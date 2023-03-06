@@ -5,5 +5,5 @@ IF NOT EXIST build (
 )
 
 pushd build
-    cl -Zi ..\src\win32_basalt.c
+    cl -Zi -FC ..\src\win32_basalt.c user32.lib gdi32.lib
 popd
