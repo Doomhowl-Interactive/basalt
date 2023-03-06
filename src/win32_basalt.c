@@ -50,7 +50,7 @@ static void RenderWeirdGradient(win32_offscreen_buffer Buffer, int BlueOffset, i
             uint8 Blue = (X + BlueOffset);
             uint8 Green = (Y + GreenOffset);
 
-            *Pixel++ = ((Green << 8) | Blue);
+            *Pixel++ = ((Green << 16) | Blue);
         }
         
         Row += Buffer.Pitch;
