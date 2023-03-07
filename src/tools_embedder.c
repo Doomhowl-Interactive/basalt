@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdint.h>
+#include <stdlib.h>
+#include <time.h>
 
 #if defined(_WIN64) || defined(_WIN32)
 #include "external/dirent.h"
@@ -8,120 +10,207 @@
 #include <dirent.h>
 #endif
 
-#define STB_IMAGE_IMPLEMENTATION
-#include "external/stb_image.h"
-
 #define true 1
 #define false 0
 
-typedef uint32_t uint32;
 typedef int bool;
 
-typedef uint8_t ColorComp;
-typedef uint32_t Color;
+#undef assert
+void assert(bool cond) {
+#ifdef DEBUG
+    if (!cond) {
+        int* i = NULL;
+        *i = 666;
+    }
+#endif
+}
 
-bool WriteCode(const char* outputPath, char* code){
+// malloc condom
+void* s_malloc(size_t len){
+    void* mem = malloc(len);
+    if (mem == NULL){
+        fprintf(stderr, "Failed to allocate memory!");
+        exit(1);
+    }
+    return mem;
+}
+
+void WriteCode(char* outputPath, char* code) {
     FILE* file;
     file = fopen(outputPath, "a");
-    if (file == NULL){
-        printf("Could not open file for writing.\n");
-        return false;
+    if (file == NULL) {
+        fprintf(stderr,"Could not open file for writing.\n");
+        exit(1);
     }
     fprintf(file, "\n%s", code);
     fclose(file);
-    printf("Wrote code into %s.\n", outputPath);
+    printf("Wrote code into %s\n", outputPath);
+    free(code);
 }
 
-bool EncodeImage(const char* file, char** genCode) {
-    printf("Encoding image %s\n", file);
-
-    Color* colors = NULL;
-    int width = 0;
-    int height = 0;
-    if (!GetImageColors(file, &colors, &width, &height)){
-        printf("Could not determine image colors\n");
-        return false;
+char* GetAssetName(char* path) {
+    // replace backslashes if any
+    for (char* p = path; *p != '\0'; p++) {
+        if (*p == '\\') {
+            *p = '/';
+        }
     }
-    int pixelCount = width * height;
 
-    char* assetName = "SPR_PLAYER_FOX";
+    // get filestem
+    char* stem = strrchr(path, '/');
+    if (stem == NULL){
+        stem = path;
+    } else {
+        stem++;
+    }
 
-    int totalIntegers = pixelCount+2;
-    char* code = malloc(sizeof(char) * (totalIntegers * 12 + 1024));
+    char* dot = strrchr(stem, '.');
+    if (dot != NULL){
+        *dot = '\0'; // cut of string at dot
+    }
+
+    stem = strupr(stem);
+
+    return stem;
+}
+
+unsigned char* LoadFileBytes(char* filePath, size_t* size) {
+    FILE *file = fopen(filePath,"rb");
+    if (file == NULL){
+        fprintf(stderr,"Error opening file %s\n", filePath);
+        exit(1);
+    }
+
+    fseek(file, 0, SEEK_END);
+    *size = (size_t) ftell(file);
+    fseek(file, 0, SEEK_SET);
+
+    unsigned char* buffer = (unsigned char*) s_malloc(*size);
+    fread(buffer, *size, 1, file);
+    fclose(file);
+
+    return buffer;
+}
+
+
+//sprintf(hex, "0x%02X", bytes[i]); (replaces this slower call)
+char HexLookupTable[] = "0123456789ABCDEF";
+inline void UnsignedByteToHex(char* hex, unsigned char val){
+    hex[0] = HexLookupTable[(val >> 4) & 0x0f];
+    hex[1] = HexLookupTable[val & 0x0f];
+    hex[2] = '\0'; 
+    return hex[0];
+}
+
+void EmbedFile(char* file, char** genCode) {
+
+    // read raw binary
+    size_t size = 0;
+    unsigned char* bytes = LoadFileBytes(file, &size);
+    assert(size > 0);
+
+    char* fileName = strdup(file);
+    char* assetName = GetAssetName(file);
+    printf("Embedding file %s named %s\n", fileName, assetName);
+    free(fileName);
+
+    char* code = s_malloc(size * 8 + 1024);
+
+    clock_t startTime = clock();
 
     // write code header
-    sprintf(code,"static unsigned int %s[%d] = {\n",assetName,totalIntegers);
-
-    // write width and height first
-    char hex[12];
-    sprintf(hex, "0x%08X", width);
-    strcat(code, hex);
-    strcat(code, ",");
-    sprintf(hex, "0x%08X", height);
-    strcat(code, hex);
-    strcat(code, ",");
+    sprintf(code, "static unsigned int %s[%d] = {\n", assetName, size);
 
     // write each pixel after
-    for (int i = 0; i < pixelCount; i++){
-        sprintf(hex, "0x%08X", colors[i]);
+    char hex[3];
+    for (int i = 0; i < size; i++) {
+        UnsignedByteToHex(hex,bytes[i]);
+        strcat(code, "0x");
         strcat(code, hex);
         strcat(code, ",");
     }
+
+    free(bytes);
 
     // end code block
     strcat(code, "\n};");
 
     *genCode = code;
-    return true;
+
+    clock_t endTime = clock();
+    double cpuTimeUsed = ((double)(endTime - startTime)) / CLOCKS_PER_SEC;
+    printf("%f secs...\n", cpuTimeUsed);
 }
 
-bool GetImageColors(const char* file, Color** pixels, int* width, int* height) {
-
-    int channels = 0;
-    int w, h;
-    ColorComp* comps = stbi_load(file, &w, &h, &channels, STBI_rgb_alpha);
-    if (comps == NULL){
-        printf("Failed to encode image %s!", file);
-        return false;
+void ClearFile(char* outputFile) {
+    FILE* file = fopen(outputFile, "w");
+    if (file != NULL) {
+        fputs("", file);
+        fclose(file);
     }
-
-    *pixels = (Color*) comps;
-    *width = w;
-    *height = h;
-
-    // TODO: call later stbi_image_free(comps);
-    return true;
 }
 
-void EncodeFolder(const char* folder, const char* outputFile) {
+void GetFolderFiles(char* folder, char* ext, char*** files);
+
+void EncodeFolder(char* folder, char* outputFile) {
+    ClearFile(outputFile);
+
     char** files = NULL;
-    if (!GetFolderFiles(folder,".png", &files)) {
-        printf("Failed to read folder %s", folder);
-    }
+    GetFolderFiles(folder, ".png", &files);
 
     for (int i = 0; files[i] != NULL; i++) {
-        char** code = NULL;
-        EncodeImage(files[i],&code);
+        char* code = NULL;
+        EmbedFile(files[i], &code);
         WriteCode(outputFile, code);
+        free(files[i]);
     }
+    free(files);
 }
 
-int main(int argc, char** argv){
-    EncodeFolder("../src","../src/assets_custom.dat.c");
-    printf("Done");
+#ifdef DEBUG
+bool UnitTest() {
+    assert(strcmp(GetAssetName("assets/spr_player_fox.png"), "SPR_PLAYER_FOX") == 0);
+    assert(strcmp(GetAssetName("assets\\mus_overworld.ogg"), "MUS_OVERWORLD") == 0);
+
+    printf("Completed unit testing...\n");
+    return true;
+}
+#endif
+
+int main(int argc, char** argv) {
+#ifdef DEBUG
+    assert(UnitTest());
+#endif
+
+    if (argc != 3) {
+        printf("Incorrect amount of arguments! Gave %d\n",argc);
+        return 1;
+    }
+
+    char* inputFolder = argv[1];
+    char* outputFile = argv[2];
+
+    clock_t startTime = clock();
+
+    EncodeFolder(inputFolder, outputFile);
+
+    clock_t endTime = clock();
+    double cpuTimeUsed = ((double)(endTime - startTime)) / CLOCKS_PER_SEC;
+
+    printf("Done in %f seconds\n", cpuTimeUsed);
 }
 
 #define MAX_PATH_LENGTH 128
 #define MAX_FILE_COUNT 512
-static bool GetFolderFiles(const char* folder, const char* ext, char*** files){
+void GetFolderFiles(char* folder, char* ext, char*** files) {
 
-    DIR *dir;
-    struct dirent *ent;
+    DIR* dir;
+    struct dirent* ent;
     int extLen = strlen(ext);
     if ((dir = opendir(folder)) != NULL) {
 
         // list
-        *files = (char**) malloc((MAX_FILE_COUNT+1) * sizeof(char*));
+        *files = (char**)s_malloc((MAX_FILE_COUNT + 1) * sizeof(char*));
 
         int index = 0;
         while ((ent = readdir(dir)) != NULL) {
@@ -136,10 +225,10 @@ static bool GetFolderFiles(const char* folder, const char* ext, char*** files){
 
         // append null to end list
         (*files)[index++] = NULL;
-    } else {
-        perror("Unable to open directory");
-        (*files) = NULL;
-        return false;
     }
-    return true;
+    else {
+        (*files) = NULL;
+        fprintf(stderr,"Unable to open directory");
+        exit(1);
+    }
 }
