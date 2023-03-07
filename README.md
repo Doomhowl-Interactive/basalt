@@ -5,7 +5,7 @@ Slowly solidifying [Magma Game Engine](https://github.com/bramtechs/RaylibMagmaE
 ## New goals
 - C over C++
 - Engine agnostic
-- ~~Low level SDL over Raylib~~ **Only C-standard libary and windows.h!**
+- Batteries included, no external dependencies/libraries.
 - Embed game assets into executable (instead of seperate file)
 - High backwards-compatibility (Windows XP support and higher)
 

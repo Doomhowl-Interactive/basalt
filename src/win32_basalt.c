@@ -1,29 +1,30 @@
 #include <windows.h>
 #include "basalt.h"
 
-typedef struct
-{
+#include "assets_core.h"
+#include "assets_custom.dat.c"
+
+typedef struct {
     // NOTE(casey): Pixels are alwasy 32-bits wide, Memory Order BB GG RR XX
     BITMAPINFO Info;
     void *Memory;
     int Width;
     int Height;
     int Pitch;
-} win32_offscreen_buffer;
+} OffscreenBuffer;
 
-typedef struct
-{
+typedef struct {
     int Width;
     int Height;
-} win32_window_dimension;
+} Dimension;
 
 // TODO(casey): This is a global for now.
 static bool GlobalRunning;
-static win32_offscreen_buffer GlobalBackbuffer;
+static OffscreenBuffer GlobalBackbuffer;
 
-win32_window_dimension Win32GetWindowDimension(HWND Window)
+Dimension Win32GetWindowDimension(HWND Window)
 {
-    win32_window_dimension Result;
+    Dimension Result;
     
     RECT ClientRect;
     GetClientRect(Window, &ClientRect);
@@ -33,7 +34,7 @@ win32_window_dimension Win32GetWindowDimension(HWND Window)
     return(Result);
 }
 
-static void RenderWeirdGradient(win32_offscreen_buffer Buffer, int BlueOffset, int GreenOffset)
+static void RenderWeirdGradient(OffscreenBuffer Buffer, int BlueOffset, int GreenOffset)
 {
     // TODO(casey): Let's see what the optimizer does
 
@@ -57,7 +58,25 @@ static void RenderWeirdGradient(win32_offscreen_buffer Buffer, int BlueOffset, i
     }
 }
 
-static void Win32ResizeDIBSection(win32_offscreen_buffer *Buffer, int Width, int Height)
+static void RenderSprite(OffscreenBuffer buffer, int posX, int posY, uint32_t* bytes){
+    uint32_t width = bytes[0];
+    uint32_t height = bytes[1];
+
+    uint32 *pixels = buffer.Memory;
+
+    int j = 0;
+    for (int y = 0; y < height; y++){
+        for (int x = 0; x < width; x++){
+            int xx = posX + x;
+            int yy = posY + y;
+            int i = yy * buffer.Width + xx;
+            pixels[i] = bytes[j++];
+        }
+    }
+
+}
+
+static void Win32ResizeDIBSection(OffscreenBuffer *Buffer, int Width, int Height)
 {
     // TODO(casey): Bulletproof this.
     // Maybe don't free first, free after, then free first if that fails.
@@ -95,7 +114,7 @@ static void Win32ResizeDIBSection(win32_offscreen_buffer *Buffer, int Width, int
 
 static void Win32DisplayBufferInWindow(HDC DeviceContext,
                                        int WindowWidth, int WindowHeight,
-                                       win32_offscreen_buffer Buffer)
+                                       OffscreenBuffer Buffer)
 {
     // TODO(casey): Aspect ratio correction
     // TODO(casey): Play with stretch modes
@@ -141,7 +160,7 @@ LRESULT CALLBACK Win32MainWindowCallback(HWND Window,
         {
             PAINTSTRUCT Paint;
             HDC DeviceContext = BeginPaint(Window, &Paint);
-            win32_window_dimension Dimension = Win32GetWindowDimension(Window);
+            Dimension Dimension = Win32GetWindowDimension(Window);
             Win32DisplayBufferInWindow(DeviceContext, Dimension.Width, Dimension.Height,
                                        GlobalBackbuffer);
             EndPaint(Window, &Paint);
@@ -216,8 +235,9 @@ WinMain(HINSTANCE Instance,
                 }
 
                 RenderWeirdGradient(GlobalBackbuffer, XOffset, YOffset);
+                RenderSprite(GlobalBackbuffer, 10, 10, SPR_PLAYER_FOX);
 
-                win32_window_dimension Dimension = Win32GetWindowDimension(Window);
+                Dimension Dimension = Win32GetWindowDimension(Window);
                 Win32DisplayBufferInWindow(DeviceContext, Dimension.Width, Dimension.Height,
                                            GlobalBackbuffer);
                 
