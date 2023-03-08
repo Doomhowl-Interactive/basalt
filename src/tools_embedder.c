@@ -48,30 +48,33 @@ void WriteCode(char* outputPath, char* code) {
     free(code);
 }
 
-char* GetAssetName(char* path) {
+void GetAssetName(char* dest, const char* path) {
+    char* name = strdup(path);
+
     // replace backslashes if any
-    for (char* p = path; *p != '\0'; p++) {
+    for (char* p = name; *p != '\0'; p++) {
         if (*p == '\\') {
             *p = '/';
         }
     }
 
-    // get filestem
-    char* stem = strrchr(path, '/');
+    // only get filestem
+    char* stem = strrchr(name, '/');
     if (stem == NULL){
-        stem = path;
-    } else {
-        stem++;
+        strcpy(dest, name);
+    }else{
+        strcpy(dest, stem+1);
+    }
+    //free(name);
+
+    // remove extension
+    char* dot = strrchr(dest, '.');
+    if (dot != NULL) {
+        *dot = '\0'; // cut off string at dot
     }
 
-    char* dot = strrchr(stem, '.');
-    if (dot != NULL){
-        *dot = '\0'; // cut of string at dot
-    }
-
-    stem = strupr(stem);
-
-    return stem;
+    // string to uppercase
+    strupr(dest);
 }
 
 unsigned char* LoadFileBytes(char* filePath, size_t* size) {
@@ -92,54 +95,65 @@ unsigned char* LoadFileBytes(char* filePath, size_t* size) {
     return buffer;
 }
 
-
-//sprintf(hex, "0x%02X", bytes[i]); (replaces this slower call)
-char HexLookupTable[] = "0123456789ABCDEF";
-inline void UnsignedByteToHex(char* hex, unsigned char val){
-    hex[0] = HexLookupTable[(val >> 4) & 0x0f];
-    hex[1] = HexLookupTable[val & 0x0f];
-    hex[2] = '\0'; 
-    return hex[0];
+char* AppendString(char* dest, char* add){
+    strcpy(dest, add);
+    dest += strlen(add);
+    return dest;
 }
 
+const char HexLookupTable[] = "0123456789ABCDEF";
 void EmbedFile(char* file, char** genCode) {
 
     // read raw binary
-    size_t size = 0;
+    uint32_t size = 0;
     unsigned char* bytes = LoadFileBytes(file, &size);
     assert(size > 0);
 
     char* fileName = strdup(file);
-    char* assetName = GetAssetName(file);
-    printf("Embedding file %s named %s\n", fileName, assetName);
+    char assetName[128]; GetAssetName(assetName, file);
+    printf("Embedding file %s named %s ", fileName, assetName);
     free(fileName);
 
-    char* code = s_malloc(size * 8 + 1024);
+    size_t codeMaxSize = size * 8 + 1024;
+    char* code = s_malloc(codeMaxSize);
+    memset(code, '\0', codeMaxSize);
+    char* marker = code;
 
     clock_t startTime = clock();
 
     // write code header
-    sprintf(code, "static unsigned int %s[%d] = {\n", assetName, size);
+    char header[64];
+    sprintf(header, "unsigned char %s[] = {\n", assetName, size);
+    marker = AppendString(marker, header);
+
+    // add size marker (4 bytes) == BIG ENDIAN
+    char sizeText[64];
+    unsigned char s[4];
+    s[0] = (unsigned char)(size >> 24);
+    s[1] = (unsigned char)(size >> 16);
+    s[2] = (unsigned char)(size >> 8);
+    s[3] = (unsigned char)size;
+    sprintf(sizeText,"%d,%d,%d,%d,",s[0],s[1],s[2],s[3]);
+    marker = AppendString(marker, sizeText);
 
     // write each pixel after
-    char hex[3];
     for (int i = 0; i < size; i++) {
-        UnsignedByteToHex(hex,bytes[i]);
-        strcat(code, "0x");
-        strcat(code, hex);
-        strcat(code, ",");
+        marker = AppendString(marker, "0x");
+        *(marker++) = HexLookupTable[(bytes[i] >> 4) & 0x0f];
+        *(marker++) = HexLookupTable[(bytes[i] >> 0) & 0x0f];
+        marker = AppendString(marker, ",");
     }
 
     free(bytes);
 
     // end code block
-    strcat(code, "\n};");
+    marker = AppendString(marker, "\n};\0");
 
     *genCode = code;
 
     clock_t endTime = clock();
     double cpuTimeUsed = ((double)(endTime - startTime)) / CLOCKS_PER_SEC;
-    printf("%f secs...\n", cpuTimeUsed);
+    printf(" - %f secs...\n", cpuTimeUsed);
 }
 
 void ClearFile(char* outputFile) {
@@ -169,8 +183,20 @@ void EncodeFolder(char* folder, char* outputFile) {
 
 #ifdef DEBUG
 bool UnitTest() {
-    assert(strcmp(GetAssetName("assets/spr_player_fox.png"), "SPR_PLAYER_FOX") == 0);
-    assert(strcmp(GetAssetName("assets\\mus_overworld.ogg"), "MUS_OVERWORLD") == 0);
+    char name1[128];
+    GetAssetName(name1, "assets/spr_player_fox.png");
+    assert(strcmp(name1, "SPR_PLAYER_FOX") == 0);
+
+    char name2[128];
+    GetAssetName(name2, "assets\\mus_overworld.ogg");
+    assert(strcmp(name2, "MUS_OVERWORLD") == 0);
+
+    char str[128];
+    char* ptr = str;
+    ptr = AppendString(ptr, "Hello");
+    ptr = AppendString(ptr, " world");
+    ptr = AppendString(ptr, "!");
+    assert(strcmp(str,"Hello world!") == 0);
 
     printf("Completed unit testing...\n");
     return true;

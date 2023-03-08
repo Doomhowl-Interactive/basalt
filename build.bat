@@ -7,7 +7,8 @@ IF NOT EXIST build (
 PUSHD build
 
 DEL /F tools_embedder.exe
-CL -ZI -FC /O2 "..\src\tools_embedder.c"
+REM CL -ZI -FC /O2 "..\src\tools_embedder.c"
+CL -ZI -FC /DDEBUG "..\src\tools_embedder.c"
 IF EXIST tools_embedder.exe (
     CALL tools_embedder.exe "..\assets" "..\src\assets_custom.dat.c"
 

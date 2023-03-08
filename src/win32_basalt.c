@@ -1,8 +1,9 @@
 #include <windows.h>
 #include "basalt.h"
 
+#define STB_IMAGE_IMPLEMENTATION
+#include "external/stb_image.h"
 #include "assets_core.h"
-#include "assets_custom.dat.c"
 
 typedef struct {
     // NOTE(casey): Pixels are alwasy 32-bits wide, Memory Order BB GG RR XX
@@ -18,9 +19,80 @@ typedef struct {
     int Height;
 } Dimension;
 
+
+#undef assert
+void assert(bool cond) {
+#ifndef RELEASE
+    if (!cond) {
+        int* i = NULL;
+        *i = 666;
+    }
+#endif
+}
+
 // TODO(casey): This is a global for now.
 static bool GlobalRunning;
 static OffscreenBuffer GlobalBackbuffer;
+
+// assets
+Texture LoadTexture(unsigned char* pixels){
+    uint32 len = 0;
+
+    volatile uint32_t i=0x01234567;
+    bool bigEndian = (*((uint8_t*)(&i))) != 0x67;
+
+    unsigned char a1 = pixels[0];
+    unsigned char a2 = pixels[1];
+    unsigned char a3 = pixels[2];
+    unsigned char a4 = pixels[3];
+
+    if (bigEndian) {
+        len = *(uint32_t*)pixels;
+    } else {
+        len = ((uint32)pixels[0] << 24) |
+              ((uint32)pixels[1] << 16) |
+              ((uint32)pixels[2] << 8)  |
+              ((uint32)pixels[3] << 0);
+    }
+
+    void* data = &pixels[4];
+
+    Texture texture;
+    int channels = 0;
+
+    uint32_t* imgData = (uint32_t*) stbi_load_from_memory(data, len, &texture.width, &texture.height, &channels, 4);
+    if (imgData == NULL) {
+        exit(1);
+    }
+
+    // TODO: deal with 3 channels
+    // TODO: check if windows can draw RGBA so this doesn't need to be converted
+    int pixelCount = texture.width * texture.height;
+
+    // rearrange each pixel to be BGRA (for windows bitmaps)
+    uint32_t* pixel = imgData;
+    for (int i = 0; i < pixelCount; i++){
+
+        // Extract the red, green, blue, and alpha channels
+        // TODO: find out why this is weird
+        uint8_t green = (*pixel >> 0)   & 0xFF;
+        uint8_t red =   (*pixel >> 8)   & 0xFF;
+        uint8_t alpha = (*pixel >> 16)  & 0xFF;
+        uint8_t blue =  (*pixel >> 24)  & 0xFF;
+       
+        // Create a new BGRA color value by swapping the red and blue channels
+        uint32_t bgraColor = (blue << 24) | (green << 16) | (red << 8) | alpha;
+
+        // WARN: swap is done in place, so don't do stb operations after this!
+        *pixel = bgraColor;
+        pixel++;
+    }
+
+    texture.pixels = imgData;
+    assert(channels == 4);
+
+    return texture;
+}
 
 Dimension Win32GetWindowDimension(HWND Window)
 {
@@ -58,9 +130,9 @@ static void RenderWeirdGradient(OffscreenBuffer Buffer, int BlueOffset, int Gree
     }
 }
 
-static void RenderSprite(OffscreenBuffer buffer, int posX, int posY, uint32_t* bytes){
-    uint32_t width = bytes[0];
-    uint32_t height = bytes[1];
+static void RenderSprite(OffscreenBuffer buffer, Texture texture, int posX, int posY){
+    uint32_t width = texture.width;
+    uint32_t height = texture.height;
 
     uint32 *pixels = buffer.Memory;
 
@@ -70,7 +142,7 @@ static void RenderSprite(OffscreenBuffer buffer, int posX, int posY, uint32_t* b
             int xx = posX + x;
             int yy = posY + y;
             int i = yy * buffer.Width + xx;
-            pixels[i] = bytes[j++];
+            pixels[i] = texture.pixels[j++];
         }
     }
 
@@ -176,6 +248,33 @@ LRESULT CALLBACK Win32MainWindowCallback(HWND Window,
     return(Result);
 }
 
+void UnitTest(){
+    volatile uint32_t i = 0x01234567;
+    bool littleEndian = *((uint8_t*)(&i)) == 0x67;
+    assert(sizeof(uint32) == 4);
+    
+    {
+        // spr block
+        unsigned char result[4];
+        uint32_t value = 1770;
+        if (littleEndian) {
+            result[3] = (unsigned char)(value >> 24);
+            result[2] = (unsigned char)(value >> 16);
+            result[1] = (unsigned char)(value >> 8);
+            result[0] = (unsigned char)value;
+        }
+        else {
+            result[0] = (unsigned char)(value >> 24);
+            result[1] = (unsigned char)(value >> 16);
+            result[2] = (unsigned char)(value >> 8);
+            result[3] = (unsigned char)value;
+        }
+        uint32_t val = *((uint32_t*)result);
+        assert(val == 1770);
+    }
+
+}
+
 int CALLBACK
 WinMain(HINSTANCE Instance,
         HINSTANCE PrevInstance,
@@ -191,6 +290,8 @@ WinMain(HINSTANCE Instance,
     WindowClass.hInstance = Instance;
 //    WindowClass.hIcon;
     WindowClass.lpszClassName = "HandmadeHeroWindowClass";
+
+    UnitTest();
 
     if(RegisterClassA(&WindowClass))
     {
@@ -219,6 +320,12 @@ WinMain(HINSTANCE Instance,
             int YOffset = 0;
 
             GlobalRunning = true;
+
+            Texture colorSprite = LoadTexture(SPR_RGBA);
+            Texture foxSprite = LoadTexture(SPR_PLAYER_FOX);
+            Texture blockSprite = LoadTexture(SPR_BLOCK);
+            Texture smallBlockSprite = LoadTexture(TILE_BLOCK_SMALL);
+            
             while(GlobalRunning)
             {
                 MSG Message;
@@ -235,7 +342,11 @@ WinMain(HINSTANCE Instance,
                 }
 
                 RenderWeirdGradient(GlobalBackbuffer, XOffset, YOffset);
-                RenderSprite(GlobalBackbuffer, 10, 10, SPR_PLAYER_FOX);
+
+                RenderSprite(GlobalBackbuffer, colorSprite, 300, 250);
+                RenderSprite(GlobalBackbuffer, foxSprite, 10, 10);
+                RenderSprite(GlobalBackbuffer, blockSprite, 10, foxSprite.height + 10);
+                RenderSprite(GlobalBackbuffer, smallBlockSprite, blockSprite.width + 10, foxSprite.height + 10);
 
                 Dimension Dimension = Win32GetWindowDimension(Window);
                 Win32DisplayBufferInWindow(DeviceContext, Dimension.Width, Dimension.Height,
