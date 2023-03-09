@@ -17,6 +17,7 @@ Slowly solidifying [Magma Game Engine](https://github.com/bramtechs/RaylibMagmaE
 - WASM-browser support
 - Actually make a game I guess
 
-## Dumb goals
+## Dumb/unrealistic goals
+- Replace C standard library
 - Arduino Uno support (communicate graphics over serial connection)
-
+- Run game in the bootloader without OS (with limited functionality)
