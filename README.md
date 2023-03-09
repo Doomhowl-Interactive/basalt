@@ -1,4 +1,5 @@
 # basalt
+game engine made from sticks and twigs
 
 Slowly solidifying [Magma Game Engine](https://github.com/bramtechs/RaylibMagmaEngine) and [dream-emu](https://github.com/bramtechs/dream-emu) while focusing on [Suckless](suckless.org)/[Handmade Hero](https://handmadehero.org/)-minimalism and performance.
 
