@@ -1,3 +1,4 @@
+// TODO: long term: write without c-standard library
 /* stb_image - v2.28 - public domain image loader - http://nothings.org/stb
                                   no warranty implied; use at your own risk
 

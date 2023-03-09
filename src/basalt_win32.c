@@ -1,6 +1,7 @@
 #include <windows.h>
 #include "basalt.h"
 
+#define STBI_NO_STDIO
 #define STB_IMAGE_IMPLEMENTATION
 #include "external/stb_image.h"
 #include "assets_core.h"
@@ -19,40 +20,28 @@ typedef struct {
     int Height;
 } Dimension;
 
-
-#undef assert
-void assert(bool cond) {
-#ifndef RELEASE
-    if (!cond) {
-        int* i = NULL;
-        *i = 666;
-    }
-#endif
-}
-
 // TODO(casey): This is a global for now.
 static bool GlobalRunning;
 static OffscreenBuffer GlobalBackbuffer;
 
 // assets
-Texture LoadTexture(unsigned char* pixels){
-    uint32 len = 0;
+Texture LoadTexture(uchar* pixels){
+    uint len = 0;
 
-    volatile uint32_t i=0x01234567;
-    bool bigEndian = (*((uint8_t*)(&i))) != 0x67;
+    volatile uint i=0x01234567;
 
-    unsigned char a1 = pixels[0];
-    unsigned char a2 = pixels[1];
-    unsigned char a3 = pixels[2];
-    unsigned char a4 = pixels[3];
+    uchar a1 = pixels[0];
+    uchar a2 = pixels[1];
+    uchar a3 = pixels[2];
+    uchar a4 = pixels[3];
 
-    if (bigEndian) {
-        len = *(uint32_t*)pixels;
+    if (IsLittleEndian()) {
+        len = ((uint)pixels[0] << 24) |
+              ((uint)pixels[1] << 16) |
+              ((uint)pixels[2] << 8)  |
+              ((uint)pixels[3] << 0);
     } else {
-        len = ((uint32)pixels[0] << 24) |
-              ((uint32)pixels[1] << 16) |
-              ((uint32)pixels[2] << 8)  |
-              ((uint32)pixels[3] << 0);
+        len = *(uint*)pixels;
     }
 
     void* data = &pixels[4];
@@ -60,7 +49,7 @@ Texture LoadTexture(unsigned char* pixels){
     Texture texture;
     int channels = 0;
 
-    uint32_t* imgData = (uint32_t*) stbi_load_from_memory(data, len, &texture.width, &texture.height, &channels, 4);
+    uint* imgData = (uint*) stbi_load_from_memory(data, len, &texture.width, &texture.height, &channels, 4);
     if (imgData == NULL) {
         exit(1);
     }
@@ -70,18 +59,18 @@ Texture LoadTexture(unsigned char* pixels){
     int pixelCount = texture.width * texture.height;
 
     // rearrange each pixel to be BGRA (for windows bitmaps)
-    uint32_t* pixel = imgData;
+    uint* pixel = imgData;
     for (int i = 0; i < pixelCount; i++){
 
         // Extract the red, green, blue, and alpha channels
         // TODO: find out why this is weird
-        uint8_t green = (*pixel >> 0)   & 0xFF;
-        uint8_t red =   (*pixel >> 8)   & 0xFF;
-        uint8_t alpha = (*pixel >> 16)  & 0xFF;
-        uint8_t blue =  (*pixel >> 24)  & 0xFF;
+        uchar green = (*pixel >> 0)   & 0xFF;
+        uchar red =   (*pixel >> 8)   & 0xFF;
+        uchar alpha = (*pixel >> 16)  & 0xFF;
+        uchar blue =  (*pixel >> 24)  & 0xFF;
        
         // Create a new BGRA color value by swapping the red and blue channels
-        uint32_t bgraColor = (blue << 24) | (green << 16) | (red << 8) | alpha;
+        uint bgraColor = (blue << 24) | (green << 16) | (red << 8) | alpha;
 
         // WARN: swap is done in place, so don't do stb operations after this!
         *pixel = bgraColor;
@@ -110,18 +99,18 @@ static void RenderWeirdGradient(OffscreenBuffer Buffer, int BlueOffset, int Gree
 {
     // TODO(casey): Let's see what the optimizer does
 
-    uint8 *Row = (uint8 *)Buffer.Memory;    
+    uchar *Row = (uchar *)Buffer.Memory;    
     for(int Y = 0;
         Y < Buffer.Height;
         ++Y)
     {
-        uint32 *Pixel = (uint32 *)Row;
+        uint *Pixel = (uint *)Row;
         for(int X = 0;
             X < Buffer.Width;
             ++X)
         {
-            uint8 Blue = (X + BlueOffset);
-            uint8 Green = (Y + GreenOffset);
+            uchar Blue = (X + BlueOffset);
+            uchar Green = (Y + GreenOffset);
 
             *Pixel++ = ((Green << 16) | Blue);
         }
@@ -131,10 +120,10 @@ static void RenderWeirdGradient(OffscreenBuffer Buffer, int BlueOffset, int Gree
 }
 
 static void RenderSprite(OffscreenBuffer buffer, Texture texture, int posX, int posY){
-    uint32_t width = texture.width;
-    uint32_t height = texture.height;
+    uint width = texture.width;
+    uint height = texture.height;
 
-    uint32 *pixels = buffer.Memory;
+    uint *pixels = buffer.Memory;
 
     int j = 0;
     for (int y = 0; y < height; y++){
@@ -248,32 +237,29 @@ LRESULT CALLBACK Win32MainWindowCallback(HWND Window,
     return(Result);
 }
 
+#ifndef RELEASE
 void UnitTest(){
-    volatile uint32_t i = 0x01234567;
-    bool littleEndian = *((uint8_t*)(&i)) == 0x67;
-    assert(sizeof(uint32) == 4);
-    
-    {
-        // spr block
-        unsigned char result[4];
-        uint32_t value = 1770;
-        if (littleEndian) {
-            result[3] = (unsigned char)(value >> 24);
-            result[2] = (unsigned char)(value >> 16);
-            result[1] = (unsigned char)(value >> 8);
-            result[0] = (unsigned char)value;
-        }
-        else {
-            result[0] = (unsigned char)(value >> 24);
-            result[1] = (unsigned char)(value >> 16);
-            result[2] = (unsigned char)(value >> 8);
-            result[3] = (unsigned char)value;
-        }
-        uint32_t val = *((uint32_t*)result);
-        assert(val == 1770);
-    }
+    CheckTypes();
 
+    // spr block size example
+    uchar result[4];
+    uint value = 1770;
+    if (IsLittleEndian()) {
+        result[3] = (uchar)(value >> 24);
+        result[2] = (uchar)(value >> 16);
+        result[1] = (uchar)(value >> 8);
+        result[0] = (uchar)(value >> 0);
+    }
+    else {
+        result[0] = (uchar)(value >> 24);
+        result[1] = (uchar)(value >> 16);
+        result[2] = (uchar)(value >> 8);
+        result[3] = (uchar)(value >> 0);
+    }
+    uint val = *((uint*)result);
+    assert(val == 1770);
 }
+#endif
 
 int CALLBACK
 WinMain(HINSTANCE Instance,

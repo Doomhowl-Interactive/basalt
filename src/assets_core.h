@@ -3,13 +3,13 @@
 typedef struct {
     int width;
     int height;
-    uint32_t* pixels;
+    color* pixels;
 } Texture;
 
 Texture LoadTexture(unsigned char* data);
 
 // core assets
-extern unsigned int SPR_RGBA[];
-extern unsigned int SPR_PLAYER_FOX[];
-extern unsigned int SPR_BLOCK[];
-extern unsigned int TILE_BLOCK_SMALL[];
+extern uchar SPR_RGBA[];
+extern uchar SPR_PLAYER_FOX[];
+extern uchar SPR_BLOCK[];
+extern uchar TILE_BLOCK_SMALL[];

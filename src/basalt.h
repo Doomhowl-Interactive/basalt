@@ -1,24 +1,28 @@
 #ifndef BASALT_H
 #define BASALT_H
 
-#include <stdint.h>
-
+typedef int color;
 typedef int bool;
+
+typedef unsigned int uint;
+typedef unsigned char uchar;
+
+#ifndef NULL
+#define NULL    0
+#endif
+
 #define true    1
 #define false   0
 
-typedef int8_t int8;
-typedef int16_t int16;
-typedef int32_t int32;
-typedef int64_t int64;
+#ifndef RELEASE
+#define Assert(X) AssertImpl(X)
+void AssertImpl(bool cond);
+void CheckTypes();
+#else
+#define Assert(X)
+#endif
 
-typedef uint8_t uint8;
-typedef uint16_t uint16;
-typedef uint32_t uint32;
-typedef uint64_t uint64;
-
-typedef float f32;
-typedef double f64;
+bool IsLittleEndian();
 
 typedef struct {
     int X;
