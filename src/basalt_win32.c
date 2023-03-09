@@ -9,7 +9,7 @@
 typedef struct {
     // NOTE(casey): Pixels are alwasy 32-bits wide, Memory Order BB GG RR XX
     BITMAPINFO Info;
-    void *Memory;
+    uint* Memory;
     int Width;
     int Height;
     int Pitch;
@@ -44,7 +44,7 @@ Texture LoadTexture(uchar* pixels){
         len = *(uint*)pixels;
     }
 
-    void* data = &pixels[4];
+    const stbi_uc* data = (const stbi_uc*) &pixels[4];
 
     Texture texture;
     int channels = 0;
@@ -123,7 +123,7 @@ static void RenderSprite(OffscreenBuffer buffer, Texture texture, int posX, int 
     uint width = texture.width;
     uint height = texture.height;
 
-    uint *pixels = buffer.Memory;
+    uint *pixels = (uint*) buffer.Memory;
 
     int j = 0;
     for (int y = 0; y < height; y++){
@@ -167,7 +167,7 @@ static void Win32ResizeDIBSection(OffscreenBuffer *Buffer, int Width, int Height
     // for clarifying the deal with StretchDIBits and BitBlt!
     // No more DC for us.
     int BitmapMemorySize = (Buffer->Width*Buffer->Height)*BytesPerPixel;
-    Buffer->Memory = VirtualAlloc(0, BitmapMemorySize, MEM_COMMIT, PAGE_READWRITE);
+    Buffer->Memory = (uint *) VirtualAlloc(0, BitmapMemorySize, MEM_COMMIT, PAGE_READWRITE);
     Buffer->Pitch = Width*BytesPerPixel;
 
     // TODO(casey): Probably clear this to black

@@ -1,8 +1,9 @@
 #ifndef BASALT_H
 #define BASALT_H
 
-typedef int color;
+#ifndef __cplusplus
 typedef int bool;
+#endif
 
 typedef unsigned int uint;
 typedef unsigned char uchar;

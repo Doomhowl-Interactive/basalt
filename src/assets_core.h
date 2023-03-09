@@ -3,7 +3,7 @@
 typedef struct {
     int width;
     int height;
-    color* pixels;
+    uint* pixels;
 } Texture;
 
 Texture LoadTexture(unsigned char* data);
