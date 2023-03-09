@@ -2,3 +2,5 @@ build
 **/*.dat.c
 **/.vs
 **/temp
+
+basalt.zip
