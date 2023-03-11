@@ -181,7 +181,7 @@ void EncodeFolder(char* folder, char* outputFile) {
     free(files);
 }
 
-#ifndef RELEASE
+#ifdef DEBUG
 bool UnitTest() {
     char name1[128];
     GetAssetName(name1, "assets/spr_player_fox.png");
@@ -204,7 +204,7 @@ bool UnitTest() {
 #endif
 
 int main(int argc, char** argv) {
-#ifndef RELEASE
+#ifdef DEBUG
     assert(UnitTest());
 #endif
 

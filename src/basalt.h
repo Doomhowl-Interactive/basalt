@@ -15,38 +15,72 @@ typedef unsigned char uchar;
 #define true    1
 #define false   0
 
-#ifndef RELEASE
+typedef struct {
+    int x;
+    int y;
+    int width;
+    int height;
+} Rect;
+
+typedef struct {
+    float x;
+    float y;
+    float width;
+    float height;
+} RectF;
+
+typedef struct {
+    int width;
+    int height;
+} Size;
+
+typedef struct {
+    float x;
+    float y;
+} Vec2;
+
+typedef struct {
+    float x;
+    float y;
+    float z;
+} Vec3;
+
+// Utilties (basalt_utils.c)
+void* MemAlloc(uint size);
+void* MemAllocEx(uint size, uint amount);
+void MemFree(void* ptr);
+
+#ifdef DEBUG
 #define Assert(X) AssertImpl(X)
+#define Panic(X) PanicImpl(X)
 void AssertImpl(bool cond);
-void CheckTypes();
+void PanicImpl(char* msg);
+void UnitTest();
 #else
 #define Assert(X)
+#define Panic(X)
 #endif
 
 bool IsLittleEndian();
 
+// Asset handling (basalt_assets.c)
 typedef struct {
-    int X;
-    int Y;
-    int Width;
-    int Height;
-} rect;
+    int width;
+    int height;
+    uint* pixels;
+} Texture;
 
-typedef struct {
-    float X;
-    float Y;
-    float Width;
-    float Height;
-} rectf;
+#ifndef BASALT_NO_ASSETS
 
-typedef struct {
-    int X;
-    int Y;
-} vec2;
+Texture LoadTexture(unsigned char* data);
 
-typedef struct {
-    float X;
-    float Y;
-} vec2f;
+#endif
+
+// Graphics drawing (basalt_graphics.c)
+typedef Texture Canvas;
+
+void RenderSprite(Canvas canvas, Texture texture, int posX, int posY);
+void RenderSpriteV(Canvas canvas, Texture texture, Vec2 pos);
+void RenderWeirdTestGradient(Canvas canvas);
 
 #endif

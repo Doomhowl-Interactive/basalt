@@ -1,6 +1,6 @@
 #include "basalt.h"
 
-#ifndef RELEASE
+#ifdef DEBUG
 void AssertImpl(bool cond) { // call with Assert() macro
     if (!cond) {
         int* i = NULL;
@@ -8,12 +8,9 @@ void AssertImpl(bool cond) { // call with Assert() macro
     }
 }
 
-void CheckTypes() {
-    Assert(sizeof(int)    == 4);
-    Assert(sizeof(long)   == 4);
-    Assert(sizeof(char)   == 1);
-    Assert(sizeof(float)  == 4);
-    Assert(sizeof(double) == 8);
+void PanicImpl(char* msg) { // call with Panic() macro
+    int* i = NULL;
+    *i = 606;
 }
 #endif
 
