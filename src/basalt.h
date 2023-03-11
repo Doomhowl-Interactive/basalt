@@ -1,19 +1,10 @@
 #ifndef BASALT_H
 #define BASALT_H
 
-#ifndef __cplusplus
-typedef int bool;
-#endif
+#include "basalt_stdlib.h"
 
 typedef unsigned int uint;
 typedef unsigned char uchar;
-
-#ifndef NULL
-#define NULL    0
-#endif
-
-#define true    1
-#define false   0
 
 typedef struct {
     int x;
@@ -51,10 +42,8 @@ void* MemAllocEx(uint size, uint amount);
 void MemFree(void* ptr);
 
 #ifdef DEBUG
-#define Assert(X) AssertImpl(X)
-#define Panic(X) PanicImpl(X)
-void AssertImpl(bool cond);
-void PanicImpl(char* msg);
+#define Assert(X) assert(X)
+#define Panic(X) panic(X)
 void UnitTest();
 #else
 #define Assert(X)

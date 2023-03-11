@@ -1,18 +1,22 @@
 #include "basalt.h"
 
-#ifdef DEBUG
-void AssertImpl(bool cond) { // call with Assert() macro
-    if (!cond) {
-        int* i = NULL;
-        *i = 666;
-    }
+// memory condoms
+void* MemAlloc(uint size) {
+    void* mem = malloc(size);
+    Assert(mem);
+    return mem;
 }
 
-void PanicImpl(char* msg) { // call with Panic() macro
-    int* i = NULL;
-    *i = 606;
+void* MemAllocEx(uint size, uint amount) {
+    uint totalSize = size * amount;
+    return MemAlloc(totalSize);
 }
-#endif
+
+void MemFree(void* ptr) {
+    if (ptr != NULL) {
+        free(ptr);
+    }
+}
 
 bool IsLittleEndian(){
     volatile uint i = 0x01234567;

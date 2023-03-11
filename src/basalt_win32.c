@@ -1,4 +1,6 @@
 #include <windows.h>
+
+#define BASALT_STDLIB_IMPLEMENTATION
 #include "basalt.h"
 
 // core assets
@@ -15,24 +17,6 @@ typedef struct {
 
 static bool ShouldBeRunning;
 static OffscreenBuffer GlobalBackbuffer;
-
-// windows specific utilities
-void* MemAlloc(uint size) {
-    void* mem = VirtualAlloc(0, size, MEM_COMMIT, PAGE_READWRITE);
-    Assert(mem);
-    return mem;
-}
-
-void* MemAllocEx(uint size, uint amount) {
-    uint totalSize = size * amount;
-    return MemAlloc(totalSize);
-}
-
-void MemFree(void* ptr) {
-    if (ptr != NULL) {
-        Assert(VirtualFree(ptr, 0, MEM_RELEASE));
-    }
-}
 
 static Size GetWindowSize(HWND window)
 {
@@ -195,4 +179,10 @@ int CALLBACK WinMain(HINSTANCE instance, HINSTANCE prevInstance, LPSTR commandLi
     }
     
     return(0);
+}
+
+void __stdcall WinMainCRTStartup()
+{
+    int result = WinMain(GetModuleHandle(0), 0, 0, 0); // TODO: command line args
+    ExitProcess(result);
 }

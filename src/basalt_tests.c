@@ -31,7 +31,9 @@ static void CheckByteReading(){
     Assert(val == 1770);
 }
 
+void TestStdLib();
 void UnitTest() {
+    TestStdLib();
     CheckTypes();
     CheckByteReading();
 }
