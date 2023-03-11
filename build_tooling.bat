@@ -1,7 +1,4 @@
 @echo off
-set EXE_DEBUG=basalt_win32.exe
-set EXE=basalt_win32_rel.exe
-
 set TARGET_PLATFORM=x86
 
 WHERE cl >nul 2>nul
@@ -33,33 +30,17 @@ IF NOT EXIST build (
     MKDIR build
 )
 
-call build_tooling.bat
-
 PUSHD build
-
-    IF EXIST %EXE% (
-        DEL /F %EXE%
-    )
-    IF EXIST %EXE_DEBUG% (
-        DEL /F %EXE_DEBUG%
+    set EMBEDDER=embedder.exe
+    IF EXIST %EMBEDDER% (
+        DEL /F %EMBEDDER%
     )
 
-    rem debug build
-    CL /nologo /GS- /ZI /FC /EHa /Fe: %EXE_DEBUG% /DDEBUG /Tc ..\src\basalt_*.c /Tc ..\src\assets_custom.dat.c -link -nodefaultlib -subsystem:windows user32.lib kernel32.lib gdi32.lib
+    CL /nologo /O2 /ZI /FC /Fe: %EMBEDDER% /DDEBUG /I ..\src\tooling /Tp ..\src\tooling\embedder.c
 
-    IF EXIST %EXE_DEBUG% (
-        ECHO Debug build completed!
+    IF EXIST %EMBEDDER% (
+        echo Built embedder
 
-        CL /nologo /GS- /Ot /Oy /Ob2 /GF /Gy /Fe: %EXE% /Tc ..\src\basalt_*.c /Tc ..\src\assets_custom.dat.c -link -nodefaultlib -subsystem:windows user32.lib kernel32.lib gdi32.lib
-
-        IF EXIST %EXE% (
-            ECHO Release build completed!
-        ) ELSE (
-            ECHO Release build failed!
-        )
-
-    ) ELSE (
-        ECHO Debug build failed!
+        call %EMBEDDER% ..\assets ..\src\assets_custom.dat.c
     )
-
 POPD

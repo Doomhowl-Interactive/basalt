@@ -4,13 +4,13 @@
 #include "basalt.h"
 
 // core assets
-extern uchar SPR_RGBA[];
-extern uchar SPR_PLAYER_FOX[];
-extern uchar SPR_BLOCK[];
-extern uchar TILE_BLOCK_SMALL[];
+extern unsigned char SPR_RGBA[];
+extern unsigned char SPR_PLAYER_FOX[];
+extern unsigned char SPR_BLOCK[];
+extern unsigned char TILE_BLOCK_SMALL[];
 
 typedef struct {
-    // NOTE: pixels are 32-bits wide, BB GG RR AA
+    // NOTE: pixels are 32-bits wide, AA RR GG BB
     BITMAPINFO info;
     Canvas canvas;
 } OffscreenBuffer;

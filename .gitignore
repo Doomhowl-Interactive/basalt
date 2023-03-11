@@ -1,5 +1,5 @@
 build
-# **/*.dat.c
+**/*.dat.c
 **/.vs
 **/temp
 
