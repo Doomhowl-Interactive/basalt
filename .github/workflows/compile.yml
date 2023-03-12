@@ -15,7 +15,7 @@ jobs:
     - uses: ilammy/msvc-dev-cmd@v1.4.1
     - name: compile
       run: | 
-        build_windows_modern.bat
+        call build_windows_modern.bat
 
   ubuntu:
     name: Compile on Ubuntu
