@@ -5,8 +5,7 @@
 
 #ifdef __linux__ 
 #define LINUX
-
-// TODO: not implemented
+typedef unsigned long size_t;
 
 #elif defined(_WIN32) || defined(_WIN64)
 #define WINDOWS
@@ -97,11 +96,11 @@ void* realloc(void* ptr, size_t size) {
     return copy;
 }
 
-void exit(int status) {
 #ifdef WINDOWS
+void exit(int status) {
     ExitProcess(status);
-#endif
 }
+#endif
 
 int abs(int x) {
     if (x < 0) {

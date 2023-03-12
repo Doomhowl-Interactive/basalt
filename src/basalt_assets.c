@@ -18,9 +18,9 @@ Texture LoadTexture(uchar* pixels){
 
     // get texture size
     texture.width = UnsignedCharsToInteger(pixels);
-    assert(texture.width > 0);
+    Assert(texture.width > 0);
     texture.height = UnsignedCharsToInteger(&pixels[4]);
-    assert(texture.height > 0);
+    Assert(texture.height > 0);
 
     // allocate pixel memory
     texture.pixels = malloc(texture.width*texture.height*sizeof(uint));
@@ -30,12 +30,12 @@ Texture LoadTexture(uchar* pixels){
 
         // Color lookup from palette
         uchar index = pixels[i+4*2];
-        assert(index < 256 * 4);
+        Assert(index < 256 * 4);
         uchar red   = PALETTE_COLORS[index * 4 + 0];
         uchar green = PALETTE_COLORS[index * 4 + 1];
         uchar blue  = PALETTE_COLORS[index * 4 + 2];
         uchar alpha = PALETTE_COLORS[index * 4 + 3];
-        assert(alpha == 0 || alpha == 255);
+        Assert(alpha == 0 || alpha == 255);
 
         uint argbColor = (alpha << 24) | (red << 16) | (green << 8) | blue;
         texture.pixels[i] = argbColor;
