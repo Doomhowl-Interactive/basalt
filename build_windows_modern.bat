@@ -22,7 +22,7 @@ IF EXIST "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxil
   goto BUILD
 ) ELSE (
   echo "Couldn't find vcvarsall.bat or vcbuildtools.bat, please set it manually."
-  exit /B
+  exit /B 1
 )
 
 call %VC_INIT% %TARGET_PLATFORM% > NUL 2>&1
@@ -56,10 +56,12 @@ PUSHD build
             ECHO Release build completed!
         ) ELSE (
             ECHO Release build failed!
+            EXIT /b 1
         )
 
     ) ELSE (
         ECHO Debug build failed!
+        EXIT /b 1
     )
 
 POPD
