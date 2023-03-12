@@ -1,5 +1,6 @@
-#include "basalt.h"
 #ifndef BASALT_NO_ASSETS
+
+#include "basalt.h"
 
 extern unsigned char PALETTE_COLORS[];
 

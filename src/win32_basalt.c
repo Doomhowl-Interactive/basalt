@@ -1,6 +1,4 @@
 #include <windows.h>
-
-#define BASALT_STDLIB_IMPLEMENTATION
 #include "basalt.h"
 
 // core assets
@@ -112,7 +110,7 @@ int CALLBACK WinMain(HINSTANCE instance, HINSTANCE prevInstance, LPSTR commandLi
     windowClass.hInstance = instance;
     windowClass.lpszClassName = "HandmadeHerowindowClass";
 
-#ifdef DEBUG
+#ifdef BASALT_DEBUG
     UnitTest();
 #endif
 

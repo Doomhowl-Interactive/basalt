@@ -1,7 +1,12 @@
 #ifndef BASALT_H
 #define BASALT_H
 
-#include "basalt_stdlib.h"
+#include <stdbool.h>
+#include <stddef.h>
+#include <stdint.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <assert.h>
 
 typedef unsigned int uint;
 typedef unsigned char uchar;
@@ -41,13 +46,21 @@ void* MemAlloc(uint size);
 void* MemAllocEx(uint size, uint amount);
 void MemFree(void* ptr);
 
-#ifdef DEBUG
+#define INFO(...) printf("INFO: "__VA_ARGS__); printf("\n")
+#define WARN(...) printf("WARN: "__VA_ARGS__); printf("\n")
+#undef ERROR
+#define ERROR(...) fprintf(stderr,"ERROR: "__VA_ARGS__); printf("\n")
+#define FATAL(...) fprintf(stderr,"FATAL: "__VA_ARGS__); printf("\n"); exit(1);
+
+#ifdef BASALT_DEBUG
 #define Assert(X) assert(X)
 #define Panic(X) panic(X)
+#define DEBUG(...) printf("DEBUG: "__VA_ARGS__); printf("\n")
 void UnitTest();
 #else
 #define Assert(X)
 #define Panic(X)
+#define DEBUG(...)
 #endif
 
 bool IsLittleEndian();

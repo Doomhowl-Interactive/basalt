@@ -1,6 +1,6 @@
 #include "basalt.h"
 
-#ifdef DEBUG
+#ifdef BASALT_DEBUG
 
 static void CheckTypes(){
     // check types
@@ -31,9 +31,7 @@ static void CheckByteReading(){
     Assert(val == 1770);
 }
 
-void TestStdLib();
 void UnitTest() {
-    TestStdLib();
     CheckTypes();
     CheckByteReading();
 }

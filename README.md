@@ -22,6 +22,6 @@ Slowly solidifying [Magma Game Engine](https://github.com/bramtechs/RaylibMagmaE
 - Actually make a game I guess
 
 ## Dumb/unrealistic goals
-- Replace C standard library
+- ~~Replace C standard library~~
 - Arduino Uno support (communicate graphics over serial connection)
 - Run game in the bootloader without OS (with limited functionality)

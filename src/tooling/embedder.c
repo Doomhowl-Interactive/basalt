@@ -2,7 +2,9 @@
 #include <string.h>
 #include <stdint.h>
 #include <stdlib.h>
+#include <math.h>
 #include <time.h>
+#include <ctype.h>
 
 #if defined(_WIN64) || defined(_WIN32)
 #include "external/dirent.h"
@@ -11,6 +13,8 @@
 #endif
 
 #define STB_IMAGE_IMPLEMENTATION
+#define STBI_NO_HDR
+#define STBI_NO_LINEAR
 #include "external/stb_image.h"
 
 #define true 1
@@ -27,7 +31,7 @@ typedef unsigned char uchar;
 
 #undef assert
 void assert(bool cond) {
-#ifdef DEBUG
+#ifdef BASALT_DEBUG
     if (!cond) {
         int* i = NULL;
         *i = 666;
@@ -293,7 +297,7 @@ void EmbedFolder(char* folder, char* outputFile) {
     SaveFileText(outputFile, code.text);
 }
 
-#ifdef DEBUG
+#ifdef BASALT_DEBUG
 bool UnitTest() {
     char name1[128];
     GetAssetName(name1, "assets/spr_player_fox.png");
@@ -315,7 +319,7 @@ bool UnitTest() {
 #endif
 
 int main(int argc, char** argv) {
-#ifdef DEBUG
+#ifdef BASALT_DEBUG
     assert(UnitTest());
 #endif
 
@@ -373,7 +377,7 @@ static FilePathList GetFolderFiles(char* folder, char* ext) {
         closedir(dir);
     }
     else {
-        fprintf(stderr,"Unable to open directory");
+        fprintf(stderr,"Unable to open directory\n");
         exit(1);
     }
 
@@ -406,7 +410,9 @@ static void GetAssetName(char* dest, const char* path) {
     }
 
     // string to uppercase
-    strupr(dest);
+    for (char* v = dest; *v != '\0'; v++){
+        *v = toupper(*v);
+    }
 }
 
 static String MakeString(){

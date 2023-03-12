@@ -1,5 +1,7 @@
 #include "basalt.h"
 
+#include <stdlib.h>
+
 // memory condoms
 void* MemAlloc(uint size) {
     void* mem = malloc(size);
