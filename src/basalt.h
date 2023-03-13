@@ -7,6 +7,10 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <assert.h>
+#include <string.h>
+
+#define WIDTH 1280
+#define HEIGHT 720
 
 typedef unsigned int uint;
 typedef unsigned char uchar;
