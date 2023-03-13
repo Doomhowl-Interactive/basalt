@@ -7,6 +7,8 @@
 
 #include <X11/Xlib.h>
 
+static bool ShouldBeRunning = true;
+
 int main(int argc, char **argv) {
     DEBUG("Opening Xorg display...");
     Display *display = XOpenDisplay(NULL);
@@ -15,8 +17,14 @@ int main(int argc, char **argv) {
     }
 
     int screen = DefaultScreen(display);
+
+    // if only things were that simple
     Window win = XCreateSimpleWindow(display, RootWindow(display, screen), 10,
                                      10, WIDTH, HEIGHT, 0, 0, 255);
+
+    // make window closing work (it's a big deal for some reason)
+    Atom wmDeleteWindow = XInternAtom(display, "WM_DELETE_WINDOW", false);
+    XSetWMProtocols(display, win, &wmDeleteWindow, 1);
 
     XSelectInput(display, win, ExposureMask | KeyPressMask);
     XMapWindow(display, win);
@@ -24,8 +32,8 @@ int main(int argc, char **argv) {
     XSync(display, false);
 
     int x = 0;
-    XEvent e;
-    while (XPending(display) > 0) {
+    XEvent e = {0};
+    while (ShouldBeRunning) {
         XNextEvent(display, &e);
 
         switch (e.type) {
@@ -35,6 +43,12 @@ int main(int argc, char **argv) {
             break;
         case KeyPress:
             x += 10;
+            break;
+        case ClientMessage:
+            if ((Atom)e.xclient.data.l[0] == wmDeleteWindow) {
+                DEBUG("Closing window...");
+                ShouldBeRunning = false;
+            }
             break;
         }
 
