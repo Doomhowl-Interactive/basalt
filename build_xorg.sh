@@ -12,7 +12,4 @@ gcc ../src/tooling/embedder.c -o embedder
 # build game
 gcc -Werror -DBASALT_DEBUG ../src/basalt_*.c ../src/xorg_basalt.c ../src/assets_custom.dat.c -lX11 -o basalt_linux.x11 
 
-# test run
-./basalt_linux.x11
-
 cd ..

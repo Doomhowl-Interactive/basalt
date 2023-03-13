@@ -45,12 +45,12 @@ PUSHD build
     )
 
     rem debug build
-    CL /nologo /GS- /ZI /FC /EHa /Fe: %EXE_DEBUG% /DBASALT_DEBUG /Tc ..\src\basalt_*.c /Tc ..\src\win32_basalt.c /Tc ..\src\assets_custom.dat.c -link user32.lib gdi32.lib
+    CL /nologo /GS- /ZI /FC /EHa /Fe: %EXE_DEBUG% /DBASALT_DEBUG /Tc ..\src\basalt_*.c /Tc ..\src\win32_basalt.c /Tc ..\src\assets_custom.dat.c -link user32.lib kernel32.lib gdi32.lib
 
     IF EXIST %EXE_DEBUG% (
         ECHO Debug build completed!
 
-        CL /nologo /GS- /Ot /Oy /Ob2 /GF /Gy /Fe: %EXE% /Tc ..\src\basalt_*.c /Tc ..\src\win32_basalt.c /Tc ..\src\assets_custom.dat.c -link user32.lib gdi32.lib
+        CL /nologo /O2 /Fe: %EXE% /Tc ..\src\basalt_*.c /Tc ..\src\win32_basalt.c /Tc ..\src\assets_custom.dat.c -link user32.lib kernel32.lib gdi32.lib
 
         IF EXIST %EXE% (
             ECHO Release build completed!
