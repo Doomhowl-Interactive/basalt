@@ -460,7 +460,10 @@ static void SaveFileText(char* outputPath, char* code) {
     }
     fputs(code, file);
     fclose(file);
-    printf("Wrote %d chars into %s\n", strlen(code), outputPath);
+
+    int len = strlen(code);
+    printf("Wrote %d chars into %s\n", len, outputPath);
+
     free(code);
 }
 

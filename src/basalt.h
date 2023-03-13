@@ -50,6 +50,14 @@ void* MemAlloc(uint size);
 void* MemAllocEx(uint size, uint amount);
 void MemFree(void* ptr);
 
+#ifdef __linux__ 
+#define LINUX
+#elif defined(_WIN32) || defined(_WIN64)
+#define WINDOWS
+#else
+#define UNKNOWN
+#endif
+
 #define INFO(...) printf("INFO: "__VA_ARGS__); printf("\n")
 #define WARN(...) printf("WARN: "__VA_ARGS__); printf("\n")
 #undef ERROR
@@ -75,6 +83,12 @@ typedef struct {
     int height;
     uint* pixels;
 } Texture;
+
+// core assets
+extern unsigned char SPR_RGBA[];
+extern unsigned char SPR_PLAYER_FOX[];
+extern unsigned char SPR_BLOCK[];
+extern unsigned char TILE_BLOCK_SMALL[];
 
 #ifndef BASALT_NO_ASSETS
 

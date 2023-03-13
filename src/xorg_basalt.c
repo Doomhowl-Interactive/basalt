@@ -1,20 +1,14 @@
 // Reference: X11 App in C with Xlib - Tsoding Daily
 // https://youtu.be/764fnfEb1_c
 
-#include <X11/Xlib.h>
-
-#define BASALT_STDLIB_IMPLEMENTATION
 #include "basalt.h"
 
-// core assets
-extern unsigned char SPR_RGBA[];
-extern unsigned char SPR_PLAYER_FOX[];
-extern unsigned char SPR_BLOCK[];
-extern unsigned char TILE_BLOCK_SMALL[];
+#ifdef LINUX
+
+#include <X11/Xlib.h>
 
 int main(int argc, char **argv) {
-    DEBUG("Opening Xorg server...");
-
+    DEBUG("Opening Xorg display...");
     Display *display = XOpenDisplay(NULL);
     if (display == NULL) {
         FATAL("Failed to open X display!");
@@ -29,11 +23,9 @@ int main(int argc, char **argv) {
 
     XSync(display, false);
 
-    const char *msg = "Hello world!";
-
     int x = 0;
     XEvent e;
-    while (1) {
+    while (XPending(display) > 0) {
         XNextEvent(display, &e);
 
         switch (e.type) {
@@ -54,5 +46,8 @@ int main(int argc, char **argv) {
     }
 
     XCloseDisplay(display);
+    DEBUG("Closed Xorg display");
     return 0;
 }
+
+#endif
