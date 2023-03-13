@@ -9,11 +9,11 @@
 #include <assert.h>
 #include <string.h>
 
-extern const uint WIDTH;
-extern const uint HEIGHT;
-
 typedef unsigned int uint;
 typedef unsigned char uchar;
+
+extern const uint WIDTH;
+extern const uint HEIGHT;
 
 typedef struct {
     int x;

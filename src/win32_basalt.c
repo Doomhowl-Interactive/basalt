@@ -6,7 +6,7 @@
 typedef struct {
     // NOTE: pixels are 32-bits wide, AA RR GG BB
     BITMAPINFO info;
-    Canvas canvas;
+    Texture canvas;
 } OffscreenBuffer;
 
 static bool ShouldBeRunning;
@@ -31,7 +31,7 @@ static void ResizeDIBSection(OffscreenBuffer *buffer, int width, int height) {
     buffer->info.bmiHeader.biPlanes = 1;
     buffer->info.bmiHeader.biBitCount = 32;
     buffer->info.bmiHeader.biCompression = BI_RGB;
-    buffer->canvas = InitCanvas(width, height);
+    buffer->canvas = InitTexture(width, height);
 }
 
 static void DisplayBufferInWindow(HDC deviceContext, int winWidth,
@@ -125,7 +125,7 @@ int CALLBACK WinMain(HINSTANCE instance, HINSTANCE prevInstance,
                     DispatchMessageA(&message);
                 }
 
-                Canvas canvas = GlobalBackbuffer.canvas;
+                Texture canvas = GlobalBackbuffer.canvas;
                 float delta = 1.f/60.f;
                 UpdateAndRenderGame(canvas, delta);
 
