@@ -1,5 +1,13 @@
 #include "basalt.h"
 
+Canvas InitCanvas(int width, int height){
+    Canvas canv;
+    canv.width = width;
+    canv.height = height;
+    canv.pixels = (uint *) MemAllocEx(width * height, 4);
+    return canv;
+}
+
 void RenderSprite(Canvas canvas, Texture texture, int posX, int posY){
     uint *pixels = (uint*) canvas.pixels;
 

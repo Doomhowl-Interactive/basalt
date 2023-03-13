@@ -25,16 +25,13 @@ static Size GetWindowSize(HWND window) {
 static void ResizeDIBSection(OffscreenBuffer *buffer, int width, int height) {
     MemFree(buffer->canvas.pixels);
 
-    buffer->canvas.width = width;
-    buffer->canvas.height = height;
-
     buffer->info.bmiHeader.biSize = sizeof(buffer->info.bmiHeader);
     buffer->info.bmiHeader.biWidth = width;
     buffer->info.bmiHeader.biHeight = -height;
     buffer->info.bmiHeader.biPlanes = 1;
     buffer->info.bmiHeader.biBitCount = 32;
     buffer->info.bmiHeader.biCompression = BI_RGB;
-    buffer->canvas.pixels = (uint *)MemAllocEx(width * height, 4);
+    buffer->canvas = InitCanvas(width, height);
 }
 
 static void DisplayBufferInWindow(HDC deviceContext, int winWidth,
@@ -115,10 +112,7 @@ int CALLBACK WinMain(HINSTANCE instance, HINSTANCE prevInstance,
             HDC deviceContext = GetDC(window);
             ShouldBeRunning = true;
 
-            Texture colorSprite = LoadTexture(SPR_RGBA);
-            Texture foxSprite = LoadTexture(SPR_PLAYER_FOX);
-            Texture blockSprite = LoadTexture(SPR_BLOCK);
-            Texture smallBlockSprite = LoadTexture(TILE_BLOCK_SMALL);
+            InitializeGame();
 
             while (ShouldBeRunning) {
                 MSG message;
@@ -132,13 +126,8 @@ int CALLBACK WinMain(HINSTANCE instance, HINSTANCE prevInstance,
                 }
 
                 Canvas canvas = GlobalBackbuffer.canvas;
-
-                RenderWeirdTestGradient(canvas);
-                RenderSprite(canvas, colorSprite, 300, 250);
-                RenderSprite(canvas, foxSprite, 10, 10);
-                RenderSprite(canvas, blockSprite, 10, foxSprite.height + 10);
-                RenderSprite(canvas, smallBlockSprite, blockSprite.width + 10,
-                             foxSprite.height + 10);
+                float delta = 1.f/60.f;
+                UpdateAndRenderGame(canvas, delta);
 
                 Size size = GetWindowSize(window);
                 DisplayBufferInWindow(deviceContext, size.width, size.height,
@@ -150,6 +139,8 @@ int CALLBACK WinMain(HINSTANCE instance, HINSTANCE prevInstance,
     } else {
         // TODO(casey): Logging
     }
+
+    DisposeGame();
 
     return (0);
 }
