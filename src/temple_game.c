@@ -22,9 +22,9 @@ void DisposeGame() {
 void UpdateAndRenderGame(Texture canvas, float delta) {
 
     RenderWeirdTestGradient(canvas);
-    RenderSprite(canvas, colorSprite, 300, 250);
-    RenderSprite(canvas, foxSprite, 10, 10);
-    RenderSprite(canvas, blockSprite, 10, foxSprite.height + 10);
-    RenderSprite(canvas, smallBlockSprite, blockSprite.width + 10,
+    BlitTexture(canvas, colorSprite, 300, 250);
+    BlitTexture(canvas, foxSprite, 10, 10);
+    BlitTexture(canvas, blockSprite, 10, foxSprite.height + 10);
+    BlitTexture(canvas, smallBlockSprite, blockSprite.width + 10,
                  foxSprite.height + 10);
 }

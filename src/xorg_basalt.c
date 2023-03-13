@@ -2,6 +2,8 @@
 // https://youtu.be/764fnfEb1_c
 
 #include "basalt.h"
+#include <X11/Xutil.h>
+#include <assert.h>
 #include <stdint.h>
 
 #ifdef LINUX
@@ -9,6 +11,46 @@
 #include <X11/Xlib.h>
 
 static bool ShouldBeRunning = true;
+
+typedef struct {
+    Display *display;
+    Window window;
+    Texture canvas;
+
+    GC gc;
+    XImage *image;
+    Texture monitorCanvas;
+} OffscreenBuffer;
+
+static OffscreenBuffer InitOffscreenBuffer(Display *display, Window window,
+                                           Texture canvas) {
+    OffscreenBuffer buffer = {0};
+    buffer.display = display;
+    buffer.window = window;
+    buffer.gc = XCreateGC(display, window, 0, NULL);
+    buffer.canvas = canvas;
+    buffer.monitorCanvas = InitTexture(1920, 1080);
+
+    XWindowAttributes wAttribs = {0};
+    XGetWindowAttributes(display, window, &wAttribs);
+
+    buffer.image =
+        XCreateImage(display, wAttribs.visual, wAttribs.depth, ZPixmap, 0,
+                     (char *)buffer.monitorCanvas.pixels,
+                     buffer.monitorCanvas.width, buffer.monitorCanvas.height,
+                     32, buffer.monitorCanvas.width * sizeof(uint32_t));
+    return buffer;
+}
+
+static void RenderOffscreenBuffer(OffscreenBuffer *buffer, int width,
+                                  int height) {
+    assert(buffer->monitorCanvas.pixels && buffer->canvas.pixels);
+
+    BlitTexture(buffer->monitorCanvas, buffer->canvas, 0, 0);
+
+    XPutImage(buffer->display, buffer->window, buffer->gc, buffer->image, 0, 0,
+              0, 0, width, height);
+}
 
 int main(int argc, char **argv) {
     DEBUG("Opening Xorg display...");
@@ -31,17 +73,9 @@ int main(int argc, char **argv) {
                  ExposureMask | KeyPressMask | ResizeRedirectMask);
     // ================
 
-    XWindowAttributes wAttribs = {0};
-    XGetWindowAttributes(display, win, &wAttribs);
-
     Texture canvas = InitTexture(WIDTH, HEIGHT);
 
-    XImage *image =
-        XCreateImage(display, wAttribs.visual, wAttribs.depth, ZPixmap, 0,
-                     (char *)canvas.pixels, canvas.width, canvas.height, 32,
-                     canvas.width * sizeof(uint32_t));
-
-    GC gc = XCreateGC(display, win, 0, NULL);
+    OffscreenBuffer buffer = InitOffscreenBuffer(display, win, canvas);
 
     XMapWindow(display, win);
 
@@ -49,36 +83,38 @@ int main(int argc, char **argv) {
 
     InitializeGame();
 
-    int width = wAttribs.width;
-    int height = wAttribs.height;
+    int width = WIDTH;
+    int height = HEIGHT;
 
-    int x = 0;
     XEvent event = {0};
     while (ShouldBeRunning) {
-        XNextEvent(display, &event);
+        while (XPending(display) > 0) {
+            XNextEvent(display, &event);
 
-        switch (event.type) {
-        case ClientMessage:
-            if ((Atom)event.xclient.data.l[0] == wmDeleteWindow) {
-                DEBUG("Closing window...");
-                ShouldBeRunning = false;
+            switch (event.type) {
+            case Expose:
+
+            case ClientMessage:
+                if ((Atom)event.xclient.data.l[0] == wmDeleteWindow) {
+                    DEBUG("Closing window...");
+                    ShouldBeRunning = false;
+                }
+                break;
+            case ResizeRequest: {
+                width = event.xresizerequest.width;
+                height = event.xresizerequest.height;
+            } break;
             }
-            break;
-        case ResizeRequest: {
-            width = event.xresizerequest.width;
-            height = event.xresizerequest.height;
-        } break;
+
+            float delta = 1.f / 60.f;
+            UpdateAndRenderGame(canvas, delta);
+            RenderOffscreenBuffer(&buffer, width, height);
         }
-
-        float delta = 1.f / 60.f;
-        UpdateAndRenderGame(canvas, delta);
-
-        XPutImage(display, win, gc, image, 0, 0, 0, 0, width, height);
 
         XEvent expose;
         expose.type = Expose;
         expose.xexpose.window = win;
-        XSendEvent(display, win, false, ExposureMask, &expose);
+        XSendEvent(display, win, true, ExposureMask, &expose);
         XFlush(display);
     }
 

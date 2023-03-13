@@ -75,6 +75,9 @@ void UnitTest();
 #define DEBUG(...)
 #endif
 
+#define MAX(X,Y) (X > Y ? X:Y)
+#define MIN(X,Y) (X < Y ? X:Y)
+
 bool IsLittleEndian();
 
 // Asset handling (basalt_assets.c)
@@ -98,10 +101,11 @@ Texture LoadTexture(unsigned char* data);
 
 // Graphics drawing (basalt_graphics.c)
 Texture InitTexture(int width, int height);
-void StretchTexture(Texture srcTex, Texture destTex);
+void DisposeTexture(Texture texture);
 
-void RenderSprite(Texture canvas, Texture texture, int posX, int posY);
-void RenderSpriteV(Texture canvas, Texture texture, Vec2 pos);
+void BlitTexture(Texture canvas, Texture texture, int posX, int posY);
+void BlitTextureV(Texture canvas, Texture texture, Vec2 pos);
+void BlitTextureEx(Texture canvas, Texture texture, Vec2 pos, float scale);
 void RenderWeirdTestGradient(Texture canvas);
 
 // Main game methods (for example: temple_game.c)
