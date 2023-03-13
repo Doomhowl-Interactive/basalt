@@ -1,14 +1,14 @@
 #include "basalt.h"
 
-Canvas InitCanvas(int width, int height){
-    Canvas canv;
-    canv.width = width;
-    canv.height = height;
-    canv.pixels = (uint *) MemAllocEx(width * height, 4);
-    return canv;
+Texture InitTexture(int width, int height){
+    Texture tex;
+    tex.width = width;
+    tex.height = height;
+    tex.pixels = (uint *) MemAllocEx(width * height, 4);
+    return tex;
 }
 
-void RenderSprite(Canvas canvas, Texture texture, int posX, int posY){
+void RenderSprite(Texture canvas, Texture texture, int posX, int posY){
     uint *pixels = (uint*) canvas.pixels;
 
     // TODO: optimize
@@ -24,11 +24,11 @@ void RenderSprite(Canvas canvas, Texture texture, int posX, int posY){
 
 }
 
-void RenderSpriteV(Canvas canvas, Texture texture, Vec2 pos){
+void RenderSpriteV(Texture canvas, Texture texture, Vec2 pos){
     RenderSprite(canvas,texture,(int)pos.x,(int)pos.y);
 }
 
-void RenderWeirdTestGradient(Canvas canvas)
+void RenderWeirdTestGradient(Texture canvas)
 {
     static int xOffset = 0;
     static int yOffset = 0;

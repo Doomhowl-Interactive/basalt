@@ -9,8 +9,8 @@
 #include <assert.h>
 #include <string.h>
 
-#define WIDTH 1280
-#define HEIGHT 720
+extern const uint WIDTH;
+extern const uint HEIGHT;
 
 typedef unsigned int uint;
 typedef unsigned char uchar;
@@ -97,17 +97,17 @@ Texture LoadTexture(unsigned char* data);
 #endif
 
 // Graphics drawing (basalt_graphics.c)
-typedef Texture Canvas;
-Canvas InitCanvas(int width, int height);
+Texture InitTexture(int width, int height);
+void StretchTexture(Texture srcTex, Texture destTex);
 
-void RenderSprite(Canvas canvas, Texture texture, int posX, int posY);
-void RenderSpriteV(Canvas canvas, Texture texture, Vec2 pos);
-void RenderWeirdTestGradient(Canvas canvas);
+void RenderSprite(Texture canvas, Texture texture, int posX, int posY);
+void RenderSpriteV(Texture canvas, Texture texture, Vec2 pos);
+void RenderWeirdTestGradient(Texture canvas);
 
 // Main game methods (for example: temple_game.c)
 
 void InitializeGame();
 void DisposeGame();
-void UpdateAndRenderGame(Canvas canvas, float delta);
+void UpdateAndRenderGame(Texture canvas, float delta);
 
 #endif

@@ -27,13 +27,14 @@ int main(int argc, char **argv) {
     Atom wmDeleteWindow = XInternAtom(display, "WM_DELETE_WINDOW", false);
     XSetWMProtocols(display, win, &wmDeleteWindow, 1);
 
-    XSelectInput(display, win, ExposureMask | KeyPressMask);
+    XSelectInput(display, win,
+                 ExposureMask | KeyPressMask | ResizeRedirectMask);
     // ================
 
     XWindowAttributes wAttribs = {0};
     XGetWindowAttributes(display, win, &wAttribs);
 
-    Canvas canvas = InitCanvas(WIDTH, HEIGHT);
+    Texture canvas = InitTexture(WIDTH, HEIGHT);
 
     XImage *image =
         XCreateImage(display, wAttribs.visual, wAttribs.depth, ZPixmap, 0,
@@ -48,27 +49,31 @@ int main(int argc, char **argv) {
 
     InitializeGame();
 
-    int x = 0;
-    XEvent e = {0};
-    while (ShouldBeRunning) {
-        XNextEvent(display, &e);
+    int width = wAttribs.width;
+    int height = wAttribs.height;
 
-        switch (e.type) {
-        case KeyPress:
-            x += 10;
-            break;
+    int x = 0;
+    XEvent event = {0};
+    while (ShouldBeRunning) {
+        XNextEvent(display, &event);
+
+        switch (event.type) {
         case ClientMessage:
-            if ((Atom)e.xclient.data.l[0] == wmDeleteWindow) {
+            if ((Atom)event.xclient.data.l[0] == wmDeleteWindow) {
                 DEBUG("Closing window...");
                 ShouldBeRunning = false;
             }
             break;
+        case ResizeRequest: {
+            width = event.xresizerequest.width;
+            height = event.xresizerequest.height;
+        } break;
         }
 
         float delta = 1.f / 60.f;
         UpdateAndRenderGame(canvas, delta);
 
-        XPutImage(display, win, gc, image, 0, 0, 0, 0, canvas.width, canvas.height);
+        XPutImage(display, win, gc, image, 0, 0, 0, 0, width, height);
 
         XEvent expose;
         expose.type = Expose;

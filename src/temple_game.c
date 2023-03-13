@@ -1,5 +1,8 @@
 #include "basalt.h"
 
+const uint WIDTH = 640;
+const uint HEIGHT = 480;
+
 static Texture colorSprite;
 static Texture foxSprite;
 static Texture blockSprite;
@@ -16,7 +19,7 @@ void DisposeGame() {
     WARN("TODO: dispose game properly");
 }
 
-void UpdateAndRenderGame(Canvas canvas, float delta) {
+void UpdateAndRenderGame(Texture canvas, float delta) {
 
     RenderWeirdTestGradient(canvas);
     RenderSprite(canvas, colorSprite, 300, 250);
