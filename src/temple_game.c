@@ -9,6 +9,7 @@ static Texture blockSprite;
 static Texture smallBlockSprite;
 
 #include "temple_defs.c"
+#include "temple_levels.c"
 
 void InitializeGame() {
     colorSprite = LoadTexture(SPR_RGBA);
