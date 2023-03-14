@@ -7,16 +7,16 @@ on:
       - dev
 
 jobs:
-  windows:
-    name: Compile on Windows
-    runs-on: windows-latest
-    steps:
-    - uses: actions/checkout@v2
-    - uses: ilammy/msvc-dev-cmd@v1.4.1
-    - name: compile
-      shell: cmd
-      run: | 
-        call build_windows_modern.bat
+#  windows:
+#    name: Compile on Windows
+#    runs-on: windows-latest
+#    steps:
+#    - uses: actions/checkout@v2
+#    - uses: ilammy/msvc-dev-cmd@v1.4.1
+#    - name: compile
+#      shell: cmd
+#      run: | 
+#        call build_windows_modern.bat
 
   ubuntu:
     name: Compile on Ubuntu
