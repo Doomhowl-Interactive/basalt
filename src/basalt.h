@@ -105,7 +105,8 @@ void DisposeTexture(Texture texture);
 
 void BlitTexture(Texture canvas, Texture texture, int posX, int posY);
 void BlitTextureV(Texture canvas, Texture texture, Vec2 pos);
-void BlitTextureEx(Texture canvas, Texture texture, Vec2 pos, float scale);
+void BlitTextureEx(Texture canvas, Texture texture, Vec2 pos, Rect src);
+void BlitTextureScaled(Texture canvas, Texture texture, Vec2 pos, float scale);
 void RenderWeirdTestGradient(Texture canvas);
 
 // Main game methods (for example: temple_game.c)

@@ -23,26 +23,33 @@ Texture CopyTexture(Texture texture) {
 }
 
 void BlitTexture(Texture canvas, Texture texture, int posX, int posY) {
-    uint *pixels = (uint*) canvas.pixels;
+    Vec2 pos = {posX, posY};
+    Rect src = {0, 0, texture.width, texture.height};
+    BlitTextureEx(canvas,texture,pos,src);
+}
+
+void BlitTextureV(Texture canvas, Texture texture, Vec2 pos) {
+    Rect src = {0, 0, texture.width, texture.height};
+    BlitTextureEx(canvas, texture, pos, src);
+}
+
+void BlitTextureEx(Texture canvas, Texture texture, Vec2 pos, Rect src) {
+    uint *pixels = (uint *)canvas.pixels;
 
     // TODO: optimize
-    int j = 0;
-    for (int y = 0; y < texture.height; y++){
-        for (int x = 0; x < texture.width; x++){
-            int xx = posX + x;
-            int yy = posY + y;
-            int i = yy * canvas.width + xx;
-            pixels[i] = texture.pixels[j++];
+    for (int y = 0; y < src.height; y++) {
+        for (int x = 0; x < src.width; x++) {
+            int xx = pos.x + x;
+            int yy = pos.y + y;
+            int destIndex = yy * canvas.width + xx;
+            int srcIndex = (src.y+y) * texture.width + (src.x+x);
+            pixels[destIndex] = texture.pixels[srcIndex];
         }
     }
 }
 
-void BlitTextureV(Texture canvas, Texture texture, Vec2 pos) {
-    BlitTextureEx(canvas, texture, pos, 1.f);
-}
-
 // TODO: this entire function could be optimized
-void BlitTextureEx(Texture canvas, Texture texture, Vec2 pos, float scale) {
+void BlitTextureScaled(Texture canvas, Texture texture, Vec2 pos, float scale) {
     uint *dest = (uint *)canvas.pixels;
     const uint *src = (const uint *)texture.pixels;
 
