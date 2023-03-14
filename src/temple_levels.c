@@ -7,11 +7,10 @@ typedef enum {
 } LevelType;
 
 typedef struct {
-
+    const char* layout;
+    uint width;
+    uint height;
 } LevelLayout;
-
-typedef struct {
-} LevelObjectives;
 
 typedef struct {
     const char* shortName;
@@ -32,7 +31,7 @@ const static LevelInfo MAP_LEVEL001 = {
 };
 
 const static LevelInfo MAP_LEVEL002 = {
-    "01",
+    "02",
     "UNNAMED LEVEL",
     NULL,
     10000,
@@ -41,7 +40,7 @@ const static LevelInfo MAP_LEVEL002 = {
 };
 
 const static LevelInfo MAP_LEVEL003 = {
-    "01",
+    "03",
     "UNNAMED LEVEL",
     NULL,
     10000,
@@ -50,7 +49,7 @@ const static LevelInfo MAP_LEVEL003 = {
 };
 
 const static LevelInfo MAP_LEVEL004 = {
-    "01",
+    "04",
     "UNNAMED LEVEL",
     NULL,
     10000,
@@ -59,7 +58,7 @@ const static LevelInfo MAP_LEVEL004 = {
 };
 
 const static LevelInfo MAP_LEVEL005 = {
-    "01",
+    "05",
     "UNNAMED LEVEL",
     NULL,
     10000,
@@ -68,7 +67,7 @@ const static LevelInfo MAP_LEVEL005 = {
 };
 
 const static LevelInfo MAP_LEVEL006 = {
-    "01",
+    "06",
     "UNNAMED LEVEL",
     NULL,
     10000,
@@ -77,7 +76,7 @@ const static LevelInfo MAP_LEVEL006 = {
 };
 
 const static LevelInfo MAP_LEVEL007 = {
-    "01",
+    "07",
     "UNNAMED LEVEL",
     NULL,
     10000,
@@ -86,7 +85,7 @@ const static LevelInfo MAP_LEVEL007 = {
 };
 
 const static LevelInfo MAP_LEVEL008 = {
-    "01",
+    "08",
     "UNNAMED LEVEL",
     NULL,
     10000,
@@ -95,7 +94,7 @@ const static LevelInfo MAP_LEVEL008 = {
 };
 
 const static LevelInfo MAP_LEVEL009 = {
-    "01",
+    "09",
     "UNNAMED LEVEL",
     NULL,
     10000,
@@ -104,7 +103,7 @@ const static LevelInfo MAP_LEVEL009 = {
 };
 
 const static LevelInfo MAP_END_BOSS = {
-    "01",
+    "10",
     "UNNAMED LEVEL",
     NULL,
     10000,
@@ -113,7 +112,7 @@ const static LevelInfo MAP_END_BOSS = {
 };
 
 const static LevelInfo MAP_BONUS_CAVE = {
-    "01",
+    "A",
     "UNNAMED BONUS LEVEL",
     NULL,
     10000,
@@ -122,7 +121,7 @@ const static LevelInfo MAP_BONUS_CAVE = {
 };
 
 const static LevelInfo MAP_BONUS_PIT = {
-    "01",
+    "B",
     "UNNAMED BONUS LEVEL",
     NULL,
     10000,

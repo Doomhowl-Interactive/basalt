@@ -8,7 +8,7 @@ static Texture foxSprite;
 static Texture blockSprite;
 static Texture smallBlockSprite;
 
-#include "temple_defs.c"
+#include "temple_assets.c"
 #include "temple_levels.c"
 
 void InitializeGame() {
@@ -32,12 +32,15 @@ void UpdateAndRenderGame(Texture canvas, float delta) {
 
     // draw each fox animation for testing
     static int foxFrame = 0;
-    TextureSheet sheet = *anims[foxFrame];
-    BlitTextureSheet(canvas, sheet, foxFrame, (Vec2){10, 10});
-    foxFrame++;
-    if (anims[foxFrame] == NULL) {
-        foxFrame = 0;
+    int offsetX = 10;
+    for (int i = 0; anims[i] != NULL; i++){
+        TextureSheet sheet = *anims[i];
+        Assert(sheet.texture);
+        Vec2 pos = {offsetX, 10};
+        BlitTextureSheet(canvas, sheet, foxFrame, pos);
+        offsetX += 50;
     }
+    foxFrame++;
 
     BlitTexture(canvas, blockSprite, 10, foxSprite.height + 10);
     BlitTexture(canvas, smallBlockSprite, blockSprite.width + 10,
