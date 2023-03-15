@@ -1,3 +1,4 @@
+#include "basalt.h"
 #include "basalt_extra.h"
 
 const uint WIDTH = 640;
@@ -8,14 +9,13 @@ static Texture foxSprite;
 static Texture blockSprite;
 static Texture smallBlockSprite;
 
+#define SKY_COLOR 0x00C8FF
+
 #include "temple_assets.c"
 #include "temple_levels.c"
 
 void InitializeGame() {
-    colorSprite = LoadTexture(SPR_RGBA);
     foxSprite = LoadTexture(SPR_PLAYER_FOX);
-    blockSprite = LoadTexture(SPR_BLOCK);
-    smallBlockSprite = LoadTexture(TILE_BLOCK_SMALL);
 }
 
 void DisposeGame() { WARN("TODO: dispose game properly"); }
@@ -27,8 +27,7 @@ void UpdateAndRenderGame(Texture canvas, float delta) {
         &ANIM_FOX_JUMP, &ANIM_FOX_LAND, NULL,
     };
 
-    RenderWeirdTestGradient(canvas);
-    BlitTexture(canvas, colorSprite, 300, 250);
+    ClearTexture(canvas, SKY_COLOR);
 
     // draw each fox animation for testing
     static int foxFrame = 0;
@@ -41,8 +40,4 @@ void UpdateAndRenderGame(Texture canvas, float delta) {
         offsetX += 50;
     }
     foxFrame++;
-
-    BlitTexture(canvas, blockSprite, 10, foxSprite.height + 10);
-    BlitTexture(canvas, smallBlockSprite, blockSprite.width + 10,
-                foxSprite.height + 10);
 }

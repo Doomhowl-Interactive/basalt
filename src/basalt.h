@@ -9,7 +9,8 @@
 #include <assert.h>
 #include <string.h>
 
-typedef unsigned int uint;
+typedef int32_t int32;
+typedef uint32_t uint;
 typedef unsigned char uchar;
 
 extern const uint WIDTH;
@@ -103,6 +104,7 @@ Texture LoadTexture(unsigned char* data);
 Texture InitTexture(int width, int height);
 void DisposeTexture(Texture texture);
 
+void ClearTexture(Texture canvas, int32 color);
 void BlitTexture(Texture canvas, Texture texture, int posX, int posY);
 void BlitTextureV(Texture canvas, Texture texture, Vec2 pos);
 void BlitTextureEx(Texture canvas, Texture texture, Vec2 pos, Rect src);

@@ -22,10 +22,17 @@ Texture CopyTexture(Texture texture) {
     return copy;
 }
 
+void ClearTexture(Texture canvas, int32 color) {
+    Assert(canvas.pixels);
+    for (int i = 0; i < canvas.width*canvas.height; i++){
+        canvas.pixels[i] = color;
+    }
+}
+
 void BlitTexture(Texture canvas, Texture texture, int posX, int posY) {
     Vec2 pos = {posX, posY};
     Rect src = {0, 0, texture.width, texture.height};
-    BlitTextureEx(canvas,texture,pos,src);
+    BlitTextureEx(canvas, texture, pos, src);
 }
 
 void BlitTextureV(Texture canvas, Texture texture, Vec2 pos) {
@@ -42,7 +49,7 @@ void BlitTextureEx(Texture canvas, Texture texture, Vec2 pos, Rect src) {
             int xx = pos.x + x;
             int yy = pos.y + y;
             int destIndex = yy * canvas.width + xx;
-            int srcIndex = (src.y+y) * texture.width + (src.x+x);
+            int srcIndex = (src.y + y) * texture.width + (src.x + x);
             pixels[destIndex] = texture.pixels[srcIndex];
         }
     }
