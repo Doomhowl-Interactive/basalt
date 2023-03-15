@@ -7,7 +7,7 @@ Slowly solidifying [Magma Game Engine](https://github.com/bramtechs/RaylibMagmaE
 ![Window XP](screenshots/window_xp.png)
 
 ## New goals
-- C over C++ (support both types of compilers)
+- C over C++ (support both types of compilers) **Some tooling is written in [V-language](vlang.io)!**
 - Platform agnostic
 - Batteries included, no downloading dependencies/libraries.
 - Embed game assets into executable (instead of seperate file)
