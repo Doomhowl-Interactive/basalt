@@ -9,6 +9,11 @@ typedef struct {
     Texture canvas;
 } OffscreenBuffer;
 
+Point GetMousePosition() {
+    // TODO: implement mouse
+    return {};
+}
+
 static bool ShouldBeRunning;
 static OffscreenBuffer GlobalBackbuffer;
 

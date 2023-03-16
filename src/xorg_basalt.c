@@ -22,6 +22,14 @@ typedef struct {
     Texture monitorCanvas;
 } OffscreenBuffer;
 
+static struct {
+    Point mousePos;
+} Input;
+
+Point GetMousePosition() {
+    return Input.mousePos;
+}
+
 static OffscreenBuffer InitOffscreenBuffer(Display *display, Window window,
                                            Texture canvas) {
     OffscreenBuffer buffer = {0};
@@ -106,6 +114,19 @@ int main(int argc, char **argv) {
             } break;
             }
 
+            // poll the mouse
+            Window rootWinResult, childWinResult;
+            int rootMouseX, rootMouseY;
+            int childMouseX, childMouseY;
+            unsigned int maskResult = 0;
+            if (XQueryPointer(display, win, &rootWinResult, &childWinResult, &rootMouseX, &rootMouseY,
+                          &childMouseX, &childMouseY, &maskResult)){
+                Input.mousePos.x = childMouseX;
+                Input.mousePos.y = childMouseY;
+            }
+
+
+            // draw graphics
             float delta = 1.f / 60.f;
             UpdateAndRenderGame(canvas, delta);
             RenderOffscreenBuffer(&buffer, width, height);

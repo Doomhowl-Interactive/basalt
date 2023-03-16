@@ -15,18 +15,14 @@ static struct {
     uint gridSize;
 } Editor;
 
-Point GetMousePosition() { return (Point){120, 80}; }
-
-static void DrawSelectedGridCell(Texture canvas, Camera camera, int32 color,
-                                 int gridSize, int thick) {
+static void DrawSelectedGridCell(Texture canvas, Camera camera, int32 color, int gridSize, int thick) {
     Point mouse = GetMousePosition();
     int x = (int)((int)camera.x % gridSize + mouse.x / gridSize) * gridSize;
     int y = (int)((int)camera.y % gridSize + mouse.y / gridSize) * gridSize;
     DrawRectangleLines(canvas, x, y, gridSize, gridSize, thick, color);
 }
 
-static void DrawGrid(Texture canvas, Camera camera, int32 color, int gridSize,
-                     int thick) {
+static void DrawGrid(Texture canvas, Camera camera, int32 color, int gridSize, int thick) {
     Assert(gridSize > 0);
 
     int startX = (int)camera.x % gridSize;
@@ -50,7 +46,9 @@ void InitializeGame() {
     Editor.gridSize = 16;
 }
 
-void DisposeGame() { WARN("TODO: dispose game properly"); }
+void DisposeGame() {
+    WARN("TODO: dispose game properly");
+}
 
 void UpdateAndRenderGame(Texture canvas, float delta) {
     ClearTexture(canvas, BG_COLOR);

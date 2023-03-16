@@ -17,7 +17,9 @@ void InitializeGame() {
     foxSprite = LoadTexture(SPR_PLAYER_FOX);
 }
 
-void DisposeGame() { WARN("TODO: dispose game properly"); }
+void DisposeGame() {
+    WARN("TODO: dispose game properly");
+}
 
 void UpdateAndRenderGame(Texture canvas, float delta) {
 
