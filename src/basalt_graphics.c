@@ -2,6 +2,20 @@
 #include <math.h>
 #include <string.h>
 
+void DrawDot(Texture canvas, int posX, int posY, int radius, int32 color) {
+    int halfRadius = MAX(1,radius / 2);
+    for (int y = posY - halfRadius; y < posY + halfRadius; y++) {
+        for (int x = posX - halfRadius; x < posX + halfRadius; x++) {
+            int i = y * canvas.width + x;
+            canvas.pixels[i] = color;
+        }
+    }
+}
+
+void DrawDotV(Texture canvas, Vec2 pos, int radius, int32 color) {
+    DrawDot(canvas, pos.x, pos.y, radius, color);
+}
+
 Texture InitTexture(int width, int height) {
     Texture tex;
     tex.width = width;
@@ -24,7 +38,7 @@ Texture CopyTexture(Texture texture) {
 
 void ClearTexture(Texture canvas, int32 color) {
     Assert(canvas.pixels);
-    for (int i = 0; i < canvas.width*canvas.height; i++){
+    for (int i = 0; i < canvas.width * canvas.height; i++) {
         canvas.pixels[i] = color;
     }
 }

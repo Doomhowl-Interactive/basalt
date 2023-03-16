@@ -101,6 +101,9 @@ Texture LoadTexture(unsigned char* data);
 #endif
 
 // Graphics drawing (basalt_graphics.c)
+void DrawDot(Texture canvas, int posX, int posY, int radius, int32 color);
+void DrawDotV(Texture canvas, Vec2 pos, int radius, int32 color);
+
 Texture InitTexture(int width, int height);
 void DisposeTexture(Texture texture);
 
@@ -112,7 +115,6 @@ void BlitTextureScaled(Texture canvas, Texture texture, Vec2 pos, float scale);
 void RenderWeirdTestGradient(Texture canvas);
 
 // Main game methods (for example: temple_game.c)
-
 void InitializeGame();
 void DisposeGame();
 void UpdateAndRenderGame(Texture canvas, float delta);
