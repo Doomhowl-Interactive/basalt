@@ -1,17 +1,24 @@
 #ifndef BASALT_H
 #define BASALT_H
 
-#include <stdbool.h>
-#include <stddef.h>
-#include <stdint.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <assert.h>
-#include <string.h>
+#define HEAP_SIZE 500*1000
+#define MAX_ALLOCATIONS 500
 
-typedef int32_t int32;
-typedef uint32_t uint;
+#define NULL 0
+
+typedef int int32;
+typedef unsigned int uint;
 typedef unsigned char uchar;
+
+#define stderr 1
+
+#ifndef __cplusplus
+
+typedef int bool;
+#define false 0
+#define true 1
+
+#endif
 
 extern const uint WIDTH;
 extern const uint HEIGHT;
@@ -64,27 +71,42 @@ void MemFree(void* ptr);
 #define UNKNOWN
 #endif
 
-#define INFO(...) printf("INFO: "__VA_ARGS__); printf("\n")
-#define WARN(...) printf("WARN: "__VA_ARGS__); printf("\n")
+// logging functions (basalt_utils.c)
+#ifdef WASM
+#define INFO(...)
+#define WARN(...)
+#define ERROR(...)
+#define FATAL(...)
+#else
+#define INFO(...) PrintImpl("INFO: "__VA_ARGS__); PrintImpl("\n")
+#define WARN(...) PrintImpl("WARN: "__VA_ARGS__); PrintImpl("\n")
 #undef ERROR
-#define ERROR(...) fprintf(stderr,"ERROR: "__VA_ARGS__); printf("\n")
-#define FATAL(...) fprintf(stderr,"FATAL: "__VA_ARGS__); printf("\n"); exit(1);
+#define ERROR(...) PrintImpl(stderr,"ERROR: "__VA_ARGS__); PrintImpl("\n")
+#define FATAL(...) PrintImpl(stderr,"FATAL: "__VA_ARGS__); PrintImpl("\n"); exit(1);
+#endif
 
 #ifdef BASALT_DEBUG
-#define Assert(X) assert(X)
-#define Panic(X) panic(X)
 #define DEBUG(...) printf("DEBUG: "__VA_ARGS__); printf("\n")
 void UnitTest();
 #else
-#define Assert(X)
-#define Panic(X)
 #define DEBUG(...)
 #endif
 
 #define MAX(X,Y) (X > Y ? X:Y)
 #define MIN(X,Y) (X < Y ? X:Y)
 
+#define Assert(X) AssertImpl((bool)X)
+void AssertImpl(bool cond);
+
+void Panic(const char* msg);
 bool IsLittleEndian();
+
+// C standard library reinventing for WASM (basalt_utils.c)
+#ifdef WASM
+void* malloc(uint size);
+void free(void* ptr);
+void memcpy(void* dest, const void* src, uint size);
+#endif
 
 // Asset handling (basalt_assets.c)
 typedef struct {

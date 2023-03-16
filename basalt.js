@@ -1,49 +1,77 @@
 // reference: https://github.com/tsoding/rust-browser-game
+function make_environment(...envs) {
+    return new Proxy(envs, {
+        get(target, prop, receiver) {
+            for (let env of envs) {
+                if (env.hasOwnProperty(prop)) {
+                    return env[prop];
+                }
+            }
+            return (...args) => {
+                console.error("NOT IMPLEMENTED: " + prop, args);
+            };
+        },
+    });
+}
+
+const libm = {
+    atan2f: Math.atan2,
+    cosf: Math.cos,
+    sinf: Math.sin,
+    sqrtf: Math.sqrt,
+};
 
 async function start() {
-    let game = null
+    let game = null;
     try {
-        game = await WebAssembly.instantiateStreaming(fetch("build/basalt_wasm.wasm"));
+        game = await WebAssembly.instantiateStreaming(fetch("build/basalt_wasm.wasm"), {
+            env: make_environment(libm),
+        });
         console.log("Loaded wasm binary...");
-    } catch (e){
+    } catch (e) {
         console.log(`Failed to load wasm binary\n${e}...`);
         return;
     }
 
     // check wasm integrity
     const lifeUniverse = game.instance.exports.LifeAndTheUniverse();
-    assert(lifeUniverse == 42);
-
-    console.log(game.instance.exports);
+    if (lifeUniverse != 42) {
+        console.warn("Binary is probably corrupted!");
+    }
 
     const memory = new Uint8Array(game.instance.exports.memory.buffer);
 
-    game.instance.exports.InitWASM();
+    if (game.instance.exports.InitWASM()) {
+        console.info("Initialized WASM game!");
+    } else {
+        console.error("Failed to initialize WASM game!");
+    }
 
-    const displayAddr = game.instance.exports.get_display();
-    console.log("Memory address of display:", displayAddr);
+    const displayAddr = game.instance.exports.GetWASMCanvas();
+    console.log("Memory address of canvas:", displayAddr);
     console.log("Memory:", memory.length);
 
-    const width = game.instance.exports.get_width();
-    const height = game.instance.exports.get_height();
+    const width = game.instance.exports.GetWASMCanvasWidth();
+    const height = game.instance.exports.GetWASMCanvasHeight();
     console.log("Game size from WASM", width, height);
     const size = width * height;
 
     const canvas = document.getElementById("canvas");
+    canvas.width = width;
+    canvas.height = height;
     const ctx = canvas.getContext("2d");
 
-    let curFrame = 0;
-
-    //while (true) {
-    //    // draw a frame
-    //    game.instance.exports.step(0.1, curFrame);
-    //    const pixels = new Uint8ClampedArray(
-    //        memory.subarray(displayAddr, displayAddr + 4 * size)
-    //    );
-    //    const frame = new ImageData(pixels, width, height);
-    //    ctx.putImageData(frame, 0, 0);
-    //    curFrame += 1;
-    //    // await new Promise(r => setTimeout(r, 10));
-    //}
+    while (true) {
+        // draw a frame
+        const delta = 1.0 / 60; // TODO: implement prober deltatime
+        const frameNum = game.instance.exports.UpdateAndRenderWASM(delta);
+        const pixels = new Uint8ClampedArray(memory.subarray(displayAddr, displayAddr + 4*width*height));
+        const frame = new ImageData(pixels, width, height);
+        ctx.putImageData(frame, 0, 0);
+        await new Promise((r) => setTimeout(r, 10));
+    }
 }
-start().catch((e) => console.error(e));
+
+addEventListener("DOMContentLoaded", () => {
+    start().catch((e) => console.error(e));
+});

@@ -1,4 +1,3 @@
-#include "basalt.h"
 #include "basalt_extra.h"
 
 #define BG_COLOR 0x69B7E0

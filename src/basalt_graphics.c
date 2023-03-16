@@ -1,6 +1,4 @@
 #include "basalt.h"
-#include <math.h>
-#include <string.h>
 
 void DrawDot(Texture canvas, int posX, int posY, int radius, int32 color) {
     int halfRadius = MAX(1, radius / 2);
@@ -128,7 +126,7 @@ void BlitTextureScaled(Texture canvas, Texture texture, Vec2 pos, float scale) {
             int y = (int)((destY - originY) / (float)blitHeight * texture.height);
             int srcIndex = y * texture.width + x;
 
-            assert(srcIndex >= 0 && srcIndex < texture.width * texture.height);
+            Assert(srcIndex >= 0 && srcIndex < texture.width * texture.height);
             dest[destIndex] = src[srcIndex];
         }
     }

@@ -31,6 +31,10 @@ static void CheckByteReading(){
     Assert(val == 1770);
 }
 
+static void CheckAllocation() {
+
+}
+
 static void TestMath(){
     Assert(MIN(5,3) == 3);
     Assert(MAX(5,3) == 5);
@@ -40,6 +44,7 @@ void UnitTest() {
     CheckTypes();
     CheckByteReading();
     TestMath();
+    CheckAllocation();
 }
 
 #endif
