@@ -31,6 +31,11 @@ typedef struct {
 } RectF;
 
 typedef struct {
+    int x;
+    int y;
+} Point;
+
+typedef struct {
     int width;
     int height;
 } Size;
@@ -99,6 +104,9 @@ extern unsigned char TILE_BLOCK_SMALL[];
 Texture LoadTexture(unsigned char* data);
 
 #endif
+
+// Input handling (platform dependent)
+Point GetMousePosition();
 
 // Graphics drawing (basalt_graphics.c)
 void DrawDot(Texture canvas, int posX, int posY, int radius, int32 color);
