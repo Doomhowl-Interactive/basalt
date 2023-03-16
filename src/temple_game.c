@@ -1,4 +1,3 @@
-#include "basalt.h"
 #include "basalt_extra.h"
 
 const uint WIDTH = 640;

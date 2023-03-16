@@ -1,3 +1,16 @@
 #!/bin/bash
-PATH="$PATH:~/dev/v/"
-v run src/tooling/editor/editor_main.v
+
+echo "Building editor..."
+mkdir -p build_xorg
+cd build_xorg
+
+# build embedder
+gcc ../src/tooling/embedder.c -o embedder
+./embedder ../assets ../src/assets_custom.dat.c
+
+# build editor
+gcc -ggdb -Werror -DBASALT_DEBUG ../src/basalt_*.c ../src/editor_game.c ../src/xorg_basalt.c ../src/assets_custom.dat.c -lX11 -lm -lXext -o editor_linux.x11 
+
+cd ..
+
+./build_xorg/editor_linux.x11
