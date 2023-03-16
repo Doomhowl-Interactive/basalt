@@ -112,6 +112,14 @@ Point GetMousePosition();
 void DrawDot(Texture canvas, int posX, int posY, int radius, int32 color);
 void DrawDotV(Texture canvas, Vec2 pos, int radius, int32 color);
 
+void DrawRectangle(Texture canvas, int posX, int posY, int width, int height, int32 color);
+void DrawRectangleRec(Texture canvas, Rect rect, int32 color);
+void DrawRectangleRecF(Texture canvas, RectF rect, int32 color);
+
+void DrawRectangleLines(Texture canvas, int posX, int posY, int width, int height, int border, int32 color);
+void DrawRectangleLinesRec(Texture canvas, Rect rect, int border, int32 color);
+void DrawRectangleLinesRecF(Texture canvas, RectF rect, int border, int32 color);
+
 Texture InitTexture(int width, int height);
 void DisposeTexture(Texture texture);
 

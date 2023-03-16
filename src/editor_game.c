@@ -1,7 +1,9 @@
+#include "basalt.h"
 #include "basalt_extra.h"
 
 #define BG_COLOR 0x69B7E0
 #define GRID_COLOR 0x000000
+#define GRID_CELL_COLOR 0x202000
 
 const uint WIDTH = 1280;
 const uint HEIGHT = 720;
@@ -12,6 +14,16 @@ static struct {
     Camera camera;
     uint gridSize;
 } Editor;
+
+Point GetMousePosition() { return (Point){120, 80}; }
+
+static void DrawSelectedGridCell(Texture canvas, Camera camera, int32 color,
+                                 int gridSize, int thick) {
+    Point mouse = GetMousePosition();
+    int x = (int)((int)camera.x % gridSize + mouse.x / gridSize) * gridSize;
+    int y = (int)((int)camera.y % gridSize + mouse.y / gridSize) * gridSize;
+    DrawRectangleLines(canvas, x, y, gridSize, gridSize, thick, color);
+}
 
 static void DrawGrid(Texture canvas, Camera camera, int32 color, int gridSize,
                      int thick) {
@@ -34,7 +46,7 @@ static void DrawGrid(Texture canvas, Camera camera, int32 color, int gridSize,
 }
 
 void InitializeGame() {
-    Editor.camera = (Camera) { 0, 0 };
+    Editor.camera = (Camera){0, 0};
     Editor.gridSize = 16;
 }
 
@@ -43,4 +55,5 @@ void DisposeGame() { WARN("TODO: dispose game properly"); }
 void UpdateAndRenderGame(Texture canvas, float delta) {
     ClearTexture(canvas, BG_COLOR);
     DrawGrid(canvas, Editor.camera, GRID_COLOR, Editor.gridSize, 1);
+    DrawSelectedGridCell(canvas, Editor.camera, GRID_CELL_COLOR, Editor.gridSize, 2);
 }
