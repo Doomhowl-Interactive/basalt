@@ -39,8 +39,6 @@ async function start() {
         console.warn("Binary is probably corrupted!");
     }
 
-    const memory = new Uint8Array(game.instance.exports.memory.buffer);
-
     if (game.instance.exports.InitWASM()) {
         console.info("Initialized WASM game!");
     } else {
@@ -65,6 +63,7 @@ async function start() {
         // draw a frame
         const delta = 1.0 / 60; // TODO: implement prober deltatime
         const frameNum = game.instance.exports.UpdateAndRenderWASM(delta);
+        const memory = new Uint8Array(game.instance.exports.memory.buffer);
         const pixels = new Uint8ClampedArray(memory.subarray(displayAddr, displayAddr + 4*width*height));
         const frame = new ImageData(pixels, width, height);
         ctx.putImageData(frame, 0, 0);
