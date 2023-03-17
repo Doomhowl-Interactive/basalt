@@ -19,6 +19,7 @@ const libm = {
     cosf: Math.cos,
     sinf: Math.sin,
     sqrtf: Math.sqrt,
+    printf: console.log
 };
 
 async function start() {
@@ -47,7 +48,6 @@ async function start() {
 
     const displayAddr = game.instance.exports.GetWASMCanvas();
     console.log("Memory address of canvas:", displayAddr);
-    console.log("Memory:", memory.length);
 
     const width = game.instance.exports.GetWASMCanvasWidth();
     const height = game.instance.exports.GetWASMCanvasHeight();

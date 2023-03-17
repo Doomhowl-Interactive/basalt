@@ -132,7 +132,7 @@ void BlitTextureScaled(Texture canvas, Texture texture, Vec2 pos, float scale) {
     }
 }
 
-void RenderWeirdTestGradient(Texture canvas) {
+void DrawWeirdTestGradient(Texture canvas) {
     Assert(canvas.pixels);
 
     static int xOffset = 0;

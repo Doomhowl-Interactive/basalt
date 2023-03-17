@@ -1,3 +1,4 @@
+#include "basalt.h"
 #include "basalt_extra.h"
 
 const uint WIDTH = 640;
@@ -28,7 +29,9 @@ void UpdateAndRenderGame(Texture canvas, float delta) {
         &ANIM_FOX_JUMP, &ANIM_FOX_LAND, NULL,
     };
 
-    ClearTexture(canvas, SKY_COLOR);
+    // ClearTexture(canvas, SKY_COLOR);
+
+    DrawWeirdTestGradient(canvas);
 
     // draw each fox animation for testing
     static int foxFrame = 0;
@@ -41,4 +44,5 @@ void UpdateAndRenderGame(Texture canvas, float delta) {
         offsetX += 50;
     }
     foxFrame++;
+
 }

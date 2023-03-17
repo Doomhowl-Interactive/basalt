@@ -142,6 +142,8 @@ void DrawRectangleLines(Texture canvas, int posX, int posY, int width, int heigh
 void DrawRectangleLinesRec(Texture canvas, Rect rect, int border, int32 color);
 void DrawRectangleLinesRecF(Texture canvas, RectF rect, int border, int32 color);
 
+void DrawWeirdTestGradient(Texture canvas);
+
 Texture InitTexture(int width, int height);
 void DisposeTexture(Texture texture);
 
@@ -150,7 +152,6 @@ void BlitTexture(Texture canvas, Texture texture, int posX, int posY);
 void BlitTextureV(Texture canvas, Texture texture, Vec2 pos);
 void BlitTextureEx(Texture canvas, Texture texture, Vec2 pos, Rect src);
 void BlitTextureScaled(Texture canvas, Texture texture, Vec2 pos, float scale);
-void RenderWeirdTestGradient(Texture canvas);
 
 // Main game methods (for example: temple_game.c)
 void InitializeGame();

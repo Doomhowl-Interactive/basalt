@@ -1,3 +1,4 @@
+#include "basalt.h"
 #include "basalt_extra.h"
 
 #include "../src/basalt_utils.c"
@@ -8,12 +9,15 @@
 #include "../src/assets_custom.dat.c"
 #include "../src/temple_game.c"
 
-Texture Canvas = {0};
-uchar Pixels[WIDTH*HEIGHT*4];
+static Texture Canvas = {0};
 static int FrameNumber = 0;
 
+static uint Pixels[WIDTH*HEIGHT];
+
 bool InitWASM() {
-    Canvas = InitTexture(WIDTH, HEIGHT);
+    Canvas.width = WIDTH;
+    Canvas.height = HEIGHT;
+    Canvas.pixels = Pixels;
     return true;
 }
 
@@ -26,23 +30,21 @@ int GetWASMCanvasHeight() {
 }
 
 uchar* GetWASMCanvas() {
-    return Pixels;
+    return (uchar*) Canvas.pixels;
 }
 
 int UpdateAndRenderWASM(float delta) {
     UpdateAndRenderGame(Canvas, delta);
 
-    // force on transparancy or you won't see anything in the canvas
-    uchar* pixels = (uchar*) Canvas.pixels;
-    for (int i = 0; i < Canvas.width * Canvas.height; i ++){
-        pixels[i*4 + 3] = 255;
+    // set transparancy always to 255
+    uchar* comps = (uchar*) Canvas.pixels;
+    for (int i = 0; i < 4*WIDTH*HEIGHT; i+=4) {
+        comps[i+3] = 255;
     }
 
-    for (int i = 0; i < Canvas.width * Canvas.height; i ++){
-        Pixels[i*4+0] = 69;
-        Pixels[i*4+1] = 96;
-        Pixels[i*4+2] = 42;
-        Pixels[i*4+3] = 42;
+    // test 
+    for (int i = 0; i < 4*WIDTH*HEIGHT; i++) {
+        // comps[i] = 40;
     }
 
     return FrameNumber++;
