@@ -47,6 +47,9 @@ async function start() {
     }
 
     const displayAddr = game.instance.exports.GetWASMCanvas();
+    if (displayAddr === 0){
+        console.error("Memory address of canvas is NULL (0)!");
+    }
     console.log("Memory address of canvas:", displayAddr);
 
     const width = game.instance.exports.GetWASMCanvasWidth();

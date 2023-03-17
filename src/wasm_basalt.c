@@ -1,7 +1,7 @@
 #include "basalt.h"
 #include "basalt_extra.h"
 
-#include "../src/basalt_utils.c"
+#include "../src/basalt_stdlib.c"
 #include "../src/basalt_assets.c"
 #include "../src/basalt_graphics.c"
 #include "../src/basalt_extra_graphics.c"
@@ -9,15 +9,13 @@
 #include "../src/assets_custom.dat.c"
 #include "../src/temple_game.c"
 
-static Texture Canvas = {0};
-static int FrameNumber = 0;
-
-static uint Pixels[WIDTH*HEIGHT];
+Texture Canvas = {0};
+int FrameNumber = 0;
 
 bool InitWASM() {
     Canvas.width = WIDTH;
     Canvas.height = HEIGHT;
-    Canvas.pixels = Pixels;
+    Canvas.pixels = MemAllocEx(WIDTH*HEIGHT,sizeof(int));
     return true;
 }
 
@@ -40,11 +38,6 @@ int UpdateAndRenderWASM(float delta) {
     uchar* comps = (uchar*) Canvas.pixels;
     for (int i = 0; i < 4*WIDTH*HEIGHT; i+=4) {
         comps[i+3] = 255;
-    }
-
-    // test 
-    for (int i = 0; i < 4*WIDTH*HEIGHT; i++) {
-        // comps[i] = 40;
     }
 
     return FrameNumber++;

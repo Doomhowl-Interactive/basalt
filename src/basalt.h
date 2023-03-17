@@ -1,24 +1,7 @@
 #ifndef BASALT_H
 #define BASALT_H
 
-#define HEAP_SIZE 500*1000
-#define MAX_ALLOCATIONS 500
-
-#define NULL 0
-
-typedef int int32;
-typedef unsigned int uint;
-typedef unsigned char uchar;
-
-#define stderr 1
-
-#ifndef __cplusplus
-
-typedef int bool;
-#define false 0
-#define true 1
-
-#endif
+#include "basalt_stdlib.h"
 
 extern const uint WIDTH;
 extern const uint HEIGHT;
@@ -58,11 +41,6 @@ typedef struct {
     float z;
 } Vec3;
 
-// Utilties (basalt_utils.c)
-void* MemAlloc(uint size);
-void* MemAllocEx(uint size, uint amount);
-void MemFree(void* ptr);
-
 #ifdef __linux__ 
 #define LINUX
 #elif defined(_WIN32) || defined(_WIN64)
@@ -78,34 +56,18 @@ void MemFree(void* ptr);
 #define ERROR(...)
 #define FATAL(...)
 #else
-#define INFO(...) PrintImpl("INFO: "__VA_ARGS__); PrintImpl("\n")
-#define WARN(...) PrintImpl("WARN: "__VA_ARGS__); PrintImpl("\n")
+#define INFO(...) PrintLn("INFO: "__VA_ARGS__);
+#define WARN(...) PrintLn("WARN: "__VA_ARGS__);
 #undef ERROR
-#define ERROR(...) PrintImpl(stderr,"ERROR: "__VA_ARGS__); PrintImpl("\n")
-#define FATAL(...) PrintImpl(stderr,"FATAL: "__VA_ARGS__); PrintImpl("\n"); exit(1);
+#define ERROR(...) PrintEln(stderr,"ERROR: "__VA_ARGS__);
+#define FATAL(...) PrintEln(stderr,"FATAL: "__VA_ARGS__); Exit(1);
 #endif
 
 #ifdef BASALT_DEBUG
-#define DEBUG(...) printf("DEBUG: "__VA_ARGS__); printf("\n")
+#define DEBUG(...) PrintEln("DEBUG: "__VA_ARGS__);
 void UnitTest();
 #else
 #define DEBUG(...)
-#endif
-
-#define MAX(X,Y) (X > Y ? X:Y)
-#define MIN(X,Y) (X < Y ? X:Y)
-
-#define Assert(X) AssertImpl((bool)X)
-void AssertImpl(bool cond);
-
-void Panic(const char* msg);
-bool IsLittleEndian();
-
-// C standard library reinventing for WASM (basalt_utils.c)
-#ifdef WASM
-void* malloc(uint size);
-void free(void* ptr);
-void memcpy(void* dest, const void* src, uint size);
 #endif
 
 // Asset handling (basalt_assets.c)
@@ -131,23 +93,23 @@ Texture LoadTexture(unsigned char* data);
 Point GetMousePosition();
 
 // Graphics drawing (basalt_graphics.c)
-void DrawDot(Texture canvas, int posX, int posY, int radius, int32 color);
-void DrawDotV(Texture canvas, Vec2 pos, int radius, int32 color);
+void DrawDot(Texture canvas, int posX, int posY, int radius, int color);
+void DrawDotV(Texture canvas, Vec2 pos, int radius, int color);
 
-void DrawRectangle(Texture canvas, int posX, int posY, int width, int height, int32 color);
-void DrawRectangleRec(Texture canvas, Rect rect, int32 color);
-void DrawRectangleRecF(Texture canvas, RectF rect, int32 color);
+void DrawRectangle(Texture canvas, int posX, int posY, int width, int height, int color);
+void DrawRectangleRec(Texture canvas, Rect rect, int color);
+void DrawRectangleRecF(Texture canvas, RectF rect, int color);
 
-void DrawRectangleLines(Texture canvas, int posX, int posY, int width, int height, int border, int32 color);
-void DrawRectangleLinesRec(Texture canvas, Rect rect, int border, int32 color);
-void DrawRectangleLinesRecF(Texture canvas, RectF rect, int border, int32 color);
+void DrawRectangleLines(Texture canvas, int posX, int posY, int width, int height, int border, int color);
+void DrawRectangleLinesRec(Texture canvas, Rect rect, int border, int color);
+void DrawRectangleLinesRecF(Texture canvas, RectF rect, int border, int color);
 
 void DrawWeirdTestGradient(Texture canvas);
 
 Texture InitTexture(int width, int height);
 void DisposeTexture(Texture texture);
 
-void ClearTexture(Texture canvas, int32 color);
+void ClearTexture(Texture canvas, int color);
 void BlitTexture(Texture canvas, Texture texture, int posX, int posY);
 void BlitTextureV(Texture canvas, Texture texture, Vec2 pos);
 void BlitTextureEx(Texture canvas, Texture texture, Vec2 pos, Rect src);

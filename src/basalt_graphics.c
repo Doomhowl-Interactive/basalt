@@ -1,17 +1,17 @@
 #include "basalt.h"
 
-void DrawDot(Texture canvas, int posX, int posY, int radius, int32 color) {
+void DrawDot(Texture canvas, int posX, int posY, int radius, int color) {
     int halfRadius = MAX(1, radius / 2);
     int topLeftX = posX - halfRadius;
     int topLeftY = posY - halfRadius;
     DrawRectangle(canvas, topLeftX, topLeftY, radius, radius, color);
 }
 
-void DrawDotV(Texture canvas, Vec2 pos, int radius, int32 color) {
+void DrawDotV(Texture canvas, Vec2 pos, int radius, int color) {
     DrawDot(canvas, pos.x, pos.y, radius, color);
 }
 
-void DrawRectangle(Texture canvas, int posX, int posY, int width, int height, int32 color) {
+void DrawRectangle(Texture canvas, int posX, int posY, int width, int height, int color) {
     Assert(canvas.pixels);
 
     int i = posY * canvas.width + posX;
@@ -24,15 +24,15 @@ void DrawRectangle(Texture canvas, int posX, int posY, int width, int height, in
     }
 }
 
-void DrawRectangleRec(Texture canvas, Rect rect, int32 color) {
+void DrawRectangleRec(Texture canvas, Rect rect, int color) {
     DrawRectangle(canvas, rect.x, rect.y, rect.width, rect.height, color);
 }
 
-void DrawRectangleRecF(Texture canvas, RectF rect, int32 color) {
+void DrawRectangleRecF(Texture canvas, RectF rect, int color) {
     DrawRectangle(canvas, (int)rect.x, (int)rect.y, (int)rect.width, (int)rect.height, color);
 }
 
-void DrawRectangleLines(Texture canvas, int posX, int posY, int width, int height, int border, int32 color) {
+void DrawRectangleLines(Texture canvas, int posX, int posY, int width, int height, int border, int color) {
     DrawRectangle(canvas, posX, posY, width, border, color); // top
     DrawRectangle(canvas, posX + width - border, posY, border, height,
                                 color); // right
@@ -41,11 +41,11 @@ void DrawRectangleLines(Texture canvas, int posX, int posY, int width, int heigh
     DrawRectangle(canvas, posX, posY, border, height, color); // left
 }
 
-void DrawRectangleLinesRec(Texture canvas, Rect rect, int border, int32 color) {
+void DrawRectangleLinesRec(Texture canvas, Rect rect, int border, int color) {
     DrawRectangleLines(canvas, rect.x, rect.y, rect.width, rect.height, border, color);
 }
 
-void DrawRectangleLinesRecF(Texture canvas, RectF rect, int border, int32 color) {
+void DrawRectangleLinesRecF(Texture canvas, RectF rect, int border, int color) {
     DrawRectangleLines(canvas, (int)rect.x, (int)rect.y, (int)rect.width, (int)rect.height, border, color);
 }
 
@@ -59,17 +59,17 @@ Texture InitTexture(int width, int height) {
 
 void DisposeTexture(Texture texture) {
     if (texture.pixels) {
-        free(texture.pixels);
+        MemFree(texture.pixels);
     }
 }
 
 Texture CopyTexture(Texture texture) {
     Texture copy = InitTexture(texture.width, texture.height);
-    memcpy(copy.pixels, texture.pixels, texture.width * texture.height * 4);
+    MemCopy(copy.pixels, texture.pixels, texture.width * texture.height * 4);
     return copy;
 }
 
-void ClearTexture(Texture canvas, int32 color) {
+void ClearTexture(Texture canvas, int color) {
     Assert(canvas.pixels);
     for (int i = 0; i < canvas.width * canvas.height; i++) {
         canvas.pixels[i] = color;
