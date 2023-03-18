@@ -18,7 +18,7 @@ Point GetMousePosition() {
 static bool ShouldBeRunning;
 static OffscreenBuffer GlobalBackbuffer;
 
-static Size GetWindowSize(HWND window) {
+func Size GetWindowSize(HWND window) {
     RECT clientRect;
     GetClientRect(window, &clientRect);
     Size size = {
@@ -28,7 +28,7 @@ static Size GetWindowSize(HWND window) {
     return (size);
 }
 
-static void ResizeDIBSection(OffscreenBuffer *buffer, int width, int height) {
+func void ResizeDIBSection(OffscreenBuffer *buffer, int width, int height) {
     MemFree(buffer->canvas.pixels);
 
     buffer->info.bmiHeader.biSize = sizeof(buffer->info.bmiHeader);
@@ -40,7 +40,7 @@ static void ResizeDIBSection(OffscreenBuffer *buffer, int width, int height) {
     buffer->canvas = InitTexture(width, height);
 }
 
-static void DisplayBufferInWindow(HDC deviceContext, int winWidth,
+func void DisplayBufferInWindow(HDC deviceContext, int winWidth,
                                   int winHeight, OffscreenBuffer buffer) {
     StretchDIBits(deviceContext,
                   /*

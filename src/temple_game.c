@@ -14,15 +14,15 @@ static Texture smallBlockSprite;
 #include "temple_assets.c"
 #include "temple_levels.c"
 
-void InitializeGame() {
+pubfunc void InitializeGame() {
     foxSprite = LoadTexture(SPR_PLAYER_FOX);
 }
 
-void DisposeGame() {
+pubfunc void DisposeGame() {
     WARN("TODO: dispose game properly");
 }
 
-void UpdateAndRenderGame(Texture canvas, float delta) {
+pubfunc void UpdateAndRenderGame(Texture canvas, float delta) {
 
     static const TextureSheet *anims[] = {
         &ANIM_FOX_IDLE, &ANIM_FOX_WALK, &ANIM_FOX_STOP,
@@ -40,7 +40,7 @@ void UpdateAndRenderGame(Texture canvas, float delta) {
         TextureSheet sheet = *anims[i];
         Assert(sheet.texture);
         Vec2 pos = {offsetX, 10};
-        BlitTextureSheet(canvas, sheet, foxFrame, pos);
+        DrawTextureSheet(canvas, sheet, foxFrame, pos);
         offsetX += 50;
     }
     foxFrame++;

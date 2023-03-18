@@ -11,7 +11,7 @@
 
 static bool ShouldBeRunning = true;
 
-typedef struct {
+class(OffscreenBuffer) {
     Display *display;
     Window window;
     Texture canvas;
@@ -19,17 +19,17 @@ typedef struct {
     GC gc;
     XImage *image;
     Texture monitorCanvas;
-} OffscreenBuffer;
+};
 
 static struct {
     Point mousePos;
 } Input;
 
-Point GetMousePosition() {
+pubfunc Point GetMousePosition() {
     return Input.mousePos;
 }
 
-static OffscreenBuffer InitOffscreenBuffer(Display *display, Window window,
+func OffscreenBuffer InitOffscreenBuffer(Display *display, Window window,
                                            Texture canvas) {
     OffscreenBuffer buffer = {0};
     buffer.display = display;
@@ -49,11 +49,11 @@ static OffscreenBuffer InitOffscreenBuffer(Display *display, Window window,
     return buffer;
 }
 
-static void RenderOffscreenBuffer(OffscreenBuffer *buffer, int width,
+func void RenderOffscreenBuffer(OffscreenBuffer *buffer, int width,
                                   int height) {
     assert(buffer->monitorCanvas.pixels && buffer->canvas.pixels);
 
-    BlitTexture(buffer->monitorCanvas, buffer->canvas, 0, 0);
+    DrawTexture(buffer->monitorCanvas, buffer->canvas, 0, 0);
 
     XPutImage(buffer->display, buffer->window, buffer->gc, buffer->image, 0, 0,
               0, 0, width, height);

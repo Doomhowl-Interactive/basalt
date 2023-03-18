@@ -2,7 +2,7 @@
 
 #ifdef BASALT_DEBUG
 
-static void CheckTypes(){
+func void CheckTypes(){
     // check types
     Assert(sizeof(int)    == 4);
     Assert(sizeof(long)   == 4);
@@ -11,7 +11,7 @@ static void CheckTypes(){
     Assert(sizeof(double) == 8);
 }
 
-static void CheckByteReading(){
+func void CheckByteReading(){
     // spr block size example
     uchar result[4];
     uint value = 1770;
@@ -31,16 +31,16 @@ static void CheckByteReading(){
     Assert(val == 1770);
 }
 
-static void CheckAllocation() {
+func void CheckAllocation() {
 
 }
 
-static void TestMath(){
+func void TestMath(){
     Assert(MIN(5,3) == 3);
     Assert(MAX(5,3) == 5);
 }
 
-void UnitTest() {
+pubfunc void UnitTest() {
     CheckTypes();
     CheckByteReading();
     TestMath();

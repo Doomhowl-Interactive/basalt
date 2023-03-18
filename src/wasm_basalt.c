@@ -12,26 +12,26 @@
 Texture Canvas = {0};
 int FrameNumber = 0;
 
-bool InitWASM() {
+wasmfunc bool InitWASM() {
     Canvas.width = WIDTH;
     Canvas.height = HEIGHT;
     Canvas.pixels = MemAllocEx(WIDTH*HEIGHT,sizeof(int));
     return true;
 }
 
-int GetWASMCanvasWidth() {
+wasmfunc int GetWASMCanvasWidth() {
     return Canvas.width;
 }
 
-int GetWASMCanvasHeight() {
+wasmfunc int GetWASMCanvasHeight() {
     return Canvas.height;
 }
 
-uchar* GetWASMCanvas() {
+wasmfunc uchar* GetWASMCanvas() {
     return (uchar*) Canvas.pixels;
 }
 
-int UpdateAndRenderWASM(float delta) {
+wasmfunc int UpdateAndRenderWASM(float delta) {
     UpdateAndRenderGame(Canvas, delta);
 
     // set transparancy always to 255
@@ -43,12 +43,11 @@ int UpdateAndRenderWASM(float delta) {
     return FrameNumber++;
 }
 
-float PollWASMMousePosition(float mouseX, float mouseY){
+wasmfunc float PollWASMMousePosition(float mouseX, float mouseY){
     return mouseX * mouseY;
 }
 
-int LifeAndTheUniverse(){
+wasmfunc int LifeAndTheUniverse(){
     int a = 42;
     return a;
 }
-

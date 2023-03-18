@@ -14,14 +14,14 @@ static struct {
     uint gridSize;
 } Editor;
 
-static void DrawSelectedGridCell(Texture canvas, Camera camera, int32 color, int gridSize, int thick) {
+func void DrawSelectedGridCell(Texture canvas, Camera camera, int32 color, int gridSize, int thick) {
     Point mouse = GetMousePosition();
     int x = (int)((int)camera.x % gridSize + mouse.x / gridSize) * gridSize;
     int y = (int)((int)camera.y % gridSize + mouse.y / gridSize) * gridSize;
     DrawRectangleLines(canvas, x, y, gridSize, gridSize, thick, color);
 }
 
-static void DrawGrid(Texture canvas, Camera camera, int32 color, int gridSize, int thick) {
+func void DrawGrid(Texture canvas, Camera camera, int32 color, int gridSize, int thick) {
     Assert(gridSize > 0);
 
     int startX = (int)camera.x % gridSize;
@@ -40,16 +40,16 @@ static void DrawGrid(Texture canvas, Camera camera, int32 color, int gridSize, i
     }
 }
 
-void InitializeGame() {
+pubfunc void InitializeGame() {
     Editor.camera = (Camera){0, 0};
     Editor.gridSize = 16;
 }
 
-void DisposeGame() {
+pubfunc void DisposeGame() {
     WARN("TODO: dispose game properly");
 }
 
-void UpdateAndRenderGame(Texture canvas, float delta) {
+pubfunc void UpdateAndRenderGame(Texture canvas, float delta) {
     ClearTexture(canvas, BG_COLOR);
     DrawGrid(canvas, Editor.camera, GRID_COLOR, Editor.gridSize, 1);
     DrawSelectedGridCell(canvas, Editor.camera, GRID_CELL_COLOR, Editor.gridSize, 2);
