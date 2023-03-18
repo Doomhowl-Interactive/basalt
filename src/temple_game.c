@@ -18,7 +18,9 @@ void InitializeGame() {
     foxSprite = LoadTexture(SPR_PLAYER_FOX);
 }
 
-void DisposeGame() { WARN("TODO: dispose game properly"); }
+void DisposeGame() {
+    WARN("TODO: dispose game properly");
+}
 
 void UpdateAndRenderGame(Texture canvas, float delta) {
 
@@ -27,7 +29,9 @@ void UpdateAndRenderGame(Texture canvas, float delta) {
         &ANIM_FOX_JUMP, &ANIM_FOX_LAND, NULL,
     };
 
-    ClearTexture(canvas, SKY_COLOR);
+    // ClearTexture(canvas, SKY_COLOR);
+
+    DrawWeirdTestGradient(canvas);
 
     // draw each fox animation for testing
     static int foxFrame = 0;
@@ -40,4 +44,5 @@ void UpdateAndRenderGame(Texture canvas, float delta) {
         offsetX += 50;
     }
     foxFrame++;
+
 }

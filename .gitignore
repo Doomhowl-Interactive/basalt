@@ -3,5 +3,6 @@ build_xorg
 **/*.dat.c
 **/.vs
 **/temp
+**/.vim
 
 basalt.zip

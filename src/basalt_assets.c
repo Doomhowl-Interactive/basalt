@@ -24,14 +24,13 @@ Texture LoadTexture(uchar* pixels){
     Assert(texture.height > 0);
 
     // allocate pixel memory
-    texture.pixels = malloc(texture.width*texture.height*sizeof(uint));
+    texture.pixels = MemAlloc(texture.width*texture.height*sizeof(uint));
 
     // calculate every pixel's colors
     for (int i = 0; i < texture.width*texture.height; i++){
 
         // Color lookup from palette
         uchar index = pixels[i+4*2];
-        Assert(index < 256 * 4);
         uchar red   = PALETTE_COLORS[index * 4 + 0];
         uchar green = PALETTE_COLORS[index * 4 + 1];
         uchar blue  = PALETTE_COLORS[index * 4 + 2];

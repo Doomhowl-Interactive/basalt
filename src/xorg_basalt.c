@@ -5,10 +5,9 @@
 #include <X11/Xutil.h>
 #include <assert.h>
 #include <stdint.h>
-
-#ifdef LINUX
-
 #include <X11/Xlib.h>
+
+#include "posix_stdlib.c"
 
 static bool ShouldBeRunning = true;
 
@@ -21,6 +20,14 @@ typedef struct {
     XImage *image;
     Texture monitorCanvas;
 } OffscreenBuffer;
+
+static struct {
+    Point mousePos;
+} Input;
+
+Point GetMousePosition() {
+    return Input.mousePos;
+}
 
 static OffscreenBuffer InitOffscreenBuffer(Display *display, Window window,
                                            Texture canvas) {
@@ -106,6 +113,19 @@ int main(int argc, char **argv) {
             } break;
             }
 
+            // poll the mouse
+            Window rootWinResult, childWinResult;
+            int rootMouseX, rootMouseY;
+            int childMouseX, childMouseY;
+            unsigned int maskResult = 0;
+            if (XQueryPointer(display, win, &rootWinResult, &childWinResult, &rootMouseX, &rootMouseY,
+                          &childMouseX, &childMouseY, &maskResult)){
+                Input.mousePos.x = childMouseX;
+                Input.mousePos.y = childMouseY;
+            }
+
+
+            // draw graphics
             float delta = 1.f / 60.f;
             UpdateAndRenderGame(canvas, delta);
             RenderOffscreenBuffer(&buffer, width, height);
@@ -122,5 +142,3 @@ int main(int argc, char **argv) {
     DEBUG("Closed Xorg display");
     return 0;
 }
-
-#endif
