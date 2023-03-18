@@ -49,7 +49,6 @@ typedef struct {
 #define UNKNOWN
 #endif
 
-// logging functions (basalt_utils.c)
 #ifdef WASM
 #define INFO(...)
 #define WARN(...)
@@ -59,8 +58,8 @@ typedef struct {
 #define INFO(...) PrintLn("INFO: "__VA_ARGS__);
 #define WARN(...) PrintLn("WARN: "__VA_ARGS__);
 #undef ERROR
-#define ERROR(...) PrintEln(stderr,"ERROR: "__VA_ARGS__);
-#define FATAL(...) PrintEln(stderr,"FATAL: "__VA_ARGS__); Exit(1);
+#define ERROR(...) PrintEln("ERROR: "__VA_ARGS__);
+#define FATAL(...) PrintEln("FATAL: "__VA_ARGS__); Exit(1);
 #endif
 
 #ifdef BASALT_DEBUG
@@ -69,6 +68,9 @@ void UnitTest();
 #else
 #define DEBUG(...)
 #endif
+
+// Utility functions (basalt_utils.c)
+bool IsLittleEndian();
 
 // Asset handling (basalt_assets.c)
 typedef struct {

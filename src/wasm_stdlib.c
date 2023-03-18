@@ -1,15 +1,20 @@
 #include "basalt_stdlib.h"
 
 void AssertImpl(bool cond) {
+#ifdef BASALT_DEBUG
     if (!cond) {
         int* i = NULL;
         *i = 666;
     }
+#endif
 }
 
 void Panic(char* msg, ...) {
+    PrintEln(msg);
+#ifdef BASALT_DEBUG
     int* i = NULL;
     *i = 666;
+#endif
 }
 
 void *MemCopy(void *dest, const void* src, size_t n) {
@@ -66,17 +71,4 @@ void* MemRealloc(void* ptr, size_t size) {
 
 void Exit(int status) {
     Panic("Exited with code %d!", status);
-}
-
-int Absolute(int x) {
-    if (x < 0) {
-        return -x;
-    }
-    return x;
-}
-
-bool IsLittleEndian(){
-    volatile uint i = 0x01234567;
-    bool littleEndian = *((uchar*)(&i)) == 0x67;
-    return littleEndian;
 }

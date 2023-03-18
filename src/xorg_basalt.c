@@ -5,10 +5,9 @@
 #include <X11/Xutil.h>
 #include <assert.h>
 #include <stdint.h>
-
-#ifdef LINUX
-
 #include <X11/Xlib.h>
+
+#include "posix_stdlib.c"
 
 static bool ShouldBeRunning = true;
 
@@ -143,5 +142,3 @@ int main(int argc, char **argv) {
     DEBUG("Closed Xorg display");
     return 0;
 }
-
-#endif

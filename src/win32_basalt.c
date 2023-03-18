@@ -1,7 +1,7 @@
 #include "basalt.h"
-
-#ifdef WINDOWS
 #include <windows.h>
+
+#include "posix_stdlib.c"
 
 typedef struct {
     // NOTE: pixels are 32-bits wide, AA RR GG BB
@@ -155,4 +155,3 @@ void __stdcall WinMainCRTStartup() {
         WinMain(GetModuleHandle(0), 0, 0, 0); // TODO: command line args
     ExitProcess(result);
 }
-#endif

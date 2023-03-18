@@ -1,7 +1,7 @@
 #include "basalt.h"
 #include "basalt_extra.h"
 
-#include "../src/basalt_stdlib.c"
+#include "../src/wasm_stdlib.c"
 #include "../src/basalt_assets.c"
 #include "../src/basalt_graphics.c"
 #include "../src/basalt_extra_graphics.c"
