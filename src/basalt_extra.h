@@ -5,14 +5,14 @@
 
 #define STRING(name) #name
 
-typedef enum {
+enumdef(PlayerPose) {
     POSE_IDLE,
     POSE_WALK,
     POSE_SLIDE,
     POSE_JUMP,
     POSE_FALL,
     POSE_DUCK,
-} PlayerPose;
+};
 
 #define PLAYER_POSE_LIST                                                       \
     {                                                                          \
@@ -20,13 +20,13 @@ typedef enum {
             STRING(POSE_JUMP), STRING(POSE_FALL), STRING(POSE_DUCK),           \
     }
 
-typedef enum {
+enumdef(PlaybackMode) {
     PLAY_LOOP,
     PLAY_PING_PONG,
     PLAY_ONCE,
-} PlaybackMode;
+};
 
-typedef struct {
+class(TextureSheet) {
     const char *name; // description
     Texture* texture;  // attached texture
     Vec2 origin;      // top left of sector
@@ -34,8 +34,8 @@ typedef struct {
     uint count;       // number of cells in anim
     PlaybackMode mode;
     float fps;
-} TextureSheet;
+};
 
-void BlitTextureSheet(Texture canvas, TextureSheet sheet, int frame, Vec2 pos);
+pubfunc void DrawTextureSheet(Texture canvas, TextureSheet sheet, int frame, Vec2 pos);
 
 #endif

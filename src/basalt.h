@@ -6,40 +6,53 @@
 extern const uint WIDTH;
 extern const uint HEIGHT;
 
-typedef struct {
+// NOTE: Blursed macros that will make people mad,
+// but it allows easy grepping/search
+#define class(X) typedef struct X X; \
+                 struct X
+
+#define enumdef(X) typedef enum X X; \
+                 enum X
+
+#define func static
+#define pubfunc
+#define wasmfunc
+
+class(Rect)
+{
     int x;
     int y;
     int width;
     int height;
-} Rect;
+};
 
-typedef struct {
+class(RectF) {
     float x;
     float y;
     float width;
     float height;
-} RectF;
+};
 
-typedef struct {
+class(Point) {
     int x;
     int y;
-} Point;
+};
 
-typedef struct {
+class(Size) {
     int width;
     int height;
-} Size;
+};
 
-typedef struct {
+class(Vec2) {
     float x;
     float y;
-} Vec2;
+};
 
-typedef struct {
+class(Vec3) {
     float x;
     float y;
     float z;
-} Vec3;
+};
 
 #ifdef WASM
 #define INFO(...)
@@ -55,20 +68,20 @@ typedef struct {
 
 #ifdef BASALT_DEBUG
 #define DEBUG(...) PrintEln("DEBUG: "__VA_ARGS__);
-void UnitTest();
+pubfunc void UnitTest();
 #else
 #define DEBUG(...)
 #endif
 
 // Utility functions (basalt_utils.c)
-bool IsLittleEndian();
+pubfunc bool IsLittleEndian();
 
 // Asset handling (basalt_assets.c)
-typedef struct {
+class(Texture) {
     int width;
     int height;
     uint* pixels;
-} Texture;
+};
 
 // core assets
 extern unsigned char SPR_RGBA[];
@@ -78,39 +91,38 @@ extern unsigned char TILE_BLOCK_SMALL[];
 
 #ifndef BASALT_NO_ASSETS
 
-Texture LoadTexture(unsigned char* data);
+pubfunc Texture LoadTexture(unsigned char* data);
 
 #endif
 
 // Input handling (platform dependent)
-Point GetMousePosition();
+pubfunc Point GetMousePosition();
 
 // Graphics drawing (basalt_graphics.c)
-void DrawDot(Texture canvas, int posX, int posY, int radius, int color);
-void DrawDotV(Texture canvas, Vec2 pos, int radius, int color);
+pubfunc void DrawDot(Texture canvas, int posX, int posY, int radius, int color);
+pubfunc void DrawDotV(Texture canvas, Vec2 pos, int radius, int color);
 
-void DrawRectangle(Texture canvas, int posX, int posY, int width, int height, int color);
-void DrawRectangleRec(Texture canvas, Rect rect, int color);
-void DrawRectangleRecF(Texture canvas, RectF rect, int color);
+pubfunc void DrawRectangle(Texture canvas, int posX, int posY, int width, int height, int color);
+pubfunc void DrawRectangleRec(Texture canvas, Rect rect, int color);
+pubfunc void DrawRectangleRecF(Texture canvas, RectF rect, int color);
 
-void DrawRectangleLines(Texture canvas, int posX, int posY, int width, int height, int border, int color);
-void DrawRectangleLinesRec(Texture canvas, Rect rect, int border, int color);
-void DrawRectangleLinesRecF(Texture canvas, RectF rect, int border, int color);
+pubfunc void DrawRectangleLines(Texture canvas, int posX, int posY, int width, int height, int border, int color);
+pubfunc void DrawRectangleLinesRec(Texture canvas, Rect rect, int border, int color);
+pubfunc void DrawRectangleLinesRecF(Texture canvas, RectF rect, int border, int color);
 
-void DrawWeirdTestGradient(Texture canvas);
+pubfunc void DrawWeirdTestGradient(Texture canvas);
+pubfunc Texture InitTexture(int width, int height);
+pubfunc void DisposeTexture(Texture texture);
 
-Texture InitTexture(int width, int height);
-void DisposeTexture(Texture texture);
-
-void ClearTexture(Texture canvas, int color);
-void BlitTexture(Texture canvas, Texture texture, int posX, int posY);
-void BlitTextureV(Texture canvas, Texture texture, Vec2 pos);
-void BlitTextureEx(Texture canvas, Texture texture, Vec2 pos, Rect src);
-void BlitTextureScaled(Texture canvas, Texture texture, Vec2 pos, float scale);
+pubfunc void ClearTexture(Texture canvas, int color);
+pubfunc void DrawTexture(Texture canvas, Texture texture, int posX, int posY);
+pubfunc void DrawTextureV(Texture canvas, Texture texture, Vec2 pos);
+pubfunc void DrawTextureEx(Texture canvas, Texture texture, Vec2 pos, Rect src);
+pubfunc void DrawTextureScaled(Texture canvas, Texture texture, Vec2 pos, float scale);
 
 // Main game methods (for example: temple_game.c)
-void InitializeGame();
-void DisposeGame();
-void UpdateAndRenderGame(Texture canvas, float delta);
+pubfunc void InitializeGame();
+pubfunc void DisposeGame();
+pubfunc void UpdateAndRenderGame(Texture canvas, float delta);
 
 #endif

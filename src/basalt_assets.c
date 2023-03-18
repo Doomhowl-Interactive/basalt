@@ -4,7 +4,7 @@
 
 extern unsigned char PALETTE_COLORS[];
 
-uint UnsignedCharsToInteger(unsigned char value[4]) {
+func uint UnsignedCharsToInteger(unsigned char value[4]) {
     uint result = 0;
     result |= (value[0] << 24);
     result |= (value[1] << 16);
@@ -13,8 +13,7 @@ uint UnsignedCharsToInteger(unsigned char value[4]) {
     return result;
 }
 
-Texture LoadTexture(uchar* pixels){
-
+pubfunc Texture LoadTexture(uchar* pixels){
     Texture texture;
 
     // get texture size

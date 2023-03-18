@@ -1,7 +1,7 @@
 #include "basalt.h"
 #include "basalt_extra.h"
 
-void BlitTextureSheet(Texture canvas, TextureSheet sheet, int frame, Vec2 pos) {
+pubfunc void DrawTextureSheet(Texture canvas, TextureSheet sheet, int frame, Vec2 pos) {
     Assert(sheet.texture);
     Assert(sheet.texture->pixels);
 
@@ -17,5 +17,5 @@ void BlitTextureSheet(Texture canvas, TextureSheet sheet, int frame, Vec2 pos) {
         sheet.cellSize.x,
         sheet.cellSize.y,
     };
-    BlitTextureEx(canvas, *sheet.texture, pos, source);
+    DrawTextureEx(canvas, *sheet.texture, pos, source);
 }
