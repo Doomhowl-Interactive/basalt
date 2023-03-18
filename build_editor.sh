@@ -1,8 +1,8 @@
 #!/bin/bash
 
 echo "Building editor..."
-mkdir -p build_xorg
-cd build_xorg
+mkdir -p build
+cd build
 
 # build embedder
 gcc ../src/tooling/embedder.c -o embedder
@@ -13,4 +13,4 @@ gcc -ggdb -Werror -DBASALT_DEBUG ../src/basalt_*.c ../src/editor_game.c ../src/x
 
 cd ..
 
-./build_xorg/editor_linux.x11
+./build/editor_linux.x11

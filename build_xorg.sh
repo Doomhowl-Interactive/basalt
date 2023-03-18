@@ -2,8 +2,8 @@
 set -xe
 
 echo "Building..."
-mkdir -p build_xorg
-cd build_xorg
+mkdir -p build
+cd build
 
 # build embedder
 gcc ../src/tooling/embedder.c -o embedder

@@ -17,20 +17,20 @@ void Panic(char* msg, ...) {
 #endif
 }
 
-void *MemCopy(void *dest, const void* src, size_t n) {
+void *MemCopy(void *dest, const void* src, usize n) {
     char* destChar = (char*) dest;
     char* srcChar = (char*) src;
 
-    for (size_t i = 0; i < n; i++){
+    for (usize i = 0; i < n; i++){
         destChar[i] = srcChar[i];
     }
     return dest;
 }
 
-void *MemSet(void *str, int c, size_t n) {
+void *MemSet(void *str, int c, usize n) {
     unsigned char val = (unsigned char) c;
     char* data = (char*) str;
-    for (size_t i = 0; i < n; i++){
+    for (usize i = 0; i < n; i++){
         data[i] = val;
     }
     return str;
@@ -40,9 +40,9 @@ void *MemSet(void *str, int c, size_t n) {
 // Ment for the WASM platform, but might work just fine on other platforms.
 // WARN: Do not declare these two variables as static! WASM will not find them.
 uchar* HeapMemory[HEAP_SIZE];
-size_t HeapCurrent = 0;
+usize HeapCurrent = 0;
 
-void* MemAlloc(size_t size) {
+void* MemAlloc(usize size) {
     if(HEAP_SIZE - HeapCurrent >= size){
         HeapCurrent += size;
         return HeapMemory[HeapCurrent - size];
@@ -52,7 +52,7 @@ void* MemAlloc(size_t size) {
     return NULL;
 }
 
-void* MemAllocEx(size_t size, size_t amount) {
+void* MemAllocEx(usize size, usize amount) {
     return MemAlloc(size*amount);
 }
 
@@ -60,7 +60,7 @@ void MemFree(void* ptr) {
     // TODO: free is not yet implemented, now pray you don't run out of RAM.
 }
 
-void* MemRealloc(void* ptr, size_t size) {
+void* MemRealloc(void* ptr, usize size) {
     void* copy = MemAlloc(size);
     if (ptr != NULL){
         MemCopy(copy, ptr, size);

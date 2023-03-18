@@ -41,24 +41,15 @@ typedef struct {
     float z;
 } Vec3;
 
-#ifdef __linux__ 
-#define LINUX
-#elif defined(_WIN32) || defined(_WIN64)
-#define WINDOWS
-#else
-#define UNKNOWN
-#endif
-
 #ifdef WASM
 #define INFO(...)
 #define WARN(...)
-#define ERROR(...)
+#define ERR(...)
 #define FATAL(...)
 #else
 #define INFO(...) PrintLn("INFO: "__VA_ARGS__);
 #define WARN(...) PrintLn("WARN: "__VA_ARGS__);
-#undef ERROR
-#define ERROR(...) PrintEln("ERROR: "__VA_ARGS__);
+#define ERR(...) PrintEln("ERROR: "__VA_ARGS__);
 #define FATAL(...) PrintEln("FATAL: "__VA_ARGS__); Exit(1);
 #endif
 

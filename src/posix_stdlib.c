@@ -19,15 +19,16 @@ void Panic(char* msg, ...) {
 #endif
 }
 
-void *MemCopy(void *dest, const void* src, size_t n) {
+void *MemCopy(void *dest, const void* src, usize n) {
     return memcpy(dest, src, n);
 }
 
-void *MemSet(void *str, int c, size_t n) {
-    memset(str,c,n);
+void *MemSet(void *str, int c, usize n) {
+    void* res = memset(str,c,n);
+    return res;
 }
 
-void* MemAlloc(size_t size) {
+void* MemAlloc(usize size) {
     void* ptr = malloc(size);
     if (ptr == NULL){
         Panic("Failed to allocate memory!");
@@ -35,7 +36,7 @@ void* MemAlloc(size_t size) {
     return ptr;
 }
 
-void* MemAllocEx(size_t size, size_t amount) {
+void* MemAllocEx(usize size, usize amount) {
     return MemAlloc(size*amount);
 }
 
@@ -45,7 +46,7 @@ void MemFree(void* ptr) {
     }
 }
 
-void* MemRealloc(void* ptr, size_t size) {
+void* MemRealloc(void* ptr, usize size) {
     void* moved = realloc(ptr, size);
     if (moved == NULL){
         Panic("Failed to reallocate memory!");

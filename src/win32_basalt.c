@@ -11,7 +11,8 @@ typedef struct {
 
 Point GetMousePosition() {
     // TODO: implement mouse
-    return {};
+    Point mouse = { 0 };
+    return mouse;
 }
 
 static bool ShouldBeRunning;

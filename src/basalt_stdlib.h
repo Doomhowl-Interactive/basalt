@@ -1,6 +1,15 @@
 #ifndef BASALT_STDLIB_H
 #define BASALT_STDLIB_H
 
+// Easy defines to check operating system
+#ifdef __linux__ 
+#define LINUX
+#elif defined(_WIN32) || defined(_WIN64)
+#define WINDOWS
+#else
+#define UNKNOWN
+#endif
+
 // Custom interface of the C Standard Library 
 // ==========================================
 
@@ -27,7 +36,7 @@ typedef int bool;
 #define MAX(X,Y) (X > Y ? X:Y)
 #define MIN(X,Y) (X < Y ? X:Y)
 
-typedef unsigned long size_t;
+typedef unsigned long usize;
 typedef unsigned int uint;
 typedef unsigned char uchar;
 
@@ -36,12 +45,12 @@ void Panic(char* msg, ...);
 #define Assert(X) AssertImpl((bool)X)
 void AssertImpl(bool cond);
 
-void *MemCopy(void *dest, const void * src, size_t n);
-void *MemSet(void *str, int c, size_t n);
+void *MemCopy(void *dest, const void * src, usize n);
+void *MemSet(void *str, int c, usize n);
 
-void* MemAlloc(size_t size);
-void* MemAllocEx(size_t size, size_t amount);
-void* MemRealloc(void* ptr, size_t size);
+void* MemAlloc(usize size);
+void* MemAllocEx(usize size, usize amount);
+void* MemRealloc(void* ptr, usize size);
 void MemFree(void* ptr);
 
 void PrintF(const char* format, ...);
