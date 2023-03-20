@@ -14,14 +14,14 @@ static struct {
     uint gridSize;
 } Editor;
 
-func void DrawSelectedGridCell(Texture canvas, Camera camera, int32 color, int gridSize, int thick) {
+func void DrawSelectedGridCell(Texture canvas, Camera camera, int color, int gridSize, int thick) {
     Point mouse = GetMousePosition();
     int x = (int)((int)camera.x % gridSize + mouse.x / gridSize) * gridSize;
     int y = (int)((int)camera.y % gridSize + mouse.y / gridSize) * gridSize;
     DrawRectangleLines(canvas, x, y, gridSize, gridSize, thick, color);
 }
 
-func void DrawGrid(Texture canvas, Camera camera, int32 color, int gridSize, int thick) {
+func void DrawGrid(Texture canvas, Camera camera, int color, int gridSize, int thick) {
     Assert(gridSize > 0);
 
     int startX = (int)camera.x % gridSize;

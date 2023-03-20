@@ -12,5 +12,3 @@ gcc ../src/tooling/embedder.c -o embedder
 gcc -ggdb -Werror -DBASALT_DEBUG ../src/basalt_*.c ../src/editor_game.c ../src/xorg_basalt.c ../src/assets_custom.dat.c -lX11 -lm -lXext -o editor_linux.x11 
 
 cd ..
-
-./build/editor_linux.x11

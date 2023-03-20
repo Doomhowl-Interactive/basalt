@@ -33,7 +33,7 @@ IF NOT EXIST build (
     MKDIR build
 )
 
-call build_tooling.bat
+call tooling_build.bat
 
 PUSHD build
 
