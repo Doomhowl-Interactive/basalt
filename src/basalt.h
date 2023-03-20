@@ -90,9 +90,7 @@ extern unsigned char SPR_BLOCK[];
 extern unsigned char TILE_BLOCK_SMALL[];
 
 #ifndef BASALT_NO_ASSETS
-
 pubfunc Texture LoadTexture(unsigned char* data);
-
 #endif
 
 // Input handling (platform dependent)
@@ -119,6 +117,9 @@ pubfunc void DrawTexture(Texture canvas, Texture texture, int posX, int posY);
 pubfunc void DrawTextureV(Texture canvas, Texture texture, Vec2 pos);
 pubfunc void DrawTextureEx(Texture canvas, Texture texture, Vec2 pos, Rect src);
 pubfunc void DrawTextureScaled(Texture canvas, Texture texture, Vec2 pos, float scale);
+
+pubfunc uint CreateColor(uchar r, uchar g, uchar b);
+pubfunc uint CreateColorA(uchar r, uchar g, uchar b, uchar a); // NOTE: Format AA RR GG BB
 
 // Main game methods (for example: temple_game.c)
 pubfunc void InitializeGame();

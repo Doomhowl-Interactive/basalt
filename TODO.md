@@ -1,5 +1,5 @@
 Core
-- [ ] Handle sprite transparency
+- [X] Handle sprite transparency
 
 Windows
 - [ ] Handle mouse position

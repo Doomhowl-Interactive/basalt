@@ -40,7 +40,7 @@ func void ResizeDIBSection(OffscreenBuffer *buffer, int width, int height) {
     buffer->canvas = InitTexture(width, height);
 }
 
-func void DisplayBufferInWindow(HDC deviceContext, int winWidth,
+static void DisplayBufferInWindow(HDC deviceContext, int winWidth,
                                   int winHeight, OffscreenBuffer buffer) {
     StretchDIBits(deviceContext,
                   /*

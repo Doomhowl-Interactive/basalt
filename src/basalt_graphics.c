@@ -98,7 +98,10 @@ pubfunc void DrawTextureEx(Texture canvas, Texture texture, Vec2 pos, Rect src) 
             int yy = pos.y + y;
             int destIndex = yy * canvas.width + xx;
             int srcIndex = (src.y + y) * texture.width + (src.x + x);
-            pixels[destIndex] = texture.pixels[srcIndex];
+            uint newColor = texture.pixels[srcIndex];
+            if ((newColor >> 8) & 0xFF == 255){
+                pixels[destIndex] = newColor;
+            }
         }
     }
 }
@@ -141,13 +144,22 @@ pubfunc void DrawWeirdTestGradient(Texture canvas) {
     int i = 0;
     for (int y = 0; y < canvas.height; y++) {
         for (int x = 0; x < canvas.width; x++) {
-            uchar blue = (x + xOffset);
-            uchar green = (y + yOffset);
-            canvas.pixels[i] = ((green << 16) | blue);
+            uchar red = 20;
+            uchar green = x + xOffset;
+            uchar blue = y + yOffset;
+            canvas.pixels[i] = CreateColor(red,green,blue);
             i++;
         }
     }
 
     xOffset++;
     yOffset++;
+}
+
+pubfunc uint CreateColorA(uchar r, uchar g, uchar b, uchar a){
+    return (a << 24) | (r << 16) | (g << 8) | b;
+}
+
+pubfunc uint CreateColor(uchar r, uchar g, uchar b){
+    return CreateColorA(r, g, b, 255);
 }

@@ -114,6 +114,11 @@ uint RegisterPaletteColor(Palette* pal, uchar r, uchar g, uchar b, uchar a, bool
     // round alpha value
     if (a > 0) {
         a = 255;
+    } else { 
+        // black out other channels if alpha zero
+        r = 0;
+        g = 0;
+        b = 0;
     }
 
     // check if color already present
@@ -261,6 +266,10 @@ static void GeneratePaletteCode(String* code, Palette palette) {
             AppendString(code, numChar);
             AppendString(code, ", ");
         }
+
+        char comment[32];
+        sprintf(comment, "// %03d\n", i);
+        AppendString(code, comment);
     }
 
     // end code block

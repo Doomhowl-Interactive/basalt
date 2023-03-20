@@ -34,7 +34,14 @@ pubfunc Texture LoadTexture(uchar* pixels){
         uchar green = PALETTE_COLORS[index * 4 + 1];
         uchar blue  = PALETTE_COLORS[index * 4 + 2];
         uchar alpha = PALETTE_COLORS[index * 4 + 3];
-        Assert(alpha == 0 || alpha == 255);
+
+        if (alpha == 0) {
+            Assert(red == 0);
+            Assert(green == 0);
+            Assert(blue == 0);
+        } else {
+            Assert(255);
+        }
 
         uint argbColor = (alpha << 24) | (red << 16) | (green << 8) | blue;
         texture.pixels[i] = argbColor;
