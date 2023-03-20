@@ -99,7 +99,7 @@ pubfunc void DrawTextureEx(Texture canvas, Texture texture, Vec2 pos, Rect src) 
             int destIndex = yy * canvas.width + xx;
             int srcIndex = (src.y + y) * texture.width + (src.x + x);
             uint newColor = texture.pixels[srcIndex];
-            if ((newColor >> 8) & 0xFF == 255){
+            if (((newColor >> 8) & 0xFF) == 255){
                 pixels[destIndex] = newColor;
             }
         }
