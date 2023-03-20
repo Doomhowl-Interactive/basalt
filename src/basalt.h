@@ -1,7 +1,10 @@
 #ifndef BASALT_H
 #define BASALT_H
 
+// TODO: ditch custom stdlib as I don't want to deal with it's #ifdef mess anymore
 #include "basalt_stdlib.h"
+
+#include <assert.h>
 
 extern const uint WIDTH;
 extern const uint HEIGHT;
@@ -17,6 +20,9 @@ extern const uint HEIGHT;
 #define func static
 #define pubfunc
 #define wasmfunc
+
+#include <stdint.h>
+typedef uint32_t Color;
 
 class(Rect)
 {
@@ -80,14 +86,12 @@ pubfunc bool IsLittleEndian();
 class(Texture) {
     int width;
     int height;
-    uint* pixels;
+    Color* pixels;
 };
 
-// core assets
-extern unsigned char SPR_RGBA[];
-extern unsigned char SPR_PLAYER_FOX[];
-extern unsigned char SPR_BLOCK[];
-extern unsigned char TILE_BLOCK_SMALL[];
+// required data for map editor
+extern uchar* LIST_TEXTURES[];  // WARN: Terminate with NULL-pointer
+extern uint LIST_TAGS[];        // WARN: Terminate with -1
 
 #ifndef BASALT_NO_ASSETS
 pubfunc Texture LoadTexture(unsigned char* data);
@@ -95,31 +99,33 @@ pubfunc Texture LoadTexture(unsigned char* data);
 
 // Input handling (platform dependent)
 pubfunc Point GetMousePosition();
+pubfunc bool IsMouseDown();
+pubfunc bool IsMouseUp();
 
 // Graphics drawing (basalt_graphics.c)
-pubfunc void DrawDot(Texture canvas, int posX, int posY, int radius, int color);
-pubfunc void DrawDotV(Texture canvas, Vec2 pos, int radius, int color);
+pubfunc void DrawDot(Texture canvas, int posX, int posY, int radius, Color color);
+pubfunc void DrawDotV(Texture canvas, Vec2 pos, int radius, Color color);
 
-pubfunc void DrawRectangle(Texture canvas, int posX, int posY, int width, int height, int color);
-pubfunc void DrawRectangleRec(Texture canvas, Rect rect, int color);
-pubfunc void DrawRectangleRecF(Texture canvas, RectF rect, int color);
+pubfunc void DrawRectangle(Texture canvas, int posX, int posY, int width, int height, Color color);
+pubfunc void DrawRectangleRec(Texture canvas, Rect rect, Color color);
+pubfunc void DrawRectangleRecF(Texture canvas, RectF rect, Color color);
 
-pubfunc void DrawRectangleLines(Texture canvas, int posX, int posY, int width, int height, int border, int color);
-pubfunc void DrawRectangleLinesRec(Texture canvas, Rect rect, int border, int color);
-pubfunc void DrawRectangleLinesRecF(Texture canvas, RectF rect, int border, int color);
+pubfunc void DrawRectangleLines(Texture canvas, int posX, int posY, int width, int height, int border, Color color);
+pubfunc void DrawRectangleLinesRec(Texture canvas, Rect rect, int border, Color color);
+pubfunc void DrawRectangleLinesRecF(Texture canvas, RectF rect, int border, Color color);
 
 pubfunc void DrawWeirdTestGradient(Texture canvas);
 pubfunc Texture InitTexture(int width, int height);
 pubfunc void DisposeTexture(Texture texture);
 
-pubfunc void ClearTexture(Texture canvas, int color);
+pubfunc void ClearTexture(Texture canvas, Color color);
 pubfunc void DrawTexture(Texture canvas, Texture texture, int posX, int posY);
 pubfunc void DrawTextureV(Texture canvas, Texture texture, Vec2 pos);
 pubfunc void DrawTextureEx(Texture canvas, Texture texture, Vec2 pos, Rect src);
 pubfunc void DrawTextureScaled(Texture canvas, Texture texture, Vec2 pos, float scale);
 
-pubfunc uint CreateColor(uchar r, uchar g, uchar b);
-pubfunc uint CreateColorA(uchar r, uchar g, uchar b, uchar a); // NOTE: Format AA RR GG BB
+pubfunc Color CreateColor(uchar r, uchar g, uchar b);
+pubfunc Color CreateColorA(uchar r, uchar g, uchar b, uchar a); // NOTE: Format AA RR GG BB
 
 // Main game methods (for example: temple_game.c)
 pubfunc void InitializeGame();

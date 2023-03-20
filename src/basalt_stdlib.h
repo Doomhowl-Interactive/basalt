@@ -1,3 +1,6 @@
+// TODO: Find a way to ditch this for WASM.
+// It will be way easier to just rely on POSIX goodness.
+
 #ifndef BASALT_STDLIB_H
 #define BASALT_STDLIB_H
 
@@ -41,9 +44,6 @@ typedef unsigned int uint;
 typedef unsigned char uchar;
 
 void Panic(char* msg, ...);
-
-#define Assert(X) AssertImpl((bool)X)
-void AssertImpl(bool cond);
 
 void *MemCopy(void *dest, const void * src, usize n);
 void *MemSet(void *str, int c, usize n);

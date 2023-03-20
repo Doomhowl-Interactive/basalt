@@ -21,12 +21,22 @@ class(OffscreenBuffer) {
     Texture monitorCanvas;
 };
 
-static struct {
+class(SInput) {
+    bool isMouseDown;
     Point mousePos;
-} Input;
+};
+static SInput Input = { 0 };
 
 pubfunc Point GetMousePosition() {
     return Input.mousePos;
+}
+
+pubfunc bool IsMouseDown() {
+    return Input.isMouseDown;
+}
+
+pubfunc bool IsMouseUp() {
+    return !Input.isMouseDown;
 }
 
 func OffscreenBuffer InitOffscreenBuffer(Display *display, Window window,
@@ -66,6 +76,10 @@ int main(int argc, char **argv) {
         FATAL("Failed to open X display!");
     }
 
+#ifdef BASALT_DEBUG
+    UnitTest();
+#endif
+
     int screen = DefaultScreen(display);
 
     // if only things were that simple...
@@ -100,6 +114,7 @@ int main(int argc, char **argv) {
 
             switch (event.type) {
             case Expose:
+                break;
 
             case ClientMessage:
                 if ((Atom)event.xclient.data.l[0] == wmDeleteWindow) {
@@ -122,8 +137,10 @@ int main(int argc, char **argv) {
                           &childMouseX, &childMouseY, &maskResult)){
                 Input.mousePos.x = childMouseX;
                 Input.mousePos.y = childMouseY;
-            }
 
+                // HACK: might not work while pressing multiple mouse buttons
+                Input.isMouseDown = maskResult == 272;
+            }
 
             // draw graphics
             float delta = 1.f / 60.f;

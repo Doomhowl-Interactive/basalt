@@ -6,12 +6,6 @@
 #include <assert.h>
 #include <string.h>
 
-void AssertImpl(bool cond) {
-#ifdef BASALT_DEBUG
-    assert(cond);
-#endif
-}
-
 void Panic(char* msg, ...) {
     PrintEln(msg);
 #ifdef BASALT_DEBUG

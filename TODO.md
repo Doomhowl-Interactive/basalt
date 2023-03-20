@@ -6,7 +6,7 @@ Windows
 - [ ] LONG TERM: Fix aspect ratio
 
 XOrg
-- [ ] Handle window resizing
+- [ ] LONG TERM: Handle window resizing
 
 WASM
 - [ ] Fix sprite drawing

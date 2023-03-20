@@ -8,7 +8,7 @@ Slowly solidifying [Magma Game Engine](https://github.com/bramtechs/RaylibMagmaE
 
 ## New goals
 - C over C++ (support both types of compilers)
-- Platform agnostic
+- Platform agnostic (POSIX-compliant)
 - Batteries included, no downloading dependencies/libraries.
 - Embed game assets into executable (instead of seperate file)
 - High backwards-compatibility (Windows XP support and later)
@@ -22,6 +22,6 @@ Slowly solidifying [Magma Game Engine](https://github.com/bramtechs/RaylibMagmaE
 - Actually make a game I guess
 
 ## Dumb/unrealistic goals
-- Reimplement C standard library (needed for WASM-support anyway)
+- ~~Reimplement C standard library (needed for WASM-support anyway)~~
 - Arduino Uno support (communicate graphics over serial connection)
 - Run game in the bootloader without OS (with limited functionality)

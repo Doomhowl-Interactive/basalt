@@ -9,7 +9,7 @@ typedef struct {
     Texture canvas;
 } OffscreenBuffer;
 
-Point GetMousePosition() {
+pubfunc Point GetMousePosition() {
     // TODO: implement mouse
     Point mouse = { 0 };
     return mouse;

@@ -2,8 +2,8 @@
 #include "basalt_extra.h"
 
 pubfunc void DrawTextureSheet(Texture canvas, TextureSheet sheet, int frame, Vec2 pos) {
-    Assert(sheet.texture);
-    Assert(sheet.texture->pixels);
+    assert(sheet.texture);
+    assert(sheet.texture->pixels);
 
     // wrap frame if needed
     frame = frame % sheet.count;

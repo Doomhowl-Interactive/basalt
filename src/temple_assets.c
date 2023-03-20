@@ -1,4 +1,5 @@
 #include "basalt_extra.h"
+#include "temple_assets.h"
 
 #define FOX_CELL_SIZE {17,32}
 #define FOX_ANIM_FPS 15.f

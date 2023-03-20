@@ -18,9 +18,9 @@ pubfunc Texture LoadTexture(uchar* pixels){
 
     // get texture size
     texture.width = UnsignedCharsToInteger(pixels);
-    Assert(texture.width > 0);
+    assert(texture.width > 0);
     texture.height = UnsignedCharsToInteger(&pixels[4]);
-    Assert(texture.height > 0);
+    assert(texture.height > 0);
 
     // allocate pixel memory
     texture.pixels = MemAlloc(texture.width*texture.height*sizeof(uint));
@@ -30,21 +30,21 @@ pubfunc Texture LoadTexture(uchar* pixels){
 
         // Color lookup from palette
         uchar index = pixels[i+4*2];
-        uchar red   = PALETTE_COLORS[index * 4 + 0];
-        uchar green = PALETTE_COLORS[index * 4 + 1];
-        uchar blue  = PALETTE_COLORS[index * 4 + 2];
-        uchar alpha = PALETTE_COLORS[index * 4 + 3];
+        uchar alpha = PALETTE_COLORS[index * 4 + 0];
+        uchar red   = PALETTE_COLORS[index * 4 + 1];
+        uchar green = PALETTE_COLORS[index * 4 + 2];
+        uchar blue  = PALETTE_COLORS[index * 4 + 3];
 
         if (alpha == 0) {
-            Assert(red == 0);
-            Assert(green == 0);
-            Assert(blue == 0);
+            assert(red == 0);
+            assert(green == 0);
+            assert(blue == 0);
         } else {
-            Assert(255);
+            assert(alpha == 255);
         }
 
-        uint argbColor = (alpha << 24) | (red << 16) | (green << 8) | blue;
-        texture.pixels[i] = argbColor;
+        // A RGB
+        texture.pixels[i] = CreateColorA(red, green, blue, alpha);
     }
     return texture;
 }

@@ -38,7 +38,7 @@ pubfunc void UpdateAndRenderGame(Texture canvas, float delta) {
     int offsetX = 10;
     for (int i = 0; anims[i] != NULL; i++){
         TextureSheet sheet = *anims[i];
-        Assert(sheet.texture);
+        assert(sheet.texture);
         Vec2 pos = {offsetX, 10};
         DrawTextureSheet(canvas, sheet, foxFrame, pos);
         offsetX += 50;

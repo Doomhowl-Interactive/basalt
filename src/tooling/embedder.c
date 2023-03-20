@@ -89,6 +89,8 @@ static void GetAssetName(char* dest, const char* path);
 static FilePathList GetFolderFiles(char* folder, char* ext);
 static void UnloadFilePathList(FilePathList list);
 
+// TODO: Don't store alpha.
+
 Texture LoadTexture(char* fileName) {
     Texture texture;
 
@@ -114,11 +116,12 @@ uint RegisterPaletteColor(Palette* pal, uchar r, uchar g, uchar b, uchar a, bool
     // round alpha value
     if (a > 0) {
         a = 255;
-    } else { 
-        // black out other channels if alpha zero
-        r = 0;
-        g = 0;
-        b = 0;
+    } else if (pal->count > 0) { 
+        // return VOID color
+        if (isNew) {
+            *isNew = false;
+        }
+        return 0;
     }
 
     // check if color already present
@@ -163,7 +166,7 @@ Palette LoadPalette(Texture* textures, size_t count) {
     Palette palette = { 0 };
     palette.components = 4;
 
-    RegisterPaletteColor(&palette,255,0,255,0, NULL); // alpha
+    RegisterPaletteColor(&palette,0,0,0,0, NULL); // alpha
 
     for (int i = 0; i < count; i++) {
         Texture txt = textures[i];
@@ -207,7 +210,7 @@ static void GenerateTextureCode(String* code, Texture texture) {
 
     // write code header
     char header[64];
-    sprintf(header, "unsigned char %s[] = {\n", texture.name);
+    sprintf(header, "uchar %s[] = {\n", texture.name);
     AppendString(code, header);
 
     // write dimensions
@@ -248,16 +251,17 @@ static void GenerateTextureCode(String* code, Texture texture) {
     AppendString(code, "\n};");
 }
 
+static int PALETTE_COMP_ORDER[] = { 3, 0, 1, 2 };
 static void GeneratePaletteCode(String* code, Palette palette) {
     clock_t startTime = clock();
 
     // write code header
-    AppendString(code, "unsigned char PALETTE_COLORS[] = {\n");
+    AppendString(code, "uchar PALETTE_COLORS[] = {\n");
 
     // write each pixel after
     for (int i = 0; i < palette.count; i++) {
         for (int j = 0; j < palette.components; j++){
-            int index = i * palette.components + j;
+            int index = i * palette.components + PALETTE_COMP_ORDER[j];
             uchar v = palette.colors[index];
 
             char numChar[4];
@@ -292,6 +296,8 @@ void EmbedFolder(char* folder, char* outputFile) {
     printf("Extracted %d colors from all textures\n", palette.count);
 
     String code = MakeString();
+    // include "basalt.h"
+    AppendString(&code, "#include \"basalt.h\"\n\n");
 
     // write palette header
     GeneratePaletteCode(&code, palette); 

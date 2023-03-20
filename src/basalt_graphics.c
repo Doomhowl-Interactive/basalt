@@ -1,22 +1,25 @@
 #include "basalt.h"
 
-pubfunc void DrawDot(Texture canvas, int posX, int posY, int radius, int color) {
+pubfunc void DrawDot(Texture canvas, int posX, int posY, int radius, Color color) {
     int halfRadius = MAX(1, radius / 2);
     int topLeftX = posX - halfRadius;
     int topLeftY = posY - halfRadius;
     DrawRectangle(canvas, topLeftX, topLeftY, radius, radius, color);
 }
 
-pubfunc void DrawDotV(Texture canvas, Vec2 pos, int radius, int color) {
+pubfunc void DrawDotV(Texture canvas, Vec2 pos, int radius, Color color) {
     DrawDot(canvas, pos.x, pos.y, radius, color);
 }
 
-pubfunc void DrawRectangle(Texture canvas, int posX, int posY, int width, int height, int color) {
-    Assert(canvas.pixels);
+pubfunc void DrawRectangle(Texture canvas, int posX, int posY, int width, int height, Color color) {
+    assert(canvas.pixels);
+
+    // assume color is opaque
+    color |= 0xFF000000;
 
     int i = posY * canvas.width + posX;
-    for (int y = posY; y < posY + height; y++) {
-        for (int x = posX; x < posX + width; x++) {
+    for (int y = MAX(0,posY); y < MIN(posY + height, canvas.height); y++) {
+        for (int x = MAX(0,posX); x < MIN(posX + width, canvas.width); x++) {
             canvas.pixels[i++] = color;
         }
         i -= width;
@@ -24,28 +27,26 @@ pubfunc void DrawRectangle(Texture canvas, int posX, int posY, int width, int he
     }
 }
 
-pubfunc void DrawRectangleRec(Texture canvas, Rect rect, int color) {
+pubfunc void DrawRectangleRec(Texture canvas, Rect rect, Color color) {
     DrawRectangle(canvas, rect.x, rect.y, rect.width, rect.height, color);
 }
 
-pubfunc void DrawRectangleRecF(Texture canvas, RectF rect, int color) {
+pubfunc void DrawRectangleRecF(Texture canvas, RectF rect, Color color) {
     DrawRectangle(canvas, (int)rect.x, (int)rect.y, (int)rect.width, (int)rect.height, color);
 }
 
-pubfunc void DrawRectangleLines(Texture canvas, int posX, int posY, int width, int height, int border, int color) {
+pubfunc void DrawRectangleLines(Texture canvas, int posX, int posY, int width, int height, int border, Color color) {
     DrawRectangle(canvas, posX, posY, width, border, color); // top
-    DrawRectangle(canvas, posX + width - border, posY, border, height,
-                                color); // right
-    DrawRectangle(canvas, posX, posY + height - border, width, border,
-                                color); // bottom
+    DrawRectangle(canvas, posX + width - border, posY, border, height, color); // right
+    DrawRectangle(canvas, posX, posY + height - border, width, border, color); // bottom
     DrawRectangle(canvas, posX, posY, border, height, color); // left
 }
 
-pubfunc void DrawRectangleLinesRec(Texture canvas, Rect rect, int border, int color) {
+pubfunc void DrawRectangleLinesRec(Texture canvas, Rect rect, int border, Color color) {
     DrawRectangleLines(canvas, rect.x, rect.y, rect.width, rect.height, border, color);
 }
 
-pubfunc void DrawRectangleLinesRecF(Texture canvas, RectF rect, int border, int color) {
+pubfunc void DrawRectangleLinesRecF(Texture canvas, RectF rect, int border, Color color) {
     DrawRectangleLines(canvas, (int)rect.x, (int)rect.y, (int)rect.width, (int)rect.height, border, color);
 }
 
@@ -69,8 +70,8 @@ pubfunc Texture CopyTexture(Texture texture) {
     return copy;
 }
 
-pubfunc void ClearTexture(Texture canvas, int color) {
-    Assert(canvas.pixels);
+pubfunc void ClearTexture(Texture canvas, Color color) {
+    assert(canvas.pixels);
     for (int i = 0; i < canvas.width * canvas.height; i++) {
         canvas.pixels[i] = color;
     }
@@ -88,19 +89,19 @@ pubfunc void DrawTextureV(Texture canvas, Texture texture, Vec2 pos) {
 }
 
 pubfunc void DrawTextureEx(Texture canvas, Texture texture, Vec2 pos, Rect src) {
-    Assert(canvas.pixels);
-    uint *pixels = (uint *)canvas.pixels;
+    assert(canvas.pixels);
+    Color *pixels = (Color *)canvas.pixels;
 
     // TODO: optimize
+    // TODO: Bounds checking!
     for (int y = 0; y < src.height; y++) {
         for (int x = 0; x < src.width; x++) {
             int xx = pos.x + x;
             int yy = pos.y + y;
             int destIndex = yy * canvas.width + xx;
             int srcIndex = (src.y + y) * texture.width + (src.x + x);
-            uint newColor = texture.pixels[srcIndex];
-            if (newColor >> 8 & 0xFF == 255){
-                pixels[destIndex] = newColor;
+            if ((texture.pixels[srcIndex] & 0xFF000000) == 0xFF000000){
+                pixels[destIndex] = texture.pixels[srcIndex];
             }
         }
     }
@@ -108,8 +109,8 @@ pubfunc void DrawTextureEx(Texture canvas, Texture texture, Vec2 pos, Rect src) 
 
 // TODO: this entire function could be optimized
 pubfunc void DrawTextureScaled(Texture canvas, Texture texture, Vec2 pos, float scale) {
-    Assert(canvas.pixels);
-    Assert(texture.pixels);
+    assert(canvas.pixels);
+    assert(texture.pixels);
 
     uint *dest = (uint *)canvas.pixels;
     const uint *src = (const uint *)texture.pixels;
@@ -129,14 +130,14 @@ pubfunc void DrawTextureScaled(Texture canvas, Texture texture, Vec2 pos, float 
             int y = (int)((destY - originY) / (float)blitHeight * texture.height);
             int srcIndex = y * texture.width + x;
 
-            Assert(srcIndex >= 0 && srcIndex < texture.width * texture.height);
+            assert(srcIndex >= 0 && srcIndex < texture.width * texture.height);
             dest[destIndex] = src[srcIndex];
         }
     }
 }
 
 pubfunc void DrawWeirdTestGradient(Texture canvas) {
-    Assert(canvas.pixels);
+    assert(canvas.pixels);
 
     static int xOffset = 0;
     static int yOffset = 0;
@@ -156,10 +157,10 @@ pubfunc void DrawWeirdTestGradient(Texture canvas) {
     yOffset++;
 }
 
-pubfunc uint CreateColorA(uchar r, uchar g, uchar b, uchar a){
+pubfunc Color CreateColorA(uchar r, uchar g, uchar b, uchar a){
     return (a << 24) | (r << 16) | (g << 8) | b;
 }
 
-pubfunc uint CreateColor(uchar r, uchar g, uchar b){
+pubfunc Color CreateColor(uchar r, uchar g, uchar b){
     return CreateColorA(r, g, b, 255);
 }
