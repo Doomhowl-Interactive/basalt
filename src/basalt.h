@@ -135,7 +135,13 @@ pubfunc void DrawRectangleLinesRecF(Texture canvas, RectF rect, int border, Colo
 
 pubfunc void DrawWeirdTestGradient(Texture canvas);
 pubfunc Texture InitTexture(int width, int height);
+pubfunc Texture CopyTexture(Texture source);
+pubfunc Texture CopyTextureInto(Texture dest, Texture source);
 pubfunc void DisposeTexture(Texture texture);
+
+// Texture pixels are in ABGR (big endian), use this to convert to correct colors for XImage
+// NOTE: What is the correct format you might ask? I have no idea, found out after trial-and-error.
+pubfunc void MapTextureToCorrectFormat(Texture dest, Texture source);
 
 pubfunc void ClearTexture(Texture canvas, Color color);
 pubfunc void DrawTexture(Texture canvas, Texture texture, int posX, int posY);

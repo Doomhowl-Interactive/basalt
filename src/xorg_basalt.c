@@ -13,10 +13,11 @@ class(OffscreenBuffer) {
     Display *display;
     Window window;
     Texture canvas;
+    Texture mappedCanvas;
 
     GC gc;
+    uchar* pixels;
     XImage *image;
-    Texture monitorCanvas;
 };
 
 class(SInput) {
@@ -44,24 +45,24 @@ func OffscreenBuffer InitOffscreenBuffer(Display *display, Window window,
     buffer.window = window;
     buffer.gc = XCreateGC(display, window, 0, NULL);
     buffer.canvas = canvas;
-    buffer.monitorCanvas = InitTexture(1920, 1080);
+    buffer.mappedCanvas = InitTexture(WIDTH, HEIGHT);
 
     XWindowAttributes wAttribs = {0};
     XGetWindowAttributes(display, window, &wAttribs);
 
     buffer.image =
         XCreateImage(display, wAttribs.visual, wAttribs.depth, ZPixmap, 0,
-                     (char *)buffer.monitorCanvas.pixels,
-                     buffer.monitorCanvas.width, buffer.monitorCanvas.height,
-                     32, buffer.monitorCanvas.width * sizeof(uint32_t));
+                     (char *)buffer.mappedCanvas.pixels,
+                     buffer.mappedCanvas.width, buffer.mappedCanvas.height,
+                     32, buffer.mappedCanvas.width * sizeof(uint32_t));
     return buffer;
 }
 
 func void RenderOffscreenBuffer(OffscreenBuffer *buffer, int width,
                                   int height) {
-    assert(buffer->monitorCanvas.pixels && buffer->canvas.pixels);
+    assert(buffer->mappedCanvas.pixels && buffer->canvas.pixels);
 
-    DrawTexture(buffer->monitorCanvas, buffer->canvas, 0, 0);
+    MapTextureToCorrectFormat(buffer->mappedCanvas, buffer->canvas);
 
     XPutImage(buffer->display, buffer->window, buffer->gc, buffer->image, 0, 0,
               0, 0, width, height);

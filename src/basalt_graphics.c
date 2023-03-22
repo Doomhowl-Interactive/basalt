@@ -58,16 +58,36 @@ pubfunc Texture InitTexture(int width, int height) {
     return tex;
 }
 
+pubfunc Texture CopyTexture(Texture source){
+    Texture new = InitTexture(source.width,source.height);
+    CopyTextureInto(new, source);
+    return new;
+}
+
+pubfunc Texture CopyTextureInto(Texture dest, Texture source){
+    assert(dest.width == source.width && dest.height == source.height);
+    memcpy(dest.pixels, source.pixels, source.width*source.height*sizeof(Color));
+}
+
+
 pubfunc void DisposeTexture(Texture texture) {
     if (texture.pixels) {
         free(texture.pixels);
     }
 }
 
-pubfunc Texture CopyTexture(Texture texture) {
-    Texture copy = InitTexture(texture.width, texture.height);
-    memcpy(copy.pixels, texture.pixels, texture.width * texture.height * 4);
-    return copy;
+pubfunc void MapTextureToCorrectFormat(Texture dest, Texture source) {
+    assert(dest.width == source.width && source.height == dest.height);
+
+    const uchar* src = (const uchar*) source.pixels;
+    uchar* dst = (uchar*) dest.pixels;
+
+    for (int i = 0; i < dest.width*dest.height; i++) {
+        dst[i*4+0] = src[i*4+1];
+        dst[i*4+1] = src[i*4+2];
+        dst[i*4+2] = src[i*4+3];
+        dst[i*4+3] = src[i*4+0];
+    }
 }
 
 pubfunc void ClearTexture(Texture canvas, Color color) {
@@ -107,9 +127,7 @@ pubfunc void DrawTextureEx(Texture canvas, Texture texture, Vec2 pos, Rect src) 
             }
 
             // drop pixel if opacity not 255 (temporary)
-            if ((texture.pixels[srcIndex] & 0x000000FF) == 0x000000FF){
-                pixels[destIndex] = texture.pixels[srcIndex];
-            }
+            pixels[destIndex] = texture.pixels[srcIndex];
         }
     }
 }
