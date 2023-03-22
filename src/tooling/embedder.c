@@ -8,7 +8,7 @@
 #include <time.h>
 
 #if defined(_WIN64) || defined(_WIN32)
-#include "external/dirent.h"
+#include "../external/dirent.h"
 #else
 #include <dirent.h>
 #endif

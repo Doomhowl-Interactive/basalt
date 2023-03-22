@@ -64,7 +64,7 @@ pubfunc Texture CopyTexture(Texture source){
     return new;
 }
 
-pubfunc Texture CopyTextureInto(Texture dest, Texture source){
+pubfunc void CopyTextureInto(Texture dest, Texture source){
     assert(dest.width == source.width && dest.height == source.height);
     memcpy(dest.pixels, source.pixels, source.width*source.height*sizeof(Color));
 }

@@ -1,12 +1,11 @@
 #include "basalt.h"
 #include <windows.h>
 
-#include "posix_stdlib.c"
-
 typedef struct {
     // NOTE: pixels are 32-bits wide, AA RR GG BB
     BITMAPINFO info;
     Texture canvas;
+    Texture mappedCanvas;
 } OffscreenBuffer;
 
 pubfunc Point GetMousePosition() {
@@ -29,7 +28,13 @@ func Size GetWindowSize(HWND window) {
 }
 
 func void ResizeDIBSection(OffscreenBuffer *buffer, int width, int height) {
-    MemFree(buffer->canvas.pixels);
+
+    // switch out screen textures for correctly sized ones
+    DisposeTexture(buffer->canvas);
+    buffer->canvas = InitTexture(width, height);
+
+    DisposeTexture(buffer->mappedCanvas);
+    buffer->mappedCanvas = InitTexture(width, height);
 
     buffer->info.bmiHeader.biSize = sizeof(buffer->info.bmiHeader);
     buffer->info.bmiHeader.biWidth = width;
@@ -42,13 +47,16 @@ func void ResizeDIBSection(OffscreenBuffer *buffer, int width, int height) {
 
 static void DisplayBufferInWindow(HDC deviceContext, int winWidth,
                                   int winHeight, OffscreenBuffer buffer) {
+
+    MapTextureToCorrectFormat(buffer.mappedCanvas, buffer.canvas);
+
     StretchDIBits(deviceContext,
                   /*
                   dest: X, Y, Width, Height,
                   source: X, Y, Width, Height,
                   */
-                  0, 0, winWidth, winHeight, 0, 0, buffer.canvas.width,
-                  buffer.canvas.height, buffer.canvas.pixels, &buffer.info,
+                  0, 0, winWidth, winHeight, 0, 0, buffer.mappedCanvas.width,
+                  buffer.mappedCanvas.height, buffer.mappedCanvas.pixels, &buffer.info,
                   DIB_RGB_COLORS, SRCCOPY);
 }
 
