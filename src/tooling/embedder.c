@@ -72,6 +72,7 @@ unsigned char* LoadFileBytes(char* filePath, size_t* size) {
     *size = (size_t) ftell(file);
     fseek(file, 0, SEEK_SET);
 
+    assert(*size > 0);
     unsigned char* buffer = (unsigned char*) malloc(*size);
     fread(buffer, *size, 1, file);
     fclose(file);
@@ -116,13 +117,13 @@ void EmbedFile(char* file, char** genCode) {
     s[1] = (unsigned char)(size >> 16);
     s[2] = (unsigned char)(size >>  8);
     s[3] = (unsigned char)(size >>  0);
-    sprintf(sizeText,"%d,%d,%d,%d,",s[0],s[1],s[2],s[3]);
+    sprintf(sizeText,"0x%02X,0x%02X,0x%02X,0x%02X, ",s[0],s[1],s[2],s[3]);
     marker = AppendString(marker, sizeText);
 
     // write each pixel after
     for (int i = 0; i < size; i++) {
         char hexText[18];
-        sprintf(hexText,"0x%X,", bytes[i]);
+        sprintf(hexText,"0x%02X,", bytes[i]);
         marker = AppendString(marker, hexText);
     }
 
