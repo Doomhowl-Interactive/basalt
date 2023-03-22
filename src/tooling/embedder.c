@@ -125,14 +125,14 @@ void AppendFileCode(String* code, char* file) {
         AppendString(code, header);
     }
 
-    // add size marker (4 bytes) == BIG ENDIAN
+    // add size marker (4 bytes) == LITTLE ENDIAN
     {
         char sizeText[64];
         unsigned char s[4];
-        s[0] = (unsigned char)(size >> 24);
-        s[1] = (unsigned char)(size >> 16);
-        s[2] = (unsigned char)(size >>  8);
-        s[3] = (unsigned char)(size >>  0);
+        s[0] = (unsigned char)(size >>  0);
+        s[1] = (unsigned char)(size >>  8);
+        s[2] = (unsigned char)(size >> 16);
+        s[3] = (unsigned char)(size >> 24);
         sprintf(sizeText,"0x%02X,0x%02X,0x%02X,0x%02X, ",s[0],s[1],s[2],s[3]);
         AppendString(code, sizeText);
     }
