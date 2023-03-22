@@ -112,7 +112,8 @@ extern uchar* LIST_TEXTURES[];  // WARN: Terminate with NULL-pointer
 extern uint LIST_TAGS[];        // WARN: Terminate with -1
 
 #ifndef BASALT_NO_ASSETS
-pubfunc Texture LoadTexture(unsigned char* data);
+#define LoadTexture(X) LoadTextureEx(#X,X)
+pubfunc Texture LoadTextureEx(const char* name, uchar* pixels);
 #endif
 
 // Input handling (platform dependent)

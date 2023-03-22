@@ -7,7 +7,7 @@
 #define STBI_NO_LINEAR
 #include "external/stb_image.h"
 
-pubfunc Texture LoadTexture(uchar* pixels){
+pubfunc Texture LoadTextureEx(const char* name, uchar* pixels) {
     Texture texture;
 
     int channels = 0;
@@ -18,7 +18,7 @@ pubfunc Texture LoadTexture(uchar* pixels){
                                                  &texture.width, &texture.height,
                                                  &channels, 4);
     if (data == NULL) {
-        ERR("Failed to load texture from memory!");
+        ERR("Failed to load texture %s from memory! ( likely data corruption :( )", name);
         return texture;
     }
 
@@ -40,11 +40,15 @@ pubfunc Texture LoadTexture(uchar* pixels){
         texture.pixels = (Color*) data;
     } else {
         ERR("Unexpected amount of channels in image (%d)!", channels);
+        return texture;
     }
 
     if (!texture.pixels) {
         ERR("Failed to parse texture!");
+        return texture;
     }
+
+    DEBUG("Loaded texture %s of size %d with %d channels...", name, size, channels);
     return texture;
 }
 
