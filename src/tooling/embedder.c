@@ -13,15 +13,27 @@
 #include <dirent.h>
 #endif
 
+#define MAX_PATH_LENGTH 128
+
 typedef struct {
     size_t size;
     size_t capacity;
     char* text;
 } String;
 
+typedef struct {
+    size_t count;
+    size_t capacity;
+    char** files;
+} FilePathList;
+
 static String MakeString();
 static void UnloadString(String* str);
 static String* AppendString(String* str, const char* add);
+
+static bool FileHasExtension(char* name, char* ext);
+static FilePathList GetFolderFiles(char* folder, char* ext);
+static void UnloadFilePathList(FilePathList list);
 
 void WriteCode(char* outputPath, String code) {
     FILE* file;
@@ -150,25 +162,18 @@ void ClearFile(char* outputFile) {
     }
 }
 
-void GetFolderFiles(char* folder, char* ext, char*** files);
-
 void EncodeFolder(char* folder, char* outputFile) {
     ClearFile(outputFile);
 
     String code = MakeString();
+    FilePathList files = GetFolderFiles(folder, ".png");
 
-    // TODO: hide in struct
-    char** files = NULL;
-    GetFolderFiles(folder, ".png", &files);
-
-    for (int i = 0; files[i] != NULL; i++) {
-        AppendFileCode(&code, files[i]);
-        free(files[i]);
+    for (int i = 0; i < files.count; i++) {
+        AppendFileCode(&code, files.files[i]);
     }
 
     WriteCode(outputFile, code);
-
-    free(files);
+    UnloadFilePathList(files);
 }
 
 void UnitTest() {
@@ -225,39 +230,6 @@ int main(int argc, char** argv) {
     printf("Done in %f seconds\n", cpuTimeUsed);
 }
 
-#define MAX_PATH_LENGTH 128
-#define MAX_FILE_COUNT 512
-void GetFolderFiles(char* folder, char* ext, char*** files) {
-
-    DIR* dir;
-    struct dirent* ent;
-    int extLen = strlen(ext);
-    if ((dir = opendir(folder)) != NULL) {
-
-        // list
-        *files = (char**)malloc((MAX_FILE_COUNT + 1) * sizeof(char*));
-
-        int index = 0;
-        while ((ent = readdir(dir)) != NULL) {
-            int nameLen = strlen(ent->d_name);
-            if (nameLen > extLen && strcmp(ent->d_name + nameLen - extLen, ext) == 0) {
-                char fullName[MAX_PATH_LENGTH];
-                snprintf(fullName, MAX_PATH_LENGTH, "%s/%s", folder, ent->d_name);
-                (*files)[index++] = strdup(fullName);
-            }
-        }
-        closedir(dir);
-
-        // append null to end list
-        (*files)[index++] = NULL;
-    }
-    else {
-        (*files) = NULL;
-        fprintf(stderr,"Unable to open directory");
-        exit(1);
-    }
-}
-
 // string implementation
 static String MakeString(){
     String str = { 0 };
@@ -293,4 +265,50 @@ static void UnloadString(String* str) {
     if (str->text){
         free(str->text);
     }
+}
+
+static bool FileHasExtension(char* name, char* ext) {
+    int cmp = strcmp(name + strlen(name) - strlen(ext), ext);
+    return cmp == 0;
+}
+
+static FilePathList GetFolderFiles(char* folder, char* ext) {
+
+    FilePathList list = { 0 };
+    list.count = 0;
+    list.capacity = 20;
+
+    DIR* dir;
+    struct dirent* ent;
+    if ((dir = opendir(folder)) != NULL) {
+        list.files = (char**) malloc(list.capacity * sizeof(char*));
+        while ((ent = readdir(dir)) != NULL) {
+            if (FileHasExtension(ent->d_name, ext)) {
+
+                // expand FilePathList if needed
+                if (list.count == list.capacity) {
+                    list.capacity *= 2;
+                    list.files = (char**) realloc(list.files,list.capacity * sizeof(char*));
+                }
+
+                char fullName[MAX_PATH_LENGTH];
+                snprintf(fullName, MAX_PATH_LENGTH, "%s/%s", folder, ent->d_name);
+                list.files[list.count++] = strdup(fullName);
+            }
+        }
+        closedir(dir);
+    }
+    else {
+        fprintf(stderr,"Unable to open directory\n");
+        exit(1);
+    }
+
+    return list;
+}
+
+static void UnloadFilePathList(FilePathList list) {
+    for (size_t i = 0; i < list.count; i++) {
+        free(list.files[i]);
+    }
+    free(list.files);
 }
