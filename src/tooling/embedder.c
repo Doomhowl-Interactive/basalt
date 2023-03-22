@@ -3,71 +3,29 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <math.h>
+#include <assert.h>
 #include <time.h>
 #include <ctype.h>
+#include <limits.h>
+#include <stdbool.h>
 
 #if defined(_WIN64) || defined(_WIN32)
-#include "external/dirent.h"
+#include "../external/dirent.h"
 #else
 #include <dirent.h>
 #endif
 
-#define STB_IMAGE_IMPLEMENTATION
-#define STBI_NO_HDR
-#define STBI_NO_LINEAR
-#include "external/stb_image.h"
-
-#define true 1
-#define false 0
-
 #define MAX_PATH_LENGTH 128
-
-#ifndef __cplusplus
-typedef int bool;
-#endif
 
 typedef unsigned int uint;
 typedef unsigned char uchar;
 
-#undef assert
-void assert(bool cond) {
-#ifdef BASALT_DEBUG
-    if (!cond) {
-        int* i = NULL;
-        *i = 666;
-    }
-#endif
-}
-
 // TODO: memory cleanup
-
-// === NEW DESIGN ===
-// 1. Load all textures assets colors into memory
-// 2. Extract unique colors from assets
-// 3. Map pixels to table
-// 4. Write palette array to file
-// 5. Write pixel array to file
-//
-// PROS:
-// - No stdb image required at runtime
-// - Smaller executable size
-// CONS:
-// - Slower to render sprites due to frequent lookups (solution: caching)
-
 typedef struct {
-    char* name;
-    int width;
-    int height;
-    int channels;
-    uchar* colors;
-    uchar* indices;
-} Texture;
-
-typedef struct {
-    uint count;
-    uint components;
-    uchar* colors;
-} Palette;
+    char name[256];
+    size_t size;
+    uint32_t* data;
+} Asset;
 
 typedef struct {
     size_t count;
@@ -89,191 +47,49 @@ static void GetAssetName(char* dest, const char* path);
 static FilePathList GetFolderFiles(char* folder, char* ext);
 static void UnloadFilePathList(FilePathList list);
 
-// TODO: Don't store alpha.
+// TODO: Write unit test for this
 
-Texture LoadTexture(char* fileName) {
-    Texture texture;
+Asset LoadAsset(char* fileName) {
+    Asset asset;
+    GetAssetName(asset.name, fileName);
 
-    // make asset name
-    char assetName[256];
-    GetAssetName(assetName, fileName);
-    texture.name = strdup(assetName);
+    FILE* file = fopen(fileName, "r");
+    assert(file);
+    fseek(file, 0L, SEEK_END);
 
-    // extract texture colors
-    texture.colors = (uchar*) stbi_load(fileName, &texture.width, &texture.height, &texture.channels, 4);
-    if (!texture.colors) {
-        fprintf(stderr,"Could not load image colors %s.\n", fileName);
-        exit(1);
+    // determine size to allocate
+    asset.size = ftell(file);
+    asset.data = malloc(sizeof(uint32_t) + asset.size);
+    rewind(file);
+
+    printf("Embedding asset %s with size %u bytes\n", asset.name, asset.size);
+
+    // write length header into buffer
+    asset.data[0] = asset.size;
+
+    // write data into buffer
+    for (int i = 1; i < asset.size; i++) {
+        char c = fgetc(file);
+        ((char*)asset.data)[i++] = (char) c;
     }
 
-    // allocate space for indices array
-    texture.indices = (uchar*) malloc(sizeof(uchar)*texture.width*texture.height);
-
-    return texture;
+    return asset;
 }
 
-uint RegisterPaletteColor(Palette* pal, uchar r, uchar g, uchar b, uchar a, bool* isNew) {
-    // round alpha value
-    if (a > 0) {
-        a = 255;
-    } else if (pal->count > 0) { 
-        // return VOID color
-        if (isNew) {
-            *isNew = false;
-        }
-        return 0;
-    }
-
-    // check if color already present
-    for (uint i = 0; i < pal->count; i++) {
-        if (pal->colors[i*pal->components + 0] == r &&
-            pal->colors[i*pal->components + 1] == g &&
-            pal->colors[i*pal->components + 2] == b &&
-            pal->colors[i*pal->components + 3] == a){
-
-            if (isNew) {
-                *isNew = false;
-            }
-            return i;
-        }
-    }
-
-    // add the new color
-    if (pal->count == 0) {
-        pal->colors = (uchar*)malloc(256 * pal->components);
-    } else if (pal->count == 256) {
-        fprintf(stderr,"\nYou are using too much colors! (max is 255)\n");
-        exit(1);
-    }
-
-    int i = pal->count*pal->components;
-    pal->colors[i + 0] = r;
-    pal->colors[i + 1] = g;
-    pal->colors[i + 2] = b;
-    pal->colors[i + 3] = a;
-
-    // printf("Registered color %d %d %d %d\n",r,g,b,a);
-
-    if (isNew) {
-        *isNew = true;
-    }
-
-    uint latest = pal->count++;
-    return latest;
-}
-
-Palette LoadPalette(Texture* textures, size_t count) {
-    Palette palette = { 0 };
-    palette.components = 4;
-
-    RegisterPaletteColor(&palette,0,0,0,0, NULL); // alpha
-
-    for (int i = 0; i < count; i++) {
-        Texture txt = textures[i];
-        printf("Converting image %s ... ",txt.name);
-
-        // read every pixel
-        uchar* colors = txt.colors;
-        uint unique = 0;
-        for (int j = 0; j < txt.width*txt.height; j++) {
-            uchar r = colors[j*txt.channels + 0];
-            uchar g = colors[j*txt.channels + 1];
-            uchar b = colors[j*txt.channels + 2];
-            uchar a = txt.channels == 4 ? 255 : colors[j + 3];
-
-            bool isNew;
-            uchar index = RegisterPaletteColor(&palette,r,g,b,a,&isNew);
-            txt.indices[j] = index;
-
-            if (isNew){
-                unique++;
-            }
-        }
-        if (unique == 0){
-            printf("(no new colors! :D )\n");
-        } else {
-            printf("(%d new colors)\n",unique);
-        }
-    }
-    return palette;
-}
-
-void UnsignedIntegerToUnsignedChars(uint32_t value, unsigned char result[4]) {
-    result[0] = (value >> 24) & 0xFF;
-    result[1] = (value >> 16) & 0xFF;
-    result[2] = (value >> 8) & 0xFF;
-    result[3] = value & 0xFF;
-}
-
-static void GenerateTextureCode(String* code, Texture texture) {
+static void GenerateAssetCode(String* code, Asset asset) {
     clock_t startTime = clock();
 
     // write code header
     char header[64];
-    sprintf(header, "uchar %s[] = {\n", texture.name);
+    sprintf(header, "unsigned char %s[%d] = {\n", asset.name, asset.size + sizeof(uint32_t));
     AppendString(code, header);
 
-    // write dimensions
-    unsigned char width[4];
-    UnsignedIntegerToUnsignedChars(texture.width, width);
-
-    for (int i = 0; i < 4; i++) {
-        char numChar[4];
-        sprintf(numChar,"%d",width[i]);
-        AppendString(code, numChar);
+    // write each asset byte
+    for (size_t i = 0; i < asset.size; i++) {
+        char hexString[12];
+        sprintf(hexString,"0x%X",asset.data[i]);
+        AppendString(code, hexString);
         AppendString(code, ", ");
-    }
-
-    unsigned char height[4];
-    UnsignedIntegerToUnsignedChars(texture.height, height);
-
-    for (int i = 0; i < 4; i++) {
-        char numChar[4];
-        sprintf(numChar,"%d",height[i]);
-        AppendString(code, numChar);
-        AppendString(code, ", ");
-    }
-
-    // write each pixel after
-    for (int i = 0; i < texture.width*texture.height; i++) {
-        uchar index = texture.indices[i];
-
-        char numChar[4];
-        sprintf(numChar,"%d",index);
-
-        AppendString(code, numChar);
-        AppendString(code, ", ");
-    }
-    // write terminator
-    AppendString(code, "255");
-
-    // end code block
-    AppendString(code, "\n};");
-}
-
-static int PALETTE_COMP_ORDER[] = { 3, 0, 1, 2 };
-static void GeneratePaletteCode(String* code, Palette palette) {
-    clock_t startTime = clock();
-
-    // write code header
-    AppendString(code, "uchar PALETTE_COLORS[] = {\n");
-
-    // write each pixel after
-    for (int i = 0; i < palette.count; i++) {
-        for (int j = 0; j < palette.components; j++){
-            int index = i * palette.components + PALETTE_COMP_ORDER[j];
-            uchar v = palette.colors[index];
-
-            char numChar[4];
-            sprintf(numChar,"%d",v);
-
-            AppendString(code, numChar);
-            AppendString(code, ", ");
-        }
-
-        char comment[32];
-        sprintf(comment, "// %03d\n", i);
-        AppendString(code, comment);
     }
 
     // end code block
@@ -282,37 +98,26 @@ static void GeneratePaletteCode(String* code, Palette palette) {
 
 void EmbedFolder(char* folder, char* outputFile) {
     FilePathList list = GetFolderFiles(folder, ".png");
-    Texture* textures = (Texture*) malloc(sizeof(Texture)*list.count);
+    Asset* textures = (Asset*) malloc(sizeof(Asset)*list.count);
 
     for (int i = 0; i < list.count; i++) {
         char* file = list.files[i];
-        textures[i] = LoadTexture(file);
+        textures[i] = LoadAsset(file);
     }
 
     UnloadFilePathList(list);
 
-    // load palette
-    Palette palette = LoadPalette(textures, list.count);
-    printf("Extracted %d colors from all textures\n", palette.count);
-
     String code = MakeString();
-    // include "basalt.h"
-    AppendString(&code, "#include \"basalt.h\"\n\n");
 
-    // write palette header
-    GeneratePaletteCode(&code, palette); 
-    AppendString(&code, "\n");
-
-    // write texture code
+    // write Asset code
     for (int i = 0; i < list.count; i++) {
-        GenerateTextureCode(&code, textures[i]);
+        GenerateAssetCode(&code, textures[i]);
         AppendString(&code, "\n");
     }
 
     SaveFileText(outputFile, code.text);
 }
 
-#ifdef BASALT_DEBUG
 bool UnitTest() {
     char name1[128];
     GetAssetName(name1, "assets/spr_player_fox.png");
@@ -328,15 +133,12 @@ bool UnitTest() {
     AppendString(&str, "!");
     assert(strcmp(str.text,"Hello world!") == 0);
 
-    printf("Completed unit testing...\n");
+    // printf("Completed unit testing...\n");
     return true;
 }
-#endif
 
 int main(int argc, char** argv) {
-#ifdef BASALT_DEBUG
     assert(UnitTest());
-#endif
 
     if (argc != 3) {
         printf("Incorrect amount of arguments! Gave %d\n",argc);

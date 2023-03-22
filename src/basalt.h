@@ -13,6 +13,7 @@
 #include "string.h"
 
 typedef size_t usize;
+typedef int32_t int32;
 typedef uint32_t uint;
 typedef uint8_t uchar;
 

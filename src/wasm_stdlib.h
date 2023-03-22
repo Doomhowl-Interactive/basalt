@@ -14,6 +14,7 @@ typedef int bool;
 
 // ==========================================
 
+typedef int int32;
 typedef unsigned long usize;
 typedef unsigned int uint;
 typedef unsigned char uchar;

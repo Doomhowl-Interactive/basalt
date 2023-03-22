@@ -100,6 +100,12 @@ pubfunc void DrawTextureEx(Texture canvas, Texture texture, Vec2 pos, Rect src) 
             int yy = pos.y + y;
             int destIndex = yy * canvas.width + xx;
             int srcIndex = (src.y + y) * texture.width + (src.x + x);
+
+            // drop pixel if out of bounds
+            if (srcIndex < 0 || srcIndex >= texture.width*texture.height) {
+                continue;
+            }
+
             if ((texture.pixels[srcIndex] & 0xFF000000) == 0xFF000000){
                 pixels[destIndex] = texture.pixels[srcIndex];
             }
