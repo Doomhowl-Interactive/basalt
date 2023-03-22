@@ -143,8 +143,8 @@ pubfunc void DrawTextureV(Texture canvas, Texture texture, Vec2 pos);
 pubfunc void DrawTextureEx(Texture canvas, Texture texture, Vec2 pos, Rect src);
 pubfunc void DrawTextureScaled(Texture canvas, Texture texture, Vec2 pos, float scale);
 
-pubfunc Color CreateColor(uchar r, uchar g, uchar b);
-pubfunc Color CreateColorA(uchar r, uchar g, uchar b, uchar a); // NOTE: Format AA RR GG BB
+pubfunc Color RGB(uchar r, uchar g, uchar b);
+pubfunc Color RGBA(uchar r, uchar g, uchar b, uchar a); // NOTE: Format RR GG BB AA
 
 // Main game methods (for example: temple_game.c)
 pubfunc void InitializeGame();

@@ -18,6 +18,7 @@ pubfunc void InitializeGame() {
     foxSprite = LoadTexture(SPR_PLAYER_FOX);
     blockSprite = LoadTexture(SPR_BLOCK);
     smallBlockSprite = LoadTexture(TILE_BLOCK_SMALL);
+    colorSprite = LoadTexture(SPR_RGBA);
 }
 
 pubfunc void DisposeGame() {
@@ -47,7 +48,17 @@ pubfunc void UpdateAndRenderGame(Texture canvas, float delta) {
     }
     foxFrame++;
 
+    // TODO: use raylib's color constants
+    DrawRectangle(canvas, 50+00, 250+00, 150, 150, RGB(255,0,0));
+    DrawRectangle(canvas, 50+20, 250+20, 150, 150, RGB(0,255,0));
+    DrawRectangle(canvas, 50+40, 250+40, 150, 150, RGB(0,0,255));
+
+    DrawRectangle(canvas, 300+00, 250+00, 150, 150, 0xFF0000FF);
+    DrawRectangle(canvas, 300+20, 250+20, 150, 150, 0x00FF00FF);
+    DrawRectangle(canvas, 300+40, 250+40, 150, 150, 0x0000FFFF);
+
     // draw other sprites
     DrawTexture(canvas, blockSprite, 150, 50);
     DrawTexture(canvas, smallBlockSprite, 350, 50);
+    DrawTexture(canvas, colorSprite, 450, 50);
 }

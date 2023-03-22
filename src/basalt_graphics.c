@@ -15,7 +15,7 @@ pubfunc void DrawRectangle(Texture canvas, int posX, int posY, int width, int he
     assert(canvas.pixels);
 
     // assume color is opaque
-    color |= 0xFF000000;
+    color |= 0x000000FF;
 
     int i = posY * canvas.width + posX;
     for (int y = MAX(0,posY); y < MIN(posY + height, canvas.height); y++) {
@@ -106,7 +106,8 @@ pubfunc void DrawTextureEx(Texture canvas, Texture texture, Vec2 pos, Rect src) 
                 continue;
             }
 
-            if ((texture.pixels[srcIndex] & 0xFF000000) == 0xFF000000){
+            // drop pixel if opacity not 255 (temporary)
+            if ((texture.pixels[srcIndex] & 0x000000FF) == 0x000000FF){
                 pixels[destIndex] = texture.pixels[srcIndex];
             }
         }
@@ -154,7 +155,7 @@ pubfunc void DrawWeirdTestGradient(Texture canvas) {
             uchar red = 20;
             uchar green = x + xOffset;
             uchar blue = y + yOffset;
-            canvas.pixels[i] = CreateColor(red,green,blue);
+            canvas.pixels[i] = RGB(red,green,blue);
             i++;
         }
     }
@@ -163,10 +164,10 @@ pubfunc void DrawWeirdTestGradient(Texture canvas) {
     yOffset++;
 }
 
-pubfunc Color CreateColorA(uchar r, uchar g, uchar b, uchar a){
-    return (a << 24) | (r << 16) | (g << 8) | b;
+pubfunc Color RGBA(uchar r, uchar g, uchar b, uchar a){
+    return (r << 24) | (g << 16) | (b << 8) | a;
 }
 
-pubfunc Color CreateColor(uchar r, uchar g, uchar b){
-    return CreateColorA(r, g, b, 255);
+pubfunc Color RGB(uchar r, uchar g, uchar b){
+    return RGBA(r, g, b, 255);
 }

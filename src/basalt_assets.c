@@ -11,7 +11,7 @@ pubfunc Texture LoadTextureEx(const char* name, uchar* pixels) {
     Texture texture;
 
     int channels = 0;
-    int32* pixels32Bit = (int32*) pixels;
+    uint* pixels32Bit = (uint*) pixels;
 
     int size = pixels32Bit[0];
     uchar* data = (uchar*) stbi_load_from_memory((stbi_uc*) &pixels32Bit[1], size,
@@ -29,6 +29,7 @@ pubfunc Texture LoadTextureEx(const char* name, uchar* pixels) {
         ERR("Unexpected amount of channels in image (%d)!", channels);
         return texture;
     }
+
     texture.pixels = (Color*) data;
 
     if (!texture.pixels) {
