@@ -170,10 +170,9 @@ pubfunc void DrawWeirdTestGradient(Texture canvas) {
     int i = 0;
     for (int y = 0; y < canvas.height; y++) {
         for (int x = 0; x < canvas.width; x++) {
-            uchar red = 20;
-            uchar green = x + xOffset;
-            uchar blue = y + yOffset;
-            canvas.pixels[i] = RGB(red,green,blue);
+            uchar red = x + xOffset;
+            uchar green = y + xOffset;
+            canvas.pixels[i] = RGB(red,green,0);
             i++;
         }
     }
