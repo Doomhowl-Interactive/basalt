@@ -31,7 +31,7 @@ extern const uint HEIGHT;
                  struct X
 
 #define enumdef(X) typedef enum X X; \
-                 enum X
+                   enum X
 
 #define MAX(X,Y) (X > Y ? X:Y)
 #define MIN(X,Y) (X < Y ? X:Y)
