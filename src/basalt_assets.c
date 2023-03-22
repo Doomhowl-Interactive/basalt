@@ -25,27 +25,11 @@ pubfunc Texture LoadTextureEx(const char* name, uchar* pixels) {
         return texture;
     }
 
-    // If there are only 3 channels in the image, add an alpha channel
-    if(channels == 3) {
-        int count = texture.width*texture.height;
-        Color* newPixels = malloc(count*sizeof(Color));
-        for (uint i = 0; i < count; i++){
-            uchar r = data[i+0];
-            uchar g = data[i+1];
-            uchar b = data[i+2];
-            uchar a = data[i+3];
-            newPixels[i] = CreateColorA(r,g,b,a);
-        }
-
-        stbi_image_free(texture.pixels);
-        texture.pixels = newPixels;
-        DEBUG("Added alpha to texture %s", name);
-    } else if (channels == 4){
-        texture.pixels = (Color*) data;
-    } else {
+    if (channels != 4 && channels != 3) {
         ERR("Unexpected amount of channels in image (%d)!", channels);
         return texture;
     }
+    texture.pixels = (Color*) data;
 
     if (!texture.pixels) {
         ERR("Failed to parse texture!");
