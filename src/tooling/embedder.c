@@ -13,20 +13,33 @@
 #include <dirent.h>
 #endif
 
-void WriteCode(char* outputPath, char* code) {
+typedef struct {
+    size_t size;
+    size_t capacity;
+    char* text;
+} String;
+
+static String MakeString();
+static void UnloadString(String* str);
+static String* AppendString(String* str, const char* add);
+
+void WriteCode(char* outputPath, String code) {
     FILE* file;
     file = fopen(outputPath, "a");
     if (file == NULL) {
         fprintf(stderr,"Could not open file for writing.\n");
         exit(1);
     }
-    fprintf(file, "\n%s", code);
+
+    // append code to disk file
+    fprintf(file, "\n%s", code.text);
     fclose(file);
     printf("Wrote code into %s\n", outputPath);
-    free(code);
+
+    UnloadString(&code);
 }
 
-void StringToUppercase(char* str) {
+void ToUppercase(char* str) {
     while (*str){
         *str = toupper(*str);
         str++;
@@ -58,7 +71,7 @@ void GetAssetName(char* dest, const char* path) {
         *dot = '\0'; // cut off string at dot
     }
 
-    StringToUppercase(dest);
+    ToUppercase(dest);
 }
 
 unsigned char* LoadFileBytes(char* filePath, size_t* size) {
@@ -80,59 +93,49 @@ unsigned char* LoadFileBytes(char* filePath, size_t* size) {
     return buffer;
 }
 
-char* AppendString(char* dest, char* add){
-    strcpy(dest, add);
-    dest += strlen(add);
-    return dest;
-}
-
-void EmbedFile(char* file, char** genCode) {
+void AppendFileCode(String* code, char* file) {
 
     // read raw binary
     size_t size = 0;
-    unsigned char* bytes = LoadFileBytes(file, &size);
+    unsigned char* fileBytes = LoadFileBytes(file, &size);
     assert(size > 0);
 
-    char* fileName = strdup(file);
-    char assetName[128]; GetAssetName(assetName, file);
-    printf("Embedding file %s named %s ", fileName, assetName);
-    free(fileName);
-
-    size_t codeMaxSize = size * 8 + 1024;
-    char* code = malloc(codeMaxSize);
-    memset(code, '\0', codeMaxSize);
-    char* marker = code;
+    char assetName[128];
+    GetAssetName(assetName, file);
+    printf("Embedding file %s named %s ", file, assetName);
 
     clock_t startTime = clock();
 
     // write code header
-    char header[64];
-    sprintf(header, "unsigned char %s[] = {\n", assetName, size);
-    marker = AppendString(marker, header);
+    {
+        char header[64];
+        sprintf(header, "unsigned char %s[] = {\n", assetName, size);
+        AppendString(code, header);
+    }
 
     // add size marker (4 bytes) == BIG ENDIAN
-    char sizeText[64];
-    unsigned char s[4];
-    s[0] = (unsigned char)(size >> 24);
-    s[1] = (unsigned char)(size >> 16);
-    s[2] = (unsigned char)(size >>  8);
-    s[3] = (unsigned char)(size >>  0);
-    sprintf(sizeText,"0x%02X,0x%02X,0x%02X,0x%02X, ",s[0],s[1],s[2],s[3]);
-    marker = AppendString(marker, sizeText);
+    {
+        char sizeText[64];
+        unsigned char s[4];
+        s[0] = (unsigned char)(size >> 24);
+        s[1] = (unsigned char)(size >> 16);
+        s[2] = (unsigned char)(size >>  8);
+        s[3] = (unsigned char)(size >>  0);
+        sprintf(sizeText,"0x%02X,0x%02X,0x%02X,0x%02X, ",s[0],s[1],s[2],s[3]);
+        AppendString(code, sizeText);
+    }
 
     // write each pixel after
     for (int i = 0; i < size; i++) {
         char hexText[18];
-        sprintf(hexText,"0x%02X,", bytes[i]);
-        marker = AppendString(marker, hexText);
+        sprintf(hexText,"0x%02X,", fileBytes[i]);
+        AppendString(code, hexText);
     }
 
-    free(bytes);
+    free(fileBytes);
 
     // end code block
-    marker = AppendString(marker, "\n};\0");
-
-    *genCode = code;
+    AppendString(code, "\n};\n");
 
     clock_t endTime = clock();
     double cpuTimeUsed = ((double)(endTime - startTime)) / CLOCKS_PER_SEC;
@@ -152,45 +155,57 @@ void GetFolderFiles(char* folder, char* ext, char*** files);
 void EncodeFolder(char* folder, char* outputFile) {
     ClearFile(outputFile);
 
+    String code = MakeString();
+
+    // TODO: hide in struct
     char** files = NULL;
     GetFolderFiles(folder, ".png", &files);
 
     for (int i = 0; files[i] != NULL; i++) {
-        char* code = NULL;
-        EmbedFile(files[i], &code);
-        WriteCode(outputFile, code);
+        AppendFileCode(&code, files[i]);
         free(files[i]);
     }
+
+    WriteCode(outputFile, code);
+
     free(files);
 }
 
-bool UnitTest() {
-    char name1[128];
-    GetAssetName(name1, "assets/spr_player_fox.png");
-    assert(strcmp(name1, "SPR_PLAYER_FOX") == 0);
+void UnitTest() {
 
-    char name2[128];
-    GetAssetName(name2, "assets\\mus_overworld.ogg");
-    assert(strcmp(name2, "MUS_OVERWORLD") == 0);
+    // test appending assets
+    {
+        char name1[128];
+        GetAssetName(name1, "assets/spr_player_fox.png");
+        assert(strcmp(name1, "SPR_PLAYER_FOX") == 0);
 
-    char str[128];
-    char* ptr = str;
-    ptr = AppendString(ptr, "Hello");
-    ptr = AppendString(ptr, " world");
-    ptr = AppendString(ptr, "!");
-    assert(strcmp(str,"Hello world!") == 0);
+        char name2[128];
+        GetAssetName(name2, "assets\\mus_overworld.ogg");
+        assert(strcmp(name2, "MUS_OVERWORLD") == 0);
+    }
 
-    char clone[16];
-    strcpy(clone, "Hello");
-    StringToUppercase(clone);
-    assert(strcmp(clone,"HELLO") == 0);
+    // test text capitalization
+    {
+        char clone[16];
+        strcpy(clone, "Hello");
+        ToUppercase(clone);
+        assert(strcmp(clone,"HELLO") == 0);
+    }
+
+    // test appending strings
+    {
+        String str = MakeString();
+        AppendString(&str, "Hello");
+        AppendString(&str, " world");
+        AppendString(&str, "!");
+        assert(strcmp(str.text,"Hello world!") == 0);
+    }
 
     // printf("Completed unit testing...\n");
-    return true;
 }
 
 int main(int argc, char** argv) {
-    assert(UnitTest());
+    UnitTest();
 
     if (argc != 3) {
         printf("Incorrect amount of arguments! Gave %d\n",argc);
@@ -240,5 +255,42 @@ void GetFolderFiles(char* folder, char* ext, char*** files) {
         (*files) = NULL;
         fprintf(stderr,"Unable to open directory");
         exit(1);
+    }
+}
+
+// string implementation
+static String MakeString(){
+    String str = { 0 };
+    str.capacity = 128;
+    return str;
+}
+
+static String* AppendString(String* str, const char* add) {
+    size_t addLen = strlen(add);
+    str->size += addLen;
+
+    // allocate string
+    if (str->text == NULL) {
+        str->capacity = str->size + 1; // +1 for null terminator
+        str->text = (char*)malloc(str->capacity * sizeof(char));
+    }
+
+    // grow string
+    if (str->size >= str->capacity) {
+        str->capacity += 500;
+        str->text = (char*)realloc(str->text, str->capacity * sizeof(char));
+    }
+
+    char* head = &str->text[str->size - addLen]; // calculate head position
+    strcpy(head, add);
+
+    return str;
+}
+
+static void UnloadString(String* str) {
+    str->size = 0;
+    str->capacity = 100;
+    if (str->text){
+        free(str->text);
     }
 }
