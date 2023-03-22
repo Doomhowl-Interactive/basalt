@@ -85,7 +85,6 @@ char* AppendString(char* dest, char* add){
     return dest;
 }
 
-const char HexLookupTable[] = "0123456789ABCDEF";
 void EmbedFile(char* file, char** genCode) {
 
     // read raw binary
@@ -122,10 +121,9 @@ void EmbedFile(char* file, char** genCode) {
 
     // write each pixel after
     for (int i = 0; i < size; i++) {
-        marker = AppendString(marker, "0x");
-        *(marker++) = HexLookupTable[(bytes[i] >> 4) & 0x0f];
-        *(marker++) = HexLookupTable[(bytes[i] >> 0) & 0x0f];
-        marker = AppendString(marker, ",");
+        char hexText[18];
+        sprintf(hexText,"0x%X,", bytes[i]);
+        marker = AppendString(marker, hexText);
     }
 
     free(bytes);
