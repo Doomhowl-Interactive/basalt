@@ -1,10 +1,25 @@
 #ifndef BASALT_H
 #define BASALT_H
 
-// TODO: ditch custom stdlib as I don't want to deal with it's #ifdef mess anymore
-#include "basalt_stdlib.h"
+#ifdef WASM
+#include "wasm_stdlib.h"
+#else 
 
 #include <assert.h>
+#include <stdbool.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include "string.h"
+
+typedef size_t usize;
+typedef uint32_t uint;
+typedef uint8_t uchar;
+
+#endif
+
+#define MAX(X,Y) (X > Y ? X:Y)
+#define MIN(X,Y) (X < Y ? X:Y)
 
 extern const uint WIDTH;
 extern const uint HEIGHT;
@@ -17,12 +32,14 @@ extern const uint HEIGHT;
 #define enumdef(X) typedef enum X X; \
                  enum X
 
+#define MAX(X,Y) (X > Y ? X:Y)
+#define MIN(X,Y) (X < Y ? X:Y)
+
 #define func static
 #define pubfunc
 #define wasmfunc
 
-#include <stdint.h>
-typedef uint32_t Color;
+typedef uint Color;
 
 class(Rect)
 {
@@ -66,14 +83,14 @@ class(Vec3) {
 #define ERR(...)
 #define FATAL(...)
 #else
-#define INFO(...) PrintLn("INFO: "__VA_ARGS__);
-#define WARN(...) PrintLn("WARN: "__VA_ARGS__);
-#define ERR(...) PrintEln("ERROR: "__VA_ARGS__);
-#define FATAL(...) PrintEln("FATAL: "__VA_ARGS__); Exit(1);
+#define INFO(...)   printf("INFO: "__VA_ARGS__); printf("\n")
+#define WARN(...)   printf("WARN: "__VA_ARGS__); printf("\n")
+#define ERR(...)    printf("ERROR: "__VA_ARGS__); printf("\n")
+#define FATAL(...)  printf("FATAL: "__VA_ARGS__); printf("\n"); exit(1)
 #endif
 
 #ifdef BASALT_DEBUG
-#define DEBUG(...) PrintEln("DEBUG: "__VA_ARGS__);
+#define DEBUG(...) printf("DEBUG: "__VA_ARGS__); printf("\n")
 pubfunc void UnitTest();
 #else
 #define DEBUG(...)

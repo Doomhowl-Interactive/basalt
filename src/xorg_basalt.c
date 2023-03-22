@@ -7,8 +7,6 @@
 #include <stdint.h>
 #include <X11/Xlib.h>
 
-#include "posix_stdlib.c"
-
 static bool ShouldBeRunning = true;
 
 class(OffscreenBuffer) {

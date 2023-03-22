@@ -54,19 +54,19 @@ pubfunc Texture InitTexture(int width, int height) {
     Texture tex;
     tex.width = width;
     tex.height = height;
-    tex.pixels = (uint *)MemAllocEx(width * height, 4);
+    tex.pixels = (uint *)malloc(width * height * 4);
     return tex;
 }
 
 pubfunc void DisposeTexture(Texture texture) {
     if (texture.pixels) {
-        MemFree(texture.pixels);
+        free(texture.pixels);
     }
 }
 
 pubfunc Texture CopyTexture(Texture texture) {
     Texture copy = InitTexture(texture.width, texture.height);
-    MemCopy(copy.pixels, texture.pixels, texture.width * texture.height * 4);
+    memcpy(copy.pixels, texture.pixels, texture.width * texture.height * 4);
     return copy;
 }
 

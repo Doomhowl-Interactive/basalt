@@ -23,7 +23,7 @@ pubfunc Texture LoadTexture(uchar* pixels){
     assert(texture.height > 0);
 
     // allocate pixel memory
-    texture.pixels = MemAlloc(texture.width*texture.height*sizeof(uint));
+    texture.pixels = malloc(texture.width*texture.height*sizeof(uint));
 
     // calculate every pixel's colors
     for (int i = 0; i < texture.width*texture.height; i++){

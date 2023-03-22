@@ -1,7 +1,9 @@
 #include "basalt.h"
 #include "basalt_extra.h"
 
-#include "../src/wasm_stdlib.c"
+#define WASM_STDLIB_IMPLEMENTATION
+#include "../src/wasm_stdlib.h"
+
 #include "../src/basalt_assets.c"
 #include "../src/basalt_graphics.c"
 #include "../src/basalt_extra_graphics.c"
@@ -15,7 +17,7 @@ int FrameNumber = 0;
 wasmfunc bool InitWASM() {
     Canvas.width = WIDTH;
     Canvas.height = HEIGHT;
-    Canvas.pixels = MemAllocEx(WIDTH*HEIGHT,sizeof(int));
+    Canvas.pixels = malloc(WIDTH*HEIGHT*sizeof(int));
     return true;
 }
 
