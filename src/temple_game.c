@@ -17,6 +17,7 @@ static Texture smallBlockSprite;
 pubfunc void InitializeGame() {
     foxSprite = LoadTexture(SPR_PLAYER_FOX);
     blockSprite = LoadTexture(SPR_BLOCK);
+    smallBlockSprite = LoadTexture(TILE_BLOCK_SMALL);
 }
 
 pubfunc void DisposeGame() {
@@ -48,4 +49,5 @@ pubfunc void UpdateAndRenderGame(Texture canvas, float delta) {
 
     // draw other sprites
     DrawTexture(canvas, blockSprite, 150, 50);
+    DrawTexture(canvas, smallBlockSprite, 350, 50);
 }

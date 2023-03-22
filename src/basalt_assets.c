@@ -17,6 +17,9 @@ pubfunc Texture LoadTextureEx(const char* name, uchar* pixels) {
     uchar* data = (uchar*) stbi_load_from_memory((stbi_uc*) &pixels32Bit[1], size,
                                                  &texture.width, &texture.height,
                                                  &channels, 4);
+
+    DEBUG("Loaded texture %s of size %u with %d channels", name, size, channels);
+
     if (data == NULL) {
         ERR("Failed to load texture %s from memory! ( likely data corruption :( )", name);
         return texture;
@@ -36,6 +39,7 @@ pubfunc Texture LoadTextureEx(const char* name, uchar* pixels) {
 
         stbi_image_free(texture.pixels);
         texture.pixels = newPixels;
+        DEBUG("Added alpha to texture %s", name);
     } else if (channels == 4){
         texture.pixels = (Color*) data;
     } else {
@@ -47,8 +51,6 @@ pubfunc Texture LoadTextureEx(const char* name, uchar* pixels) {
         ERR("Failed to parse texture!");
         return texture;
     }
-
-    DEBUG("Loaded texture %s of size %d with %d channels...", name, size, channels);
     return texture;
 }
 
