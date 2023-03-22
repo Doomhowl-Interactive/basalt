@@ -2,206 +2,38 @@
 #include <string.h>
 #include <stdint.h>
 #include <stdlib.h>
-#include <math.h>
 #include <assert.h>
-#include <time.h>
-#include <ctype.h>
-#include <limits.h>
 #include <stdbool.h>
+#include <ctype.h>
+#include <time.h>
 
 #if defined(_WIN64) || defined(_WIN32)
-#include "../external/dirent.h"
+#include "external/dirent.h"
 #else
 #include <dirent.h>
 #endif
 
-#define MAX_PATH_LENGTH 128
-
-typedef unsigned int uint;
-typedef unsigned char uchar;
-
-// TODO: memory cleanup
-typedef struct {
-    char name[256];
-    size_t size;
-    uint32_t* data;
-} Asset;
-
-typedef struct {
-    size_t count;
-    size_t capacity;
-    char** files;
-} FilePathList;
-
-typedef struct {
-    size_t size;
-    size_t capacity;
-    char* text;
-} String;
-
-static String MakeString();
-static String* AppendString(String* str, const char* add);
-static void SaveFileText(char* outputPath, char* code);
-static bool FileHasExtension(char* name, char* ext);
-static void GetAssetName(char* dest, const char* path);
-static FilePathList GetFolderFiles(char* folder, char* ext);
-static void UnloadFilePathList(FilePathList list);
-
-// TODO: Write unit test for this
-
-Asset LoadAsset(char* fileName) {
-    Asset asset;
-    GetAssetName(asset.name, fileName);
-
-    FILE* file = fopen(fileName, "r");
-    assert(file);
-    fseek(file, 0L, SEEK_END);
-
-    // determine size to allocate
-    asset.size = ftell(file);
-    asset.data = malloc(sizeof(uint32_t) + asset.size);
-    rewind(file);
-
-    printf("Embedding asset %s with size %u bytes\n", asset.name, asset.size);
-
-    // write length header into buffer
-    asset.data[0] = asset.size;
-
-    // write data into buffer
-    for (int i = 1; i < asset.size; i++) {
-        char c = fgetc(file);
-        ((char*)asset.data)[i++] = (char) c;
-    }
-
-    return asset;
-}
-
-static void GenerateAssetCode(String* code, Asset asset) {
-    clock_t startTime = clock();
-
-    // write code header
-    char header[64];
-    sprintf(header, "unsigned char %s[%d] = {\n", asset.name, asset.size + sizeof(uint32_t));
-    AppendString(code, header);
-
-    // write each asset byte
-    for (size_t i = 0; i < asset.size; i++) {
-        char hexString[12];
-        sprintf(hexString,"0x%X",asset.data[i]);
-        AppendString(code, hexString);
-        AppendString(code, ", ");
-    }
-
-    // end code block
-    AppendString(code, "\n};");
-}
-
-void EmbedFolder(char* folder, char* outputFile) {
-    FilePathList list = GetFolderFiles(folder, ".png");
-    Asset* textures = (Asset*) malloc(sizeof(Asset)*list.count);
-
-    for (int i = 0; i < list.count; i++) {
-        char* file = list.files[i];
-        textures[i] = LoadAsset(file);
-    }
-
-    UnloadFilePathList(list);
-
-    String code = MakeString();
-
-    // write Asset code
-    for (int i = 0; i < list.count; i++) {
-        GenerateAssetCode(&code, textures[i]);
-        AppendString(&code, "\n");
-    }
-
-    SaveFileText(outputFile, code.text);
-}
-
-bool UnitTest() {
-    char name1[128];
-    GetAssetName(name1, "assets/spr_player_fox.png");
-    assert(strcmp(name1, "SPR_PLAYER_FOX") == 0);
-
-    char name2[128];
-    GetAssetName(name2, "assets\\mus_overworld.ogg");
-    assert(strcmp(name2, "MUS_OVERWORLD") == 0);
-
-    String str = MakeString();
-    AppendString(&str, "Hello");
-    AppendString(&str, " world");
-    AppendString(&str, "!");
-    assert(strcmp(str.text,"Hello world!") == 0);
-
-    // printf("Completed unit testing...\n");
-    return true;
-}
-
-int main(int argc, char** argv) {
-    assert(UnitTest());
-
-    if (argc != 3) {
-        printf("Incorrect amount of arguments! Gave %d\n",argc);
-        return 1;
-    }
-
-    char* inputFolder = argv[1];
-    char* outputFile = argv[2];
-
-    clock_t startTime = clock();
-
-    EmbedFolder(inputFolder, outputFile);
-
-    clock_t endTime = clock();
-    double cpuTimeUsed = ((double)(endTime - startTime)) / CLOCKS_PER_SEC;
-
-    printf("Done in %f seconds\n", cpuTimeUsed);
-}
-
-// Utilities
-
-static bool FileHasExtension(char* name, char* ext) {
-    int cmp = strcmp(name + strlen(name) - strlen(ext), ext);
-    return cmp == 0;
-}
-
-static FilePathList GetFolderFiles(char* folder, char* ext) {
-
-    FilePathList list = { 0 };
-    list.count = 0;
-    list.capacity = 100;
-
-    DIR* dir;
-    struct dirent* ent;
-    if ((dir = opendir(folder)) != NULL) {
-
-        list.files = (char**) malloc(list.capacity * sizeof(char*));
-
-        while ((ent = readdir(dir)) != NULL) {
-            if (FileHasExtension(ent->d_name, ext)) {
-
-                // expand FilePathList if needed
-                if (list.count == list.capacity) {
-                    list.capacity *= 2;
-                    list.files = (char**) realloc(list.files,list.capacity * sizeof(char*));
-                }
-
-                char fullName[MAX_PATH_LENGTH];
-                snprintf(fullName, MAX_PATH_LENGTH, "%s/%s", folder, ent->d_name);
-                list.files[list.count++] = strdup(fullName);
-            }
-        }
-        closedir(dir);
-    }
-    else {
-        fprintf(stderr,"Unable to open directory\n");
+void WriteCode(char* outputPath, char* code) {
+    FILE* file;
+    file = fopen(outputPath, "a");
+    if (file == NULL) {
+        fprintf(stderr,"Could not open file for writing.\n");
         exit(1);
     }
-
-    return list;
+    fprintf(file, "\n%s", code);
+    fclose(file);
+    printf("Wrote code into %s\n", outputPath);
+    free(code);
 }
 
-static void GetAssetName(char* dest, const char* path) {
+void StringToUppercase(char* str) {
+    while (*str){
+        *str = toupper(*str);
+        str++;
+    }
+}
+
+void GetAssetName(char* dest, const char* path) {
     char* name = strdup(path);
 
     // replace backslashes if any
@@ -226,67 +58,188 @@ static void GetAssetName(char* dest, const char* path) {
         *dot = '\0'; // cut off string at dot
     }
 
-    // string to uppercase
-    for (char* v = dest; *v != '\0'; v++){
-        *v = toupper(*v);
-    }
+    StringToUppercase(dest);
 }
 
-static String MakeString(){
-    String str = { 0 };
-    str.capacity = 128;
-    return str;
-}
-
-static String* AppendString(String* str, const char* add) {
-    size_t addLen = strlen(add);
-    str->size += addLen;
-
-    // allocate string
-    if (str->text == NULL) {
-        str->capacity = str->size + 1; // +1 for null terminator
-        str->text = (char*)malloc(str->capacity * sizeof(char));
-    }
-
-    // grow string
-    if (str->size >= str->capacity) {
-        str->capacity += 500;
-        str->text = (char*)realloc(str->text, str->capacity * sizeof(char));
-    }
-
-    char* head = &str->text[str->size - addLen]; // calculate head position
-    strcpy(head, add);
-
-    return str;
-}
-
-static void UnloadString(String* string) {
-    string->size = 0;
-    string->capacity = 100;
-    if (string->text){
-        free(string->text);
-    }
-}
-
-static void SaveFileText(char* outputPath, char* code) {
-    FILE* file;
-    file = fopen(outputPath, "w");
-    if (file == NULL) {
-        fprintf(stderr,"Could not open file for writing.\n");
+unsigned char* LoadFileBytes(char* filePath, size_t* size) {
+    FILE *file = fopen(filePath,"rb");
+    if (file == NULL){
+        fprintf(stderr,"Error opening file %s\n", filePath);
         exit(1);
     }
-    fputs(code, file);
+
+    fseek(file, 0, SEEK_END);
+    *size = (size_t) ftell(file);
+    fseek(file, 0, SEEK_SET);
+
+    unsigned char* buffer = (unsigned char*) malloc(*size);
+    fread(buffer, *size, 1, file);
     fclose(file);
 
-    int len = strlen(code);
-    printf("Wrote %d chars into %s\n", len, outputPath);
-
-    free(code);
+    return buffer;
 }
 
-static void UnloadFilePathList(FilePathList list) {
-    for (size_t i = 0; i < list.count; i++) {
-        free(list.files[i]);
+char* AppendString(char* dest, char* add){
+    strcpy(dest, add);
+    dest += strlen(add);
+    return dest;
+}
+
+const char HexLookupTable[] = "0123456789ABCDEF";
+void EmbedFile(char* file, char** genCode) {
+
+    // read raw binary
+    size_t size = 0;
+    unsigned char* bytes = LoadFileBytes(file, &size);
+    assert(size > 0);
+
+    char* fileName = strdup(file);
+    char assetName[128]; GetAssetName(assetName, file);
+    printf("Embedding file %s named %s ", fileName, assetName);
+    free(fileName);
+
+    size_t codeMaxSize = size * 8 + 1024;
+    char* code = malloc(codeMaxSize);
+    memset(code, '\0', codeMaxSize);
+    char* marker = code;
+
+    clock_t startTime = clock();
+
+    // write code header
+    char header[64];
+    sprintf(header, "unsigned char %s[] = {\n", assetName, size);
+    marker = AppendString(marker, header);
+
+    // add size marker (4 bytes) == BIG ENDIAN
+    char sizeText[64];
+    unsigned char s[4];
+    s[0] = (unsigned char)(size >> 24);
+    s[1] = (unsigned char)(size >> 16);
+    s[2] = (unsigned char)(size >>  8);
+    s[3] = (unsigned char)(size >>  0);
+    sprintf(sizeText,"%d,%d,%d,%d,",s[0],s[1],s[2],s[3]);
+    marker = AppendString(marker, sizeText);
+
+    // write each pixel after
+    for (int i = 0; i < size; i++) {
+        marker = AppendString(marker, "0x");
+        *(marker++) = HexLookupTable[(bytes[i] >> 4) & 0x0f];
+        *(marker++) = HexLookupTable[(bytes[i] >> 0) & 0x0f];
+        marker = AppendString(marker, ",");
     }
-    free(list.files);
+
+    free(bytes);
+
+    // end code block
+    marker = AppendString(marker, "\n};\0");
+
+    *genCode = code;
+
+    clock_t endTime = clock();
+    double cpuTimeUsed = ((double)(endTime - startTime)) / CLOCKS_PER_SEC;
+    printf(" - %f secs...\n", cpuTimeUsed);
+}
+
+void ClearFile(char* outputFile) {
+    FILE* file = fopen(outputFile, "w");
+    if (file != NULL) {
+        fputs("", file);
+        fclose(file);
+    }
+}
+
+void GetFolderFiles(char* folder, char* ext, char*** files);
+
+void EncodeFolder(char* folder, char* outputFile) {
+    ClearFile(outputFile);
+
+    char** files = NULL;
+    GetFolderFiles(folder, ".png", &files);
+
+    for (int i = 0; files[i] != NULL; i++) {
+        char* code = NULL;
+        EmbedFile(files[i], &code);
+        WriteCode(outputFile, code);
+        free(files[i]);
+    }
+    free(files);
+}
+
+bool UnitTest() {
+    char name1[128];
+    GetAssetName(name1, "assets/spr_player_fox.png");
+    assert(strcmp(name1, "SPR_PLAYER_FOX") == 0);
+
+    char name2[128];
+    GetAssetName(name2, "assets\\mus_overworld.ogg");
+    assert(strcmp(name2, "MUS_OVERWORLD") == 0);
+
+    char str[128];
+    char* ptr = str;
+    ptr = AppendString(ptr, "Hello");
+    ptr = AppendString(ptr, " world");
+    ptr = AppendString(ptr, "!");
+    assert(strcmp(str,"Hello world!") == 0);
+
+    char clone[16];
+    strcpy(clone, "Hello");
+    StringToUppercase(clone);
+    assert(strcmp(clone,"HELLO") == 0);
+
+    // printf("Completed unit testing...\n");
+    return true;
+}
+
+int main(int argc, char** argv) {
+    assert(UnitTest());
+
+    if (argc != 3) {
+        printf("Incorrect amount of arguments! Gave %d\n",argc);
+        return 1;
+    }
+
+    char* inputFolder = argv[1];
+    char* outputFile = argv[2];
+
+    clock_t startTime = clock();
+
+    EncodeFolder(inputFolder, outputFile);
+
+    clock_t endTime = clock();
+    double cpuTimeUsed = ((double)(endTime - startTime)) / CLOCKS_PER_SEC;
+
+    printf("Done in %f seconds\n", cpuTimeUsed);
+}
+
+#define MAX_PATH_LENGTH 128
+#define MAX_FILE_COUNT 512
+void GetFolderFiles(char* folder, char* ext, char*** files) {
+
+    DIR* dir;
+    struct dirent* ent;
+    int extLen = strlen(ext);
+    if ((dir = opendir(folder)) != NULL) {
+
+        // list
+        *files = (char**)malloc((MAX_FILE_COUNT + 1) * sizeof(char*));
+
+        int index = 0;
+        while ((ent = readdir(dir)) != NULL) {
+            int nameLen = strlen(ent->d_name);
+            if (nameLen > extLen && strcmp(ent->d_name + nameLen - extLen, ext) == 0) {
+                char fullName[MAX_PATH_LENGTH];
+                snprintf(fullName, MAX_PATH_LENGTH, "%s/%s", folder, ent->d_name);
+                (*files)[index++] = strdup(fullName);
+            }
+        }
+        closedir(dir);
+
+        // append null to end list
+        (*files)[index++] = NULL;
+    }
+    else {
+        (*files) = NULL;
+        fprintf(stderr,"Unable to open directory");
+        exit(1);
+    }
 }
