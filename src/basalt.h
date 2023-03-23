@@ -22,6 +22,10 @@ typedef uint8_t uchar;
 #define MAX(X,Y) (X > Y ? X:Y)
 #define MIN(X,Y) (X < Y ? X:Y)
 
+#define SWAP(T, a, b) do { T t = a; a = b; b = t; } while (0)
+#define SIGN(T, x) ((T)((x) > 0) - (T)((x) < 0))
+#define ABS(T, x) (SIGN(T, x)*(x))
+
 extern const uint WIDTH;
 extern const uint HEIGHT;
 
@@ -117,7 +121,7 @@ extern uint LIST_TAGS[];        // WARN: Terminate with -1
 pubfunc Texture LoadTextureEx(const char* name, uchar* pixels);
 #endif
 
-// Input handling (platform dependent)
+// Platform dependent stuff
 pubfunc Point GetMousePosition();
 pubfunc bool IsMouseDown();
 pubfunc bool IsMouseUp();
@@ -142,13 +146,13 @@ pubfunc void DisposeTexture(Texture texture);
 
 // Texture pixels are in ABGR (big endian), use this to convert to correct colors for XImage
 // NOTE: What is the correct format you might ask? I have no idea, found out after trial-and-error.
-pubfunc void MapTextureToCorrectFormat(Texture dest, Texture source);
+pubfunc void MapTextureToCorrectFormat(Texture texture);
 
 pubfunc void ClearTexture(Texture canvas, Color color);
 pubfunc void DrawTexture(Texture canvas, Texture texture, int posX, int posY);
 pubfunc void DrawTextureV(Texture canvas, Texture texture, Vec2 pos);
 pubfunc void DrawTextureEx(Texture canvas, Texture texture, Vec2 pos, Rect src);
-pubfunc void DrawTextureScaled(Texture canvas, Texture texture, Vec2 pos, float scale);
+pubfunc void DrawTextureScaled(Texture canvas, Texture texture, Rect region);
 
 pubfunc Color RGB(uchar r, uchar g, uchar b);
 pubfunc Color RGBA(uchar r, uchar g, uchar b, uchar a); // NOTE: Format RR GG BB AA
