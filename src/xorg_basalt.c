@@ -38,6 +38,16 @@ pubfunc bool IsMouseUp() {
     return !Input.isMouseDown;
 }
 
+func Size GetMonitorSize(Display* display) {
+    Size size;
+
+    int screen = DefaultScreen(display);
+    size.width = DisplayWidth(display, screen);
+    size.height = DisplayHeight(display, screen);
+
+    return size;
+}
+
 func OffscreenBuffer InitOffscreenBuffer(Display *display, Window window,
                                            Texture canvas) {
     OffscreenBuffer buffer = {0};
@@ -45,7 +55,12 @@ func OffscreenBuffer InitOffscreenBuffer(Display *display, Window window,
     buffer.window = window;
     buffer.gc = XCreateGC(display, window, 0, NULL);
     buffer.canvas = canvas;
-    buffer.mappedCanvas = InitTexture(WIDTH, HEIGHT);
+
+    // Determine monitor size
+    // TODO: this should be done dynamically
+    Size size = GetMonitorSize(display);
+    buffer.mappedCanvas = InitTexture(size.width, size.height);
+    DEBUG("Allocated texture for monitor size %d x %d", size.width, size.height);
 
     XWindowAttributes wAttribs = {0};
     XGetWindowAttributes(display, window, &wAttribs);
@@ -58,11 +73,12 @@ func OffscreenBuffer InitOffscreenBuffer(Display *display, Window window,
     return buffer;
 }
 
-func void RenderOffscreenBuffer(OffscreenBuffer *buffer, int width,
-                                  int height) {
+func void RenderOffscreenBuffer(OffscreenBuffer *buffer, int width, int height) {
     assert(buffer->mappedCanvas.pixels && buffer->canvas.pixels);
 
-    MapTextureToCorrectFormat(buffer->mappedCanvas, buffer->canvas);
+    Rect rect = { 0, 0, MIN(width, buffer->mappedCanvas.width), MIN(height, buffer->mappedCanvas.height) };
+    MapTextureToCorrectFormat(buffer->canvas);
+    DrawTextureScaled(buffer->mappedCanvas, buffer->canvas, rect);
 
     XPutImage(buffer->display, buffer->window, buffer->gc, buffer->image, 0, 0,
               0, 0, width, height);
@@ -79,11 +95,13 @@ int main(int argc, char **argv) {
     UnitTest();
 #endif
 
-    int screen = DefaultScreen(display);
+    Size size = GetMonitorSize(display);
+
+    // HACK: make the window the size of the entire monitor so the DC is big enough
 
     // if only things were that simple...
-    Window win = XCreateSimpleWindow(display, RootWindow(display, screen), 10,
-                                     10, WIDTH, HEIGHT, 0, 0, 255);
+    Window win = XCreateSimpleWindow(display, RootWindow(display, DefaultScreen(display)), 10,
+                                     10, size.width, size.height, 0, 0, 255);
 
     // === make window closing work (it's a big deal for some reason)
     Atom wmDeleteWindow = XInternAtom(display, "WM_DELETE_WINDOW", false);
@@ -100,6 +118,11 @@ int main(int argc, char **argv) {
     XMapWindow(display, win);
 
     XSync(display, false);
+
+    // HACK: resize window to game size
+    int posX = size.width / 2 - WIDTH / 2;
+    int posY = size.height / 2 - HEIGHT / 2;
+    XMoveResizeWindow(display, win, posX, posY, WIDTH, HEIGHT);
 
     InitializeGame();
 
