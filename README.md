@@ -12,6 +12,7 @@ Slowly solidifying [Magma Game Engine](https://github.com/bramtechs/RaylibMagmaE
 - Batteries included, no downloading dependencies/libraries.
 - Embed game assets into executable (instead of seperate file)
 - High backwards-compatibility (Windows XP support and later)
+- All tooling is written in-engine.
 
 - No CMake (use plain old .bat script)
 - No Entity Component Systems (too complicated)
