@@ -37,31 +37,16 @@ call tooling_build.bat
 
 PUSHD build
 
-    IF EXIST %EXE% (
-        DEL /F %EXE%
-    )
-    IF EXIST %EXE_DEBUG% (
-        DEL /F %EXE_DEBUG%
-    )
-
     rem debug build
     CL /nologo /GS- /ZI /FC /EHa /Fe: %EXE_DEBUG% /DBASALT_DEBUG /Tc ..\src\basalt_*.c /Tc ..\src\temple_game.c /Tc ..\src\win32_basalt.c /Tc ..\src\assets_custom.dat.c -link user32.lib gdi32.lib
+    if %errorlevel% neq 0 popd; exit /b %errorlevel%
 
     IF EXIST %EXE_DEBUG% (
         ECHO Debug build completed!
 
         CL /nologo /O2 /Fe: %EXE% /Tc ..\src\basalt_*.c /Tc ..\src\win32_basalt.c /Tc ..\src\temple_game.c /Tc ..\src\assets_custom.dat.c -link user32.lib gdi32.lib
+        if %errorlevel% neq 0 popd; exit /b %errorlevel%
 
-        IF EXIST %EXE% (
-            ECHO Release build completed!
-        ) ELSE (
-            ECHO Release build failed!
-            EXIT /b 1
-        )
-
-    ) ELSE (
-        ECHO Debug build failed!
-        EXIT /b 1
-    )
+    ) 
 
 POPD

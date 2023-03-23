@@ -63,4 +63,8 @@ pubfunc void UpdateAndRenderGame(Texture canvas, float delta) {
     DrawTexture(canvas, blockSprite, 150, 50);
     DrawTexture(canvas, smallBlockSprite, 350, 50);
     DrawTexture(canvas, colorSprite, 450, 50);
+
+    // draw rectangle at cursor for testing
+    Point mouse = GetMousePosition();
+    DrawRectangle(canvas, mouse.x, mouse.y, 32, 32, 0xFFAAAAFF);
 }

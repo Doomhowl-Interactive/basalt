@@ -1,21 +1,27 @@
 #include "basalt.h"
 #include <windows.h>
 
-typedef struct {
+class(OffscreenBuffer) {
     // NOTE: pixels are 32-bits wide, AA RR GG BB
     BITMAPINFO info;
     Texture canvas;
     Texture mappedCanvas;
-} OffscreenBuffer;
+};
+
+class(SInput) {
+    Point mouse;
+};
+static SInput Input = { 0 };
 
 pubfunc Point GetMousePosition() {
-    // TODO: implement mouse
-    Point mouse = { 0 };
-    return mouse;
+    return Input.mouse;
 }
 
 static bool ShouldBeRunning;
 static OffscreenBuffer GlobalBackbuffer;
+
+func void OpenSystemConsole();
+func void CloseSystemConsole();
 
 func Size GetWindowSize(HWND window) {
     RECT clientRect;
@@ -114,13 +120,14 @@ int CALLBACK WinMain(HINSTANCE instance, HINSTANCE prevInstance,
 
 #ifdef BASALT_DEBUG
     UnitTest();
+    OpenSystemConsole();
 #endif
 
     if (RegisterClassA(&windowClass)) {
         HWND window = CreateWindowExA(
             0, windowClass.lpszClassName, "Handmade Hero",
             WS_OVERLAPPEDWINDOW | WS_VISIBLE, CW_USEDEFAULT, CW_USEDEFAULT,
-            CW_USEDEFAULT, CW_USEDEFAULT, 0, 0, instance, 0);
+            WIDTH, HEIGHT, 0, 0, instance, 0);
 
         if (window) {
             HDC deviceContext = GetDC(window);
@@ -130,6 +137,20 @@ int CALLBACK WinMain(HINSTANCE instance, HINSTANCE prevInstance,
 
             while (ShouldBeRunning) {
                 MSG message;
+                Size size = GetWindowSize(window);
+
+                // Poll inputs
+                POINT p;
+                GetCursorPos(&p);
+                ScreenToClient(window, &p);
+
+                float scaleX = size.width / (float) WIDTH;
+                float scaleY = size.height / (float) HEIGHT;
+
+                Input.mouse.x = Clamp(p.x/scaleX, 0, WIDTH);
+                Input.mouse.y = Clamp(p.y/scaleY, 0, HEIGHT);
+
+                INFO("%d, %d", Input.mouse.x, Input.mouse.y);
 
                 while (PeekMessage(&message, 0, 0, 0, PM_REMOVE)) {
                     if (message.message == WM_QUIT)
@@ -143,7 +164,6 @@ int CALLBACK WinMain(HINSTANCE instance, HINSTANCE prevInstance,
                 float delta = 1.f/60.f;
                 UpdateAndRenderGame(canvas, delta);
 
-                Size size = GetWindowSize(window);
                 DisplayBufferInWindow(deviceContext, size.width, size.height,
                                       GlobalBackbuffer);
             }
@@ -156,11 +176,24 @@ int CALLBACK WinMain(HINSTANCE instance, HINSTANCE prevInstance,
 
     DisposeGame();
 
+#ifdef BASALT_DEBUG
+    CloseSystemConsole();
+#endif
+
     return (0);
 }
 
-void __stdcall WinMainCRTStartup() {
-    int result =
-        WinMain(GetModuleHandle(0), 0, 0, 0); // TODO: command line args
-    ExitProcess(result);
+func void OpenSystemConsole() {
+    if (AllocConsole()) {
+        freopen("CONIN$", "r", stdin);
+        freopen("CONOUT$", "w", stdout);
+        freopen("CONOUT$", "w", stderr); 
+    }
+    printf("Allocated Windows console");
+}
+
+func void CloseSystemConsole() {
+    #ifdef WIN32
+    FreeConsole();
+    #endif
 }

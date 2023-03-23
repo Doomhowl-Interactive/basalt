@@ -99,6 +99,7 @@ pubfunc void UnitTest();
 
 // Utility functions (basalt_utils.c)
 pubfunc bool IsLittleEndian();
+pubfunc int Clamp(int value, int min, int max);
 
 // Asset handling (basalt_assets.c)
 class(Texture) {
