@@ -2,12 +2,14 @@
 #include <assert.h>
 #include <stdio.h>
 #include "raylib.h"
+#include <stdbool.h>
 
 typedef Rectangle Rect;
 typedef unsigned int uint;
 typedef Vector2 Vec2;
 typedef Vector3 Vec3;
 
+typedef uint EntityID;
 typedef uint EntityType;
 
 static char* SPR_RGBA = "assets/spr_rgba.png";
@@ -18,14 +20,17 @@ static char* TILE_BLOCK_SMALL = "assets/tile_block_small.png";
 static Texture foxSprite   = { 0 };
 static Texture blockSprite = { 0 };
 
+#define COMPARE(X,Y) ((X & Y) == Y)
+
 #define WIDTH 640
 #define HEIGHT 480
 
 #define TPS 25
 #define MAX_ENTITIES 256
 
-#define ENTITY_PLAYER       (1 << 0)
-#define ENTITY_TILE         (1 << 1)
+#define ENTITY_PLAYER           (1 << 0)
+#define ENTITY_TILE             (1 << 1)
+#define ENTITY_PHYSICS_BODY     (1 << 2)
 
 #include "temple_assets.c"
 
@@ -42,12 +47,16 @@ typedef enum PlayerPose {
 
 // entity mega struct
 typedef struct Entity {
+    EntityID id;
     EntityType type;
 
     // player
     Vec2 pos;
     PlayerPose pose;
 
+    // physics
+    Vec2 vel;
+    
     // sprite
     Color tint;
     Rect source;
@@ -68,9 +77,11 @@ Entity* CreateEntity()
     // get next available entity
     for (uint i = 0; i < MAX_ENTITIES; i++)
     {
-        if (GameEntities[i].type == 0)
+        Entity* entity = &GameEntities[i];
+        if (entity->type == 0)
         {
-            return &GameEntities[i];
+            entity->id = i;
+            return entity; 
         }
     }
 
@@ -82,7 +93,7 @@ void InitPlayer(Entity* e, Vec2 pos)
 {
     foxSprite = LoadTexture(SPR_PLAYER_FOX);
     e->pos = pos;
-    e->type = ENTITY_PLAYER;
+    e->type = ENTITY_PLAYER | ENTITY_PHYSICS_BODY;
     e->tint = WHITE;
 }
 
@@ -118,7 +129,40 @@ void UpdateTextureFromSheet(Entity* entity, TextureSheet sheet) {
     };
 }
 
-#define COMPARE(X,Y) ((X & Y) == Y)
+Rect GetEntityBounds(Entity entity)
+{
+    Rect bounds = {
+        entity.pos.x,
+        entity.pos.y,
+        entity.source.width,
+        entity.source.height
+    };
+    return bounds;
+}
+
+Entity* GetTileCollision(Rect bounds, Rect* overlap)
+{
+    for (uint i = 0; i < MAX_ENTITIES; i++)
+    {
+        Entity* other = &GameEntities[i];
+
+        // only check tiles
+        if (!COMPARE(other->type,ENTITY_TILE)) continue;
+
+        Rect otherBounds = GetEntityBounds(*other); 
+        Rect colRect = GetCollisionRec(bounds, otherBounds);
+        if (colRect.width > 0 && colRect.height > 0)
+        {
+            if (overlap) *overlap = colRect;
+            return other;
+        }
+    }
+
+    if (overlap)
+        memset(overlap, 0, sizeof(Rect));
+
+    return NULL;
+}
 void UpdateAndRenderEntity(Entity* e, float delta)
 {
     static float frameInterval = 0.2f;
@@ -131,6 +175,11 @@ void UpdateAndRenderEntity(Entity* e, float delta)
         frameID++;
     }
     timer += delta;
+
+    if (e->texture.width > 0)
+    {
+        DrawTextureRec(e->texture, e->source, e->pos, e->tint);
+    }
 
     if (COMPARE(e->type,ENTITY_PLAYER))
     {
@@ -161,18 +210,47 @@ void UpdateAndRenderEntity(Entity* e, float delta)
         }
         UpdateTextureFromSheet(e, sheet);
     }
-    else if (COMPARE(e->type,ENTITY_TILE))
+    if (COMPARE(e->type,ENTITY_TILE))
     {
 
     }
-    else
+    if (COMPARE(e->type,ENTITY_PHYSICS_BODY))
     {
-        assert(0);
-    }
+        static float gravity = 9.8f;
+        e->vel.y += delta * gravity * 10.f;
 
-    if (e->texture.width > 0)
-    {
-        DrawTextureRec(e->texture, e->source, e->pos, e->tint);
+        float nextX = e->pos.x + e->vel.x * delta;
+        float nextY = e->pos.y + e->vel.y * delta;
+
+        int width = e->source.width;
+        int height = e->source.height;
+
+        Rect overlap = { 0 };
+
+        Rect nextRect = {
+            nextX, nextY,
+            width, height,
+        };
+        bool isOverlapping = GetTileCollision(nextRect, &overlap);
+
+        DrawRectangleLines(nextX, nextY, width, height, isOverlapping ? RED:BLACK);
+
+        if (isOverlapping)
+        {
+            if (overlap.width > overlap.height)
+            {
+                nextY -= overlap.height;
+                e->vel.y = 0.f;
+            }
+            else
+            {
+                nextX -= overlap.width;
+                e->vel.y = 0.f;
+            }
+        }
+
+        e->pos.x = nextX;
+        e->pos.y = nextY;
     }
 }
 
@@ -180,7 +258,8 @@ int main(void)
 {
     InitWindow(WIDTH, HEIGHT, "Temple Mayhem");
 
-    SetTargetFPS(999);               // Set our game to run at 60 frames-per-second
+    // TODO: Fix physics bugs at low FPS
+    SetTargetFPS(60);
 
     ClearEntities();
 
