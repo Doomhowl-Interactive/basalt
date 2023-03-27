@@ -1,9 +1,23 @@
-#include "raylib.h"
-
 #define FOX_CELL_SIZE {17,32}
 #define FOX_ANIM_FPS 15.f
 
-extern Texture foxSprite;
+#define STRING(name) #name
+
+typedef enum PlaybackMode {
+    PLAY_LOOP,
+    PLAY_PING_PONG,
+    PLAY_ONCE,
+} PlaybackMode;
+
+typedef struct TextureSheet {
+    const char *name; // description
+    Texture* texture;  // attached texture
+    Vec2 origin;      // top left of sector
+    Vec2 cellSize;    // size of each cell
+    uint count;       // number of cells in anim
+    PlaybackMode mode;
+    float fps;
+} TextureSheet;
 
 const TextureSheet ANIM_FOX_IDLE = {
     STRING(ANIM_FOX_IDLE),

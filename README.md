@@ -1,3 +1,9 @@
+> NOTE: In order to actually make a game (which I want to do), Raylib is being used for `temple`  with the goal of slowly replacing it with my custom engine.
+>
+> ***Lessons learnt from a [jdh video](https://www.youtube.com/watch?v=GhTAoilsFUs): Fail fast! Game first, engine second!***
+
+---
+
 # basalt
 game engine made from sticks and twigs
 
