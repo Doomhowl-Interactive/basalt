@@ -1,7 +1,6 @@
 // compile raylib first: https://github.com/raysan5/raylib/wiki/Working-on-GNU-Linux
 #include <assert.h>
 #include <stdio.h>
-#include "raylib.h"
 #include <stdbool.h>
 
 typedef Rectangle Rect;

@@ -5,6 +5,7 @@
 #include <X11/Xutil.h>
 #include <assert.h>
 #include <stdint.h>
+#include <time.h>
 #include <X11/Xlib.h>
 
 static bool ShouldBeRunning = true;
@@ -129,9 +130,13 @@ int main(int argc, char **argv) {
     int width = WIDTH;
     int height = HEIGHT;
 
-    XEvent event = {0};
     while (ShouldBeRunning) {
+
+        clock_t startTime = clock();
+        float delta = 1.f / 60.f;
+
         while (XPending(display) > 0) {
+            XEvent event;
             XNextEvent(display, &event);
 
             switch (event.type) {
@@ -165,7 +170,6 @@ int main(int argc, char **argv) {
             }
 
             // draw graphics
-            float delta = 1.f / 60.f;
             UpdateAndRenderGame(canvas, delta);
             RenderOffscreenBuffer(&buffer, width, height);
         }
@@ -175,6 +179,10 @@ int main(int argc, char **argv) {
         expose.xexpose.window = win;
         XSendEvent(display, win, true, ExposureMask, &expose);
         XFlush(display);
+
+        clock_t endTime = clock();
+        double cpuTimeUsed = ((double)(endTime - startTime)) / CLOCKS_PER_SEC;
+        printf(" - %f secs...\n", cpuTimeUsed);
     }
 
     XCloseDisplay(display);
