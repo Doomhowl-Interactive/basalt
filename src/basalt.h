@@ -28,6 +28,7 @@ typedef uint8_t uchar;
 
 extern const uint WIDTH;
 extern const uint HEIGHT;
+extern const const char* GAME_TITLE;
 
 // NOTE: Blursed macros that will make people mad,
 // but it allows easy grepping/search
@@ -122,6 +123,8 @@ pubfunc Texture LoadTextureEx(const char* name, uchar* pixels);
 #endif
 
 // Platform dependent stuff
+pubfunc void SetWindowTitle(const char* title);
+
 pubfunc Point GetMousePosition();
 pubfunc bool IsMouseDown();
 pubfunc bool IsMouseUp();

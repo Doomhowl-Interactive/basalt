@@ -19,13 +19,31 @@ class(OffscreenBuffer) {
     GC gc;
     uchar* pixels;
     XImage *image;
+    char title[128];
 };
 
 class(SInput) {
     bool isMouseDown;
     Point mousePos;
 };
+
 static SInput Input = { 0 };
+static OffscreenBuffer ActiveBuffer = { 0 };
+
+pubfunc void SetWindowTitle(const char* title) {
+    if (ActiveBuffer.display != NULL) {
+        // check if changed
+        if (strcmp(ActiveBuffer.title, title) != 0)
+        {
+            strcpy(ActiveBuffer.title, title);
+            XStoreName(ActiveBuffer.display,
+                       ActiveBuffer.window,
+                       title);
+        }
+    } else {
+        ERR("Failed to set change window title!\n");
+    }
+}
 
 pubfunc Point GetMousePosition() {
     return Input.mousePos;
@@ -87,7 +105,7 @@ func void RenderOffscreenBuffer(OffscreenBuffer *buffer, int width, int height) 
 
 int main(int argc, char **argv) {
     DEBUG("Opening Xorg display...");
-    Display *display = XOpenDisplay(NULL);
+    Display* display = XOpenDisplay(NULL);
     if (display == NULL) {
         FATAL("Failed to open X display!");
     }
@@ -110,15 +128,15 @@ int main(int argc, char **argv) {
 
     XSelectInput(display, win,
                  ExposureMask | KeyPressMask | ResizeRedirectMask);
-    // ================
 
     Texture canvas = InitTexture(WIDTH, HEIGHT);
 
-    OffscreenBuffer buffer = InitOffscreenBuffer(display, win, canvas);
+    ActiveBuffer = InitOffscreenBuffer(display, win, canvas);
 
     XMapWindow(display, win);
-
     XSync(display, false);
+
+    SetWindowTitle(GAME_TITLE);
 
     // HACK: resize window to game size
     int posX = size.width / 2 - WIDTH / 2;
@@ -130,11 +148,9 @@ int main(int argc, char **argv) {
     int width = WIDTH;
     int height = HEIGHT;
 
+    double delta = 1.0 / 60.0;
+    double fps = 60;
     while (ShouldBeRunning) {
-
-        clock_t startTime = clock();
-        float delta = 1.f / 60.f;
-
         while (XPending(display) > 0) {
             XEvent event;
             XNextEvent(display, &event);
@@ -169,9 +185,14 @@ int main(int argc, char **argv) {
                 Input.isMouseDown = maskResult == 272;
             }
 
+            clock_t startTime = clock();
             // draw graphics
-            UpdateAndRenderGame(canvas, delta);
-            RenderOffscreenBuffer(&buffer, width, height);
+            UpdateAndRenderGame(canvas, (float) delta);
+            RenderOffscreenBuffer(&ActiveBuffer, width, height);
+
+            clock_t endTime = clock();
+            delta = (endTime - startTime) / (double)CLOCKS_PER_SEC;
+            fps = 1.0 / delta;
         }
 
         XEvent expose;
@@ -180,9 +201,16 @@ int main(int argc, char **argv) {
         XSendEvent(display, win, true, ExposureMask, &expose);
         XFlush(display);
 
-        clock_t endTime = clock();
-        double cpuTimeUsed = ((double)(endTime - startTime)) / CLOCKS_PER_SEC;
-        printf(" - %f secs...\n", cpuTimeUsed);
+        static double timer = 0.f;
+        if (timer > 0.2)
+        {
+            // set window title to framerate
+            char title[200] = { 0 };
+            sprintf(title, "%s - %d FPS", GAME_TITLE, (int)fps);
+            SetWindowTitle(title);
+            timer = 0.0;
+        }
+        timer += delta;
     }
 
     XCloseDisplay(display);
