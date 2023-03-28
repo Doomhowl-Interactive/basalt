@@ -24,9 +24,6 @@ static Texture blockSprite = { 0 };
 #define WIDTH 640
 #define HEIGHT 480
 
-#define TPS 25
-#define MAX_ENTITIES 256
-
 #define ENTITY_PLAYER           (1 << 0)
 #define ENTITY_TILE             (1 << 1)
 #define ENTITY_PHYSICS_BODY     (1 << 2)

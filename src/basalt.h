@@ -30,6 +30,10 @@ extern const uint WIDTH;
 extern const uint HEIGHT;
 extern const const char* GAME_TITLE;
 
+extern const uint MAX_FPS;
+extern const uint TPS;
+extern const uint MAX_ENTITIES;
+
 // NOTE: Blursed macros that will make people mad,
 // but it allows easy grepping/search
 #define class(X) typedef struct X X; \

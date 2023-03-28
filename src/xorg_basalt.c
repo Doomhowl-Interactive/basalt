@@ -6,6 +6,8 @@
 #include <assert.h>
 #include <stdint.h>
 #include <time.h>
+#include <sys/time.h>
+#include <unistd.h>
 #include <X11/Xlib.h>
 
 static bool ShouldBeRunning = true;
@@ -148,8 +150,8 @@ int main(int argc, char **argv) {
     int width = WIDTH;
     int height = HEIGHT;
 
-    double delta = 1.0 / 60.0;
-    double fps = 60;
+    double delta = 1.0 / MAX_FPS;
+    double fps = MAX_FPS;
     while (ShouldBeRunning) {
         while (XPending(display) > 0) {
             XEvent event;
@@ -185,15 +187,31 @@ int main(int argc, char **argv) {
                 Input.isMouseDown = maskResult == 272;
             }
 
-            clock_t startTime = clock();
-            // draw graphics
-            UpdateAndRenderGame(canvas, (float) delta);
-            RenderOffscreenBuffer(&ActiveBuffer, width, height);
-
-            clock_t endTime = clock();
-            delta = (endTime - startTime) / (double)CLOCKS_PER_SEC;
-            fps = 1.0 / delta;
         }
+
+        struct timeval startTime;
+        gettimeofday(&startTime, NULL);
+
+        // draw graphics
+        UpdateAndRenderGame(canvas, (float) delta);
+        RenderOffscreenBuffer(&ActiveBuffer, width, height);
+
+        // throttle the engine to respect capped fps
+        struct timeval interTime;
+        gettimeofday(&interTime, NULL);
+
+        size_t interMicros = interTime.tv_usec - startTime.tv_usec;
+        size_t maxMicros = 1.0 / MAX_FPS * 1000000;
+        long waitMicros = maxMicros - interMicros;
+        if (waitMicros > 0 && interMicros < maxMicros)
+            usleep(waitMicros);
+
+        struct timeval endTime;
+        gettimeofday(&endTime, NULL);
+
+        size_t elapsedMicros = endTime.tv_usec - startTime.tv_usec;
+        delta = elapsedMicros / 1000000.0;
+        fps = 1.0 / delta;
 
         XEvent expose;
         expose.type = Expose;
@@ -206,7 +224,7 @@ int main(int argc, char **argv) {
         {
             // set window title to framerate
             char title[200] = { 0 };
-            sprintf(title, "%s - %d FPS", GAME_TITLE, (int)fps);
+            sprintf(title, "%s - %d FPS - %f delta", GAME_TITLE, (int)fps, delta);
             SetWindowTitle(title);
             timer = 0.0;
         }
