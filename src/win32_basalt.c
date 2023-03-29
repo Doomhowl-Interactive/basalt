@@ -54,6 +54,7 @@ func void ResizeDIBSection(OffscreenBuffer *buffer, int width, int height) {
 static void DisplayBufferInWindow(HDC deviceContext, int winWidth,
                                   int winHeight, OffscreenBuffer buffer) {
 
+    CopyTextureInto(buffer.mappedCanvas, buffer.canvas);
     MapTextureToCorrectFormat(buffer.mappedCanvas);
 
     StretchDIBits(deviceContext,
