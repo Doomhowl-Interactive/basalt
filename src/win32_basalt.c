@@ -1,5 +1,6 @@
 #include "basalt.h"
 #include <windows.h>
+#include <synchapi.h>
 
 class(OffscreenBuffer) {
     // NOTE: pixels are 32-bits wide, AA RR GG BB
@@ -22,6 +23,23 @@ static OffscreenBuffer GlobalBackbuffer;
 
 func void OpenSystemConsole();
 func void CloseSystemConsole();
+
+func usize GetMicroseconds(){
+    LARGE_INTEGER frequency;
+    QueryPerformanceFrequency(&frequency); 
+
+    LARGE_INTEGER now;
+    QueryPerformanceCounter(&now);
+
+    now.QuadPart *= 1000000;
+    now.QuadPart /= frequency.QuadPart;
+    return now.QuadPart;
+}
+
+func void SleepMicroseconds(usize micros){
+    usize millis = micros / 1000;
+    Sleep(millis);
+}
 
 func Size GetWindowSize(HWND window) {
     RECT clientRect;
@@ -136,6 +154,8 @@ int CALLBACK WinMain(HINSTANCE instance, HINSTANCE prevInstance,
 
             InitializeGame();
 
+            double delta = 1.0 / MAX_FPS;
+            double fps = MAX_FPS;
             while (ShouldBeRunning) {
                 MSG message;
                 Size size = GetWindowSize(window);
@@ -159,12 +179,33 @@ int CALLBACK WinMain(HINSTANCE instance, HINSTANCE prevInstance,
                     DispatchMessageA(&message);
                 }
 
+                // begin time measurement
+                usize startTime = GetMicroseconds();
+
+                // do updateing and drawing
                 Texture canvas = GlobalBackbuffer.canvas;
                 float delta = 1.f/60.f;
                 UpdateAndRenderGame(canvas, delta);
 
                 DisplayBufferInWindow(deviceContext, size.width, size.height,
                                       GlobalBackbuffer);
+
+                // brake engine to respect frame rate cap
+                usize interTime = GetMicroseconds();
+
+                usize interMicros = interTime - startTime;
+                usize maxMicros = 1.0 / MAX_FPS * 1000000;
+                long waitMicros = maxMicros - interMicros;
+                if (waitMicros > 0 && interMicros < maxMicros)
+                    SleepMicroseconds(waitMicros);
+
+                // stop time measurement
+                usize endTime = GetMicroseconds();
+                usize elapsedMicros = endTime - startTime;
+                delta = elapsedMicros / 1000000.0;
+                fps = 1.0 / delta;
+
+                printf("%f\n",fps);
             }
         } else {
             // TODO(casey): Logging
