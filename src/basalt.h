@@ -28,7 +28,7 @@ typedef uint8_t uchar;
 
 extern const uint WIDTH;
 extern const uint HEIGHT;
-extern const const char* GAME_TITLE;
+extern const char* GAME_TITLE;
 
 extern const uint MAX_FPS;
 extern const uint TPS;

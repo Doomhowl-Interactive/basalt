@@ -54,7 +54,7 @@ func void ResizeDIBSection(OffscreenBuffer *buffer, int width, int height) {
 static void DisplayBufferInWindow(HDC deviceContext, int winWidth,
                                   int winHeight, OffscreenBuffer buffer) {
 
-    MapTextureToCorrectFormat(buffer.mappedCanvas, buffer.canvas);
+    MapTextureToCorrectFormat(buffer.mappedCanvas);
 
     StretchDIBits(deviceContext,
                   /*
@@ -149,8 +149,6 @@ int CALLBACK WinMain(HINSTANCE instance, HINSTANCE prevInstance,
 
                 Input.mouse.x = Clamp(p.x/scaleX, 0, WIDTH);
                 Input.mouse.y = Clamp(p.y/scaleY, 0, HEIGHT);
-
-                INFO("%d, %d", Input.mouse.x, Input.mouse.y);
 
                 while (PeekMessage(&message, 0, 0, 0, PM_REMOVE)) {
                     if (message.message == WM_QUIT)
