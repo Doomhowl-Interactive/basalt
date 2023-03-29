@@ -1,5 +1,6 @@
 #include "basalt.h"
 #include "basalt_extra.h"
+#include "temple_assets.h"
 
 const uint WIDTH = 640;
 const uint HEIGHT = 480;

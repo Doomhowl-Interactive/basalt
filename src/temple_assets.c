@@ -1,5 +1,3 @@
-#include "raylib.h"
-
 #define FOX_CELL_SIZE {17,32}
 #define FOX_ANIM_FPS 15.f
 
