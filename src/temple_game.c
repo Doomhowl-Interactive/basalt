@@ -4,6 +4,11 @@
 
 const uint WIDTH = 640;
 const uint HEIGHT = 480;
+const char* GAME_TITLE = "Basalt Engine";
+
+const uint MAX_FPS = 60;
+const uint TPS = 25;
+const uint MAX_ENTITIES = 256;
 
 static Texture colorSprite;
 static Texture foxSprite;
