@@ -39,7 +39,6 @@ pubfunc void UpdateAndRenderGame(Texture canvas, float delta) {
     };
 
     // ClearTexture(canvas, SKY_COLOR);
-
     DrawWeirdTestGradient(canvas);
 
     // draw each fox animation for testing

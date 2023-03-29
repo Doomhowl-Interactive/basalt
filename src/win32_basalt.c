@@ -2,6 +2,11 @@
 #include <windows.h>
 #include <synchapi.h>
 
+class(WindowContext){
+    HWND window;
+    bool shouldBeRunning;
+};
+
 class(OffscreenBuffer) {
     // NOTE: pixels are 32-bits wide, AA RR GG BB
     BITMAPINFO info;
@@ -12,14 +17,28 @@ class(OffscreenBuffer) {
 class(SInput) {
     Point mouse;
 };
+
+static WindowContext Context = { 0 };
 static SInput Input = { 0 };
+static OffscreenBuffer GlobalBackbuffer = { 0 };
 
 pubfunc Point GetMousePosition() {
     return Input.mouse;
 }
 
-static bool ShouldBeRunning;
-static OffscreenBuffer GlobalBackbuffer;
+#define MAX_TITLE_LEN 128
+pubfunc void SetWindowTitle(const char* title) {
+    // check if changed
+    char curTitle[MAX_TITLE_LEN];
+    if (GetWindowTextA(Context.window, curTitle, MAX_TITLE_LEN) != 0){
+        if (strcmp(curTitle, title) != 0)
+            SetWindowTextA(Context.window, title);
+    }
+    else
+    {
+        ERR("Failed to set change window title!\n");
+    }
+}
 
 func void OpenSystemConsole();
 func void CloseSystemConsole();
@@ -92,7 +111,7 @@ LRESULT CALLBACK MainWindowCallback(HWND window, UINT message, WPARAM wParam,
     switch (message) {
     case WM_CLOSE:
         {
-            ShouldBeRunning = false;
+            Context.shouldBeRunning = false;
         }
         break;
     case WM_ACTIVATEAPP:
@@ -102,7 +121,7 @@ LRESULT CALLBACK MainWindowCallback(HWND window, UINT message, WPARAM wParam,
         break;
     case WM_DESTROY:
         {
-            ShouldBeRunning = false;
+            Context.shouldBeRunning = false;
         }
         break;
     case WM_PAINT:
@@ -147,16 +166,17 @@ int CALLBACK WinMain(HINSTANCE instance, HINSTANCE prevInstance,
             0, windowClass.lpszClassName, "Handmade Hero",
             WS_OVERLAPPEDWINDOW | WS_VISIBLE, CW_USEDEFAULT, CW_USEDEFAULT,
             WIDTH, HEIGHT, 0, 0, instance, 0);
+        Context.window = window;
 
-        if (window) {
+        if (Context.window) {
             HDC deviceContext = GetDC(window);
-            ShouldBeRunning = true;
+            Context.shouldBeRunning = true;
 
             InitializeGame();
 
             double delta = 1.0 / MAX_FPS;
             double fps = MAX_FPS;
-            while (ShouldBeRunning) {
+            while (Context.shouldBeRunning) {
                 MSG message;
                 Size size = GetWindowSize(window);
 
@@ -173,7 +193,7 @@ int CALLBACK WinMain(HINSTANCE instance, HINSTANCE prevInstance,
 
                 while (PeekMessage(&message, 0, 0, 0, PM_REMOVE)) {
                     if (message.message == WM_QUIT)
-                        ShouldBeRunning = false;
+                        Context.shouldBeRunning = false;
 
                     TranslateMessage(&message);
                     DispatchMessageA(&message);
@@ -184,8 +204,7 @@ int CALLBACK WinMain(HINSTANCE instance, HINSTANCE prevInstance,
 
                 // do updateing and drawing
                 Texture canvas = GlobalBackbuffer.canvas;
-                float delta = 1.f/60.f;
-                UpdateAndRenderGame(canvas, delta);
+                UpdateAndRenderGame(canvas, (float) delta);
 
                 DisplayBufferInWindow(deviceContext, size.width, size.height,
                                       GlobalBackbuffer);
@@ -205,7 +224,17 @@ int CALLBACK WinMain(HINSTANCE instance, HINSTANCE prevInstance,
                 delta = elapsedMicros / 1000000.0;
                 fps = 1.0 / delta;
 
-                printf("%f\n",fps);
+                // set window title
+                static double timer = 0.f;
+                if (timer > 0.2)
+                {
+                    // set window title to framerate
+                    char title[200] = { 0 };
+                    sprintf(title, "%s - %d FPS - %f delta", GAME_TITLE, (int)fps, delta);
+                    SetWindowTitle(title);
+                    timer = 0.0;
+                }
+                timer += delta;
             }
         } else {
             // TODO(casey): Logging
