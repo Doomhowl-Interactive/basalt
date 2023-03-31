@@ -5,6 +5,9 @@
 #include <X11/Xutil.h>
 #include <assert.h>
 #include <stdint.h>
+#include <time.h>
+#include <sys/time.h>
+#include <unistd.h>
 #include <X11/Xlib.h>
 
 static bool ShouldBeRunning = true;
@@ -18,13 +21,31 @@ class(OffscreenBuffer) {
     GC gc;
     uchar* pixels;
     XImage *image;
+    char title[128];
 };
 
 class(SInput) {
     bool isMouseDown;
     Point mousePos;
 };
+
 static SInput Input = { 0 };
+static OffscreenBuffer ActiveBuffer = { 0 };
+
+pubfunc void SetWindowTitle(const char* title) {
+    if (ActiveBuffer.display != NULL) {
+        // check if changed
+        if (strcmp(ActiveBuffer.title, title) != 0)
+        {
+            strcpy(ActiveBuffer.title, title);
+            XStoreName(ActiveBuffer.display,
+                       ActiveBuffer.window,
+                       title);
+        }
+    } else {
+        ERR("Failed to set change window title!\n");
+    }
+}
 
 pubfunc Point GetMousePosition() {
     return Input.mousePos;
@@ -86,7 +107,7 @@ func void RenderOffscreenBuffer(OffscreenBuffer *buffer, int width, int height) 
 
 int main(int argc, char **argv) {
     DEBUG("Opening Xorg display...");
-    Display *display = XOpenDisplay(NULL);
+    Display* display = XOpenDisplay(NULL);
     if (display == NULL) {
         FATAL("Failed to open X display!");
     }
@@ -109,15 +130,15 @@ int main(int argc, char **argv) {
 
     XSelectInput(display, win,
                  ExposureMask | KeyPressMask | ResizeRedirectMask);
-    // ================
 
     Texture canvas = InitTexture(WIDTH, HEIGHT);
 
-    OffscreenBuffer buffer = InitOffscreenBuffer(display, win, canvas);
+    ActiveBuffer = InitOffscreenBuffer(display, win, canvas);
 
     XMapWindow(display, win);
-
     XSync(display, false);
+
+    SetWindowTitle(GAME_TITLE);
 
     // HACK: resize window to game size
     int posX = size.width / 2 - WIDTH / 2;
@@ -129,9 +150,11 @@ int main(int argc, char **argv) {
     int width = WIDTH;
     int height = HEIGHT;
 
-    XEvent event = {0};
+    double delta = 1.0 / MAX_FPS;
+    double fps = MAX_FPS;
     while (ShouldBeRunning) {
         while (XPending(display) > 0) {
+            XEvent event;
             XNextEvent(display, &event);
 
             switch (event.type) {
@@ -164,17 +187,48 @@ int main(int argc, char **argv) {
                 Input.isMouseDown = maskResult == 272;
             }
 
-            // draw graphics
-            float delta = 1.f / 60.f;
-            UpdateAndRenderGame(canvas, delta);
-            RenderOffscreenBuffer(&buffer, width, height);
         }
+
+        struct timeval startTime;
+        gettimeofday(&startTime, NULL);
+
+        // draw graphics
+        UpdateAndRenderGame(canvas, (float) delta);
+        RenderOffscreenBuffer(&ActiveBuffer, width, height);
+
+        // throttle the engine to respect capped fps
+        struct timeval interTime;
+        gettimeofday(&interTime, NULL);
+
+        size_t interMicros = interTime.tv_usec - startTime.tv_usec;
+        size_t maxMicros = 1.0 / MAX_FPS * 1000000;
+        long waitMicros = maxMicros - interMicros;
+        if (waitMicros > 0 && interMicros < maxMicros)
+            usleep(waitMicros);
+
+        struct timeval endTime;
+        gettimeofday(&endTime, NULL);
+
+        size_t elapsedMicros = endTime.tv_usec - startTime.tv_usec;
+        delta = elapsedMicros / 1000000.0;
+        fps = 1.0 / delta;
 
         XEvent expose;
         expose.type = Expose;
         expose.xexpose.window = win;
         XSendEvent(display, win, true, ExposureMask, &expose);
         XFlush(display);
+
+        static double timer = 0.f;
+        if (timer > 0.2)
+        {
+            // set window title to framerate
+            char title[200] = { 0 };
+            sprintf(title, "%s - %d FPS - %f delta", GAME_TITLE, (int)fps, delta);
+            SetWindowTitle(title);
+            timer = 0.0;
+        }
+        timer += delta;
     }
 
     XCloseDisplay(display);

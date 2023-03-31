@@ -1,5 +1,11 @@
 #include "basalt.h"
 #include <windows.h>
+#include <synchapi.h>
+
+class(WindowContext){
+    HWND window;
+    bool shouldBeRunning;
+};
 
 class(OffscreenBuffer) {
     // NOTE: pixels are 32-bits wide, AA RR GG BB
@@ -11,17 +17,48 @@ class(OffscreenBuffer) {
 class(SInput) {
     Point mouse;
 };
+
+static WindowContext Context = { 0 };
 static SInput Input = { 0 };
+static OffscreenBuffer GlobalBackbuffer = { 0 };
 
 pubfunc Point GetMousePosition() {
     return Input.mouse;
 }
 
-static bool ShouldBeRunning;
-static OffscreenBuffer GlobalBackbuffer;
+#define MAX_TITLE_LEN 128
+pubfunc void SetWindowTitle(const char* title) {
+    // check if changed
+    char curTitle[MAX_TITLE_LEN];
+    if (GetWindowTextA(Context.window, curTitle, MAX_TITLE_LEN) != 0){
+        if (strcmp(curTitle, title) != 0)
+            SetWindowTextA(Context.window, title);
+    }
+    else
+    {
+        ERR("Failed to set change window title!\n");
+    }
+}
 
 func void OpenSystemConsole();
 func void CloseSystemConsole();
+
+func usize GetMicroseconds(){
+    LARGE_INTEGER frequency;
+    QueryPerformanceFrequency(&frequency); 
+
+    LARGE_INTEGER now;
+    QueryPerformanceCounter(&now);
+
+    now.QuadPart *= 1000000;
+    now.QuadPart /= frequency.QuadPart;
+    return now.QuadPart;
+}
+
+func void SleepMicroseconds(usize micros){
+    usize millis = micros / 1000;
+    Sleep(millis);
+}
 
 func Size GetWindowSize(HWND window) {
     RECT clientRect;
@@ -54,7 +91,8 @@ func void ResizeDIBSection(OffscreenBuffer *buffer, int width, int height) {
 static void DisplayBufferInWindow(HDC deviceContext, int winWidth,
                                   int winHeight, OffscreenBuffer buffer) {
 
-    MapTextureToCorrectFormat(buffer.mappedCanvas, buffer.canvas);
+    CopyTextureInto(buffer.mappedCanvas, buffer.canvas);
+    MapTextureToCorrectFormat(buffer.mappedCanvas);
 
     StretchDIBits(deviceContext,
                   /*
@@ -73,7 +111,7 @@ LRESULT CALLBACK MainWindowCallback(HWND window, UINT message, WPARAM wParam,
     switch (message) {
     case WM_CLOSE:
         {
-            ShouldBeRunning = false;
+            Context.shouldBeRunning = false;
         }
         break;
     case WM_ACTIVATEAPP:
@@ -83,7 +121,7 @@ LRESULT CALLBACK MainWindowCallback(HWND window, UINT message, WPARAM wParam,
         break;
     case WM_DESTROY:
         {
-            ShouldBeRunning = false;
+            Context.shouldBeRunning = false;
         }
         break;
     case WM_PAINT:
@@ -128,14 +166,17 @@ int CALLBACK WinMain(HINSTANCE instance, HINSTANCE prevInstance,
             0, windowClass.lpszClassName, "Handmade Hero",
             WS_OVERLAPPEDWINDOW | WS_VISIBLE, CW_USEDEFAULT, CW_USEDEFAULT,
             WIDTH, HEIGHT, 0, 0, instance, 0);
+        Context.window = window;
 
-        if (window) {
+        if (Context.window) {
             HDC deviceContext = GetDC(window);
-            ShouldBeRunning = true;
+            Context.shouldBeRunning = true;
 
             InitializeGame();
 
-            while (ShouldBeRunning) {
+            double delta = 1.0 / MAX_FPS;
+            double fps = MAX_FPS;
+            while (Context.shouldBeRunning) {
                 MSG message;
                 Size size = GetWindowSize(window);
 
@@ -150,22 +191,50 @@ int CALLBACK WinMain(HINSTANCE instance, HINSTANCE prevInstance,
                 Input.mouse.x = Clamp(p.x/scaleX, 0, WIDTH);
                 Input.mouse.y = Clamp(p.y/scaleY, 0, HEIGHT);
 
-                INFO("%d, %d", Input.mouse.x, Input.mouse.y);
-
                 while (PeekMessage(&message, 0, 0, 0, PM_REMOVE)) {
                     if (message.message == WM_QUIT)
-                        ShouldBeRunning = false;
+                        Context.shouldBeRunning = false;
 
                     TranslateMessage(&message);
                     DispatchMessageA(&message);
                 }
 
+                // begin time measurement
+                usize startTime = GetMicroseconds();
+
+                // do updateing and drawing
                 Texture canvas = GlobalBackbuffer.canvas;
-                float delta = 1.f/60.f;
-                UpdateAndRenderGame(canvas, delta);
+                UpdateAndRenderGame(canvas, (float) delta);
 
                 DisplayBufferInWindow(deviceContext, size.width, size.height,
                                       GlobalBackbuffer);
+
+                // brake engine to respect frame rate cap
+                usize interTime = GetMicroseconds();
+
+                usize interMicros = interTime - startTime;
+                usize maxMicros = 1.0 / MAX_FPS * 1000000;
+                long waitMicros = maxMicros - interMicros;
+                if (waitMicros > 0 && interMicros < maxMicros)
+                    SleepMicroseconds(waitMicros);
+
+                // stop time measurement
+                usize endTime = GetMicroseconds();
+                usize elapsedMicros = endTime - startTime;
+                delta = elapsedMicros / 1000000.0;
+                fps = 1.0 / delta;
+
+                // set window title
+                static double timer = 0.f;
+                if (timer > 0.2)
+                {
+                    // set window title to framerate
+                    char title[200] = { 0 };
+                    sprintf(title, "%s - %d FPS - %f delta", GAME_TITLE, (int)fps, delta);
+                    SetWindowTitle(title);
+                    timer = 0.0;
+                }
+                timer += delta;
             }
         } else {
             // TODO(casey): Logging

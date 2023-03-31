@@ -88,7 +88,6 @@ pubfunc void DisposeTexture(Texture texture) {
 
 pubfunc void MapTextureToCorrectFormat(Texture texture) {
     assert(texture.pixels);
-
     uchar* pixels = (uchar*) texture.pixels;
 
     for (int i = 0; i < texture.width*texture.height; i++) {

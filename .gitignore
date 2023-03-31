@@ -1,3 +1,4 @@
+.vagrant
 build
 build_xorg
 **/*.dat.c
