@@ -128,10 +128,15 @@ pubfunc Texture LoadTextureEx(const char* name, uchar* pixels);
 
 // Platform dependent stuff
 pubfunc void SetWindowTitle(const char* title);
-
 pubfunc Point GetMousePosition();
 pubfunc bool IsMouseDown();
 pubfunc bool IsMouseUp();
+
+// Tooling stuff 
+// (basalt_tooling.h)
+pubfunc bool UpdateAndRenderArchaeo();
+#define DRAWCALL(X,Y) DrawCallImpl(X,#Y)
+pubfunc void DrawCallImpl(Texture canvas, const char* desc);
 
 // Graphics drawing (basalt_graphics.c)
 pubfunc void DrawDot(Texture canvas, int posX, int posY, int radius, Color color);
@@ -153,7 +158,7 @@ pubfunc void DisposeTexture(Texture texture);
 
 // Texture pixels are in ABGR (big endian), use this to convert to correct colors for XImage
 // NOTE: What is the correct format you might ask? I have no idea, found out after trial-and-error.
-pubfunc void MapTextureToCorrectFormat(Texture texture);
+pubfunc void MapTextureToCorrectFormat(Texture dest, Texture src);
 
 pubfunc void ClearTexture(Texture canvas, Color color);
 pubfunc void DrawTexture(Texture canvas, Texture texture, int posX, int posY);

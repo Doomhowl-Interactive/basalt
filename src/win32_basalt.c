@@ -12,15 +12,26 @@ class(OffscreenBuffer) {
     BITMAPINFO info;
     Texture canvas;
     Texture mappedCanvas;
+    Texture mappedCanvas2;
 };
 
 class(SInput) {
+    // TODO: Implement
+    bool isMouseDown;
     Point mouse;
 };
 
 static WindowContext Context = { 0 };
 static SInput Input = { 0 };
 static OffscreenBuffer GlobalBackbuffer = { 0 };
+
+pubfunc bool IsMouseDown() {
+    return Input.isMouseDown;
+}
+
+pubfunc bool IsMouseUp() {
+    return !Input.isMouseDown;
+}
 
 pubfunc Point GetMousePosition() {
     return Input.mouse;
@@ -78,6 +89,7 @@ func void ResizeDIBSection(OffscreenBuffer *buffer, int width, int height) {
 
     DisposeTexture(buffer->mappedCanvas);
     buffer->mappedCanvas = InitTexture(width, height);
+    buffer->mappedCanvas2 = InitTexture(width, height);
 
     buffer->info.bmiHeader.biSize = sizeof(buffer->info.bmiHeader);
     buffer->info.bmiHeader.biWidth = width;
@@ -85,22 +97,21 @@ func void ResizeDIBSection(OffscreenBuffer *buffer, int width, int height) {
     buffer->info.bmiHeader.biPlanes = 1;
     buffer->info.bmiHeader.biBitCount = 32;
     buffer->info.bmiHeader.biCompression = BI_RGB;
-    buffer->canvas = InitTexture(width, height);
 }
 
 static void DisplayBufferInWindow(HDC deviceContext, int winWidth,
                                   int winHeight, OffscreenBuffer buffer) {
 
     CopyTextureInto(buffer.mappedCanvas, buffer.canvas);
-    MapTextureToCorrectFormat(buffer.mappedCanvas);
+    MapTextureToCorrectFormat(buffer.mappedCanvas2, buffer.mappedCanvas);
 
     StretchDIBits(deviceContext,
                   /*
                   dest: X, Y, Width, Height,
                   source: X, Y, Width, Height,
                   */
-                  0, 0, winWidth, winHeight, 0, 0, buffer.mappedCanvas.width,
-                  buffer.mappedCanvas.height, buffer.mappedCanvas.pixels, &buffer.info,
+                  0, 0, winWidth, winHeight, 0, 0, buffer.mappedCanvas2.width,
+                  buffer.mappedCanvas2.height, buffer.mappedCanvas2.pixels, &buffer.info,
                   DIB_RGB_COLORS, SRCCOPY);
 }
 
@@ -160,6 +171,8 @@ int CALLBACK WinMain(HINSTANCE instance, HINSTANCE prevInstance,
     UnitTest();
     OpenSystemConsole();
 #endif
+
+    Input.isMouseDown = true;
 
     if (RegisterClassA(&windowClass)) {
         HWND window = CreateWindowExA(

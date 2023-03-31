@@ -36,6 +36,7 @@ pubfunc void DrawRectangle(Texture canvas, int posX, int posY, int width, int he
         i -= width;
         i += canvas.width;
     }
+    DRAWCALL(canvas, DrawRectangle);
 }
 
 pubfunc void DrawRectangleRec(Texture canvas, Rect rect, Color color) {
@@ -77,6 +78,9 @@ pubfunc Texture CopyTexture(Texture source){
 
 pubfunc void CopyTextureInto(Texture dest, Texture source){
     assert(dest.width == source.width && dest.height == source.height);
+    assert(dest.pixels);
+    assert(source.pixels);
+
     memcpy(dest.pixels, source.pixels, source.width*source.height*sizeof(Color));
 }
 
@@ -86,15 +90,19 @@ pubfunc void DisposeTexture(Texture texture) {
     }
 }
 
-pubfunc void MapTextureToCorrectFormat(Texture texture) {
-    assert(texture.pixels);
-    uchar* pixels = (uchar*) texture.pixels;
+pubfunc void MapTextureToCorrectFormat(Texture dest, Texture src) {
+    // TODO: Add collective assert method, also write assert that prints values
+    assert(dest.width == src.width && dest.height == src.height);
+    assert(dest.pixels);
+    assert(src.pixels);
 
-    for (int i = 0; i < texture.width*texture.height; i++) {
-        pixels[i*4+0] = pixels[i*4+1];
-        pixels[i*4+1] = pixels[i*4+2];
-        pixels[i*4+2] = pixels[i*4+3];
-        pixels[i*4+3] = pixels[i*4+0];
+    uchar* destPixels = (uchar*) dest.pixels;
+    uchar* srcPixels = (uchar*) src.pixels;
+    for (int i = 0; i < dest.width*dest.height; i++) {
+        destPixels[i*4+0] = srcPixels[i*4+1];
+        destPixels[i*4+1] = srcPixels[i*4+2];
+        destPixels[i*4+2] = srcPixels[i*4+3];
+        destPixels[i*4+3] = srcPixels[i*4+0];
     }
 }
 
@@ -138,6 +146,7 @@ pubfunc void DrawTextureEx(Texture canvas, Texture texture, Vec2 pos, Rect src) 
             pixels[destIndex] = texture.pixels[srcIndex];
         }
     }
+    DRAWCALL(canvas, DrawRectangle);
 }
 
 func bool olivec_normalize_rect(int x, int y, int w, int h,
@@ -166,6 +175,7 @@ pubfunc void DrawTextureScaled(Texture canvas, Texture texture, Rect region) {
             canvas.pixels[destIndex] = texture.pixels[srcIndex];
         }
     }
+    DRAWCALL(canvas, DrawRectangle);
 }
 
 pubfunc void DrawWeirdTestGradient(Texture canvas) {
@@ -186,6 +196,8 @@ pubfunc void DrawWeirdTestGradient(Texture canvas) {
 
     xOffset++;
     yOffset++;
+
+    DRAWCALL(canvas, DrawRectangle);
 }
 
 pubfunc Color RGBA(uchar r, uchar g, uchar b, uchar a){

@@ -17,6 +17,7 @@ class(OffscreenBuffer) {
     Window window;
     Texture canvas;
     Texture mappedCanvas;
+    Texture mappedCanvas2;
 
     GC gc;
     uchar* pixels;
@@ -76,30 +77,31 @@ func OffscreenBuffer InitOffscreenBuffer(Display *display, Window window,
     buffer.window = window;
     buffer.gc = XCreateGC(display, window, 0, NULL);
     buffer.canvas = canvas;
+    buffer.mappedCanvas = InitTexture(canvas.width, canvas.height);
 
     // Determine monitor size
     // TODO: this should be done dynamically
     Size size = GetMonitorSize(display);
-    buffer.mappedCanvas = InitTexture(size.width, size.height);
-    DEBUG("Allocated texture for monitor size %d x %d", size.width, size.height);
+    buffer.mappedCanvas2 = InitTexture(size.width, size.height);
+    DEBUG("Allocated two textures for monitor size %d x %d", size.width, size.height);
 
     XWindowAttributes wAttribs = {0};
     XGetWindowAttributes(display, window, &wAttribs);
 
     buffer.image =
         XCreateImage(display, wAttribs.visual, wAttribs.depth, ZPixmap, 0,
-                     (char *)buffer.mappedCanvas.pixels,
-                     buffer.mappedCanvas.width, buffer.mappedCanvas.height,
-                     32, buffer.mappedCanvas.width * sizeof(uint32_t));
+                     (char *)buffer.mappedCanvas2.pixels,
+                     buffer.mappedCanvas2.width, buffer.mappedCanvas2.height,
+                     32, buffer.mappedCanvas2.width * sizeof(uint32_t));
     return buffer;
 }
 
 func void RenderOffscreenBuffer(OffscreenBuffer *buffer, int width, int height) {
     assert(buffer->mappedCanvas.pixels && buffer->canvas.pixels);
 
-    Rect rect = { 0, 0, MIN(width, buffer->mappedCanvas.width), MIN(height, buffer->mappedCanvas.height) };
-    MapTextureToCorrectFormat(buffer->canvas);
-    DrawTextureScaled(buffer->mappedCanvas, buffer->canvas, rect);
+    Rect rect = { 0, 0, MIN(width, buffer->mappedCanvas2.width), MIN(height, buffer->mappedCanvas2.height) };
+    MapTextureToCorrectFormat(buffer->mappedCanvas, buffer->canvas);
+    DrawTextureScaled(buffer->mappedCanvas2, buffer->mappedCanvas, rect);
 
     XPutImage(buffer->display, buffer->window, buffer->gc, buffer->image, 0, 0,
               0, 0, width, height);
@@ -193,7 +195,9 @@ int main(int argc, char **argv) {
         gettimeofday(&startTime, NULL);
 
         // draw graphics
-        UpdateAndRenderGame(canvas, (float) delta);
+        if (UpdateAndRenderArchaeo(canvas))
+            UpdateAndRenderGame(canvas, (float) delta);
+
         RenderOffscreenBuffer(&ActiveBuffer, width, height);
 
         // throttle the engine to respect capped fps
