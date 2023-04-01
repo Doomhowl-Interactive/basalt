@@ -222,6 +222,18 @@ int main(int argc, char **argv) {
         struct timeval startTime;
         gettimeofday(&startTime, NULL);
 
+        // Set window title to fps and delta-time
+        static double timer = 0.f;
+        if (timer > 0.2)
+        {
+            // set window title to framerate
+            char title[200] = { 0 };
+            sprintf(title, "%s - %d FPS - %f delta", GAME_TITLE, (int)fps, delta);
+            SetWindowTitle(title);
+            timer = 0.0;
+        }
+
+        timer += delta;
         // draw graphics
         if (UpdateAndRenderArchaeo(canvas))
             UpdateAndRenderGame(canvas, (float) delta);
@@ -250,17 +262,6 @@ int main(int argc, char **argv) {
         expose.xexpose.window = win;
         XSendEvent(display, win, true, ExposureMask, &expose);
         XFlush(display);
-
-        static double timer = 0.f;
-        if (timer > 0.2)
-        {
-            // set window title to framerate
-            char title[200] = { 0 };
-            sprintf(title, "%s - %d FPS - %f delta", GAME_TITLE, (int)fps, delta);
-            SetWindowTitle(title);
-            timer = 0.0;
-        }
-        timer += delta;
     }
 
     XCloseDisplay(display);
