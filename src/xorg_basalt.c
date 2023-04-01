@@ -26,6 +26,7 @@ class(OffscreenBuffer) {
 };
 
 class(SInput) {
+    bool keysPressed[256];
     bool isMouseDown;
     Point mousePos;
 };
@@ -58,6 +59,14 @@ pubfunc bool IsMouseDown() {
 
 pubfunc bool IsMouseUp() {
     return !Input.isMouseDown;
+}
+
+pubfunc bool IsKeyDown(Key code) {
+    return Input.keysPressed[code];
+}
+
+pubfunc bool IsKeyUp(Key code) {
+    return !Input.keysPressed[code];
 }
 
 func Size GetMonitorSize(Display* display) {
@@ -102,6 +111,20 @@ func void RenderOffscreenBuffer(OffscreenBuffer *buffer, int width, int height) 
 
     XPutImage(buffer->display, buffer->window, buffer->gc, buffer->image, 0, 0,
               0, 0, width, height);
+}
+
+func void HandleKeyEvent(XEvent event, bool pressed){
+    KeySym sym = XLookupKeysym(&event.xkey, 0);
+    KeySym upperSym, lowerSym;
+    XConvertCase(sym, &lowerSym, &upperSym);
+    char* string = XKeysymToString(upperSym);
+
+    // HACK: ignore special characters (for now)
+    if (string[1] == '\0'){
+        char key = string[0];
+        // DEBUG("%s %c", pressed ? "Pressed":"Released", key);
+        Input.keysPressed[key] = pressed;
+    }
 }
 
 int main(int argc, char **argv) {
@@ -159,21 +182,14 @@ int main(int argc, char **argv) {
             switch (event.type) {
             case KeyPress:
                 {
-                    KeySym sym = XLookupKeysym(&event.xkey, 0);
-                    KeySym upperSym, lowerSym;
-                    XConvertCase(sym, &lowerSym, &upperSym);
-                    char* string = XKeysymToString(upperSym);
-                    INFO("Pressed %s", string);
+                    HandleKeyEvent(event, true);
+                    if (IsKeyDown(KEY_Q)) {
+                        ShouldBeRunning = false;
+                    }
                 }
                 break;
             case KeyRelease:
-                {
-                    KeySym sym = XLookupKeysym(&event.xkey, 0);
-                    KeySym upperSym, lowerSym;
-                    XConvertCase(sym, &lowerSym, &upperSym);
-                    char* string = XKeysymToString(upperSym);
-                    INFO("Released %s", string);
-                }
+                HandleKeyEvent(event, false);
                 break;
             case ClientMessage:
                 if ((Atom)event.xclient.data.l[0] == wmDeleteWindow) {

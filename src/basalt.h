@@ -1,5 +1,4 @@
-#ifndef BASALT_H
-#define BASALT_H
+#pragma once
 
 #ifdef WASM
 #include "wasm_stdlib.h"
@@ -16,6 +15,7 @@ typedef size_t usize;
 typedef int32_t int32;
 typedef uint32_t uint;
 typedef uint8_t uchar;
+typedef uchar Key;
 
 #endif
 
@@ -127,10 +127,13 @@ pubfunc Texture LoadTextureEx(const char* name, uchar* pixels);
 #endif
 
 // Platform dependent stuff
-pubfunc void SetWindowTitle(const char* title);
 pubfunc Point GetMousePosition();
+pubfunc void SetWindowTitle(const char* title);
+
 pubfunc bool IsMouseDown();
 pubfunc bool IsMouseUp();
+pubfunc bool IsKeyDown(Key code);
+pubfunc bool IsKeyUp(Key code);
 
 // Tooling stuff 
 // (basalt_tooling.h)
@@ -201,4 +204,3 @@ pubfunc void UpdateAndRenderGame(Texture canvas, float delta);
 #define KEY_X               'X'
 #define KEY_Y               'Y'
 #define KEY_Z               'Z'
-#endif
