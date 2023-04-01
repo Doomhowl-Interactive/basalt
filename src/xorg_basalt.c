@@ -61,12 +61,10 @@ pubfunc bool IsMouseUp() {
 }
 
 func Size GetMonitorSize(Display* display) {
-    Size size;
-
     int screen = DefaultScreen(display);
+    Size size;
     size.width = DisplayWidth(display, screen);
     size.height = DisplayHeight(display, screen);
-
     return size;
 }
 
@@ -88,11 +86,10 @@ func OffscreenBuffer InitOffscreenBuffer(Display *display, Window window,
     XWindowAttributes wAttribs = {0};
     XGetWindowAttributes(display, window, &wAttribs);
 
-    buffer.image =
-        XCreateImage(display, wAttribs.visual, wAttribs.depth, ZPixmap, 0,
-                     (char *)buffer.mappedCanvas2.pixels,
-                     buffer.mappedCanvas2.width, buffer.mappedCanvas2.height,
-                     32, buffer.mappedCanvas2.width * sizeof(uint32_t));
+    buffer.image = XCreateImage(display, wAttribs.visual, wAttribs.depth, ZPixmap, 0,
+                               (char *)buffer.mappedCanvas2.pixels,
+                               buffer.mappedCanvas2.width, buffer.mappedCanvas2.height,
+                               32, buffer.mappedCanvas2.width * sizeof(uint32_t));
     return buffer;
 }
 
@@ -131,7 +128,7 @@ int main(int argc, char **argv) {
     XSetWMProtocols(display, win, &wmDeleteWindow, 1);
 
     XSelectInput(display, win,
-                 ExposureMask | KeyPressMask | ResizeRedirectMask);
+                 ExposureMask | KeyPressMask | KeyReleaseMask | ResizeRedirectMask);
 
     Texture canvas = InitTexture(WIDTH, HEIGHT);
 
@@ -160,9 +157,20 @@ int main(int argc, char **argv) {
             XNextEvent(display, &event);
 
             switch (event.type) {
-            case Expose:
+            case KeyPress:
+                {
+                    KeySym sym = XLookupKeysym(&event.xkey, 0);
+                    char* string = XKeysymToString(sym);
+                    INFO("Pressed %s", string);
+                }
                 break;
-
+            case KeyRelease:
+                {
+                    KeySym sym = XLookupKeysym(&event.xkey, 0);
+                    char* string = XKeysymToString(sym);
+                    INFO("Released %s", string);
+                }
+                break;
             case ClientMessage:
                 if ((Atom)event.xclient.data.l[0] == wmDeleteWindow) {
                     DEBUG("Closing window...");
