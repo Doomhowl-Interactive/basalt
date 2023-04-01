@@ -193,6 +193,7 @@ int main(int argc, char **argv) {
     int width = WIDTH;
     int height = HEIGHT;
 
+    double prevDelta = 0.f;
     double delta = 1.0 / MAX_FPS;
     double fps = MAX_FPS;
     while (ShouldBeRunning) {
@@ -200,6 +201,7 @@ int main(int argc, char **argv) {
             XEvent event;
             XNextEvent(display, &event);
 
+            // FIXME: Prevent keys from getting stuck when pressing mutiple.
             switch (event.type) {
             case KeyPress:
                 {
@@ -257,7 +259,13 @@ int main(int argc, char **argv) {
         timer += delta;
         // draw graphics
         if (UpdateAndRenderArchaeo(canvas))
+        {
+            // HACK: Prevent delta artifacts from breaking the game
+            if (delta > 1){
+                delta = prevDelta;
+            }
             UpdateAndRenderGame(canvas, (float) delta);
+        }
 
         RenderOffscreenBuffer(&ActiveBuffer, width, height);
 
@@ -275,6 +283,7 @@ int main(int argc, char **argv) {
         gettimeofday(&endTime, NULL);
 
         size_t elapsedMicros = endTime.tv_usec - startTime.tv_usec;
+        prevDelta = delta;
         delta = elapsedMicros / 1000000.0;
         fps = 1.0 / delta;
 
