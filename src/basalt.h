@@ -132,11 +132,12 @@ pubfunc void SetWindowTitle(const char* title);
 
 pubfunc bool IsMouseDown();
 pubfunc bool IsMouseUp();
+
 pubfunc bool IsKeyDown(Key code);
 pubfunc bool IsKeyUp(Key code);
 
-// TODO: IsKeyPressed(Key code);
-// TODO: IsKeyReleased(Key code);
+pubfunc bool IsKeyPressed(Key code);
+pubfunc bool IsKeyReleased(Key code);
 
 // Tooling stuff 
 // (basalt_tooling.h)

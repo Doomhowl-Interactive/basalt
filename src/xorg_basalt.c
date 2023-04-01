@@ -26,7 +26,8 @@ class(OffscreenBuffer) {
 };
 
 class(SInput) {
-    bool keysPressed[256];
+    bool pressedKeys[256];
+    bool pressedKeysOnce[256];
     bool isMouseDown;
     Point mousePos;
 };
@@ -49,24 +50,39 @@ pubfunc void SetWindowTitle(const char* title) {
     }
 }
 
-pubfunc Point GetMousePosition() {
+pubfunc Point GetMousePosition()
+{
     return Input.mousePos;
 }
 
-pubfunc bool IsMouseDown() {
+pubfunc bool IsMouseDown()
+{
     return Input.isMouseDown;
 }
 
-pubfunc bool IsMouseUp() {
+pubfunc bool IsMouseUp()
+{
     return !Input.isMouseDown;
 }
 
-pubfunc bool IsKeyDown(Key code) {
-    return Input.keysPressed[code];
+pubfunc bool IsKeyDown(Key code)
+{
+    return Input.pressedKeys[code];
 }
 
-pubfunc bool IsKeyUp(Key code) {
-    return !Input.keysPressed[code];
+pubfunc bool IsKeyUp(Key code)
+{
+    return !Input.pressedKeys[code];
+}
+
+pubfunc bool IsKeyPressed(Key code)
+{
+    return Input.pressedKeysOnce[code];
+}
+
+pubfunc bool IsKeyReleased(Key code)
+{
+    return !Input.pressedKeysOnce[code];
 }
 
 func Size GetMonitorSize(Display* display) {
@@ -122,9 +138,14 @@ func void HandleKeyEvent(XEvent event, bool pressed){
     // HACK: ignore special characters (for now)
     if (string[1] == '\0'){
         char key = string[0];
+        Input.pressedKeys[key] = pressed;
+
+        if (pressed)
+            Input.pressedKeysOnce[key] = true;
+
         // DEBUG("%s %c", pressed ? "Pressed":"Released", key);
-        Input.keysPressed[key] = pressed;
     }
+
 }
 
 int main(int argc, char **argv) {
@@ -183,7 +204,7 @@ int main(int argc, char **argv) {
             case KeyPress:
                 {
                     HandleKeyEvent(event, true);
-                    if (IsKeyDown(KEY_Q)) {
+                    if (IsKeyPressed(KEY_Q)) {
                         ShouldBeRunning = false;
                     }
                 }
@@ -256,6 +277,9 @@ int main(int argc, char **argv) {
         size_t elapsedMicros = endTime.tv_usec - startTime.tv_usec;
         delta = elapsedMicros / 1000000.0;
         fps = 1.0 / delta;
+
+        // clear keys
+        memset(Input.pressedKeysOnce, 0, sizeof(Input.pressedKeysOnce));
 
         XEvent expose;
         expose.type = Expose;
