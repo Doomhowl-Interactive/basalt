@@ -160,14 +160,18 @@ int main(int argc, char **argv) {
             case KeyPress:
                 {
                     KeySym sym = XLookupKeysym(&event.xkey, 0);
-                    char* string = XKeysymToString(sym);
+                    KeySym upperSym, lowerSym;
+                    XConvertCase(sym, &lowerSym, &upperSym);
+                    char* string = XKeysymToString(upperSym);
                     INFO("Pressed %s", string);
                 }
                 break;
             case KeyRelease:
                 {
                     KeySym sym = XLookupKeysym(&event.xkey, 0);
-                    char* string = XKeysymToString(sym);
+                    KeySym upperSym, lowerSym;
+                    XConvertCase(sym, &lowerSym, &upperSym);
+                    char* string = XKeysymToString(upperSym);
                     INFO("Released %s", string);
                 }
                 break;
