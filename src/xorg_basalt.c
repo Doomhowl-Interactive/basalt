@@ -122,7 +122,11 @@ func void RenderOffscreenBuffer(OffscreenBuffer *buffer, int width, int height) 
     assert(buffer->mappedCanvas.pixels && buffer->canvas.pixels);
 
     Rect rect = { 0, 0, MIN(width, buffer->mappedCanvas2.width), MIN(height, buffer->mappedCanvas2.height) };
+
+    // FIXME: SLOW 25% performance hit
     MapTextureToCorrectFormat(buffer->mappedCanvas, buffer->canvas);
+
+    // FIXME: SLOW 50% performance hit
     DrawTextureScaled(buffer->mappedCanvas2, buffer->mappedCanvas, rect);
 
     XPutImage(buffer->display, buffer->window, buffer->gc, buffer->image, 0, 0,

@@ -1,5 +1,7 @@
 #include "basalt.h"
 
+#ifdef ARCHAEO
+
 #define MAX_DRAW_CALLS 128
 
 static bool IsRunning = false;
@@ -9,8 +11,11 @@ static Color* TargetTextureMemory = NULL;
 static uint DrawCallCount = 0;
 static Texture DrawCallTextures[MAX_DRAW_CALLS] = { 0 };
 
+#endif
+
 pubfunc void DrawCallImpl(Texture canvas, const char* desc)
 {
+#ifdef ARCHAEO
     if (TargetTextureMemory == NULL || TargetTextureMemory != canvas.pixels)
         return;
 
@@ -26,10 +31,12 @@ pubfunc void DrawCallImpl(Texture canvas, const char* desc)
     {
         WARN("Too many draw calls to register!");
     }
+#endif
 }
 
 pubfunc bool UpdateAndRenderArchaeo(Texture canvas)
 {
+#ifdef ARCHAEO
     if (TargetTextureMemory == NULL)
         TargetTextureMemory = canvas.pixels;
 
@@ -66,6 +73,6 @@ pubfunc bool UpdateAndRenderArchaeo(Texture canvas)
 
     // clear drawcalls
     DrawCallCount = 0;
-
+#endif
     return true;
 }

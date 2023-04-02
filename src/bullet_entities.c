@@ -9,6 +9,8 @@
 
 #define COMPARE(X,Y) ((X & Y) == Y)
 
+// TODO: Use regions for sprites
+
 typedef uint EntityID;
 typedef uint EntityType;
 
@@ -112,7 +114,7 @@ void InitPlayer(Entity* e, Vec2 pos)
 
         Entity* ent = CreateEntity();
         ent->sprite.tint = 0xFFFF00FF;
-        ent->spawner.interval = 0.3f;
+        ent->spawner.interval = 0.1f;
         ent->spawner.normal.x = cos(DEG2RAD(angle));
         ent->spawner.normal.y = sin(DEG2RAD(angle));
         ent->spawner.offsetFromParent.x = ent->spawner.normal.x*distanceFromPlayer;
