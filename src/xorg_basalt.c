@@ -143,9 +143,18 @@ func void HandleKeyEvent(XEvent event, bool pressed){
         if (pressed)
             Input.pressedKeysOnce[key] = true;
 
-        // DEBUG("%s %c", pressed ? "Pressed":"Released", key);
+        DEBUG("%s %c", pressed ? "Pressed":"Released", key);
     }
+}
 
+func void DumpKeyboardTable()
+{
+    DEBUG("Dumping key table");
+    for (int i = 33; i < 90; i++)
+    {
+        DEBUG("key: %d %c %d", i, i, Input.pressedKeys[i]);
+    }
+    DEBUG("==================");
 }
 
 int main(int argc, char **argv) {
@@ -206,9 +215,11 @@ int main(int argc, char **argv) {
             case KeyPress:
                 {
                     HandleKeyEvent(event, true);
-                    if (IsKeyPressed(KEY_Q)) {
+                    if (IsKeyPressed(KEY_Q))
                         ShouldBeRunning = false;
-                    }
+
+                    if (IsKeyPressed(KEY_L))
+                        DumpKeyboardTable();
                 }
                 break;
             case KeyRelease:

@@ -109,21 +109,23 @@ void UpdateAndRenderEntity(Texture canvas, Entity* e, float delta)
     {
         if (COMPARE(e->type,ENTITY_PLAYER))
         {
+            e->vel.x = 0;
+            e->vel.y = 0;
             if (IsKeyDown(KEY_A))
             {
-                e->vel.x = -e->moveSpeed;
+                e->vel.x -= e->moveSpeed;
             }
             if (IsKeyDown(KEY_D))
             {
-                e->vel.x = e->moveSpeed;
+                e->vel.x += e->moveSpeed;
             }
             if (IsKeyDown(KEY_W))
             {
-                e->vel.y = -e->moveSpeed;
+                e->vel.y -= e->moveSpeed;
             }
             if (IsKeyDown(KEY_S))
             {
-                e->vel.y = e->moveSpeed;
+                e->vel.y += e->moveSpeed;
             }
         }
     }
