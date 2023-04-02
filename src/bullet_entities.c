@@ -14,7 +14,6 @@ typedef enum BulletType {
     Default,
 } BulletType;
 
-// TODO: Use anonymous structs
 // entity mega struct
 typedef struct Entity Entity;
 struct Entity {
@@ -28,26 +27,30 @@ struct Entity {
         Texture texture;
     } sprite;
 
-    // Moveable 
-    Vec2 vel;
-    float drag;
+    struct {
+        Vec2 vel;
+        float drag;
+    } physics;
 
-    // Player
-    float moveSpeed;
+    struct {
+        float moveSpeed;
+    } ship;
     
-    // Health
-    uint maxHealth;
-    uint health;
+    struct {
+        uint maxHealth;
+        uint health;
+    } alive;
 
-    // Bullet spawner
-    float interval;
-    BulletType bulletType;
-    uint bulletDamage;
+    struct {
+        float interval;
+        BulletType bulletType;
+        uint bulletDamage;
+    } spawner;
 
-    // Bullet spawner container
-    Entity* spawners;
-    uint spawnerCount;
-
+    struct {
+        Entity* spawners;
+        uint spawnerCount;
+    } spawners;
 };
 
 static Entity GameEntities[MAX_ENTITIES];
@@ -88,7 +91,7 @@ void InitPlayer(Entity* e, Vec2 pos)
     e->type = ENTITY_PLAYER;
     e->sprite.pos = (Vec2) { pos.x - 48 / 2, pos.y };
     e->sprite.tint = 0x00FF00FF;
-    e->moveSpeed = 200;
+    e->ship.moveSpeed = 200;
     SetEntitySize(e, 32, 32);
 }
 
@@ -105,6 +108,9 @@ Rect GetEntityBounds(Entity e)
 
 void UpdateAndRenderEntity(Texture canvas, Entity* e, float delta)
 {
+    // Shortcuts
+    Vec2* vel = &e->physics.vel;
+
     // Entity drawing
     // TODO: Put in entity struct
     static float frameInterval = 0.2f;
@@ -128,35 +134,37 @@ void UpdateAndRenderEntity(Texture canvas, Entity* e, float delta)
     // Player behaviour
     if (COMPARE(e->type,ENTITY_PLAYER))
     {
-        e->vel.x = 0;
-        e->vel.y = 0;
+        float moveSpeed = e->ship.moveSpeed;
+        vel->x = 0;
+        vel->y = 0;
+
         if (IsKeyDown(KEY_A))
         {
-            e->vel.x -= e->moveSpeed;
+            vel->x -= moveSpeed;
         }
         if (IsKeyDown(KEY_D))
         {
-            e->vel.x += e->moveSpeed;
+            vel->x += moveSpeed;
         }
         if (IsKeyDown(KEY_W))
         {
-            e->vel.y -= e->moveSpeed;
+            vel->y -= moveSpeed;
         }
         if (IsKeyDown(KEY_S))
         {
-            e->vel.y += e->moveSpeed;
+            vel->y += moveSpeed;
         }
     }
 
     // apply movement
-    e->sprite.pos.x += e->vel.x*delta;
-    e->sprite.pos.y += e->vel.y*delta;
+    e->sprite.pos.x += vel->x*delta;
+    e->sprite.pos.y += vel->y*delta;
     
     // apply drag
-    float offsetX = e->drag * delta * SIGN(float, e->vel.x);
-    e->vel.x -= MIN(offsetX, e->vel.x);
-    float offsetY = e->drag * delta * SIGN(float, e->vel.y);
-    e->vel.y -= MIN(offsetY, e->vel.y);
+    float offsetX = e->physics.drag * delta * SIGN(float, vel->x);
+    vel->x -= MIN(offsetX, vel->x);
+    float offsetY = e->physics.drag * delta * SIGN(float, vel->y);
+    vel->y -= MIN(offsetY, vel->y);
 }
 
 uint UpdateAndRenderEntities(Texture canvas, float delta)
