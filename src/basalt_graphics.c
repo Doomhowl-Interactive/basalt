@@ -11,15 +11,84 @@ typedef struct {
     int oy1, oy2;
 } Olivec_Normalized_Rect;
 
-pubfunc void DrawDot(Texture canvas, int posX, int posY, int radius, Color color) {
-    int halfRadius = MAX(1, radius / 2);
-    int topLeftX = posX - halfRadius;
-    int topLeftY = posY - halfRadius;
-    DrawRectangle(canvas, topLeftX, topLeftY, radius, radius, color);
+pubfunc void DrawDot(Texture canvas, int posX, int posY, Color color) {
+    int i = posY * canvas.width + posX;
+    canvas.pixels[i] = color;
 }
 
-pubfunc void DrawDotV(Texture canvas, Vec2 pos, int radius, Color color) {
-    DrawDot(canvas, pos.x, pos.y, radius, color);
+pubfunc void DrawDotV(Texture canvas, Vec2 pos, Color color)
+{
+    DrawDot(canvas, pos.x, pos.y, color);
+}
+
+// TODO: Clean up required
+// NOTE: Taken from https://github.com/tsoding/olive.c/blob/master/olive.c
+pubfunc void DrawLine(Texture canvas, int startX, int startY, int endX, int endY, Color color)
+{
+    int x1 = startX;
+    int x2 = endX;
+    int y1 = startY;
+    int y2 = endY;
+
+    int dx = x2 - x1;
+    int dy = y2 - y1;
+
+    // If both of the differences are 0 there will be a division by 0 below.
+    if (dx == 0 && dy == 0) {
+        if (0 <= x1 && x1 < (int) canvas.width && 0 <= y1 && y1 < (int) canvas.height) {
+            DrawDot(canvas, x1, y1, color);
+        }
+        return;
+    }
+
+    if (ABS(int, dx) > ABS(int, dy)) {
+        if (x1 > x2) {
+            SWAP(int, x1, x2);
+            SWAP(int, y1, y2);
+        }
+
+        // Cull out invisible line
+        if (x1 > (int) canvas.width) return;
+        if (x2 < 0) return;
+
+        // Clamp the line to the boundaries
+        if (x1 < 0) x1 = 0;
+        if (x2 >= (int) canvas.width) x2 = (int) canvas.width - 1;
+
+        for (int x = x1; x <= x2; ++x) {
+            int y = dy*(x - x1)/dx + y1;
+            // TODO: move boundary checks out side of the loops in olivec_draw_line
+            if (0 <= y && y < (int) canvas.height) {
+                DrawDot(canvas, x, y, color);
+            }
+        }
+    } else {
+        if (y1 > y2) {
+            SWAP(int, x1, x2);
+            SWAP(int, y1, y2);
+        }
+
+        // Cull out invisible line
+        if (y1 > (int) canvas.height) return;
+        if (y2 < 0) return;
+
+        // Clamp the line to the boundaries
+        if (y1 < 0) y1 = 0;
+        if (y2 >= (int) canvas.height) y2 = (int) canvas.height - 1;
+
+        for (int y = y1; y <= y2; ++y) {
+            int x = dx*(y - y1)/dy + x1;
+            // TODO: move boundary checks out side of the loops in olivec_draw_line
+            if (0 <= x && x < (int) canvas.width) {
+                DrawDot(canvas, x, y, color);
+            }
+        }
+    }
+}
+
+pubfunc void DrawLineV(Texture canvas, Vec2 start, Vec2 end, Color color)
+{
+    DrawLine(canvas, start.x, start.y, end.x, end.y, color);
 }
 
 pubfunc void DrawRectangle(Texture canvas, int posX, int posY, int width, int height, Color color) {
@@ -43,10 +112,6 @@ pubfunc void DrawRectangleRec(Texture canvas, Rect rect, Color color) {
     DrawRectangle(canvas, rect.x, rect.y, rect.width, rect.height, color);
 }
 
-pubfunc void DrawRectangleRecF(Texture canvas, RectF rect, Color color) {
-    DrawRectangle(canvas, (int)rect.x, (int)rect.y, (int)rect.width, (int)rect.height, color);
-}
-
 pubfunc void DrawRectangleLines(Texture canvas, int posX, int posY, int width, int height, int border, Color color) {
     DrawRectangle(canvas, posX, posY, width, border, color); // top
     DrawRectangle(canvas, posX + width - border, posY, border, height, color); // right
@@ -56,10 +121,6 @@ pubfunc void DrawRectangleLines(Texture canvas, int posX, int posY, int width, i
 
 pubfunc void DrawRectangleLinesRec(Texture canvas, Rect rect, int border, Color color) {
     DrawRectangleLines(canvas, rect.x, rect.y, rect.width, rect.height, border, color);
-}
-
-pubfunc void DrawRectangleLinesRecF(Texture canvas, RectF rect, int border, Color color) {
-    DrawRectangleLines(canvas, (int)rect.x, (int)rect.y, (int)rect.width, (int)rect.height, border, color);
 }
 
 pubfunc Texture InitTexture(int width, int height) {

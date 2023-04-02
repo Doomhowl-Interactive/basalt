@@ -2,8 +2,9 @@
 #include "basalt_extra.h"
 
 #define MAX_ENTITIES 256
+#define MAX_SPAWNERS 32
 
-#define ENTITY_PLAYER           (1 << 0)
+#define TAG_PLAYER      (1 << 0)
 
 #define COMPARE(X,Y) ((X & Y) == Y)
 
@@ -17,6 +18,7 @@ typedef enum BulletType {
 // entity mega struct
 typedef struct Entity Entity;
 struct Entity {
+    bool isActive;
     EntityID id;
     EntityType type;
 
@@ -42,15 +44,15 @@ struct Entity {
     } alive;
 
     struct {
+        Vec2 offsetFromParent;
+        Vec2 normal;
         float interval;
         BulletType bulletType;
-        uint bulletDamage;
     } spawner;
 
     struct {
-        Entity* spawners;
-        uint spawnerCount;
-    } spawners;
+        Entity* spawners[MAX_SPAWNERS];
+    } weapon;
 };
 
 static Entity GameEntities[MAX_ENTITIES];
@@ -67,9 +69,10 @@ Entity* CreateEntity()
     for (uint i = 0; i < MAX_ENTITIES; i++)
     {
         Entity* entity = &GameEntities[i];
-        if (entity->type == 0)
+        if (!entity->isActive)
         {
             entity->id = i;
+            entity->isActive = true;
             return entity; 
         }
     }
@@ -88,11 +91,32 @@ void SetEntitySize(Entity* e, uint width, uint height)
 
 void InitPlayer(Entity* e, Vec2 pos)
 {
-    e->type = ENTITY_PLAYER;
+    e->type = TAG_PLAYER;
     e->sprite.pos = (Vec2) { pos.x - 48 / 2, pos.y };
     e->sprite.tint = 0x00FF00FF;
     e->ship.moveSpeed = 200;
     SetEntitySize(e, 32, 32);
+
+    // Bullet spawners
+    double outwardsAngleDeg = 70;
+    double distanceFromPlayer = 45;
+    uint spawnerCount = 5;
+
+    double anglePerSpawner = outwardsAngleDeg / spawnerCount;
+    for (uint i = 0; i < spawnerCount; i++)
+    {
+        double angle = -90 - outwardsAngleDeg * 0.5f + anglePerSpawner * i + anglePerSpawner * 0.5f;
+
+        Entity* ent = CreateEntity();
+        ent->sprite.tint = 0xFFFF00FF;
+        ent->spawner.normal.x = cos(DEG2RAD(angle));
+        ent->spawner.normal.y = sin(DEG2RAD(angle));
+        ent->spawner.offsetFromParent.x = ent->spawner.normal.x*distanceFromPlayer;
+        ent->spawner.offsetFromParent.y = ent->spawner.normal.y*distanceFromPlayer;
+        SetEntitySize(ent, 2,2);
+
+        e->weapon.spawners[i] = ent;
+    }
 }
 
 Rect GetEntityBounds(Entity e)
@@ -128,11 +152,10 @@ void UpdateAndRenderEntity(Texture canvas, Entity* e, float delta)
     {
         Rect bounds = GetEntityBounds(*e);
         DrawRectangleRec(canvas, bounds, e->sprite.tint);
-
     }
 
     // Player behaviour
-    if (COMPARE(e->type,ENTITY_PLAYER))
+    if (COMPARE(e->type,TAG_PLAYER))
     {
         float moveSpeed = e->ship.moveSpeed;
         vel->x = 0;
@@ -156,6 +179,26 @@ void UpdateAndRenderEntity(Texture canvas, Entity* e, float delta)
         }
     }
 
+    // TODO: rename spawners to weapon
+    // spawner container behaviour
+    for (uint i = 0; i < MAX_SPAWNERS; i++)
+    {
+        Entity* spawner = e->weapon.spawners[i];
+        if (spawner == NULL) continue;
+
+        Rect bounds = GetEntityBounds(*e);
+        float centerX = bounds.x + bounds.width * 0.5f;
+        float centerY = bounds.y + bounds.height * 0.5f;
+        spawner->sprite.pos.x = centerX + spawner->spawner.offsetFromParent.x;
+        spawner->sprite.pos.y = centerY + spawner->spawner.offsetFromParent.y;
+
+        // draw normal
+        Vec2 end;
+        end.x = spawner->sprite.pos.x + spawner->spawner.normal.x * 10;
+        end.y = spawner->sprite.pos.y + spawner->spawner.normal.y * 10;
+        DrawLineV(canvas, spawner->sprite.pos, end, 0x0000AAFF);
+    }
+    
     // apply movement
     e->sprite.pos.x += vel->x*delta;
     e->sprite.pos.y += vel->y*delta;
@@ -173,7 +216,7 @@ uint UpdateAndRenderEntities(Texture canvas, float delta)
     for (uint i = 0; i < MAX_ENTITIES; i++)
     {
         Entity* e = &GameEntities[i];
-        if (e->type > 0)
+        if (e->isActive)
         {
             UpdateAndRenderEntity(canvas, e, delta);
             count++;

@@ -9,6 +9,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 #include "string.h"
 
 typedef size_t usize;
@@ -59,13 +60,6 @@ class(Rect)
     int height;
 };
 
-class(RectF) {
-    float x;
-    float y;
-    float width;
-    float height;
-};
-
 class(Point) {
     int x;
     int y;
@@ -107,8 +101,14 @@ pubfunc void UnitTest();
 #endif
 
 // Utility functions (basalt_utils.c)
+#define DEG2RAD(Y) ((Y) * M_PI / 180)
+#define RAD2DEG(X) ((X) * 180.0 / M_PI)
+
 pubfunc bool IsLittleEndian();
 pubfunc int Clamp(int value, int min, int max);
+
+pubfunc Vec2 Vec2Normalize(Vec2 v2);
+pubfunc float Vec2Magnitude(Vec2 v2);
 
 // Asset handling (basalt_assets.c)
 class(Texture) {
@@ -146,16 +146,17 @@ pubfunc bool UpdateAndRenderArchaeo();
 pubfunc void DrawCallImpl(Texture canvas, const char* desc);
 
 // Graphics drawing (basalt_graphics.c)
-pubfunc void DrawDot(Texture canvas, int posX, int posY, int radius, Color color);
-pubfunc void DrawDotV(Texture canvas, Vec2 pos, int radius, Color color);
+pubfunc void DrawDot(Texture canvas, int posX, int posY, Color color);
+pubfunc void DrawDotV(Texture canvas, Vec2 pos, Color color);
+
+pubfunc void DrawLine(Texture canvas, int startX, int startY, int endX, int endY, Color color);
+pubfunc void DrawLineV(Texture canvas, Vec2 start, Vec2 end, Color color);
 
 pubfunc void DrawRectangle(Texture canvas, int posX, int posY, int width, int height, Color color);
 pubfunc void DrawRectangleRec(Texture canvas, Rect rect, Color color);
-pubfunc void DrawRectangleRecF(Texture canvas, RectF rect, Color color);
 
 pubfunc void DrawRectangleLines(Texture canvas, int posX, int posY, int width, int height, int border, Color color);
 pubfunc void DrawRectangleLinesRec(Texture canvas, Rect rect, int border, Color color);
-pubfunc void DrawRectangleLinesRecF(Texture canvas, RectF rect, int border, Color color);
 
 pubfunc void DrawWeirdTestGradient(Texture canvas);
 pubfunc Texture InitTexture(int width, int height);
