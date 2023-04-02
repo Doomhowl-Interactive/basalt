@@ -5,6 +5,7 @@
 #define MAX_SPAWNERS 32
 
 #define TAG_PLAYER      (1 << 0)
+#define TAG_BULLET      (1 << 1)
 
 #define COMPARE(X,Y) ((X & Y) == Y)
 
@@ -19,6 +20,7 @@ typedef enum BulletType {
 typedef struct Entity Entity;
 struct Entity {
     bool isActive;
+    float timeAlive;
     EntityID id;
     EntityType type;
 
@@ -47,6 +49,7 @@ struct Entity {
         Vec2 offsetFromParent;
         Vec2 normal;
         float interval;
+        float spawnTimer;
         BulletType bulletType;
     } spawner;
 
@@ -98,7 +101,7 @@ void InitPlayer(Entity* e, Vec2 pos)
     SetEntitySize(e, 32, 32);
 
     // Bullet spawners
-    double outwardsAngleDeg = 70;
+    double outwardsAngleDeg = 40;
     double distanceFromPlayer = 45;
     uint spawnerCount = 5;
 
@@ -109,6 +112,7 @@ void InitPlayer(Entity* e, Vec2 pos)
 
         Entity* ent = CreateEntity();
         ent->sprite.tint = 0xFFFF00FF;
+        ent->spawner.interval = 0.3f;
         ent->spawner.normal.x = cos(DEG2RAD(angle));
         ent->spawner.normal.y = sin(DEG2RAD(angle));
         ent->spawner.offsetFromParent.x = ent->spawner.normal.x*distanceFromPlayer;
@@ -130,8 +134,36 @@ Rect GetEntityBounds(Entity e)
     return bounds;
 }
 
+void InitBullet(Entity* e, BulletType type, Vec2 pos, Vec2 normal)
+{
+    Color tint;
+    float power;
+
+    e->type = TAG_BULLET;
+    e->sprite.pos.x = pos.x;
+    e->sprite.pos.y = pos.y;
+
+    float radius = 13.f;
+    SetEntitySize(e, radius, radius);
+    switch (type)
+    {
+        case Default:
+            power = 1000.f;
+            tint = 0x11CC11FF;
+            break;
+        default:
+            assert(0);
+    }
+
+    e->physics.vel.x = normal.x * power;
+    e->physics.vel.y = normal.y * power;
+    e->sprite.tint = tint;
+}
+
 void UpdateAndRenderEntity(Texture canvas, Entity* e, float delta)
 {
+    e->timeAlive += delta;
+
     // Shortcuts
     Vec2* vel = &e->physics.vel;
 
@@ -179,35 +211,60 @@ void UpdateAndRenderEntity(Texture canvas, Entity* e, float delta)
         }
     }
 
-    // TODO: rename spawners to weapon
-    // spawner container behaviour
+    // WEAPON BEHAVIOUR
     for (uint i = 0; i < MAX_SPAWNERS; i++)
     {
-        Entity* spawner = e->weapon.spawners[i];
-        if (spawner == NULL) continue;
+        Entity* weapon = e->weapon.spawners[i];
+        if (weapon == NULL) continue;
 
+        // set weapon into correct position
         Rect bounds = GetEntityBounds(*e);
         float centerX = bounds.x + bounds.width * 0.5f;
         float centerY = bounds.y + bounds.height * 0.5f;
-        spawner->sprite.pos.x = centerX + spawner->spawner.offsetFromParent.x;
-        spawner->sprite.pos.y = centerY + spawner->spawner.offsetFromParent.y;
+        weapon->sprite.pos.x = centerX + weapon->spawner.offsetFromParent.x;
+        weapon->sprite.pos.y = centerY + weapon->spawner.offsetFromParent.y;
 
-        // draw normal
+        // draw normal (debugging)
+#if 0
         Vec2 end;
-        end.x = spawner->sprite.pos.x + spawner->spawner.normal.x * 10;
-        end.y = spawner->sprite.pos.y + spawner->spawner.normal.y * 10;
-        DrawLineV(canvas, spawner->sprite.pos, end, 0x0000AAFF);
+        end.x = weapon->sprite.pos.x + weapon->spawner.normal.x * 10;
+        end.y = weapon->sprite.pos.y + weapon->spawner.normal.y * 10;
+        DrawLineV(canvas, weapon->sprite.pos, end, 0x0000AAFF);
+#endif
+
+        // spawn bullets on interval
+        if (weapon->spawner.spawnTimer > weapon->spawner.interval)
+        {
+            Entity* bul = CreateEntity();
+            InitBullet(bul, e->spawner.bulletType, weapon->sprite.pos, weapon->spawner.normal);
+            weapon->spawner.spawnTimer = 0.f;
+        }
+        weapon->spawner.spawnTimer += delta;
     }
-    
+
+    // Bullet behaviour
+    if (COMPARE(e->type,TAG_BULLET))
+    {
+        const int OOB = 100;
+        int x = e->sprite.pos.x;
+        int y = e->sprite.pos.y;
+        if (x < -OOB || y < -OOB || x > WIDTH+OOB || y > HEIGHT+OOB)
+        {
+            // TODO: DestroyEntity
+            e->timeAlive = 0.f;
+            e->isActive = false;
+        }
+    }
+
     // apply movement
     e->sprite.pos.x += vel->x*delta;
     e->sprite.pos.y += vel->y*delta;
     
     // apply drag
-    float offsetX = e->physics.drag * delta * SIGN(float, vel->x);
-    vel->x -= MIN(offsetX, vel->x);
-    float offsetY = e->physics.drag * delta * SIGN(float, vel->y);
-    vel->y -= MIN(offsetY, vel->y);
+    // float offsetX = e->physics.drag * delta * SIGN(float, vel->x);
+    // vel->x -= MIN(offsetX, vel->x);
+    // float offsetY = e->physics.drag * delta * SIGN(float, vel->y);
+    // vel->y -= MIN(offsetY, vel->y);
 }
 
 uint UpdateAndRenderEntities(Texture canvas, float delta)
