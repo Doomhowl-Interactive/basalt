@@ -21,17 +21,18 @@ struct Entity {
     EntityID id;
     EntityType type;
 
-    // Sprite
-    Color tint;
-    Rect source;
-    Texture texture;
+    struct {
+        Vec2 pos;
+        Color tint;
+        Rect source;
+        Texture texture;
+    } sprite;
 
     // Moveable 
     Vec2 vel;
     float drag;
 
     // Player
-    Vec2 pos;
     float moveSpeed;
     
     // Health
@@ -76,28 +77,28 @@ Entity* CreateEntity()
 
 void SetEntitySize(Entity* e, uint width, uint height)
 {
-    e->source.width = width;
-    e->source.height = height;
-    e->texture.width = width;
-    e->texture.height = height;
+    e->sprite.source.width = width;
+    e->sprite.source.height = height;
+    e->sprite.texture.width = width;
+    e->sprite.texture.height = height;
 }
 
 void InitPlayer(Entity* e, Vec2 pos)
 {
-    e->pos = (Vec2) { pos.x - 48 / 2, pos.y };
     e->type = ENTITY_PLAYER;
-    e->tint = 0x00FF00FF;
+    e->sprite.pos = (Vec2) { pos.x - 48 / 2, pos.y };
+    e->sprite.tint = 0x00FF00FF;
     e->moveSpeed = 200;
     SetEntitySize(e, 32, 32);
 }
 
-Rect GetEntityBounds(Entity entity)
+Rect GetEntityBounds(Entity e)
 {
     Rect bounds = {
-        entity.pos.x,
-        entity.pos.y,
-        entity.source.width,
-        entity.source.height
+        e.sprite.pos.x,
+        e.sprite.pos.y,
+        e.sprite.source.width,
+        e.sprite.source.height
     };
     return bounds;
 }
@@ -117,10 +118,10 @@ void UpdateAndRenderEntity(Texture canvas, Entity* e, float delta)
     }
     timer += delta;
 
-    if (e->texture.width > 0)
+    if (e->sprite.texture.width > 0)
     {
         Rect bounds = GetEntityBounds(*e);
-        DrawRectangleRec(canvas, bounds, e->tint);
+        DrawRectangleRec(canvas, bounds, e->sprite.tint);
 
     }
 
@@ -148,8 +149,8 @@ void UpdateAndRenderEntity(Texture canvas, Entity* e, float delta)
     }
 
     // apply movement
-    e->pos.x += e->vel.x*delta;
-    e->pos.y += e->vel.y*delta;
+    e->sprite.pos.x += e->vel.x*delta;
+    e->sprite.pos.y += e->vel.y*delta;
     
     // apply drag
     float offsetX = e->drag * delta * SIGN(float, e->vel.x);
