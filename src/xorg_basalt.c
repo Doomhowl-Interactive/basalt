@@ -143,7 +143,7 @@ func void HandleKeyEvent(XEvent event, bool pressed){
         if (pressed)
             Input.pressedKeysOnce[key] = true;
 
-        DEBUG("%s %c", pressed ? "Pressed":"Released", key);
+        // DEBUG("%s %c", pressed ? "Pressed":"Released", key);
     }
 }
 
