@@ -33,11 +33,10 @@ typedef struct BulletAction {
     int parameters[MAX_PARAMETERS];
 } BulletAction;
 
-typedef struct BulletPatterns {
-    uint current;
+typedef struct BulletPattern {
+    BulletAction actions[MAX_PATTERNS];
     uint count;
-    BulletAction patterns[MAX_PATTERNS];
-} BulletPatterns;
+} BulletPattern;
 
 // TODO: Use regions for sprites
 struct Entity {
@@ -70,7 +69,9 @@ struct Entity {
     } alive;
 
     struct {
-        BulletPatterns patterns;
+        BulletData data;
+        BulletPattern pattern;
+        uint curPatternIndex;
     } bullet;
 
     struct {
@@ -78,7 +79,7 @@ struct Entity {
         Vec2 normal;
         float interval;
         float spawnTimer;
-        const BulletPatterns patternsToSpawn;
+        const BulletPattern* patternToSpawn;
     } spawner;
 
     struct {
@@ -94,6 +95,8 @@ struct Scene {
 // bullet_entities.c
 BULLET void ClearEntities(Scene* scene);
 BULLET Entity* CreateEntity(Scene* scene);
+BULLET void DestroyEntity(Entity* e);
+
 BULLET void SetEntitySize(Entity* e, uint width, uint height);
 BULLET Rect GetEntityBounds(Entity e);
 
@@ -101,10 +104,10 @@ BULLET void UpdateAndRenderEntity(Scene* scene, Texture canvas, Entity* e, float
 BULLET uint UpdateAndRenderScene(Scene* scene, Texture canvas, float delta);
 
 BULLET void InitPlayer(Entity* e, Vec2 pos);
-BULLET void InitBullet(Entity* e, const BulletPatterns patterns, Vec2 pos, Vec2 normal);
+BULLET void InitBullet(Entity* e, const BulletPattern* patterns, Vec2 pos, Vec2 normal);
 
 // bullet_patterns.c
-BULLET bool RunBulletPatterns(Entity* target);
+BULLET bool RunBulletPattern(Entity* e, float delta);
 
-extern const BulletPatterns PlayerBullet;
-extern const BulletPatterns HelixBullet;
+extern const BulletPattern PlayerBullet;
+extern const BulletPattern HelixBullet;

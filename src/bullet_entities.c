@@ -30,6 +30,11 @@ BULLET Entity* CreateEntity(Scene* scene)
     return NULL;
 }
 
+BULLET void DestroyEntity(Entity* e)
+{
+    memset(e, 0, sizeof(Entity));
+}
+
 BULLET void SetEntitySize(Entity* e, uint width, uint height)
 {
     e->sprite.source.width = width;
@@ -114,7 +119,7 @@ void UpdateAndRenderEntity(Scene* scene, Texture canvas, Entity* e, float delta)
         weapon->sprite.pos.y = centerY + weapon->spawner.offsetFromParent.y;
 
         // draw normal (debugging)
-#if 0
+#if 1
         Vec2 end;
         end.x = weapon->sprite.pos.x + weapon->spawner.normal.x * 10;
         end.y = weapon->sprite.pos.y + weapon->spawner.normal.y * 10;
@@ -125,7 +130,7 @@ void UpdateAndRenderEntity(Scene* scene, Texture canvas, Entity* e, float delta)
         if (weapon->spawner.spawnTimer > weapon->spawner.interval)
         {
             Entity* bul = CreateEntity(scene);
-            InitBullet(bul, e->spawner.patternsToSpawn, weapon->sprite.pos, weapon->spawner.normal);
+            InitBullet(bul, weapon->spawner.patternToSpawn, weapon->sprite.pos, weapon->spawner.normal);
             weapon->spawner.spawnTimer = 0.f;
         }
         weapon->spawner.spawnTimer += delta;
@@ -139,9 +144,12 @@ void UpdateAndRenderEntity(Scene* scene, Texture canvas, Entity* e, float delta)
         int y = e->sprite.pos.y;
         if (x < -OOB || y < -OOB || x > WIDTH+OOB || y > HEIGHT+OOB)
         {
-            // TODO: DestroyEntity
-            e->timeAlive = 0.f;
-            e->isActive = false;
+            DestroyEntity(e);
+        }
+        else
+        {
+            if (RunBulletPattern(e, delta))
+                DestroyEntity(e);
         }
     }
 
@@ -191,19 +199,23 @@ BULLET void InitPlayer(Entity* e, Vec2 pos)
 
         Entity* ent = CreateEntity(e->scene);
         ent->sprite.tint = 0xFFFF00FF;
+        // TODO: wrap in builder
         ent->spawner.interval = 0.1f;
         ent->spawner.normal.x = cos(DEG2RAD(angle));
         ent->spawner.normal.y = sin(DEG2RAD(angle));
         ent->spawner.offsetFromParent.x = ent->spawner.normal.x*distanceFromPlayer;
         ent->spawner.offsetFromParent.y = ent->spawner.normal.y*distanceFromPlayer;
+        ent->spawner.patternToSpawn = &PlayerBullet;
         SetEntitySize(ent, 2,2);
 
         e->weapon.spawners[i] = ent;
     }
 }
 
-BULLET void InitBullet(Entity* e, const BulletPatterns patterns, Vec2 pos, Vec2 normal)
+BULLET void InitBullet(Entity* e, const BulletPattern* pattern, Vec2 pos, Vec2 normal)
 {
+    assert(pattern);
+
     Color tint;
     float power;
 
@@ -212,7 +224,7 @@ BULLET void InitBullet(Entity* e, const BulletPatterns patterns, Vec2 pos, Vec2 
     e->sprite.pos.y = pos.y;
 
     // copy bullet pattern
-    e->bullet.patterns = patterns;
+    e->bullet.pattern = *pattern;
 
     float radius = 13.f;
     SetEntitySize(e, radius, radius);
