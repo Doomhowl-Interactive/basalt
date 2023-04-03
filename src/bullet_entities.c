@@ -14,13 +14,12 @@
 typedef uint EntityID;
 typedef uint EntityType;
 
-typedef enum BulletType {
-    Default,
-} BulletType;
+typedef struct Entity Entity;
+typedef struct Scene Scene;
 
 // entity mega struct
-typedef struct Entity Entity;
 struct Entity {
+    Scene* scene;
     bool isActive;
     float timeAlive;
     EntityID id;
@@ -52,31 +51,39 @@ struct Entity {
         Vec2 normal;
         float interval;
         float spawnTimer;
-        BulletType bulletType;
+        BulletType* bulletType;
     } spawner;
 
     struct {
         Entity* spawners[MAX_SPAWNERS];
     } weapon;
 };
-
-static Entity GameEntities[MAX_ENTITIES];
-
-void ClearEntities()
+struct Scene
 {
-    memset(GameEntities, 0, sizeof(Entity)*MAX_ENTITIES);
+    uint id;
+    Entity entities[MAX_ENTITIES];
+};
+
+void ClearEntities(Scene* scene)
+{
+    assert(scene);
+
+    memset(scene->entities, 0, sizeof(Entity)*MAX_ENTITIES);
     INFO("Cleared all entities!");
 }
 
-Entity* CreateEntity()
+Entity* CreateEntity(Scene* scene)
 {
+    assert(scene);
+
     // get next available entity
     for (uint i = 0; i < MAX_ENTITIES; i++)
     {
-        Entity* entity = &GameEntities[i];
+        Entity* entity = &scene->entities[i];
         if (!entity->isActive)
         {
             entity->id = i;
+            entity->scene = scene;
             entity->isActive = true;
             return entity; 
         }
@@ -112,7 +119,7 @@ void InitPlayer(Entity* e, Vec2 pos)
     {
         double angle = -90 - outwardsAngleDeg * 0.5f + anglePerSpawner * i + anglePerSpawner * 0.5f;
 
-        Entity* ent = CreateEntity();
+        Entity* ent = CreateEntity(e->scene);
         ent->sprite.tint = 0xFFFF00FF;
         ent->spawner.interval = 0.1f;
         ent->spawner.normal.x = cos(DEG2RAD(angle));
@@ -162,7 +169,7 @@ void InitBullet(Entity* e, BulletType type, Vec2 pos, Vec2 normal)
     e->sprite.tint = tint;
 }
 
-void UpdateAndRenderEntity(Texture canvas, Entity* e, float delta)
+void UpdateAndRenderEntity(Scene* scene, Texture canvas, Entity* e, float delta)
 {
     e->timeAlive += delta;
 
@@ -237,7 +244,7 @@ void UpdateAndRenderEntity(Texture canvas, Entity* e, float delta)
         // spawn bullets on interval
         if (weapon->spawner.spawnTimer > weapon->spawner.interval)
         {
-            Entity* bul = CreateEntity();
+            Entity* bul = CreateEntity(scene);
             InitBullet(bul, e->spawner.bulletType, weapon->sprite.pos, weapon->spawner.normal);
             weapon->spawner.spawnTimer = 0.f;
         }
@@ -269,15 +276,15 @@ void UpdateAndRenderEntity(Texture canvas, Entity* e, float delta)
     // vel->y -= MIN(offsetY, vel->y);
 }
 
-uint UpdateAndRenderEntities(Texture canvas, float delta)
+uint UpdateAndRenderScene(Scene* scene, Texture canvas, float delta)
 {
     uint count = 0;
     for (uint i = 0; i < MAX_ENTITIES; i++)
     {
-        Entity* e = &GameEntities[i];
+        Entity* e = &scene->entities[i];
         if (e->isActive)
         {
-            UpdateAndRenderEntity(canvas, e, delta);
+            UpdateAndRenderEntity(scene, canvas, e, delta);
             count++;
         }
     }
