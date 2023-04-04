@@ -4,6 +4,7 @@
 #define DIFFICULTY 2
 
 #define PATTERN
+#define ENDING
 
 uint GetBulletPatternActionCount(BulletPattern* pattern)
 {
@@ -30,7 +31,13 @@ BULLET bool RunBulletPattern(Entity* e, float delta)
     e->bullet.data.timer += delta;
     e->bullet.data.delta = delta;
     e->sprite.tint = action.tint;
-    if ((*action.function)(e, &e->bullet.data, DIFFICULTY, action.parameters))
+
+    // process bullet action
+    BulletActionFunc actionFunc = action.function;
+    (*actionFunc)(e, &e->bullet.data, DIFFICULTY, action.parameters);
+
+    BulletActionEndFunc endFunc = action.endFunction;
+    if ((*endFunc)(e, &e->bullet.data, DIFFICULTY, action.parameters))
     {
         // on bullet action done
         e->bullet.curPatternIndex++;
@@ -38,10 +45,16 @@ BULLET bool RunBulletPattern(Entity* e, float delta)
     return false;
 }
 
-//typedef bool (*BulletActionFunc)(Entity* entity, BulletData memory, int difficulty, const int* args);
+ENDING bool EndBulletOOB(Entity* e, BulletData* data, int difficulty, const int* args)
+{
+    const int OOB = 100;
+    int x = e->sprite.pos.x;
+    int y = e->sprite.pos.y;
+    return (x < -OOB || y < -OOB || x > WIDTH+OOB || y > HEIGHT+OOB);
+}
 
 // TODO: Add end condition instead of passing duration integer everywhere
-PATTERN bool MoveBulletStraight(Entity* e, BulletData* data, int difficulty, const int* args)
+PATTERN void MoveBulletStraight(Entity* e, BulletData* data, int difficulty, const int* args)
 {
     int duration = args[0];
 
@@ -49,11 +62,9 @@ PATTERN bool MoveBulletStraight(Entity* e, BulletData* data, int difficulty, con
 
     e->physics.vel.x = data->normal.x*power;
     e->physics.vel.y = data->normal.y*power;
-
-    return data->timer > duration;
 }
 
-PATTERN bool MoveBulletOceanWave(Entity* e, BulletData* data, int difficulty, const int* args)
+PATTERN void MoveBulletOceanWave(Entity* e, BulletData* data, int difficulty, const int* args)
 {
     int segWidth  = args[0];
     int segHeight = args[1];
@@ -68,11 +79,9 @@ PATTERN bool MoveBulletOceanWave(Entity* e, BulletData* data, int difficulty, co
 
     e->sprite.pos.x = (data->origin.x + data->normal.x * distance) + cos(data->timer*10) * segWidth;
     e->sprite.pos.y = (data->origin.y + data->normal.y * distance) + sin(data->timer*10) * segHeight;
-
-    return false;
 }
 
-PATTERN bool MoveBulletSowing(Entity* e, BulletData* data, int difficulty, const int* args)
+PATTERN void MoveBulletSowing(Entity* e, BulletData* data, int difficulty, const int* args)
 {
     int segWidth  = args[0];
     int speed = args[1];
@@ -85,11 +94,9 @@ PATTERN bool MoveBulletSowing(Entity* e, BulletData* data, int difficulty, const
 
     e->sprite.pos.x = (data->origin.x + data->normal.x * distance) + cos(data->timer*speed) * segWidth;
     e->sprite.pos.y = (data->origin.y + data->normal.y * distance);
-
-    return false;
 }
 
-PATTERN bool MoveBulletStaircase(Entity* e, BulletData* data, int difficulty, const int* args)
+PATTERN void MoveBulletStaircase(Entity* e, BulletData* data, int difficulty, const int* args)
 {
     int segWidth  = args[0];
     int speed = args[1];
@@ -101,11 +108,9 @@ PATTERN bool MoveBulletStaircase(Entity* e, BulletData* data, int difficulty, co
     float distance = data->timer * power;
     e->sprite.pos.x = (data->origin.x + data->normal.x * distance);
     e->sprite.pos.y = (data->origin.y + data->normal.y * distance) + cos(data->timer*speed) * segWidth;
-
-    return false;
 }
 
-PATTERN bool MoveBulletSnake(Entity* e, BulletData* data, int difficulty, const int* args)
+PATTERN void MoveBulletSnake(Entity* e, BulletData* data, int difficulty, const int* args)
 {
     int segWidth  = args[0];
     int yFlip = args[1];
@@ -113,14 +118,13 @@ PATTERN bool MoveBulletSnake(Entity* e, BulletData* data, int difficulty, const 
     float power = 150 + difficulty * 30;
 
     ResetEntityVelocity(e);
-
-    return false;
 }
 
 const BulletPattern PlayerBullet = {
     {
         {
             MoveBulletStraight,
+            EndBulletOOB,
             0xFFBB00FF,
             { 5 },
         }
@@ -131,6 +135,7 @@ const BulletPattern PlayerBullet2 = {
     {
         {
             MoveBulletOceanWave,
+            EndBulletOOB,
             0xAAAAFFFF,
             { 40, 40 }
         }
@@ -141,6 +146,7 @@ const BulletPattern PlayerBullet3 = {
     {
         {
             MoveBulletStaircase,
+            EndBulletOOB,
             0x0022DDFF,
             { 10, -1 }
         }
@@ -151,6 +157,7 @@ const BulletPattern PlayerBullet4 = {
     {
         {
             MoveBulletSnake,
+            EndBulletOOB,
             0x22FF22FF,
             { 10, -1 }
         }

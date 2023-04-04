@@ -145,18 +145,8 @@ void UpdateAndRenderEntity(Scene* scene, Texture canvas, Entity* e, float delta)
     // Bullet behaviour
     if (COMPARE(e->type,TAG_BULLET))
     {
-        const int OOB = 100;
-        int x = e->sprite.pos.x;
-        int y = e->sprite.pos.y;
-        if (x < -OOB || y < -OOB || x > WIDTH+OOB || y > HEIGHT+OOB)
-        {
+        if (RunBulletPattern(e, delta))
             DestroyEntity(e);
-        }
-        else
-        {
-            if (RunBulletPattern(e, delta))
-                DestroyEntity(e);
-        }
     }
 
     // apply movement

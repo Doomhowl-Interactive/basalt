@@ -29,10 +29,12 @@ typedef struct BulletData {
     float floats[MAX_BULLET_SLOTS];
 } BulletData;
 
-typedef bool (*BulletActionFunc)(Entity* entity, BulletData* data, int difficulty, const int* args);
+typedef void (*BulletActionFunc)(Entity* entity, BulletData* data, int difficulty, const int* args);
+typedef bool (*BulletActionEndFunc)(Entity* entity, BulletData* data, int difficulty, const int* args);
 
 typedef struct BulletAction {
     BulletActionFunc function;
+    BulletActionEndFunc endFunction;
     Color tint;
     int parameters[MAX_PARAMETERS];
 } BulletAction;
