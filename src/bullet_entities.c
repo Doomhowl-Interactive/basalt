@@ -54,6 +54,12 @@ BULLET Rect GetEntityBounds(Entity e)
     return bounds;
 }
 
+BULLET void ResetEntityVelocity(Entity *e)
+{
+    e->physics.vel.x = 0;
+    e->physics.vel.y = 0;
+}
+
 void UpdateAndRenderEntity(Scene* scene, Texture canvas, Entity* e, float delta)
 {
     e->timeAlive += delta;

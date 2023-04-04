@@ -103,6 +103,7 @@ BULLET void DestroyEntity(Entity* e);
 
 BULLET void SetEntitySize(Entity* e, uint width, uint height);
 BULLET Rect GetEntityBounds(Entity e);
+BULLET void ResetEntityVelocity(Entity *e);
 
 BULLET void UpdateAndRenderEntity(Scene* scene, Texture canvas, Entity* e, float delta);
 BULLET uint UpdateAndRenderScene(Scene* scene, Texture canvas, float delta);

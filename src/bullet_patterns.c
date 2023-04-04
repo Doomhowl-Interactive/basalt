@@ -7,8 +7,7 @@
 
 uint GetBulletPatternActionCount(BulletPattern* pattern)
 {
-    uint index;
-    for (index = 0; index < MAX_ENTITIES; index++)
+    for (uint index = 0; index < MAX_ENTITIES; index++)
     {
         if (pattern->actions[index].function == NULL)
             return index;
@@ -80,9 +79,7 @@ PATTERN bool MoveBulletSowing(Entity* e, BulletData* data, int difficulty, const
 
     float power = 150 + difficulty * 30;
 
-    // TODO: ResetVelocity()
-    e->physics.vel.x = 0;
-    e->physics.vel.y = 0;
+    ResetEntityVelocity(e);
 
     float distance = data->timer * power;
 
@@ -99,12 +96,9 @@ PATTERN bool MoveBulletStaircase(Entity* e, BulletData* data, int difficulty, co
 
     float power = 150 + difficulty * 30;
 
-    // TODO: ResetVelocity()
-    e->physics.vel.x = 0;
-    e->physics.vel.y = 0;
+    ResetEntityVelocity(e);
 
     float distance = data->timer * power;
-
     e->sprite.pos.x = (data->origin.x + data->normal.x * distance);
     e->sprite.pos.y = (data->origin.y + data->normal.y * distance) + cos(data->timer*speed) * segWidth;
 
@@ -118,9 +112,7 @@ PATTERN bool MoveBulletSnake(Entity* e, BulletData* data, int difficulty, const 
 
     float power = 150 + difficulty * 30;
 
-    // TODO: ResetVelocity()
-    e->physics.vel.x = cos(data->timer*segWidth)*power;
-    e->physics.vel.y = yFlip * ABS(float, sin(data->timer*segWidth)*power);
+    ResetEntityVelocity(e);
 
     return false;
 }
