@@ -1,7 +1,60 @@
 #include "basalt.h"
 #include "basalt_extra.h"
 
-pubfunc void DrawTextureSheet(Texture canvas, TextureSheet sheet, int frame, Vec2 pos) {
+#define OPEN_SIMPLEX_NOISE_IMPLEMENTATION
+#include "external/open-simplex-noise.h"
+
+pubfunc Texture GenerateNoiseTextureEx(int width, int height, Color bg, Color fg, double scale, int seed)
+{
+    Texture texture = InitTexture(width, height);
+
+    struct osn_context* context;
+    open_simplex_noise(seed,&context);
+
+    double lowest = 1000;
+    double highest = -1000;
+    double values[texture.width*texture.height];
+
+    // Determine ranges
+    int i = 0;
+    for (int y = 0; y < texture.height; y++)
+    {
+        for (int x = 0; x < texture.width; x++)
+        {
+            double val = open_simplex_noise2(context, x / scale, y / scale);
+            if (lowest > val)
+                lowest = val; 
+            if (highest < val)
+                highest = val; 
+            values[i++] = val;
+        }
+    }
+
+    // Calculate colors
+    i = 0;
+    for (int y = 0; y < texture.height; y++)
+    {
+        for (int x = 0; x < texture.width; x++)
+        {
+            float percentage = (float) ((values[i] - lowest) / (highest - lowest));
+            texture.pixels[i++] = BlendColors(bg, fg, percentage);
+        }
+    }
+
+    open_simplex_noise_free(context);
+
+    return texture;
+}
+
+pubfunc Texture GenerateNoiseTexture(int width, int height, Color bg, Color fg)
+{
+    int seed = GetRandomNumber();
+    double scale = 60;
+    return GenerateNoiseTextureEx(width, height, bg, fg, scale, seed);
+}
+
+pubfunc void DrawTextureSheet(Texture canvas, TextureSheet sheet, int frame, Vec2 pos)
+{
     assert(sheet.texture);
     assert(sheet.texture->pixels);
 

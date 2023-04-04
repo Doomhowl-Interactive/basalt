@@ -23,6 +23,8 @@ class(OffscreenBuffer) {
     uchar* pixels;
     XImage *image;
     char title[128];
+
+    usize frameIndex;
 };
 
 class(SInput) {
@@ -48,6 +50,11 @@ pubfunc void SetWindowTitle(const char* title) {
     } else {
         ERR("Failed to set change window title!\n");
     }
+}
+
+pubfunc usize GetFrameIndex()
+{
+    return ActiveBuffer.frameIndex++;
 }
 
 pubfunc Point GetMousePosition()
@@ -201,6 +208,7 @@ int main(int argc, char **argv) {
     int posY = size.height / 2 - HEIGHT / 2;
     XMoveResizeWindow(display, win, posX, posY, WIDTH, HEIGHT);
 
+    srand(time(NULL));
     InitializeGame();
 
     int width = WIDTH;
@@ -280,6 +288,7 @@ int main(int argc, char **argv) {
                 delta = prevDelta;
             }
             UpdateAndRenderGame(canvas, (float) delta);
+            ActiveBuffer.frameIndex++;
         }
 
         RenderOffscreenBuffer(&ActiveBuffer, width, height);

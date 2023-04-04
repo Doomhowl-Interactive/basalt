@@ -1,5 +1,34 @@
 #include "basalt.h"
 
+static usize PrevRNGFrame = 0;
+static usize RNGOffset = 0;
+// NOTE: Random numbers aren't actually random, they're based on frame index
+// in order to make reproducable tests (replays?) in the future possible
+// If you want "real" random numbers, use GetRealRandomNumber()
+pubfunc int GetRandomNumber()
+{
+    usize curFrame = GetFrameIndex();
+    if (PrevRNGFrame == curFrame)
+    {
+        RNGOffset++;
+    }
+    else
+    {
+        RNGOffset += 0;
+        PrevRNGFrame = curFrame;
+    }
+
+    // TODO: This could be better
+    int rng = ((curFrame * 69696420) << 2) * (525+RNGOffset);
+    return rng;
+}
+
+pubfunc int GetRealRandomNumber()
+{
+    int rng = rand();
+    return rng;
+}
+
 pubfunc bool IsLittleEndian() {
     volatile uint i = 0x01234567;
     bool littleEndian = *((uchar*)(&i)) == 0x67;

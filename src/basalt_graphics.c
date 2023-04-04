@@ -261,12 +261,43 @@ pubfunc void DrawWeirdTestGradient(Texture canvas) {
     DRAWCALL(canvas, DrawRectangle);
 }
 
-pubfunc Color RGBA(uchar r, uchar g, uchar b, uchar a){
+pubfunc Color RGBA(uchar r, uchar g, uchar b, uchar a)
+{
     return (r << 24) | (g << 16) | (b << 8) | a;
 }
 
-pubfunc Color RGB(uchar r, uchar g, uchar b){
+pubfunc Color RGB(uchar r, uchar g, uchar b)
+{
     return RGBA(r, g, b, 255);
+}
+
+pubfunc Color BlendColors(Color color1, Color color2, float percent)
+{
+    // TODO: cleanup
+    unsigned char r1, g1, b1, a1;
+    unsigned char r2, g2, b2, a2;
+    unsigned char r3, g3, b3, a3;
+    
+    // Extract the RGBA components of color1
+    r1 = (color1 >> 24) & 0xFF;
+    g1 = (color1 >> 16) & 0xFF;
+    b1 = (color1 >> 8) & 0xFF;
+    a1 = color1 & 0xFF;
+    
+    // Extract the RGBA components of color2
+    r2 = (color2 >> 24) & 0xFF;
+    g2 = (color2 >> 16) & 0xFF;
+    b2 = (color2 >> 8) & 0xFF;
+    a2 = color2 & 0xFF;
+    
+    // Calculate the blended RGBA components
+    r3 = (unsigned char)((1 - percent) * r1 + percent * r2);
+    g3 = (unsigned char)((1 - percent) * g1 + percent * g2);
+    b3 = (unsigned char)((1 - percent) * b1 + percent * b2);
+    a3 = (unsigned char)((1 - percent) * a1 + percent * a2);
+    
+    // Combine the blended RGBA components into a single unsigned int
+    return (r3 << 24) | (g3 << 16) | (b3 << 8) | a3;
 }
 
 // NOTE: Taken from https://github.com/tsoding/olive.c/blob/master/olive.c

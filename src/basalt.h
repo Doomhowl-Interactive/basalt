@@ -106,6 +106,8 @@ pubfunc void UnitTest();
 
 pubfunc bool IsLittleEndian();
 pubfunc int Clamp(int value, int min, int max);
+pubfunc int GetRandomNumber(); // WARN: read implementation 
+pubfunc int GetRealRandomNumber();
 
 pubfunc Vec2 Vec2Normalize(Vec2 v2);
 pubfunc float Vec2Magnitude(Vec2 v2);
@@ -129,6 +131,8 @@ pubfunc Texture LoadTextureEx(const char* name, uchar* pixels);
 // Platform dependent stuff
 pubfunc Point GetMousePosition();
 pubfunc void SetWindowTitle(const char* title);
+
+pubfunc usize GetFrameIndex();
 
 pubfunc bool IsMouseDown();
 pubfunc bool IsMouseUp();
@@ -159,6 +163,7 @@ pubfunc void DrawRectangleLines(Texture canvas, int posX, int posY, int width, i
 pubfunc void DrawRectangleLinesRec(Texture canvas, Rect rect, int border, Color color);
 
 pubfunc void DrawWeirdTestGradient(Texture canvas);
+
 pubfunc Texture InitTexture(int width, int height);
 pubfunc Texture CopyTexture(Texture source);
 pubfunc void CopyTextureInto(Texture dest, Texture source);
@@ -176,6 +181,7 @@ pubfunc void DrawTextureScaled(Texture canvas, Texture texture, Rect region);
 
 pubfunc Color RGB(uchar r, uchar g, uchar b);
 pubfunc Color RGBA(uchar r, uchar g, uchar b, uchar a); // NOTE: Format RR GG BB AA
+pubfunc Color BlendColors(Color color1, Color color2, float percent);
 
 // Main game methods (for example: temple_game.c)
 pubfunc void InitializeGame();

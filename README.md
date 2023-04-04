@@ -1,3 +1,5 @@
+> NOTE: Windows build is out-of-date, use Linux ;)
+
 # basalt
 game engine made from sticks and twigs
 

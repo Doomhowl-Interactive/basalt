@@ -31,11 +31,15 @@ static const BulletPattern* Patterns[] = {
 };
 static uint SelectedPattern = 1;
 
+static Texture backgroundTexture = { 0 };
+
 pubfunc void InitializeGame()
 {
     Player = CreateEntity(&Scenes[SCENE_GAME]);
     Vec2 spawnPos = {WIDTH / 2, HEIGHT / 1.2f};
     InitPlayer(Player, spawnPos);
+
+    backgroundTexture = GenerateNoiseTexture(WIDTH, HEIGHT, 0x4B486EFF, 0x07060FFF);
 }
 
 pubfunc void DisposeGame()
@@ -74,6 +78,6 @@ pubfunc void UpdateAndRenderGame(Texture canvas, float delta)
     }
 
     Scene* activeScene = &Scenes[ActiveSceneID];
-    ClearTexture(canvas, SKY_COLOR);
+    DrawTexture(canvas, backgroundTexture, 0, 0);
     UpdateAndRenderScene(activeScene, canvas, delta);
 }

@@ -13,6 +13,7 @@ class(OffscreenBuffer) {
     Texture canvas;
     Texture mappedCanvas;
     Texture mappedCanvas2;
+    usize frameIndex;
 };
 
 class(SInput) {
@@ -35,6 +36,11 @@ pubfunc bool IsMouseUp() {
 
 pubfunc Point GetMousePosition() {
     return Input.mouse;
+}
+
+pubfunc usize GetFrameIndex()
+{
+    return GlobalBackbuffer.frameIndex;
 }
 
 #define MAX_TITLE_LEN 128
@@ -218,6 +224,7 @@ int CALLBACK WinMain(HINSTANCE instance, HINSTANCE prevInstance,
                 // do updateing and drawing
                 Texture canvas = GlobalBackbuffer.canvas;
                 UpdateAndRenderGame(canvas, (float) delta);
+                GlobalBackbuffer.frameIndex++;
 
                 DisplayBufferInWindow(deviceContext, size.width, size.height,
                                       GlobalBackbuffer);
