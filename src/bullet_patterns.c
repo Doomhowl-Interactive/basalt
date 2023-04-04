@@ -4,7 +4,6 @@
 #define DIFFICULTY 2
 
 #define PATTERN
-#define END -1000
 
 uint GetBulletPatternActionCount(BulletPattern* pattern)
 {
@@ -30,7 +29,9 @@ BULLET bool RunBulletPattern(Entity* e, float delta)
     BulletAction action = pattern->actions[e->bullet.curPatternIndex];
     assert(action.function);
     e->bullet.data.timer += delta;
-    if ((*action.function)(e, e->bullet.data, DIFFICULTY, action.parameters))
+    e->bullet.data.delta = delta;
+    e->sprite.tint = action.tint;
+    if ((*action.function)(e, &e->bullet.data, DIFFICULTY, action.parameters))
     {
         // on bullet action done
         e->bullet.curPatternIndex++;
@@ -40,22 +41,54 @@ BULLET bool RunBulletPattern(Entity* e, float delta)
 
 //typedef bool (*BulletActionFunc)(Entity* entity, BulletData memory, int difficulty, const int* args);
 
-PATTERN bool MoveBulletStraight(Entity* e, BulletData memory, int difficulty, const int* args)
+// TODO: Add end condition instead of passing duration integer everywhere
+PATTERN bool MoveBulletStraight(Entity* e, BulletData* data, int difficulty, const int* args)
 {
-    int angleDeg = args[0];
-    int duration = args[1];
+    int duration = args[0];
 
     float power = 150 + difficulty * 30;
 
-    e->physics.vel.x = cos(DEG2RAD(angleDeg))*power;
-    e->physics.vel.y = sin(DEG2RAD(angleDeg))*power;
+    e->physics.vel.x = data->normal.x*power;
+    e->physics.vel.y = data->normal.y*power;
 
-    return memory.timer > duration;
+    return data->timer > duration;
 }
 
-PATTERN bool MoveBulletHelix(Entity* e, BulletData memory, int difficulty, const int* args)
+PATTERN bool MoveBulletOceanWave(Entity* e, BulletData* data, int difficulty, const int* args)
 {
-    // TODO:
+    int segWidth  = args[0];
+    int segHeight = args[1];
+
+    float power = 150 + difficulty * 30;
+
+    // TODO: ResetVelocity()
+    e->physics.vel.x = 0;
+    e->physics.vel.y = 0;
+
+    float distance = data->timer * power;
+
+    e->sprite.pos.x = (data->origin.x + data->normal.x * distance) + cos(data->timer*10) * segWidth;
+    e->sprite.pos.y = (data->origin.y + data->normal.y * distance) + sin(data->timer*10) * segHeight;
+
+    return false;
+}
+
+PATTERN bool MoveBulletHelix(Entity* e, BulletData* data, int difficulty, const int* args)
+{
+    int segWidth  = args[0];
+    int segHeight = args[1];
+
+    float power = 150 + difficulty * 30;
+
+    // TODO: ResetVelocity()
+    e->physics.vel.x = 0;
+    e->physics.vel.y = 0;
+
+    float distance = data->timer * power;
+
+    e->sprite.pos.x = (data->origin.x + data->normal.x * distance) + cos(data->timer*10) * segWidth;
+    e->sprite.pos.y = (data->origin.y + data->normal.y * distance) + sin(data->timer*10) * segHeight;
+
     return false;
 }
 
@@ -63,16 +96,18 @@ const BulletPattern PlayerBullet = {
     {
         {
             MoveBulletStraight,
-            { -90, 5, END }
+            0xFFBB00FF,
+            { 5 },
         }
     }
 };
 
-const BulletPattern HelixBullet = {
+const BulletPattern PlayerBullet2 = {
     {
         {
-            MoveBulletHelix,
-            { 40, 40, END }
+            MoveBulletOceanWave,
+            0xAAAAFFFF,
+            { 40, 40 }
         }
     }
 };

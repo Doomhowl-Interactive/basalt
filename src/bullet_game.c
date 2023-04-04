@@ -20,11 +20,20 @@ const uint TPS = 25;
 static uint ActiveSceneID     = 0;
 static Scene Scenes[SCENE_COUNT] = { 0 };
 
+static Entity* Player = NULL;
+
+#define PATTERN_COUNT 2
+static const BulletPattern* Patterns[] = {
+    &PlayerBullet,
+    &PlayerBullet2
+};
+static uint SelectedPattern = 1;
+
 pubfunc void InitializeGame()
 {
-    Entity* player = CreateEntity(&Scenes[SCENE_GAME]);
+    Player = CreateEntity(&Scenes[SCENE_GAME]);
     Vec2 spawnPos = {WIDTH / 2, HEIGHT / 1.2f};
-    InitPlayer(player, spawnPos);
+    InitPlayer(Player, spawnPos);
 }
 
 pubfunc void DisposeGame()
@@ -45,6 +54,21 @@ pubfunc void UpdateAndRenderGame(Texture canvas, float delta)
         ActiveSceneID--;
         if (ActiveSceneID < 0)
             ActiveSceneID = SCENE_COUNT-1;
+    }
+
+    // switch between bullet types for testing
+    if (IsKeyPressed(KEY_E))
+    {
+        uint patternIndex = SelectedPattern++;
+        for (int i = 0; i < MAX_SPAWNERS; i++)
+        {
+            Entity* weapon = Player->weapon.spawners[i];
+            if (weapon == NULL) continue;
+            weapon->spawner.patternToSpawn = Patterns[patternIndex];
+        }
+
+        if (SelectedPattern >= PATTERN_COUNT)
+            SelectedPattern = 0;
     }
 
     Scene* activeScene = &Scenes[ActiveSceneID];

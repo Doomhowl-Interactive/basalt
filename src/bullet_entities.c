@@ -216,20 +216,16 @@ BULLET void InitBullet(Entity* e, const BulletPattern* pattern, Vec2 pos, Vec2 n
 {
     assert(pattern);
 
-    Color tint;
-    float power;
-
     e->type = TAG_BULLET;
     e->sprite.pos.x = pos.x;
     e->sprite.pos.y = pos.y;
 
     // copy bullet pattern
     e->bullet.pattern = *pattern;
+    e->bullet.data.origin = pos;
+    e->bullet.data.normal = normal;
 
-    float radius = 13.f;
+    float radius = 10.f;
     SetEntitySize(e, radius, radius);
-
-    e->physics.vel.x = normal.x * power;
-    e->physics.vel.y = normal.y * power;
-    e->sprite.tint = tint;
+    e->sprite.tint = 0xFFFFFFFF;
 }

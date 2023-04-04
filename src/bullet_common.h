@@ -20,16 +20,20 @@ typedef struct Scene Scene;
 
 typedef struct BulletData {
     float timer;
+    Vec2 origin;
+    Vec2 normal;
+    float delta;
 
     int ints[MAX_BULLET_SLOTS];
     bool bools[MAX_BULLET_SLOTS];
     float floats[MAX_BULLET_SLOTS];
 } BulletData;
 
-typedef bool (*BulletActionFunc)(Entity* entity, BulletData memory, int difficulty, const int* args);
+typedef bool (*BulletActionFunc)(Entity* entity, BulletData* data, int difficulty, const int* args);
 
 typedef struct BulletAction {
     BulletActionFunc function;
+    Color tint;
     int parameters[MAX_PARAMETERS];
 } BulletAction;
 
@@ -110,4 +114,4 @@ BULLET void InitBullet(Entity* e, const BulletPattern* patterns, Vec2 pos, Vec2 
 BULLET bool RunBulletPattern(Entity* e, float delta);
 
 extern const BulletPattern PlayerBullet;
-extern const BulletPattern HelixBullet;
+extern const BulletPattern PlayerBullet2;
