@@ -4,7 +4,7 @@ game engine made from sticks and twigs
 Slowly solidifying [Magma Game Engine](https://github.com/bramtechs/RaylibMagmaEngine) and [dream-emu](https://github.com/bramtechs/dream-emu) while focusing on [Suckless](https://suckless.org) & [Handmade Hero](https://handmadehero.org/)-minimalism and performance.
 
 ## Screenshots
-![Window XP](screenshots/window_xp.png)
+![Preview](screenshots/preview-bullethell.webm)
 
 ## New goals
 - C over C++ (support both types of compilers)
