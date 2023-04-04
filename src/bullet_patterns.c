@@ -71,10 +71,7 @@ PATTERN void MoveBulletOceanWave(Entity* e, BulletData* data, int difficulty, co
 
     float power = 150 + difficulty * 30;
 
-    // TODO: ResetVelocity()
-    e->physics.vel.x = 0;
-    e->physics.vel.y = 0;
-
+    ResetEntityVelocity(e);
     float distance = data->timer * power;
 
     e->sprite.pos.x = (data->origin.x + data->normal.x * distance) + cos(data->timer*10) * segWidth;
@@ -117,7 +114,8 @@ PATTERN void MoveBulletSnake(Entity* e, BulletData* data, int difficulty, const 
 
     float power = 150 + difficulty * 30;
 
-    ResetEntityVelocity(e);
+    e->physics.vel.x = cos(data->timer*segWidth)*power;
+    e->physics.vel.y = yFlip * ABS(float, sin(data->timer*segWidth)*power);
 }
 
 const BulletPattern PlayerBullet = {
