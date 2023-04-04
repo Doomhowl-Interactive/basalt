@@ -73,10 +73,10 @@ PATTERN bool MoveBulletOceanWave(Entity* e, BulletData* data, int difficulty, co
     return false;
 }
 
-PATTERN bool MoveBulletHelix(Entity* e, BulletData* data, int difficulty, const int* args)
+PATTERN bool MoveBulletSowing(Entity* e, BulletData* data, int difficulty, const int* args)
 {
     int segWidth  = args[0];
-    int segHeight = args[1];
+    int speed = args[1];
 
     float power = 150 + difficulty * 30;
 
@@ -86,8 +86,41 @@ PATTERN bool MoveBulletHelix(Entity* e, BulletData* data, int difficulty, const 
 
     float distance = data->timer * power;
 
-    e->sprite.pos.x = (data->origin.x + data->normal.x * distance) + cos(data->timer*10) * segWidth;
-    e->sprite.pos.y = (data->origin.y + data->normal.y * distance) + sin(data->timer*10) * segHeight;
+    e->sprite.pos.x = (data->origin.x + data->normal.x * distance) + cos(data->timer*speed) * segWidth;
+    e->sprite.pos.y = (data->origin.y + data->normal.y * distance);
+
+    return false;
+}
+
+PATTERN bool MoveBulletStaircase(Entity* e, BulletData* data, int difficulty, const int* args)
+{
+    int segWidth  = args[0];
+    int speed = args[1];
+
+    float power = 150 + difficulty * 30;
+
+    // TODO: ResetVelocity()
+    e->physics.vel.x = 0;
+    e->physics.vel.y = 0;
+
+    float distance = data->timer * power;
+
+    e->sprite.pos.x = (data->origin.x + data->normal.x * distance);
+    e->sprite.pos.y = (data->origin.y + data->normal.y * distance) + cos(data->timer*speed) * segWidth;
+
+    return false;
+}
+
+PATTERN bool MoveBulletSnake(Entity* e, BulletData* data, int difficulty, const int* args)
+{
+    int segWidth  = args[0];
+    int yFlip = args[1];
+
+    float power = 150 + difficulty * 30;
+
+    // TODO: ResetVelocity()
+    e->physics.vel.x = cos(data->timer*segWidth)*power;
+    e->physics.vel.y = yFlip * ABS(float, sin(data->timer*segWidth)*power);
 
     return false;
 }
@@ -108,6 +141,26 @@ const BulletPattern PlayerBullet2 = {
             MoveBulletOceanWave,
             0xAAAAFFFF,
             { 40, 40 }
+        }
+    }
+};
+
+const BulletPattern PlayerBullet3 = {
+    {
+        {
+            MoveBulletStaircase,
+            0x0022DDFF,
+            { 10, -1 }
+        }
+    }
+};
+
+const BulletPattern PlayerBullet4 = {
+    {
+        {
+            MoveBulletSnake,
+            0x22FF22FF,
+            { 10, -1 }
         }
     }
 };

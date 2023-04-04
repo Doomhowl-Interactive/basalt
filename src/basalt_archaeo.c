@@ -27,10 +27,6 @@ pubfunc void DrawCallImpl(Texture canvas, const char* desc)
 
         CopyTextureInto(DrawCallTextures[i], canvas);
     }
-    else
-    {
-        WARN("Too many draw calls to register!");
-    }
 #endif
 }
 

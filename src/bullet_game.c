@@ -22,10 +22,12 @@ static Scene Scenes[SCENE_COUNT] = { 0 };
 
 static Entity* Player = NULL;
 
-#define PATTERN_COUNT 2
+#define PATTERN_COUNT 4
 static const BulletPattern* Patterns[] = {
     &PlayerBullet,
-    &PlayerBullet2
+    &PlayerBullet2,
+    &PlayerBullet3,
+    &PlayerBullet4,
 };
 static uint SelectedPattern = 1;
 

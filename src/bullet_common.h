@@ -115,3 +115,4 @@ BULLET bool RunBulletPattern(Entity* e, float delta);
 
 extern const BulletPattern PlayerBullet;
 extern const BulletPattern PlayerBullet2;
+extern const BulletPattern PlayerBullet3;
