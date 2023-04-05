@@ -193,8 +193,9 @@ int CALLBACK WinMain(HINSTANCE instance, HINSTANCE prevInstance,
 
             InitializeGame();
 
-            double delta = 1.0 / MAX_FPS;
-            double fps = MAX_FPS;
+            double maxFps = Config.unlockedFramerate ? 10000:60;
+            double delta = 1.0 / maxFps;
+            double fps = maxFps;
             while (Context.shouldBeRunning) {
                 MSG message;
                 Size size = GetWindowSize(window);
@@ -233,7 +234,7 @@ int CALLBACK WinMain(HINSTANCE instance, HINSTANCE prevInstance,
                 usize interTime = GetMicroseconds();
 
                 usize interMicros = interTime - startTime;
-                usize maxMicros = 1.0 / MAX_FPS * 1000000;
+                usize maxMicros = 1.0 / maxFps * 1000000;
                 long waitMicros = maxMicros - interMicros;
                 if (waitMicros > 0 && interMicros < maxMicros)
                     SleepMicroseconds(waitMicros);

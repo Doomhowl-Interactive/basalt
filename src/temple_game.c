@@ -6,7 +6,6 @@ const uint WIDTH = 640;
 const uint HEIGHT = 480;
 const char* GAME_TITLE = "Basalt Engine";
 
-const uint MAX_FPS = 180;
 const uint TPS = 25;
 const uint MAX_ENTITIES = 256;
 

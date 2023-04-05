@@ -219,9 +219,10 @@ int main(int argc, char **argv) {
     int width = WIDTH;
     int height = HEIGHT;
 
+    double maxFps = Config.unlockedFramerate ? 10000:60;
     double prevDelta = 0.f;
-    double delta = 1.0 / MAX_FPS;
-    double fps = MAX_FPS;
+    double delta = 1.0 / maxFps;
+    double fps = maxFps;
     while (ShouldBeRunning) {
         while (XPending(display) > 0) {
             XEvent event;
@@ -303,7 +304,7 @@ int main(int argc, char **argv) {
         gettimeofday(&interTime, NULL);
 
         size_t interMicros = interTime.tv_usec - startTime.tv_usec;
-        size_t maxMicros = 1.0 / MAX_FPS * 1000000;
+        size_t maxMicros = 1.0 / maxFps * 1000000;
         long waitMicros = maxMicros - interMicros;
         if (waitMicros > 0 && interMicros < maxMicros)
             usleep(waitMicros);

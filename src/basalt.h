@@ -31,7 +31,6 @@ extern const uint WIDTH;
 extern const uint HEIGHT;
 extern const char* GAME_TITLE;
 
-extern const uint MAX_FPS;
 extern const uint TPS;
 extern const uint MAX_ENTITIES;
 

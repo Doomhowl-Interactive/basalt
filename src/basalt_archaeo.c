@@ -11,7 +11,7 @@ static Texture DrawCallTextures[MAX_DRAW_CALLS] = { 0 };
 
 pubfunc void DrawCallImpl(Texture canvas, const char* desc)
 {
-    if (TargetTextureMemory == NULL || TargetTextureMemory != canvas.pixels)
+    if (!Config.hasArchaeo || TargetTextureMemory == NULL || TargetTextureMemory != canvas.pixels)
         return;
 
     if (DrawCallCount < MAX_DRAW_CALLS)
@@ -26,6 +26,9 @@ pubfunc void DrawCallImpl(Texture canvas, const char* desc)
 
 pubfunc bool UpdateAndRenderArchaeo(Texture canvas)
 {
+    if (!Config.hasArchaeo)
+        return true; 
+
     if (TargetTextureMemory == NULL)
         TargetTextureMemory = canvas.pixels;
 

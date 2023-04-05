@@ -5,7 +5,6 @@ const uint WIDTH = 800;
 const uint HEIGHT = 600;
 const char* GAME_TITLE = "Bullethell game";
 
-const uint MAX_FPS = 900;
 const uint TPS = 25;
 
 #define SKY_COLOR 0x000000FF
