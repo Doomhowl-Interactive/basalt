@@ -62,3 +62,36 @@ pubfunc float Vec2Magnitude(Vec2 v2)
     // Pythagorean theorem
     return sqrt(v2.x*v2.x + v2.y*v2.y);
 }
+
+pubfunc StringArray InitStrings()
+{
+    StringArray s;
+    s.strings = NULL;
+    s.count = 0;
+    s.capacity = 20;
+    return s;
+}
+
+pubfunc void AppendString(StringArray* arr, char* text)
+{
+    if (arr->strings == NULL)
+        arr->strings = calloc(sizeof(char*),arr->capacity);
+
+    if (arr->count == arr->capacity)
+    {
+        arr->capacity += 20;
+        arr->strings = realloc(arr->strings, sizeof(char*) * arr->capacity);
+    }
+    arr->strings[arr->count++] = strdup(text);
+}
+
+pubfunc void DisposeStrings(StringArray* arr)
+{
+    if (arr->strings != NULL)
+    {
+        for (usize i = 0; i < arr->count; i++)
+            free(arr->strings[i]);
+
+        free(arr->strings);
+    }
+}

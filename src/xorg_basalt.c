@@ -169,6 +169,11 @@ func void DumpKeyboardTable()
 }
 
 int main(int argc, char **argv) {
+
+    // Check launch arguments first
+    if (!ParseLaunchArguments(argc, argv))
+        return 0;
+
     DEBUG("Opening Xorg display...");
     Display* display = XOpenDisplay(NULL);
     if (display == NULL) {

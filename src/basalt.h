@@ -81,6 +81,12 @@ class(Vec3) {
     float z;
 };
 
+class(StringArray) {
+    char** strings;
+    usize count;
+    usize capacity;
+};
+
 #ifdef WASM
 #define INFO(...)
 #define WARN(...)
@@ -112,6 +118,10 @@ pubfunc int GetRealRandomNumber();
 pubfunc Vec2 Vec2Normalize(Vec2 v2);
 pubfunc float Vec2Magnitude(Vec2 v2);
 
+pubfunc StringArray InitStrings();
+pubfunc void AppendString(StringArray* arr, char* text);
+pubfunc void DisposeStrings(StringArray* arr);
+
 // Asset handling (basalt_assets.c)
 class(Texture) {
     int width;
@@ -142,6 +152,18 @@ pubfunc bool IsKeyUp(Key code);
 
 pubfunc bool IsKeyPressed(Key code);
 pubfunc bool IsKeyReleased(Key code);
+
+// Engine configuration (basalt_config.c)
+class(EngineConfig) {
+    bool hasArchaeo;
+    bool hasHotloading;
+    bool unlockedFramerate; 
+};
+
+extern EngineConfig Config;
+
+pubfunc char* ListEnabledFeatures(int* count);
+pubfunc bool ParseLaunchArguments(int argc, char** argv); // NOTE: Returns true if engine should continue running
 
 // Tooling stuff 
 // (basalt_tooling.h)
