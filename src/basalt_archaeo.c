@@ -1,4 +1,5 @@
 #include "basalt.h"
+#include <string.h>
 
 #define MAX_DRAW_CALLS 128
 

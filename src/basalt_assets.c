@@ -7,6 +7,29 @@
 #define STBI_NO_LINEAR
 #include "external/stb_image.h"
 
+static float PollTimer = 0.f;
+static const char* AssetFolder = NULL;
+
+func const char* DetermineAssetFolder()
+{
+    
+}
+
+func void PollDisk()
+{
+
+}
+
+pubfunc void PollGameAssets(float delta)
+{
+    if (!Config.hasHotloading)
+        return;
+
+    PollTimer += delta; 
+    if (PollTimer > 2.f)
+        PollDisk();
+}
+
 pubfunc Texture LoadTextureEx(const char* name, uchar* pixels) {
 
     int width, height;

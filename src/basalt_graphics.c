@@ -1,4 +1,5 @@
 #include "basalt.h"
+#include <string.h>
 
 // NOTE: Taken from https://github.com/tsoding/olive.c/blob/master/olive.c
 typedef struct {

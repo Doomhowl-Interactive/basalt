@@ -1,6 +1,8 @@
 #include "basalt_extra.h"
 #include "bullet_common.h"
 
+#include <string.h>
+
 BULLET void ClearEntities(Scene* scene)
 {
     assert(scene);

@@ -1,12 +1,25 @@
 #include "basalt.h"
+#include <math.h>
+#include <stdio.h>
+#include <string.h>
+
+#define MAX_PATH_LENGTH 128
+
+#if defined(_WIN64) || defined(_WIN32)
+#include "external/dirent.h"
+#else
+#include <dirent.h>
+#endif
 
 static usize PrevRNGFrame = 0;
 static usize RNGOffset = 0;
+
 // NOTE: Random numbers aren't actually random, they're based on frame index
 // in order to make reproducable tests 
 // If you want "real" random numbers, use GetRealRandomNumber()
 pubfunc int GetRandomNumber()
 {
+#ifndef BASALT_NO_ENGINE
     usize curFrame = GetFrameIndex();
     if (PrevRNGFrame == curFrame)
     {
@@ -21,6 +34,9 @@ pubfunc int GetRandomNumber()
     // TODO: This could be better
     int rng = ((curFrame * 69696420) << 2) * (525+RNGOffset);
     return rng;
+#else
+    return GetRealRandomNumber();
+#endif
 }
 
 pubfunc int GetRealRandomNumber()
@@ -60,10 +76,14 @@ pubfunc Vec2 Vec2Normalize(Vec2 v2)
 pubfunc float Vec2Magnitude(Vec2 v2)
 {
     // Pythagorean theorem
+#ifdef BASALT_NO_ENGINE
+    assert(0);
+#else
     return sqrt(v2.x*v2.x + v2.y*v2.y);
+#endif
 }
 
-pubfunc StringArray InitStrings()
+pubfunc StringArray InitStringArray()
 {
     StringArray s;
     s.strings = NULL;
@@ -72,7 +92,7 @@ pubfunc StringArray InitStrings()
     return s;
 }
 
-pubfunc void AppendString(StringArray* arr, char* text)
+pubfunc void StoreString(StringArray* arr, char* text)
 {
     if (arr->strings == NULL)
         arr->strings = calloc(sizeof(char*),arr->capacity);
@@ -85,7 +105,7 @@ pubfunc void AppendString(StringArray* arr, char* text)
     arr->strings[arr->count++] = strdup(text);
 }
 
-pubfunc void DisposeStrings(StringArray* arr)
+pubfunc void DisposeStringArray(StringArray* arr)
 {
     if (arr->strings != NULL)
     {
@@ -94,4 +114,87 @@ pubfunc void DisposeStrings(StringArray* arr)
 
         free(arr->strings);
     }
+}
+
+// string implementation
+pubfunc String MakeString(){
+    String str = { 0 };
+    str.capacity = 128;
+    return str;
+}
+
+pubfunc String* AppendString(String* str, const char* add) {
+    size_t addLen = strlen(add);
+    str->size += addLen;
+
+    // allocate string
+    if (str->text == NULL) {
+        str->capacity = str->size + 1; // +1 for null terminator
+        str->text = (char*)malloc(str->capacity * sizeof(char));
+    }
+
+    // grow string
+    if (str->size >= str->capacity) {
+        str->capacity += 500;
+        str->text = (char*)realloc(str->text, str->capacity * sizeof(char));
+    }
+
+    char* head = &str->text[str->size - addLen]; // calculate head position
+    strcpy(head, add);
+
+    return str;
+}
+
+pubfunc void UnloadString(String* str) {
+    str->size = 0;
+    str->capacity = 100;
+    if (str->text){
+        free(str->text);
+    }
+}
+
+pubfunc bool FileHasExtension(char* name, char* ext) {
+    int cmp = strcmp(name + strlen(name) - strlen(ext), ext);
+    return cmp == 0;
+}
+
+pubfunc FilePathList GetFolderFiles(char* folder, char* ext) {
+
+    FilePathList list = { 0 };
+    list.count = 0;
+    list.capacity = 20;
+
+    DIR* dir;
+    struct dirent* ent;
+    if ((dir = opendir(folder)) != NULL) {
+        list.strings = (char**) malloc(list.capacity * sizeof(char*));
+        while ((ent = readdir(dir)) != NULL) {
+            if (FileHasExtension(ent->d_name, ext)) {
+
+                // expand FilePathList if needed
+                if (list.count == list.capacity) {
+                    list.capacity *= 2;
+                    list.strings = (char**) realloc(list.strings,list.capacity * sizeof(char*));
+                }
+
+                char fullName[MAX_PATH_LENGTH];
+                snprintf(fullName, MAX_PATH_LENGTH, "%s/%s", folder, ent->d_name);
+                list.strings[list.count++] = strdup(fullName);
+            }
+        }
+        closedir(dir);
+    }
+    else {
+        fprintf(stderr,"Unable to open directory\n");
+        exit(1);
+    }
+
+    return list;
+}
+
+pubfunc void UnloadFilePathList(FilePathList list) {
+    for (size_t i = 0; i < list.count; i++) {
+        free(list.strings[i]);
+    }
+    free(list.strings);
 }

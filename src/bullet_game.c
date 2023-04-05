@@ -1,6 +1,9 @@
 #include "basalt.h"
 #include "basalt_extra.h"
 
+#include <math.h>
+#include <stdio.h>
+
 const uint WIDTH = 800;
 const uint HEIGHT = 600;
 const char* GAME_TITLE = "Bullethell game";

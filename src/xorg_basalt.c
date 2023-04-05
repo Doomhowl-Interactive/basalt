@@ -1,14 +1,18 @@
 // Reference: X11 App in C with Xlib - Tsoding Daily
 // https://youtu.be/764fnfEb1_c
 
-#include "basalt.h"
 #include <X11/Xutil.h>
+#include <X11/Xlib.h>
+
+#include <stdio.h>
 #include <assert.h>
 #include <stdint.h>
+
 #include <time.h>
 #include <sys/time.h>
 #include <unistd.h>
-#include <X11/Xlib.h>
+
+#include "basalt.h"
 
 static bool ShouldBeRunning = true;
 
@@ -286,6 +290,8 @@ int main(int argc, char **argv) {
         }
 
         timer += delta;
+        PollGameAssets(delta);
+
         // draw graphics
         if (UpdateAndRenderArchaeo(canvas))
         {

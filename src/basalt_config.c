@@ -1,4 +1,5 @@
 #include "basalt.h"
+#include <string.h>
 
 //////
 // Over-engineered launch system 

@@ -4,13 +4,12 @@
 #include "wasm_stdlib.h"
 #else 
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <assert.h>
 #include <stdbool.h>
 #include <stdint.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <math.h>
-#include "string.h"
 
 typedef size_t usize;
 typedef int32_t int32;
@@ -80,11 +79,18 @@ class(Vec3) {
     float z;
 };
 
+class(String) {
+    size_t size;
+    size_t capacity;
+    char* text;
+};
+
 class(StringArray) {
     char** strings;
     usize count;
     usize capacity;
 };
+typedef StringArray FilePathList;
 
 #ifdef WASM
 #define INFO(...)
@@ -117,9 +123,17 @@ pubfunc int GetRealRandomNumber();
 pubfunc Vec2 Vec2Normalize(Vec2 v2);
 pubfunc float Vec2Magnitude(Vec2 v2);
 
-pubfunc StringArray InitStrings();
-pubfunc void AppendString(StringArray* arr, char* text);
-pubfunc void DisposeStrings(StringArray* arr);
+pubfunc StringArray InitStringArray();
+pubfunc void StoreString(StringArray* arr, char* text);
+pubfunc void DisposeStringArray(StringArray* arr);
+
+pubfunc String MakeString();
+pubfunc void UnloadString(String* str);
+pubfunc String* AppendString(String* str, const char* add);
+
+pubfunc bool FileHasExtension(char* name, char* ext);
+pubfunc FilePathList GetFolderFiles(char* folder, char* ext);
+pubfunc void UnloadFilePathList(FilePathList list);
 
 // Asset handling (basalt_assets.c)
 class(Texture) {
@@ -132,10 +146,9 @@ class(Texture) {
 extern uchar* LIST_TEXTURES[];  // WARN: Terminate with NULL-pointer
 extern uint LIST_TAGS[];        // WARN: Terminate with -1
 
-#ifndef BASALT_NO_ASSETS
 #define LoadTexture(X) LoadTextureEx(#X,X)
 pubfunc Texture LoadTextureEx(const char* name, uchar* pixels);
-#endif
+pubfunc void PollGameAssets(float delta);
 
 // Platform dependent stuff
 pubfunc Point GetMousePosition();

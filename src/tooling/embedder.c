@@ -1,9 +1,7 @@
-#include <stdio.h>
-#include <string.h>
-#include <stdint.h>
-#include <stdlib.h>
-#include <assert.h>
-#include <stdbool.h>
+#define BASALT_NO_ENGINE
+#include "../basalt.h"
+#include "../basalt_utils.c"
+
 #include <ctype.h>
 #include <time.h>
 
@@ -12,28 +10,6 @@
 #else
 #include <dirent.h>
 #endif
-
-#define MAX_PATH_LENGTH 128
-
-typedef struct {
-    size_t size;
-    size_t capacity;
-    char* text;
-} String;
-
-typedef struct {
-    size_t count;
-    size_t capacity;
-    char** files;
-} FilePathList;
-
-static String MakeString();
-static void UnloadString(String* str);
-static String* AppendString(String* str, const char* add);
-
-static bool FileHasExtension(char* name, char* ext);
-static FilePathList GetFolderFiles(char* folder, char* ext);
-static void UnloadFilePathList(FilePathList list);
 
 void WriteCode(char* outputPath, String code) {
     FILE* file;
@@ -169,7 +145,7 @@ void EncodeFolder(char* folder, char* outputFile) {
     FilePathList files = GetFolderFiles(folder, ".png");
 
     for (int i = 0; i < files.count; i++) {
-        AppendFileCode(&code, files.files[i]);
+        AppendFileCode(&code, files.strings[i]);
     }
 
     WriteCode(outputFile, code);
@@ -228,87 +204,4 @@ int main(int argc, char** argv) {
     double cpuTimeUsed = ((double)(endTime - startTime)) / CLOCKS_PER_SEC;
 
     printf("Done in %f seconds\n", cpuTimeUsed);
-}
-
-// string implementation
-static String MakeString(){
-    String str = { 0 };
-    str.capacity = 128;
-    return str;
-}
-
-static String* AppendString(String* str, const char* add) {
-    size_t addLen = strlen(add);
-    str->size += addLen;
-
-    // allocate string
-    if (str->text == NULL) {
-        str->capacity = str->size + 1; // +1 for null terminator
-        str->text = (char*)malloc(str->capacity * sizeof(char));
-    }
-
-    // grow string
-    if (str->size >= str->capacity) {
-        str->capacity += 500;
-        str->text = (char*)realloc(str->text, str->capacity * sizeof(char));
-    }
-
-    char* head = &str->text[str->size - addLen]; // calculate head position
-    strcpy(head, add);
-
-    return str;
-}
-
-static void UnloadString(String* str) {
-    str->size = 0;
-    str->capacity = 100;
-    if (str->text){
-        free(str->text);
-    }
-}
-
-static bool FileHasExtension(char* name, char* ext) {
-    int cmp = strcmp(name + strlen(name) - strlen(ext), ext);
-    return cmp == 0;
-}
-
-static FilePathList GetFolderFiles(char* folder, char* ext) {
-
-    FilePathList list = { 0 };
-    list.count = 0;
-    list.capacity = 20;
-
-    DIR* dir;
-    struct dirent* ent;
-    if ((dir = opendir(folder)) != NULL) {
-        list.files = (char**) malloc(list.capacity * sizeof(char*));
-        while ((ent = readdir(dir)) != NULL) {
-            if (FileHasExtension(ent->d_name, ext)) {
-
-                // expand FilePathList if needed
-                if (list.count == list.capacity) {
-                    list.capacity *= 2;
-                    list.files = (char**) realloc(list.files,list.capacity * sizeof(char*));
-                }
-
-                char fullName[MAX_PATH_LENGTH];
-                snprintf(fullName, MAX_PATH_LENGTH, "%s/%s", folder, ent->d_name);
-                list.files[list.count++] = strdup(fullName);
-            }
-        }
-        closedir(dir);
-    }
-    else {
-        fprintf(stderr,"Unable to open directory\n");
-        exit(1);
-    }
-
-    return list;
-}
-
-static void UnloadFilePathList(FilePathList list) {
-    for (size_t i = 0; i < list.count; i++) {
-        free(list.files[i]);
-    }
-    free(list.files);
 }
