@@ -131,8 +131,11 @@ pubfunc String MakeString();
 pubfunc void UnloadString(String* str);
 pubfunc String* AppendString(String* str, const char* add);
 
-pubfunc bool FileHasExtension(char* name, char* ext);
-pubfunc FilePathList GetFolderFiles(char* folder, char* ext);
+pubfunc bool FileHasExtension(const char* name, const char* ext);
+pubfunc bool FolderExists(const char* folder);
+pubfunc const char* GetFirstExistingFolder(const char** folders); // NOTE: Returns NULL when none exist,
+                                                                  // pass NULL ended array
+pubfunc FilePathList GetFolderFiles(const char* folder, const char* ext);
 pubfunc void UnloadFilePathList(FilePathList list);
 
 // Asset handling (basalt_assets.c)

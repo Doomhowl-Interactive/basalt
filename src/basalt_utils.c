@@ -153,12 +153,32 @@ pubfunc void UnloadString(String* str) {
     }
 }
 
-pubfunc bool FileHasExtension(char* name, char* ext) {
+pubfunc const char* GetFirstExistingFolder(const char** folders)
+{
+    for (const char* folder = folders[0]; folder != NULL; folder++)
+    {
+        if (folder != NULL && FolderExists(folder))
+            return folder;
+    }
+    return NULL;
+}
+
+pubfunc bool FolderExists(const char* folder)
+{
+    DIR* dir;
+    if ((dir = opendir(folder)) != NULL) {
+        closedir(dir);
+        return true;
+    }
+    return false;
+}
+
+pubfunc bool FileHasExtension(const char* name, const char* ext) {
     int cmp = strcmp(name + strlen(name) - strlen(ext), ext);
     return cmp == 0;
 }
 
-pubfunc FilePathList GetFolderFiles(char* folder, char* ext) {
+pubfunc FilePathList GetFolderFiles(const char* folder, const char* ext) {
 
     FilePathList list = { 0 };
     list.count = 0;

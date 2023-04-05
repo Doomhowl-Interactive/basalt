@@ -1,9 +1,9 @@
-
 ![basalt](misc/logo_original.png)
 # basalt
 game engine for c cavemen 
 
-Slowly solidifying [Magma Game Engine](https://github.com/bramtechs/RaylibMagmaEngine) and [dream-emu](https://github.com/bramtechs/dream-emu) while focusing on [Suckless](https://suckless.org) & [Handmade Hero](https://handmadehero.org/)-minimalism and performance.
+Slowly solidifying [Magma Game Engine](https://github.com/bramtechs/RaylibMagmaEngine) and [dream-emu](https://github.com/bramtechs/dream-emu) while
+focusing on [Handmade Hero](https://handmadehero.org/)-style minimalism and performance.
 
 ## Screenshots
 ![Preview](screenshots/preview-bullethell.gif)

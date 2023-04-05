@@ -10,14 +10,22 @@
 static float PollTimer = 0.f;
 static const char* AssetFolder = NULL;
 
-func const char* DetermineAssetFolder()
-{
-    
-}
+static const char* AssetFolders[] = {
+    "assets",
+    "../assets",
+    "~/dev/basalt/assets",
+    "C:\\dev\\basalt\\assets",
+    NULL,
+};
 
 func void PollDisk()
 {
-
+    // Determine the asset folder if not already
+    if (AssetFolder == NULL)
+    {
+        AssetFolder = GetFirstExistingFolder(AssetFolders);
+        INFO("Found asset folder at %s", AssetFolder);
+    }
 }
 
 pubfunc void PollGameAssets(float delta)
@@ -25,9 +33,12 @@ pubfunc void PollGameAssets(float delta)
     if (!Config.hasHotloading)
         return;
 
-    PollTimer += delta; 
     if (PollTimer > 2.f)
+    {
         PollDisk();
+        PollTimer = 0.f;
+    }
+    PollTimer += delta;
 }
 
 pubfunc Texture LoadTextureEx(const char* name, uchar* pixels) {
