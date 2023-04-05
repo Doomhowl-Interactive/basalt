@@ -23,16 +23,6 @@ static Option Options[] = {
     { NULL, NULL }
 };
 
-pubfunc StringArray GetEnabledFeatures()
-{
-    StringArray arr = InitStrings();
-    if (Config.hasArchaeo)
-        AppendString(&arr, "Archaeo");
-    if (Config.hasHotloading)
-        AppendString(&arr, "Hotloading");
-    return arr;
-}
-
 func usize GetOptionCount()
 {
     usize count = 0;

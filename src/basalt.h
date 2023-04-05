@@ -161,7 +161,6 @@ class(EngineConfig) {
 
 extern EngineConfig Config;
 
-pubfunc char* ListEnabledFeatures(int* count);
 pubfunc bool ParseLaunchArguments(int argc, char** argv); // NOTE: Returns true if engine should continue running
 
 // Tooling stuff 
