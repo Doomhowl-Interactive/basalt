@@ -3,7 +3,7 @@
 static usize PrevRNGFrame = 0;
 static usize RNGOffset = 0;
 // NOTE: Random numbers aren't actually random, they're based on frame index
-// in order to make reproducable tests (replays?) in the future possible
+// in order to make reproducable tests 
 // If you want "real" random numbers, use GetRealRandomNumber()
 pubfunc int GetRandomNumber()
 {
