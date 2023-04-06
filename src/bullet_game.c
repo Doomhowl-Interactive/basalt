@@ -1,5 +1,6 @@
 #include "basalt.h"
 #include "basalt_extra.h"
+#include "temple_assets.h"
 
 #include <math.h>
 #include <stdio.h>
@@ -34,6 +35,7 @@ static const BulletPattern* Patterns[] = {
 static uint SelectedPattern = 1;
 
 static Texture backgroundTexture = { 0 };
+static Texture testTexture = { 0 };
 
 pubfunc void InitializeGame()
 {
@@ -42,6 +44,7 @@ pubfunc void InitializeGame()
     InitPlayer(Player, spawnPos);
 
     backgroundTexture = GenerateNoiseTexture(WIDTH, HEIGHT, 0x4B486EFF, 0x07060FFF);
+    testTexture = LoadTexture(SPR_BLOCK);
 }
 
 pubfunc void DisposeGame()
@@ -82,4 +85,6 @@ pubfunc void UpdateAndRenderGame(Texture canvas, float delta)
     Scene* activeScene = &Scenes[ActiveSceneID];
     DrawTexture(canvas, backgroundTexture, 0, 0);
     UpdateAndRenderScene(activeScene, canvas, delta);
+
+    DrawTexture(canvas, testTexture, 100, 100);
 }
