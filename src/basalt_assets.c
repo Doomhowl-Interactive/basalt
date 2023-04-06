@@ -7,8 +7,14 @@
 #define STBI_NO_LINEAR
 #include "external/stb_image.h"
 
-static float PollTimer = 0.f;
-static const char* AssetFolder = NULL;
+class(AssetEntry) {
+    const char* filePath;
+    const char* fileName;
+    usize lastPollFrame;
+};
+
+static usize AssetEntryCount = 0;
+static AssetEntry* AssetEntries = NULL;
 
 static const char* AssetFolders[] = {
     "assets",
@@ -18,27 +24,71 @@ static const char* AssetFolders[] = {
     NULL,
 };
 
-func void PollDisk()
+func bool GetAssetEntry(const char* name, AssetEntry* result)
 {
-    // Determine the asset folder if not already
-    if (AssetFolder == NULL)
+    assert(name);
+    assert(AssetEntries);
+    for (usize i = 0; i < AssetEntryCount; i++)
     {
-        AssetFolder = GetFirstExistingFolder(AssetFolders);
-        INFO("Found asset folder at %s", AssetFolder);
+        const char* fileName = AssetEntries[i].fileName;
+        if (strcmp(fileName, name) == 0)
+        {
+            *result = AssetEntries[i];
+            return true;
+        }
+    }
+    return false;
+}
+
+pubfunc void HotReloadTexture(Texture texture)
+{
+    if (!Config.hasHotloading || texture.name == NULL)
+        return;
+
+    AssetEntry entry;
+    if (GetAssetEntry(texture.name, &entry))
+    {
+        if (entry.lastPollFrame - GetFrameIndex() < 300)
+            return; // polled to recently
+        entry.lastPollFrame = GetFrameIndex();
+
+        DEBUG("Polling %s", texture.name);
+    }
+    else if (GetFrameIndex() % 300 == 0)
+    {
+        WARN("Can't find original asset of %s, hotloading not supported!", texture.name);
     }
 }
 
-pubfunc void PollGameAssets(float delta)
+pubfunc void InitHotReloading()
 {
     if (!Config.hasHotloading)
         return;
 
-    if (PollTimer > 2.f)
+    const char* folder = GetFirstExistingFolder(AssetFolders);
+    INFO("Found asset folder at %s", folder);
+    FilePathList list = GetFolderFiles(folder, ".png");
+    INFO("Found %d textures to be hot-reloaded",list.count);
+
+    // Map to AssetEntries
+    AssetEntryCount = list.count;
+    AssetEntries = calloc(sizeof(AssetEntry), AssetEntryCount);
+
+    for (usize i = 0; i < AssetEntryCount; i++)
     {
-        PollDisk();
-        PollTimer = 0.f;
+        AssetEntry* e = &AssetEntries[i];
+        e->filePath = list.strings[i];
+
+        char* fileStem = (char*) GetFileStem(list.strings[i]);
+        ToUppercase(fileStem);
+        e->fileName = fileStem;
+
+        e->lastPollFrame = GetFrameIndex();
+
+        DEBUG("--> %s %s %u",e->filePath, e->fileName, e->lastPollFrame);
     }
-    PollTimer += delta;
+
+    UnloadFilePathList(list);
 }
 
 pubfunc Texture LoadTextureEx(const char* name, uchar* pixels) {
@@ -56,6 +106,7 @@ pubfunc Texture LoadTextureEx(const char* name, uchar* pixels) {
     DEBUG("Loaded texture %s of size %u with %d channels", name, size, channels);
 
     Texture texture = InitTexture(width, height);
+    texture.name = name;
 
     if (data == NULL) {
         ERR("Failed to load texture %s from memory! ( likely data corruption :( )", name);

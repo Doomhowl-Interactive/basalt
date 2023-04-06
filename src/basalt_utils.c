@@ -2,6 +2,8 @@
 #include <math.h>
 #include <stdio.h>
 #include <string.h>
+#include <libgen.h>
+#include <ctype.h>
 
 #define MAX_PATH_LENGTH 128
 
@@ -153,6 +155,13 @@ pubfunc void UnloadString(String* str) {
     }
 }
 
+pubfunc void ToUppercase(char* str) {
+    while (*str){
+        *str = toupper(*str);
+        str++;
+    }
+}
+
 pubfunc const char* GetFirstExistingFolder(const char** folders)
 {
     for (const char* folder = folders[0]; folder != NULL; folder++)
@@ -171,6 +180,24 @@ pubfunc bool FolderExists(const char* folder)
         return true;
     }
     return false;
+}
+
+static char FileNameCache[MAX_PATH_LENGTH]; 
+pubfunc const char* GetFileName(const char* folder)
+{
+    strcpy(FileNameCache,folder);
+    return basename(FileNameCache);
+}
+
+pubfunc const char* GetFileStem(const char* folder)
+{
+    const char* fileName = GetFileName(folder);
+
+    char* stem = strrchr(fileName, '.');
+    if (stem != NULL)
+        *stem = '\0';
+
+    return fileName;
 }
 
 pubfunc bool FileHasExtension(const char* name, const char* ext) {

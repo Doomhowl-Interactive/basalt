@@ -188,6 +188,10 @@ pubfunc void DrawTextureV(Texture canvas, Texture texture, Vec2 pos) {
 
 pubfunc void DrawTextureEx(Texture canvas, Texture texture, Vec2 pos, Rect src) {
     assert(canvas.pixels);
+
+    // Switch out the texture if hotreloading is on
+    HotReloadTexture(texture);
+
     Color *pixels = (Color *)canvas.pixels;
 
     // TODO: optimize

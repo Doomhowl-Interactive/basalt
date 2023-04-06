@@ -27,13 +27,6 @@ void WriteCode(char* outputPath, String code) {
     UnloadString(&code);
 }
 
-void ToUppercase(char* str) {
-    while (*str){
-        *str = toupper(*str);
-        str++;
-    }
-}
-
 void GetAssetName(char* dest, const char* path) {
     char* name = strdup(path);
 

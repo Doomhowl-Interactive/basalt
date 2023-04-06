@@ -15,11 +15,13 @@ class(Option) {
 };
 
 static bool NeedsHelp = false;
+static bool EnableAll = false;
 
 static Option Options[] = {
     { &Config.hasArchaeo, "-a", "--archaeo", "Enables tooling to inspect draw calls. (EXPENSIVE)" },
     { &Config.hasHotloading, "-h", "--hotloading", "Enables hot-reloading if original asset folder is found." },
     { &Config.unlockedFramerate, "-u", "--unlock", "Unlocks the framerate (not recommended)" },
+    { &EnableAll, "-A", "--all", "Enables all of the above." },
     { &NeedsHelp, "-?", "--help", "Shows this help screen" },
     { NULL, NULL }
 };
@@ -76,6 +78,13 @@ pubfunc bool ParseLaunchArguments(int argc, char** argv)
     {
         PrintHelpInfo();
         return false;
+    }
+    
+    if (EnableAll)
+    {
+        Config.hasArchaeo = true;
+        Config.hasHotloading = true;
+        Config.unlockedFramerate = true;
     }
 
     return true;

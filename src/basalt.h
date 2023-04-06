@@ -130,9 +130,12 @@ pubfunc void DisposeStringArray(StringArray* arr);
 pubfunc String MakeString();
 pubfunc void UnloadString(String* str);
 pubfunc String* AppendString(String* str, const char* add);
+pubfunc void ToUppercase(char* str);
 
 pubfunc bool FileHasExtension(const char* name, const char* ext);
 pubfunc bool FolderExists(const char* folder);
+pubfunc const char* GetFileName(const char* filePath);
+pubfunc const char* GetFileStem(const char* filePath);
 pubfunc const char* GetFirstExistingFolder(const char** folders); // NOTE: Returns NULL when none exist,
                                                                   // pass NULL ended array
 pubfunc FilePathList GetFolderFiles(const char* folder, const char* ext);
@@ -140,6 +143,7 @@ pubfunc void UnloadFilePathList(FilePathList list);
 
 // Asset handling (basalt_assets.c)
 class(Texture) {
+    const char* name;
     int width;
     int height;
     Color* pixels;
@@ -151,7 +155,8 @@ extern uint LIST_TAGS[];        // WARN: Terminate with -1
 
 #define LoadTexture(X) LoadTextureEx(#X,X)
 pubfunc Texture LoadTextureEx(const char* name, uchar* pixels);
-pubfunc void PollGameAssets(float delta);
+pubfunc void HotReloadTexture(Texture texture);
+pubfunc void InitHotReloading();
 
 // Platform dependent stuff
 pubfunc Point GetMousePosition();

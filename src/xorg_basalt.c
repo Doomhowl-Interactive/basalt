@@ -219,6 +219,7 @@ int main(int argc, char **argv) {
 
     srand(time(NULL));
     InitializeGame();
+    InitHotReloading();
 
     int width = WIDTH;
     int height = HEIGHT;
@@ -290,7 +291,6 @@ int main(int argc, char **argv) {
         }
 
         timer += delta;
-        PollGameAssets(delta);
 
         // draw graphics
         if (UpdateAndRenderArchaeo(canvas))
