@@ -5,8 +5,6 @@
 #include <libgen.h>
 #include <ctype.h>
 
-#define MAX_PATH_LENGTH 128
-
 #if defined(_WIN64) || defined(_WIN32)
 #include "external/dirent.h"
 #else

@@ -13,7 +13,9 @@ class(OffscreenBuffer) {
     Texture canvas;
     Texture mappedCanvas;
     Texture mappedCanvas2;
+
     usize frameIndex;
+    double timeElapsed;
 };
 
 class(SInput) {
@@ -41,6 +43,11 @@ pubfunc Point GetMousePosition() {
 pubfunc usize GetFrameIndex()
 {
     return GlobalBackbuffer.frameIndex;
+}
+
+pubfunc double GetTimeElapsed()
+{
+    return GlobalBackbuffer.timeElapsed;
 }
 
 #define MAX_TITLE_LEN 128
@@ -226,6 +233,7 @@ int CALLBACK WinMain(HINSTANCE instance, HINSTANCE prevInstance,
                 Texture canvas = GlobalBackbuffer.canvas;
                 UpdateAndRenderGame(canvas, (float) delta);
                 GlobalBackbuffer.frameIndex++;
+                GlobalBackbuffer.timeElapsed += delta;
 
                 DisplayBufferInWindow(deviceContext, size.width, size.height,
                                       GlobalBackbuffer);

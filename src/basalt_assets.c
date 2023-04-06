@@ -1,5 +1,3 @@
-#ifndef BASALT_NO_ASSETS
-
 #include "basalt.h"
 
 #define STB_IMAGE_IMPLEMENTATION
@@ -8,10 +6,12 @@
 #include "external/stb_image.h"
 
 class(AssetEntry) {
-    const char* filePath;
-    const char* fileName;
-    usize lastPollFrame;
+    char filePath[MAX_PATH_LENGTH];
+    char fileName[MAX_PATH_LENGTH];
+    double lastPollTime;
 };
+
+#define HOTLOAD_INTERVAL 2.0
 
 static usize AssetEntryCount = 0;
 static AssetEntry* AssetEntries = NULL;
@@ -24,7 +24,7 @@ static const char* AssetFolders[] = {
     NULL,
 };
 
-func bool GetAssetEntry(const char* name, AssetEntry* result)
+func bool GetAssetEntry(const char* name, AssetEntry** result)
 {
     assert(name);
     assert(AssetEntries);
@@ -33,7 +33,7 @@ func bool GetAssetEntry(const char* name, AssetEntry* result)
         const char* fileName = AssetEntries[i].fileName;
         if (strcmp(fileName, name) == 0)
         {
-            *result = AssetEntries[i];
+            *result = &AssetEntries[i];
             return true;
         }
     }
@@ -45,14 +45,15 @@ pubfunc void HotReloadTexture(Texture texture)
     if (!Config.hasHotloading || texture.name == NULL)
         return;
 
-    AssetEntry entry;
+    AssetEntry* entry;
     if (GetAssetEntry(texture.name, &entry))
     {
-        if (entry.lastPollFrame - GetFrameIndex() < 300)
+        if (GetTimeElapsed() - entry->lastPollTime < HOTLOAD_INTERVAL)
             return; // polled to recently
-        entry.lastPollFrame = GetFrameIndex();
 
-        DEBUG("Polling %s", texture.name);
+        entry->lastPollTime = GetTimeElapsed();
+
+        DEBUG("Polling %s");
     }
     else if (GetFrameIndex() % 300 == 0)
     {
@@ -77,15 +78,14 @@ pubfunc void InitHotReloading()
     for (usize i = 0; i < AssetEntryCount; i++)
     {
         AssetEntry* e = &AssetEntries[i];
-        e->filePath = list.strings[i];
+        strcpy(e->filePath, list.strings[i]);
 
         char* fileStem = (char*) GetFileStem(list.strings[i]);
         ToUppercase(fileStem);
-        e->fileName = fileStem;
+        strcpy(e->fileName, fileStem);
 
-        e->lastPollFrame = GetFrameIndex();
-
-        DEBUG("--> %s %s %u",e->filePath, e->fileName, e->lastPollFrame);
+        e->lastPollTime = GetTimeElapsed();
+        DEBUG("HOTLOAD --> Found %s at %s",e->fileName, e->filePath);
     }
 
     UnloadFilePathList(list);
@@ -136,5 +136,3 @@ pubfunc Texture LoadTextureEx(const char* name, uchar* pixels) {
     }
     return texture;
 }
-
-#endif

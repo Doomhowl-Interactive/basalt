@@ -19,6 +19,8 @@ typedef uchar Key;
 
 #endif
 
+#define MAX_PATH_LENGTH 128
+
 #define MAX(X,Y) (X > Y ? X:Y)
 #define MIN(X,Y) (X < Y ? X:Y)
 
@@ -134,6 +136,9 @@ pubfunc void ToUppercase(char* str);
 
 pubfunc bool FileHasExtension(const char* name, const char* ext);
 pubfunc bool FolderExists(const char* folder);
+
+// WARN: The following 2 functions use cached memory.
+// The result gets overwritten on future calls.
 pubfunc const char* GetFileName(const char* filePath);
 pubfunc const char* GetFileStem(const char* filePath);
 pubfunc const char* GetFirstExistingFolder(const char** folders); // NOTE: Returns NULL when none exist,
@@ -162,7 +167,8 @@ pubfunc void InitHotReloading();
 pubfunc Point GetMousePosition();
 pubfunc void SetWindowTitle(const char* title);
 
-pubfunc usize GetFrameIndex();
+pubfunc usize GetFrameIndex();   // NOTE: Get number of frames elapsed since the start of the simulation.
+pubfunc double GetTimeElapsed(); // NOTE: Get time elapsed since the start of the simulation.
 
 pubfunc bool IsMouseDown();
 pubfunc bool IsMouseUp();

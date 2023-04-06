@@ -29,6 +29,7 @@ class(OffscreenBuffer) {
     char title[128];
 
     usize frameIndex;
+    double timeElapsed;
 };
 
 class(SInput) {
@@ -58,7 +59,12 @@ pubfunc void SetWindowTitle(const char* title) {
 
 pubfunc usize GetFrameIndex()
 {
-    return ActiveBuffer.frameIndex++;
+    return ActiveBuffer.frameIndex;
+}
+
+pubfunc double GetTimeElapsed()
+{
+    return ActiveBuffer.timeElapsed;
 }
 
 pubfunc Point GetMousePosition()
@@ -295,12 +301,13 @@ int main(int argc, char **argv) {
         // draw graphics
         if (UpdateAndRenderArchaeo(canvas))
         {
-            // HACK: Prevent delta artifacts from breaking the game
+            // HACK: Prevent delta spikes from breaking the game
             if (delta > 1){
                 delta = prevDelta;
             }
             UpdateAndRenderGame(canvas, (float) delta);
             ActiveBuffer.frameIndex++;
+            ActiveBuffer.timeElapsed += delta;
         }
 
         RenderOffscreenBuffer(&ActiveBuffer, width, height);
