@@ -39,8 +39,6 @@ BULLET void DestroyEntity(Entity* e)
 
 BULLET void SetEntitySize(Entity* e, uint width, uint height)
 {
-    e->sprite.source.width = width;
-    e->sprite.source.height = height;
     e->sprite.texture.width = width;
     e->sprite.texture.height = height;
 }
@@ -50,8 +48,8 @@ BULLET Rect GetEntityBounds(Entity e)
     Rect bounds = {
         e.sprite.pos.x,
         e.sprite.pos.y,
-        e.sprite.source.width,
-        e.sprite.source.height
+        e.sprite.source.width == 0 ? e.sprite.texture.width:e.sprite.source.width,
+        e.sprite.source.height == 0 ? e.sprite.texture.height:e.sprite.source.height
     };
     return bounds;
 }
