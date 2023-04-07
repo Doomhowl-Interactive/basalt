@@ -38,12 +38,10 @@ void exit(int status);
 #ifdef WASM_STDLIB_IMPLEMENTATION
 
 void assert(bool cond) {
-#ifdef BASALT_DEBUG
     if (!cond) {
         int* i = NULL;
         *i = 666;
     }
-#endif
 }
 
 void *memcpy(void *dest, const void* src, usize n) {

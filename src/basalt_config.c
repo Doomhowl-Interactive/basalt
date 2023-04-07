@@ -20,9 +20,13 @@ static bool EnableAll = false;
 static Option Options[] = {
     { &Config.hasArchaeo, "-a", "--archaeo", "Enables tooling to inspect draw calls. (EXPENSIVE)" },
     { &Config.hasHotloading, "-h", "--hotloading", "Enables hot-reloading if original asset folder is found." },
+    { &Config.hasUnitTesting, "-t", "--test", "Does unit testing before launch" },
+    { &Config.hasConsole, "-s", "--show", "Open console logs (Windows only)" },
     { &Config.unlockedFramerate, "-u", "--unlock", "Unlocks the framerate (not recommended)" },
+
     { &EnableAll, "-A", "--all", "Enables all of the above." },
     { &NeedsHelp, "-?", "--help", "Shows this help screen" },
+
     { NULL, NULL }
 };
 
@@ -39,14 +43,8 @@ func void PrintHelpInfo()
 {
     for (Option* o = Options; o->shortArg != NULL; o++)
     {
-        usize spaces = 30 - strlen(o->longArg);
-        char* padding = malloc(spaces+1);
-        memset(padding, ' ', spaces);
-        padding[spaces-1] = '\0';
-
-        INFO("%s %s%s%s",o->shortArg,o->longArg, padding,o->desc);
-
-        free(padding);
+        const char* padding = PadStringRight(o->longArg, ' ', 30);
+        INFO("%s %s%s",o->shortArg,padding,o->desc);
     }
 }
 
@@ -79,13 +77,9 @@ pubfunc bool ParseLaunchArguments(int argc, char** argv)
         PrintHelpInfo();
         return false;
     }
-    
+
     if (EnableAll)
-    {
-        Config.hasArchaeo = true;
-        Config.hasHotloading = true;
-        Config.unlockedFramerate = true;
-    }
+        memset(&Config, 1, sizeof(EngineConfig));
 
     return true;
 }

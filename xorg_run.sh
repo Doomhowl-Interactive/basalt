@@ -10,4 +10,4 @@ gcc -ggdb -Werror -DBASALT_DEBUG ../src/basalt_*.c ../src/bullet_game.c \
     ../src/xorg_basalt.c ../src/assets_custom.dat.c -lX11 -lm -lXext -o basalt_linux.x11 
 cd ..
 
-./build/basalt_linux.x11 -a -u -h $@
+./build/basalt_linux.x11 -A $@

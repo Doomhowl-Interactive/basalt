@@ -49,6 +49,7 @@ extern const uint MAX_ENTITIES;
 
 #define func static
 #define pubfunc
+#define platfunc
 #define wasmfunc
 
 class(Rect)
@@ -107,7 +108,6 @@ typedef StringArray FilePathList;
 
 #ifdef BASALT_DEBUG
 #define DEBUG(...) printf("DEBUG: "__VA_ARGS__); printf("\n")
-pubfunc void UnitTest();
 #else
 #define DEBUG(...)
 #endif
@@ -116,7 +116,6 @@ pubfunc void UnitTest();
 #define DEG2RAD(Y) ((Y) * M_PI / 180)
 #define RAD2DEG(X) ((X) * 180.0 / M_PI)
 
-pubfunc bool IsLittleEndian();
 pubfunc int Clamp(int value, int min, int max);
 pubfunc int GetRandomNumber(); // WARN: read implementation 
 pubfunc int GetRealRandomNumber();
@@ -132,6 +131,7 @@ pubfunc String MakeString();
 pubfunc void UnloadString(String* str);
 pubfunc String* AppendString(String* str, const char* add);
 pubfunc void ToUppercase(char* str);
+pubfunc const char* PadStringRight(const char* text, char symbol, usize length);
 
 pubfunc bool FileHasExtension(const char* name, const char* ext);
 pubfunc bool FolderExists(const char* folder);
@@ -161,8 +161,6 @@ extern uint LIST_TAGS[];        // WARN: Terminate with -1
 
 #define LoadTexture(X) LoadTextureEx(#X,X)
 pubfunc Texture LoadTextureEx(const char* name, uchar* pixels);
-pubfunc void HotReloadTexture(Texture texture);
-pubfunc void InitHotReloading();
 
 // Platform dependent stuff
 pubfunc Point GetMousePosition();
@@ -184,18 +182,12 @@ pubfunc bool IsKeyReleased(Key code);
 class(EngineConfig) {
     bool hasArchaeo;
     bool hasHotloading;
+    bool hasUnitTesting;
+    bool hasConsole;
     bool unlockedFramerate; 
 };
 
 extern EngineConfig Config;
-
-pubfunc bool ParseLaunchArguments(int argc, char** argv); // NOTE: Returns true if engine should continue running
-
-// Tooling stuff 
-// (basalt_tooling.h)
-pubfunc bool UpdateAndRenderArchaeo();
-#define DRAWCALL(X,Y) DrawCallImpl(X,#Y)
-pubfunc void DrawCallImpl(Texture canvas, const char* desc);
 
 // Graphics drawing (basalt_graphics.c)
 pubfunc void DrawDot(Texture canvas, int posX, int posY, Color color);

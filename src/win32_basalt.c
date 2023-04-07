@@ -180,10 +180,11 @@ int CALLBACK WinMain(HINSTANCE instance, HINSTANCE prevInstance,
     windowClass.hInstance = instance;
     windowClass.lpszClassName = "HandmadeHerowindowClass";
 
-#ifdef BASALT_DEBUG
-    UnitTest();
-    OpenSystemConsole();
-#endif
+    if (Config.hasUnitTesting)
+        UnitTest();
+
+    if (Config.hasConsole)
+        OpenSystemConsole();
 
     Input.isMouseDown = true;
 
@@ -274,11 +275,10 @@ int CALLBACK WinMain(HINSTANCE instance, HINSTANCE prevInstance,
 
     DisposeGame();
 
-#ifdef BASALT_DEBUG
-    CloseSystemConsole();
-#endif
+    if (Config.hasConsole)
+        CloseSystemConsole();
 
-    return (0);
+    return 0;
 }
 
 func void OpenSystemConsole() {

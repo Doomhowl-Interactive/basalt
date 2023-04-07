@@ -13,6 +13,7 @@
 #include <unistd.h>
 
 #include "basalt.h"
+#include "basalt_plat.h"
 
 static bool ShouldBeRunning = true;
 
