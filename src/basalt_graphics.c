@@ -210,6 +210,10 @@ pubfunc void DrawTextureEx(Texture canvas, Texture texture, Vec2 pos, Rect src) 
                 continue;
             }
 
+            if (destIndex < 0 || destIndex >= canvas.width*canvas.height) {
+                continue;
+            }
+
             // drop pixel if opacity not 255 (temporary)
             pixels[destIndex] = texture.pixels[srcIndex];
         }

@@ -8,7 +8,7 @@
 
 class(AssetEntry) {
     char filePath[MAX_PATH_LENGTH];
-    char fileName[MAX_PATH_LENGTH];
+    char assetName[MAX_PATH_LENGTH];
     double lastPollTime;
     ulong lastEditTime;
 };
@@ -32,14 +32,36 @@ func bool GetAssetEntry(const char* name, AssetEntry** result)
     assert(AssetEntries);
     for (usize i = 0; i < AssetEntryCount; i++)
     {
-        const char* fileName = AssetEntries[i].fileName;
-        if (strcmp(fileName, name) == 0)
+        const char* assetName = AssetEntries[i].assetName;
+        if (strcmp(assetName, name) == 0)
         {
             *result = &AssetEntries[i];
             return true;
         }
     }
     return false;
+}
+
+func void LoadTextureFromStbData(Texture texture, uchar* data, int channels) {
+    assert(data);
+    assert(texture.width > 0 || texture.height > 0);
+
+    if (channels == 4 || channels == 3)
+    {
+        // HACK: Copy the texture into the correct color order
+        // (by trial and error lol)
+        uchar* comps = (uchar*) texture.pixels;
+        for (int i = 0; i < texture.width * texture.height; i++) {
+            ((uchar*)texture.pixels)[i*4+0] = data[i*4+3];
+            ((uchar*)texture.pixels)[i*4+1] = data[i*4+2];
+            ((uchar*)texture.pixels)[i*4+2] = data[i*4+1];
+            ((uchar*)texture.pixels)[i*4+3] = data[i*4+0];
+        }
+    }
+    else
+    {
+        ERR("Unexpected amount of channels in image (%d)!", channels);
+    }
 }
 
 pubfunc void HotReloadTexture(Texture texture)
@@ -52,10 +74,41 @@ pubfunc void HotReloadTexture(Texture texture)
     {
         if (GetTimeElapsed() - entry->lastPollTime < HOTLOAD_INTERVAL)
             return; // polled to recently
-
         entry->lastPollTime = GetTimeElapsed();
 
-        DEBUG("Polling %s");
+        ulong newEditTime = GetFileModifiedTime(entry->filePath);
+        if (newEditTime > entry->lastEditTime)
+        {
+            entry->lastEditTime = newEditTime;
+
+            // replace texture pixels and dimensions
+            int channels = 3;
+            int width, height;
+            uchar* data = (uchar*) stbi_load(entry->filePath, &width, &height,
+                                             &channels, 4);
+
+            if (data)
+            {
+                // Re-alloc pixel memory when different width and height
+                if (width != texture.width || height != texture.height)
+                {
+                    texture.width = width;
+                    texture.height = height;
+                    free(texture.pixels);
+                    texture.pixels = calloc(sizeof(Color), width*height);
+                    INFO("Resizing texture %s to %d x %d...", entry->assetName, width, height);
+                }
+
+                LoadTextureFromStbData(texture, data, channels);
+
+                stbi_image_free(data);
+                INFO("Hot swapped texture %s", entry->assetName);
+            }
+            else 
+            {
+                ERR("Failed to hot-swap texture %s", entry->assetName);
+            }
+        }
     }
     else if (GetFrameIndex() % 300 == 0)
     {
@@ -84,20 +137,20 @@ pubfunc void InitHotReloading()
 
         char* fileStem = (char*) GetFileStem(list.strings[i]);
         ToUppercase(fileStem);
-        strcpy(e->fileName, fileStem);
+        strcpy(e->assetName, fileStem);
 
         e->lastPollTime = GetTimeElapsed();
         e->lastEditTime = GetFileModifiedTime(e->filePath);
 
         char* formattedModTime = ctime(&e->lastEditTime);
-        DEBUG("HOTLOAD --> Found %s at %s (last edit %s)",e->fileName, e->filePath, formattedModTime);
+        DEBUG("HOTLOAD --> Found %s at %s (last edit %s)",e->assetName, e->filePath, formattedModTime);
     }
 
     UnloadFilePathList(list);
 }
 
-pubfunc Texture LoadTextureEx(const char* name, uchar* pixels) {
-
+pubfunc Texture LoadTextureEx(const char* name, uchar* pixels)
+{
     int width, height;
     int channels = 0;
 
@@ -113,31 +166,14 @@ pubfunc Texture LoadTextureEx(const char* name, uchar* pixels) {
     Texture texture = InitTexture(width, height);
     texture.name = name;
 
-    if (data == NULL) {
-        ERR("Failed to load texture %s from memory! ( likely data corruption :( )", name);
-        return texture;
+    if (data)
+    {
+        LoadTextureFromStbData(texture, data, channels);
+        stbi_image_free(data);
     }
-
-    if (channels != 4 && channels != 3) {
-        ERR("Unexpected amount of channels in image (%d)!", channels);
-        return texture;
-    }
-
-    // HACK: Copy the texture into the correct color order
-    // (by trial and error lol)
-    uchar* comps = (uchar*) texture.pixels;
-    for (int i = 0; i < width * height; i++) {
-        ((uchar*)texture.pixels)[i*4+0] = data[i*4+3];
-        ((uchar*)texture.pixels)[i*4+1] = data[i*4+2];
-        ((uchar*)texture.pixels)[i*4+2] = data[i*4+1];
-        ((uchar*)texture.pixels)[i*4+3] = data[i*4+0];
-    }
-
-    stbi_image_free(data);
-
-    if (!texture.pixels) {
-        ERR("Failed to parse texture!");
-        return texture;
+    else 
+    {
+        ERR("Failed to load texture %s", name);
     }
     return texture;
 }
