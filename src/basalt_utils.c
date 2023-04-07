@@ -5,6 +5,10 @@
 #include <libgen.h>
 #include <ctype.h>
 
+#include <time.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+
 #if defined(_WIN64) || defined(_WIN32)
 #include "external/dirent.h"
 #else
@@ -178,6 +182,14 @@ pubfunc bool FolderExists(const char* folder)
         return true;
     }
     return false;
+}
+
+pubfunc ulong GetFileModifiedTime(const char* filePath)
+{
+    struct stat attr;
+    stat(filePath, &attr);
+    ulong modifiedTime = attr.st_mtime;
+    return modifiedTime;
 }
 
 static char FileNameCache[MAX_PATH_LENGTH]; 

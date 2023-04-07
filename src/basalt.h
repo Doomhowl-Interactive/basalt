@@ -11,10 +11,11 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+typedef unsigned int uint;
+typedef unsigned char uchar;
 typedef size_t usize;
-typedef int32_t int32;
-typedef uint32_t uint;
-typedef uint8_t uchar;
+
+typedef uint32_t Color;
 typedef uchar Key;
 
 #endif
@@ -49,8 +50,6 @@ extern const uint MAX_ENTITIES;
 #define func static
 #define pubfunc
 #define wasmfunc
-
-typedef uint Color;
 
 class(Rect)
 {
@@ -139,6 +138,8 @@ pubfunc bool FolderExists(const char* folder);
 
 // WARN: The following 2 functions use cached memory.
 // The result gets overwritten on future calls.
+pubfunc ulong GetFileModifiedTime(const char* filePath); // NOTE: Get seconds since epoch a file was last changed.
+                                                         // Returns 0 if file doesn't exists.
 pubfunc const char* GetFileName(const char* filePath);
 pubfunc const char* GetFileStem(const char* filePath);
 pubfunc const char* GetFirstExistingFolder(const char** folders); // NOTE: Returns NULL when none exist,

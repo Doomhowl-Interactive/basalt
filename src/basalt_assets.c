@@ -1,4 +1,5 @@
 #include "basalt.h"
+#include <time.h>
 
 #define STB_IMAGE_IMPLEMENTATION
 #define STBI_NO_HDR
@@ -9,6 +10,7 @@ class(AssetEntry) {
     char filePath[MAX_PATH_LENGTH];
     char fileName[MAX_PATH_LENGTH];
     double lastPollTime;
+    ulong lastEditTime;
 };
 
 #define HOTLOAD_INTERVAL 2.0
@@ -85,7 +87,10 @@ pubfunc void InitHotReloading()
         strcpy(e->fileName, fileStem);
 
         e->lastPollTime = GetTimeElapsed();
-        DEBUG("HOTLOAD --> Found %s at %s",e->fileName, e->filePath);
+        e->lastEditTime = GetFileModifiedTime(e->filePath);
+
+        char* formattedModTime = ctime(&e->lastEditTime);
+        DEBUG("HOTLOAD --> Found %s at %s (last edit %s)",e->fileName, e->filePath, formattedModTime);
     }
 
     UnloadFilePathList(list);
