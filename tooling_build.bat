@@ -36,7 +36,7 @@ PUSHD build
         DEL /F %EMBEDDER%
     )
 
-    CL /nologo /O2 /ZI /FC /Fe: %EMBEDDER% /DBASALT_DEBUG /I ..\src\tooling /Tp ..\src\tooling\embedder.c
+    CL /nologo /O2 /ZI /FC /Fe: %EMBEDDER% /I ..\src\tooling /Tp ..\src\tooling\embedder.c
 
     IF EXIST %EMBEDDER% (
         echo Built embedder

@@ -106,11 +106,7 @@ typedef StringArray FilePathList;
 #define FATAL(...)  printf("FATAL: "__VA_ARGS__); printf("\n"); exit(1)
 #endif
 
-#ifdef BASALT_DEBUG
 #define DEBUG(...) printf("DEBUG: "__VA_ARGS__); printf("\n")
-#else
-#define DEBUG(...)
-#endif
 
 // Utility functions (basalt_utils.c)
 #define DEG2RAD(Y) ((Y) * M_PI / 180)

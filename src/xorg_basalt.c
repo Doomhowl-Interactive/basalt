@@ -191,9 +191,7 @@ int main(int argc, char **argv) {
         FATAL("Failed to open X display!");
     }
 
-#ifdef BASALT_DEBUG
     UnitTest();
-#endif
 
     Size size = GetMonitorSize(display);
 
