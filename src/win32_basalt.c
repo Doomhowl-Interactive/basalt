@@ -19,7 +19,8 @@ class(OffscreenBuffer) {
 };
 
 class(SInput) {
-    // TODO: Implement
+    bool pressedKeys[256];
+    bool pressedKeysOnce[256];
     bool isMouseDown;
     Point mouse;
 };
@@ -36,6 +37,25 @@ pubfunc bool IsMouseUp() {
     return !Input.isMouseDown;
 }
 
+pubfunc bool IsKeyDown(Key code)
+{
+    return Input.pressedKeys[code];
+}
+
+pubfunc bool IsKeyUp(Key code)
+{
+    return !Input.pressedKeys[code];
+}
+
+pubfunc bool IsKeyPressed(Key code)
+{
+    return Input.pressedKeysOnce[code];
+}
+
+pubfunc bool IsKeyReleased(Key code)
+{
+    return !Input.pressedKeysOnce[code];
+}
 pubfunc Point GetMousePosition() {
     return Input.mouse;
 }
@@ -112,6 +132,16 @@ func void ResizeDIBSection(OffscreenBuffer *buffer, int width, int height) {
     buffer->info.bmiHeader.biCompression = BI_RGB;
 }
 
+func void HandleKeyEvent(WPARAM wParam, bool pressed)
+{
+    // filter out other stuff
+    char key = (char) wParam;
+    Input.pressedKeys[key] = pressed;
+
+    if (pressed)
+        Input.pressedKeysOnce[key] = true;
+}
+
 static void DisplayBufferInWindow(HDC deviceContext, int winWidth,
                                   int winHeight, OffscreenBuffer buffer) {
 
@@ -134,19 +164,13 @@ LRESULT CALLBACK MainWindowCallback(HWND window, UINT message, WPARAM wParam,
 
     switch (message) {
     case WM_CLOSE:
-        {
-            Context.shouldBeRunning = false;
-        }
+        Context.shouldBeRunning = false;
         break;
     case WM_ACTIVATEAPP:
-        {
-            OutputDebugStringA("WM_ACTIVATEAPP\n");
-        }
+        OutputDebugStringA("WM_ACTIVATEAPP\n");
         break;
     case WM_DESTROY:
-        {
-            Context.shouldBeRunning = false;
-        }
+        Context.shouldBeRunning = false;
         break;
     case WM_PAINT:
         {
@@ -157,6 +181,16 @@ LRESULT CALLBACK MainWindowCallback(HWND window, UINT message, WPARAM wParam,
                                   GlobalBackbuffer);
             EndPaint(window, &paint);
         }
+        break;
+    case WM_KEYDOWN:
+        {
+            HandleKeyEvent(wParam, true);
+            if (IsKeyPressed(KEY_Q))
+                Context.shouldBeRunning = false;
+        }
+        break;
+    case WM_KEYUP:
+        HandleKeyEvent(wParam, false);
         break;
     default:
         {

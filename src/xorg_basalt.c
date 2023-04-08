@@ -83,6 +83,7 @@ pubfunc bool IsMouseUp()
     return !Input.isMouseDown;
 }
 
+// TODO: Turn SInput into global external variable
 pubfunc bool IsKeyDown(Key code)
 {
     return Input.pressedKeys[code];
@@ -158,7 +159,8 @@ func void HandleKeyEvent(XEvent event, bool pressed){
     char* string = XKeysymToString(upperSym);
 
     // HACK: ignore special characters (for now)
-    if (string[1] == '\0'){
+    if (string[1] == '\0')
+    {
         char key = string[0];
         Input.pressedKeys[key] = pressed;
 
@@ -238,7 +240,6 @@ int main(int argc, char **argv) {
             XEvent event;
             XNextEvent(display, &event);
 
-            // FIXME: Prevent keys from getting stuck when pressing mutiple.
             switch (event.type) {
             case KeyPress:
                 {
