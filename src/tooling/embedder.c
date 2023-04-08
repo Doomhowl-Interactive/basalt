@@ -83,7 +83,10 @@ void AppendFileCode(String* code, char* file) {
 
     char assetName[128];
     GetAssetName(assetName, file);
-    printf("Embedding file %s named %s ", file, assetName);
+
+    char prefixToPad[128];
+    sprintf(prefixToPad, "Embedding file %s named %s",file,assetName);
+    printf(PadStringRight(prefixToPad,' ',100));
 
     clock_t startTime = clock();
 
@@ -120,7 +123,7 @@ void AppendFileCode(String* code, char* file) {
 
     clock_t endTime = clock();
     double cpuTimeUsed = ((double)(endTime - startTime)) / CLOCKS_PER_SEC;
-    printf(" - %f secs...\n", cpuTimeUsed);
+    printf("%f secs...\n", cpuTimeUsed);
 }
 
 void ClearFile(char* outputFile) {
