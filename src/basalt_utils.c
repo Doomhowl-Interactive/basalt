@@ -2,7 +2,6 @@
 #include <math.h>
 #include <stdio.h>
 #include <string.h>
-#include <libgen.h>
 #include <ctype.h>
 
 #include <time.h>
@@ -82,6 +81,7 @@ pubfunc float Vec2Magnitude(Vec2 v2)
     // Pythagorean theorem
 #ifdef BASALT_NO_ENGINE
     assert(0);
+    return 0.f;
 #else
     return sqrt(v2.x*v2.x + v2.y*v2.y);
 #endif
@@ -99,12 +99,12 @@ pubfunc StringArray InitStringArray()
 pubfunc void StoreString(StringArray* arr, char* text)
 {
     if (arr->strings == NULL)
-        arr->strings = calloc(sizeof(char*),arr->capacity);
+        arr->strings = (char**) calloc(sizeof(char*),arr->capacity);
 
     if (arr->count == arr->capacity)
     {
         arr->capacity += 20;
-        arr->strings = realloc(arr->strings, sizeof(char*) * arr->capacity);
+        arr->strings = (char**) realloc(arr->strings, sizeof(char*) * arr->capacity);
     }
     arr->strings[arr->count++] = strdup(text);
 }
@@ -206,20 +206,38 @@ pubfunc ulong GetFileModifiedTime(const char* filePath)
     return modifiedTime;
 }
 
-static char FileNameCache[MAX_PATH_LENGTH]; 
-pubfunc const char* GetFileName(const char* folder)
+// raylib.h (rcore.c)
+pubfunc const char *GetFileName(const char *filePath)
 {
-    strcpy(FileNameCache,folder);
-    return basename(FileNameCache);
+    const char *fileName = NULL;
+    if (filePath != NULL) fileName = strpbrk(filePath, "\\/");
+
+    if (!fileName) return filePath;
+
+    return fileName + 1;
 }
 
-pubfunc const char* GetFileStem(const char* folder)
+// raylib.h (rcore.c)
+pubfunc const char *GetFileStem(const char *filePath)
 {
-    const char* fileName = GetFileName(folder);
+    #define MAX_FILENAMEWITHOUTEXT_LENGTH   256
 
-    char* stem = strrchr(fileName, '.');
-    if (stem != NULL)
-        *stem = '\0';
+    static char fileName[MAX_FILENAMEWITHOUTEXT_LENGTH] = { 0 };
+    memset(fileName, 0, MAX_FILENAMEWITHOUTEXT_LENGTH);
+
+    if (filePath != NULL) strcpy(fileName, GetFileName(filePath));   // Get filename with extension
+
+    int size = (int)strlen(fileName);   // Get size in bytes
+
+    for (int i = 0; (i < size) && (i < MAX_FILENAMEWITHOUTEXT_LENGTH); i++)
+    {
+        if (fileName[i] == '.')
+        {
+            // NOTE: We break on first '.' found
+            fileName[i] = '\0';
+            break;
+        }
+    }
 
     return fileName;
 }

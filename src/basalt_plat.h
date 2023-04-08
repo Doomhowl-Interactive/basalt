@@ -3,8 +3,11 @@
 // Methods that games shouldn't need, so engine only stuff.
 ////////
 
-// TODO: test on Windows
+#if defined(_WIN32) || defined(_WIN64)
+#define COLTEXT(C,T) T
+#else
 #define COLTEXT(C,T) "\e[1;"#C"m"T"\e[0m"
+#endif
 
 // basalt_tooling.c
 platfunc bool UpdateAndRenderArchaeo();

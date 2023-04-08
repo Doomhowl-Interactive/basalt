@@ -13,7 +13,7 @@ pubfunc Texture GenerateNoiseTextureEx(int width, int height, Color bg, Color fg
 
     double lowest = 1000;
     double highest = -1000;
-    double values[texture.width*texture.height];
+    double* values = malloc(texture.width*texture.height*sizeof(double));
 
     // Determine ranges
     int i = 0;
@@ -42,6 +42,7 @@ pubfunc Texture GenerateNoiseTextureEx(int width, int height, Color bg, Color fg
     }
 
     open_simplex_noise_free(context);
+    free(values);
 
     return texture;
 }
@@ -66,7 +67,7 @@ pubfunc void DrawNoiseRectangle(Texture canvas, Rect region, Vec2 offset, Color 
 
     double lowest = 1000;
     double highest = -1000;
-    double values[region.width*region.height];
+    double* values = malloc(region.width*region.height*sizeof(double));
 
     // TODO: Refactor
     // Determine ranges
@@ -98,6 +99,8 @@ pubfunc void DrawNoiseRectangle(Texture canvas, Rect region, Vec2 offset, Color 
             canvas.pixels[j] = BlendColors(bg, fg, percentage);
         }
     }
+
+    free(values);
 }
 
 pubfunc void DrawTextureSheet(Texture canvas, TextureSheet sheet, int frame, Vec2 pos)

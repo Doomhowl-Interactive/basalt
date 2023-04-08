@@ -15,6 +15,10 @@ typedef unsigned int uint;
 typedef unsigned char uchar;
 typedef size_t usize;
 
+#ifdef _WIN32
+typedef uint64_t ulong;
+#endif
+
 typedef uint32_t Color;
 typedef uchar Key;
 
