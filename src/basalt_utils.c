@@ -167,13 +167,10 @@ pubfunc void ToUppercase(char* str) {
 static char PaddingCache[MAX_PATH_LENGTH]; 
 pubfunc const char* PadStringRight(const char* text, char symbol, usize length)
 {
-    // TODO: cut off if string to long
-    // TODO: Add more unit testing for this
-
     memset(PaddingCache, symbol, length);
     PaddingCache[length] = '\0';
 
-    int len = strlen(text);
+    int len = MIN(MAX_PATH_LENGTH, MIN(strlen(text),length));
     memcpy(PaddingCache, text, len);
 
     return PaddingCache;
