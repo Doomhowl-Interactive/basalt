@@ -5,8 +5,8 @@
 #include <math.h>
 #include <stdio.h>
 
-const uint WIDTH = 600;
-const uint HEIGHT = 800;
+const uint WIDTH = 800;
+const uint HEIGHT = 600;
 const char* GAME_TITLE = "Bullethell game";
 
 const uint TPS = 25;

@@ -30,7 +30,7 @@ pushd build
     )
 
     rem Compile release build
-    CL /nologo /GS- /Ot /Oy /Ob2 /GF /Gy /Fe: %EXE% /TP ..\src\basalt_*.c /TP ..\src\win32_basalt.c /TP ..\src\temple_game.c /TP ..\src\assets_custom.dat.c -link -nodefaultlib -subsystem:windows kernel32.lib user32.lib gdi32.lib
+    CL /nologo /GS- /Ot /Oy /Ob2 /GF /Gy /Fe: %EXE% /TP ..\src\basalt_*.c /TP ..\src\win32_basalt.c /TP ..\src\bullet_game.c /TP ..\src\assets_custom.dat.c -link -nodefaultlib -subsystem:windows kernel32.lib user32.lib gdi32.lib
 
     IF EXIST %EXE% (
         ECHO C++ XP Building completed!

@@ -1,5 +1,9 @@
 #pragma once
 
+#ifndef PI
+#define PI 3.14159265358979323846
+#endif
+
 #ifdef WASM
 #include "wasm_stdlib.h"
 #else 
@@ -113,8 +117,8 @@ typedef StringArray FilePathList;
 #define DEBUG(...) printf("DEBUG: "__VA_ARGS__); printf("\n")
 
 // Utility functions (basalt_utils.c)
-#define DEG2RAD(Y) ((Y) * M_PI / 180)
-#define RAD2DEG(X) ((X) * 180.0 / M_PI)
+#define DEG2RAD(Y) ((Y) * PI / 180)
+#define RAD2DEG(X) ((X) * 180.0 / PI)
 
 pubfunc int Clamp(int value, int min, int max);
 pubfunc int GetRandomNumber(); // WARN: read implementation 

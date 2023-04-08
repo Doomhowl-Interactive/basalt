@@ -38,13 +38,13 @@ call tooling_build.bat
 PUSHD build
 
     rem debug build
-    CL /nologo /GS- /ZI /FC /EHa /Fe: %EXE_DEBUG% /Tc ..\src\basalt_*.c /Tc ..\src\temple_game.c /Tc ..\src\win32_basalt.c /Tc ..\src\assets_custom.dat.c -link user32.lib gdi32.lib
+    CL /nologo /GS- /ZI /FC /EHa /Fe: %EXE_DEBUG% /Tc ..\src\basalt_*.c /Tc ..\src\bullet_game.c /Tc ..\src\win32_basalt.c /Tc ..\src\assets_custom.dat.c -link user32.lib gdi32.lib
     if %errorlevel% neq 0 popd; exit /b %errorlevel%
 
     IF EXIST %EXE_DEBUG% (
         ECHO Debug build completed!
 
-        CL /nologo /O2 /Fe: %EXE% /Tc ..\src\basalt_*.c /Tc ..\src\win32_basalt.c /Tc ..\src\temple_game.c /Tc ..\src\assets_custom.dat.c -link user32.lib gdi32.lib
+        CL /nologo /O2 /Fe: %EXE% /Tc ..\src\basalt_*.c /Tc ..\src\win32_basalt.c /Tc ..\src\bullet_game.c /Tc ..\src\assets_custom.dat.c -link user32.lib gdi32.lib
         if %errorlevel% neq 0 popd; exit /b %errorlevel%
 
     ) 
