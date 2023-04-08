@@ -1,0 +1,1 @@
+extern uchar SPR_BULLET_PLACEHOLDER[];

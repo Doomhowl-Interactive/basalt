@@ -126,7 +126,8 @@ const BulletPattern PlayerBullet = {
             0xFFBB00FF,
             { 5 },
         }
-    }
+    },
+    &BulletPlacholderTexture,
 };
 
 const BulletPattern PlayerBullet2 = {
@@ -137,7 +138,8 @@ const BulletPattern PlayerBullet2 = {
             0xAAAAFFFF,
             { 40, 40 }
         }
-    }
+    },
+    &BulletPlacholderTexture,
 };
 
 const BulletPattern PlayerBullet3 = {
@@ -148,7 +150,8 @@ const BulletPattern PlayerBullet3 = {
             0x0022DDFF,
             { 10, -1 }
         }
-    }
+    },
+    &BulletPlacholderTexture
 };
 
 const BulletPattern PlayerBullet4 = {
@@ -159,5 +162,6 @@ const BulletPattern PlayerBullet4 = {
             0x22FF22FF,
             { 10, -1 }
         }
-    }
+    },
+    &BulletPlacholderTexture
 };

@@ -214,8 +214,15 @@ pubfunc void DrawTextureEx(Texture canvas, Texture texture, Vec2 pos, Rect src) 
                 continue;
             }
 
-            // drop pixel if opacity not 255 (temporary)
-            pixels[destIndex] = texture.pixels[srcIndex];
+            // HACK: Accidental motion blur while messing around
+            // Color srcColor = texture.pixels[srcIndex];
+            // Color finalColor = BlendColors(pixels[destIndex], srcColor, 0.5f);
+            // pixels[destIndex] = finalColor;
+            
+            Color srcColor = texture.pixels[srcIndex];
+            float alpha = (0x000000FF & srcColor) / 255.f;
+            Color finalColor = BlendColors(pixels[destIndex], srcColor, alpha);
+            pixels[destIndex] = finalColor;
         }
     }
     DRAWCALL(canvas, DrawRectangle);

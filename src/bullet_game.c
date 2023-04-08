@@ -5,8 +5,8 @@
 #include <math.h>
 #include <stdio.h>
 
-const uint WIDTH = 800;
-const uint HEIGHT = 600;
+const uint WIDTH = 600;
+const uint HEIGHT = 800;
 const char* GAME_TITLE = "Bullethell game";
 
 const uint TPS = 25;
@@ -36,6 +36,8 @@ static uint SelectedPattern = 1;
 
 static Texture backgroundTexture = { 0 };
 
+Texture BulletPlacholderTexture = { 0 };
+
 pubfunc void InitializeGame()
 {
     Player = CreateEntity(&Scenes[SCENE_GAME]);
@@ -43,6 +45,7 @@ pubfunc void InitializeGame()
     InitPlayer(Player, spawnPos);
 
     backgroundTexture = GenerateNoiseTexture(WIDTH, HEIGHT, 0x4B486EFF, 0x07060FFF);
+    BulletPlacholderTexture = LoadTexture(SPR_BULLET_PLACEHOLDER);
 }
 
 pubfunc void DisposeGame()

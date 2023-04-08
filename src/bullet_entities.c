@@ -82,8 +82,15 @@ void UpdateAndRenderEntity(Scene* scene, Texture canvas, Entity* e, float delta)
 
     if (e->sprite.texture.width > 0)
     {
-        Rect bounds = GetEntityBounds(*e);
-        DrawRectangleRec(canvas, bounds, e->sprite.tint);
+        if (e->sprite.texture.pixels)
+        {
+            DrawTextureV(canvas, e->sprite.texture, e->sprite.pos);
+        }
+        else
+        {
+            Rect bounds = GetEntityBounds(*e);
+            DrawRectangleRec(canvas, bounds, e->sprite.tint);
+        }
     }
 
     // Player behaviour
@@ -212,16 +219,19 @@ BULLET void InitBullet(Entity* e, const BulletPattern* pattern, Vec2 pos, Vec2 n
 {
     assert(pattern);
 
+    // set sprite
     e->type = TAG_BULLET;
     e->sprite.pos.x = pos.x;
     e->sprite.pos.y = pos.y;
+    e->sprite.source.x = 0;
+    e->sprite.source.y = 0;
+    e->sprite.source.width = pattern->texture->width;
+    e->sprite.source.height = pattern->texture->height;
+    e->sprite.texture = *pattern->texture;
 
     // copy bullet pattern
     e->bullet.pattern = *pattern;
     e->bullet.data.origin = pos;
     e->bullet.data.normal = normal;
-
-    float radius = 10.f;
-    SetEntitySize(e, radius, radius);
     e->sprite.tint = 0xFFFFFFFF;
 }

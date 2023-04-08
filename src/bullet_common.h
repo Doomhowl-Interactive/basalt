@@ -1,4 +1,5 @@
 #pragma once
+#include "bullet_assets.h"
 
 #define MAX_ENTITIES 256
 #define MAX_SPAWNERS 32
@@ -41,6 +42,7 @@ typedef struct BulletAction {
 
 typedef struct BulletPattern {
     BulletAction actions[MAX_PATTERNS];
+    Texture* texture;
     uint count;
 } BulletPattern;
 
@@ -116,6 +118,7 @@ BULLET void InitBullet(Entity* e, const BulletPattern* patterns, Vec2 pos, Vec2 
 // bullet_patterns.c
 BULLET bool RunBulletPattern(Entity* e, float delta);
 
+extern Texture BulletPlacholderTexture;
 extern const BulletPattern PlayerBullet;
 extern const BulletPattern PlayerBullet2;
 extern const BulletPattern PlayerBullet3;
