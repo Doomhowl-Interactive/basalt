@@ -16,7 +16,7 @@ void WriteCode(char* outputPath, String code) {
     file = fopen(outputPath, "a");
     if (file == NULL) {
         fprintf(stderr,"Could not open file for writing.\n");
-        exit(1);
+        exit(EXIT_FAILURE);
     }
 
     // append code to disk file
@@ -59,7 +59,7 @@ unsigned char* LoadFileBytes(char* filePath, size_t* size) {
     FILE *file = fopen(filePath,"rb");
     if (file == NULL){
         fprintf(stderr,"Error opening file %s\n", filePath);
-        exit(1);
+        exit(EXIT_FAILURE);
     }
 
     fseek(file, 0, SEEK_END);

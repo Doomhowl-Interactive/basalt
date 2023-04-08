@@ -275,7 +275,7 @@ pubfunc FilePathList GetFolderFiles(const char* folder, const char* ext) {
     }
     else {
         fprintf(stderr,"Unable to open directory\n");
-        exit(1);
+        exit(EXIT_FAILURE);
     }
 
     return list;

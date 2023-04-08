@@ -18,7 +18,7 @@ func void EndTest(const char* name, const char* description, bool succeeded)
     {
         ERR("Failed at --> %s", description);
         ERR("Cannot proceed as unit tests failed!");
-        exit(1);
+        exit(EXIT_FAILURE);
     }
 }
 

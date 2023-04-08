@@ -205,6 +205,11 @@ LRESULT CALLBACK MainWindowCallback(HWND window, UINT message, WPARAM wParam,
 
 int CALLBACK WinMain(HINSTANCE instance, HINSTANCE prevInstance,
                      LPSTR commandLine, int showCode) {
+
+    // Check launch arguments first
+    if (!ParseLaunchArguments(__argc, __argv))
+        return EXIT_SUCCESS;
+
     WNDCLASS windowClass = {0};
 
     ResizeDIBSection(&GlobalBackbuffer, WIDTH, HEIGHT);
