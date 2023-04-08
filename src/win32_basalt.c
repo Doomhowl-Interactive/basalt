@@ -206,10 +206,6 @@ LRESULT CALLBACK MainWindowCallback(HWND window, UINT message, WPARAM wParam,
 int CALLBACK WinMain(HINSTANCE instance, HINSTANCE prevInstance,
                      LPSTR commandLine, int showCode) {
 
-    // Check launch arguments first
-    if (!ParseLaunchArguments(__argc, __argv))
-        return EXIT_SUCCESS;
-
     WNDCLASS windowClass = {0};
 
     ResizeDIBSection(&GlobalBackbuffer, WIDTH, HEIGHT);
@@ -219,20 +215,22 @@ int CALLBACK WinMain(HINSTANCE instance, HINSTANCE prevInstance,
     windowClass.hInstance = instance;
     windowClass.lpszClassName = "HandmadeHerowindowClass";
 
-    if (Config.hasUnitTesting)
-        UnitTest();
-
-    if (Config.hasConsole)
-        OpenSystemConsole();
-
-    Input.isMouseDown = true;
-
     if (RegisterClassA(&windowClass)) {
         HWND window = CreateWindowExA(
             0, windowClass.lpszClassName, "Handmade Hero",
             WS_OVERLAPPEDWINDOW | WS_VISIBLE, CW_USEDEFAULT, CW_USEDEFAULT,
             WIDTH, HEIGHT, 0, 0, instance, 0);
         Context.window = window;
+
+        // Check launch arguments first
+        if (!ParseLaunchArguments(__argc, __argv))
+            return EXIT_SUCCESS;
+
+        if (Config.hasUnitTesting)
+            UnitTest();
+
+        if (Config.hasConsole)
+            OpenSystemConsole();
 
         if (Context.window) {
             HDC deviceContext = GetDC(window);
@@ -320,17 +318,23 @@ int CALLBACK WinMain(HINSTANCE instance, HINSTANCE prevInstance,
     return 0;
 }
 
+static bool AllocatedConsole = false;
 func void OpenSystemConsole() {
-    if (AllocConsole()) {
+    if (!AllocatedConsole || AllocConsole())
+    {
         freopen("CONIN$", "r", stdin);
         freopen("CONOUT$", "w", stdout);
         freopen("CONOUT$", "w", stderr); 
+        AllocatedConsole = true;
+    }
+    else
+    {
+        ERR("Failed to allocate console!");
     }
     printf("Allocated Windows console");
 }
 
 func void CloseSystemConsole() {
-    #ifdef WIN32
-    FreeConsole();
-    #endif
+    if (AllocatedConsole)
+        FreeConsole();
 }

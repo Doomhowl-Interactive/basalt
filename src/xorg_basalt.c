@@ -185,7 +185,7 @@ int main(int argc, char **argv) {
 
     // Check launch arguments first
     if (!ParseLaunchArguments(argc, argv))
-        return 0;
+        return EXIT_SUCCESS;
 
     DEBUG("Opening Xorg display...");
     Display* display = XOpenDisplay(NULL);
@@ -342,5 +342,5 @@ int main(int argc, char **argv) {
 
     XCloseDisplay(display);
     DEBUG("Closed Xorg display");
-    return 0;
+    return EXIT_SUCCESS;
 }
