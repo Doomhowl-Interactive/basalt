@@ -84,9 +84,17 @@ void AppendFileCode(String* code, char* file) {
     char assetName[128];
     GetAssetName(assetName, file);
 
+    // TODO: Messy
     char prefixToPad[128];
-    sprintf(prefixToPad, "Embedding file %s named %s",file,assetName);
-    printf(PadStringRight(prefixToPad,'.',90));
+    sprintf(prefixToPad, "Embedding file %s",file);
+
+    char suffixToPad[128];
+    sprintf(suffixToPad, "as %s",assetName);
+
+    char prefixFormatted[256];
+    strcpy(prefixFormatted, PadStringRight(prefixToPad,'.',80));
+
+    printf("%s %s",prefixFormatted,PadStringRight(suffixToPad,'.',40));
 
     clock_t startTime = clock();
 
