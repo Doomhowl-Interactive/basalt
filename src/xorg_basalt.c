@@ -15,8 +15,6 @@
 #include "basalt.h"
 #include "basalt_plat.h"
 
-static bool ShouldBeRunning = true;
-
 class(OffscreenBuffer) {
     Display *display;
     Window window;
@@ -28,19 +26,11 @@ class(OffscreenBuffer) {
     uchar* pixels;
     XImage *image;
     char title[128];
-
-    usize frameIndex;
-    double timeElapsed;
 };
 
-class(SInput) {
-    bool pressedKeys[256];
-    bool pressedKeysOnce[256];
-    bool isMouseDown;
-    Point mousePos;
-};
+GameContext Context     = { 0 };
+GameInput Input         = { 0 };
 
-static SInput Input = { 0 };
 static OffscreenBuffer ActiveBuffer = { 0 };
 
 pubfunc void SetWindowTitle(const char* title) {
@@ -56,52 +46,6 @@ pubfunc void SetWindowTitle(const char* title) {
     } else {
         ERR("Failed to set change window title!\n");
     }
-}
-
-pubfunc usize GetFrameIndex()
-{
-    return ActiveBuffer.frameIndex;
-}
-
-pubfunc double GetTimeElapsed()
-{
-    return ActiveBuffer.timeElapsed;
-}
-
-pubfunc Point GetMousePosition()
-{
-    return Input.mousePos;
-}
-
-pubfunc bool IsMouseDown()
-{
-    return Input.isMouseDown;
-}
-
-pubfunc bool IsMouseUp()
-{
-    return !Input.isMouseDown;
-}
-
-// TODO: Turn SInput into global external variable
-pubfunc bool IsKeyDown(Key code)
-{
-    return Input.pressedKeys[code];
-}
-
-pubfunc bool IsKeyUp(Key code)
-{
-    return !Input.pressedKeys[code];
-}
-
-pubfunc bool IsKeyPressed(Key code)
-{
-    return Input.pressedKeysOnce[code];
-}
-
-pubfunc bool IsKeyReleased(Key code)
-{
-    return !Input.pressedKeysOnce[code];
 }
 
 func Size GetMonitorSize(Display* display) {
@@ -235,7 +179,7 @@ int main(int argc, char **argv) {
     double prevDelta = 0.f;
     double delta = 1.0 / maxFps;
     double fps = maxFps;
-    while (ShouldBeRunning) {
+    while (!Context.shouldClose) {
         while (XPending(display) > 0) {
             XEvent event;
             XNextEvent(display, &event);
@@ -245,7 +189,7 @@ int main(int argc, char **argv) {
                 {
                     HandleKeyEvent(event, true);
                     if (IsKeyPressed(KEY_Q))
-                        ShouldBeRunning = false;
+                        Context.shouldClose = true;
 
                     if (IsKeyPressed(KEY_L))
                         DumpKeyboardTable();
@@ -257,7 +201,7 @@ int main(int argc, char **argv) {
             case ClientMessage:
                 if ((Atom)event.xclient.data.l[0] == wmDeleteWindow) {
                     DEBUG("Closing window...");
-                    ShouldBeRunning = false;
+                    Context.shouldClose = true;
                 }
                 break;
             case ResizeRequest: {
@@ -306,8 +250,8 @@ int main(int argc, char **argv) {
                 delta = prevDelta;
             }
             UpdateAndRenderGame(canvas, (float) delta);
-            ActiveBuffer.frameIndex++;
-            ActiveBuffer.timeElapsed += delta;
+            Context.frameIndex++;
+            Context.timeElapsed += delta;
         }
 
         RenderOffscreenBuffer(&ActiveBuffer, width, height);

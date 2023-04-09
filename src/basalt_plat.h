@@ -1,4 +1,6 @@
 #pragma once
+#include "basalt.h"
+
 ////////
 // Methods that games shouldn't need, so engine only stuff.
 ////////
@@ -8,6 +10,25 @@
 #else
 #define COLTEXT(C,T) "\e[1;"#C"m"T"\e[0m"
 #endif
+
+// engine
+class(GameInput) {
+    bool pressedKeys[256];
+    bool pressedKeysOnce[256];
+    bool isMouseDown;
+    Point mousePos;
+};
+
+class(GameContext) {
+    bool shouldClose;
+    usize frameIndex;
+    double timeElapsed;
+
+    Texture canvas;
+};
+
+extern GameInput Input;
+extern GameContext Context;
 
 // basalt_tooling.c
 platfunc bool UpdateAndRenderArchaeo();

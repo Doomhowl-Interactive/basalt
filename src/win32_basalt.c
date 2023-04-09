@@ -1,82 +1,32 @@
 #include "basalt.h"
+#include "basalt_plat.h"
 #include <windows.h>
 #include <synchapi.h>
 
 class(WindowContext){
     HWND window;
-    bool shouldBeRunning;
 };
 
 class(OffscreenBuffer) {
     // NOTE: pixels are 32-bits wide, AA RR GG BB
     BITMAPINFO info;
-    Texture canvas;
     Texture mappedCanvas;
     Texture mappedCanvas2;
-
-    usize frameIndex;
-    double timeElapsed;
 };
 
-class(SInput) {
-    bool pressedKeys[256];
-    bool pressedKeysOnce[256];
-    bool isMouseDown;
-    Point mouse;
-};
+GameContext Context                     = { 0 };
+GameInput Input                         = { 0 };
 
-static WindowContext Context = { 0 };
-static SInput Input = { 0 };
+static WindowContext Window             = { 0 };
 static OffscreenBuffer GlobalBackbuffer = { 0 };
-
-pubfunc bool IsMouseDown() {
-    return Input.isMouseDown;
-}
-
-pubfunc bool IsMouseUp() {
-    return !Input.isMouseDown;
-}
-
-pubfunc bool IsKeyDown(Key code)
-{
-    return Input.pressedKeys[code];
-}
-
-pubfunc bool IsKeyUp(Key code)
-{
-    return !Input.pressedKeys[code];
-}
-
-pubfunc bool IsKeyPressed(Key code)
-{
-    return Input.pressedKeysOnce[code];
-}
-
-pubfunc bool IsKeyReleased(Key code)
-{
-    return !Input.pressedKeysOnce[code];
-}
-pubfunc Point GetMousePosition() {
-    return Input.mouse;
-}
-
-pubfunc usize GetFrameIndex()
-{
-    return GlobalBackbuffer.frameIndex;
-}
-
-pubfunc double GetTimeElapsed()
-{
-    return GlobalBackbuffer.timeElapsed;
-}
 
 #define MAX_TITLE_LEN 128
 pubfunc void SetWindowTitle(const char* title) {
     // check if changed
     char curTitle[MAX_TITLE_LEN];
-    if (GetWindowTextA(Context.window, curTitle, MAX_TITLE_LEN) != 0){
+    if (GetWindowTextA(Window.window, curTitle, MAX_TITLE_LEN) != 0){
         if (strcmp(curTitle, title) != 0)
-            SetWindowTextA(Context.window, title);
+            SetWindowTextA(Window.window, title);
     }
     else
     {
@@ -117,8 +67,8 @@ func Size GetWindowSize(HWND window) {
 func void ResizeDIBSection(OffscreenBuffer *buffer, int width, int height) {
 
     // switch out screen textures for correctly sized ones
-    DisposeTexture(buffer->canvas);
-    buffer->canvas = InitTexture(width, height);
+    DisposeTexture(Context.canvas);
+    Context.canvas = InitTexture(width, height);
 
     DisposeTexture(buffer->mappedCanvas);
     buffer->mappedCanvas = InitTexture(width, height);
@@ -145,7 +95,7 @@ func void HandleKeyEvent(WPARAM wParam, bool pressed)
 static void DisplayBufferInWindow(HDC deviceContext, int winWidth,
                                   int winHeight, OffscreenBuffer buffer) {
 
-    CopyTextureInto(buffer.mappedCanvas, buffer.canvas);
+    CopyTextureInto(buffer.mappedCanvas, Context.canvas);
     MapTextureToCorrectFormat(buffer.mappedCanvas2, buffer.mappedCanvas);
 
     StretchDIBits(deviceContext,
@@ -164,13 +114,13 @@ LRESULT CALLBACK MainWindowCallback(HWND window, UINT message, WPARAM wParam,
 
     switch (message) {
     case WM_CLOSE:
-        Context.shouldBeRunning = false;
+        Context.shouldClose = true;
         break;
     case WM_ACTIVATEAPP:
         OutputDebugStringA("WM_ACTIVATEAPP\n");
         break;
     case WM_DESTROY:
-        Context.shouldBeRunning = false;
+        Context.shouldClose = true;
         break;
     case WM_PAINT:
         {
@@ -186,7 +136,7 @@ LRESULT CALLBACK MainWindowCallback(HWND window, UINT message, WPARAM wParam,
         {
             HandleKeyEvent(wParam, true);
             if (IsKeyPressed(KEY_Q))
-                Context.shouldBeRunning = false;
+                Context.shouldClose = true;
         }
         break;
     case WM_KEYUP:
@@ -220,7 +170,7 @@ int CALLBACK WinMain(HINSTANCE instance, HINSTANCE prevInstance,
             0, windowClass.lpszClassName, "Handmade Hero",
             WS_OVERLAPPEDWINDOW | WS_VISIBLE, CW_USEDEFAULT, CW_USEDEFAULT,
             WIDTH, HEIGHT, 0, 0, instance, 0);
-        Context.window = window;
+        Window.window = window;
 
         // Check launch arguments first
         if (!ParseLaunchArguments(__argc, __argv))
@@ -232,16 +182,15 @@ int CALLBACK WinMain(HINSTANCE instance, HINSTANCE prevInstance,
         if (Config.hasConsole)
             OpenSystemConsole();
 
-        if (Context.window) {
+        if (Window.window) {
             HDC deviceContext = GetDC(window);
-            Context.shouldBeRunning = true;
 
             InitializeGame();
 
             double maxFps = Config.unlockedFramerate ? 10000:60;
             double delta = 1.0 / maxFps;
             double fps = maxFps;
-            while (Context.shouldBeRunning) {
+            while (!Context.shouldClose) {
                 MSG message;
                 Size size = GetWindowSize(window);
 
@@ -253,12 +202,12 @@ int CALLBACK WinMain(HINSTANCE instance, HINSTANCE prevInstance,
                 float scaleX = size.width / (float) WIDTH;
                 float scaleY = size.height / (float) HEIGHT;
 
-                Input.mouse.x = Clamp(p.x/scaleX, 0, WIDTH);
-                Input.mouse.y = Clamp(p.y/scaleY, 0, HEIGHT);
+                Input.mousePos.x = Clamp(p.x/scaleX, 0, WIDTH);
+                Input.mousePos.y = Clamp(p.y/scaleY, 0, HEIGHT);
 
                 while (PeekMessage(&message, 0, 0, 0, PM_REMOVE)) {
                     if (message.message == WM_QUIT)
-                        Context.shouldBeRunning = false;
+                        Context.shouldClose = true;
 
                     TranslateMessage(&message);
                     DispatchMessageA(&message);
@@ -268,10 +217,9 @@ int CALLBACK WinMain(HINSTANCE instance, HINSTANCE prevInstance,
                 usize startTime = GetMicroseconds();
 
                 // do updateing and drawing
-                Texture canvas = GlobalBackbuffer.canvas;
-                UpdateAndRenderGame(canvas, (float) delta);
-                GlobalBackbuffer.frameIndex++;
-                GlobalBackbuffer.timeElapsed += delta;
+                UpdateAndRenderGame(Context.canvas, (float) delta);
+                Context.frameIndex++;
+                Context.timeElapsed += delta;
 
                 DisplayBufferInWindow(deviceContext, size.width, size.height,
                                       GlobalBackbuffer);
