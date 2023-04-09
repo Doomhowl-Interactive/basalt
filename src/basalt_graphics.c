@@ -188,31 +188,31 @@ pubfunc void DrawTextureV(Texture canvas, Texture texture, Vec2 pos) {
     DrawTextureEx(canvas, texture, pos, src);
 }
 
-pubfunc void DrawTextureEx(Texture canvas, Texture texture, Vec2 pos, Rect src) {
+pubfunc void DrawTextureEx(Texture canvas, Texture texture, Vec2 pos, Rect src)
+{
     assert(canvas.pixels);
 
     // Switch out the texture if hotreloading is on
     HotReloadTexture(texture);
 
     Color *pixels = (Color *)canvas.pixels;
+    int canvasSize = canvas.width*canvas.height;
+    int textureSize = texture.width*texture.height;
 
-    // TODO: optimize
-    // TODO: Bounds checking!
-    for (int y = 0; y < src.height; y++) {
-        for (int x = 0; x < src.width; x++) {
+    for (int y = 0; y < src.height; y++)
+    {
+        for (int x = 0; x < src.width; x++)
+        {
             int xx = pos.x + x;
             int yy = pos.y + y;
+
             int destIndex = yy * canvas.width + xx;
+            if (destIndex < 0 || destIndex >= canvasSize)
+                continue;
+
             int srcIndex = (src.y + y) * texture.width + (src.x + x);
-
-            // drop pixel if out of bounds
-            if (srcIndex < 0 || srcIndex >= texture.width*texture.height) {
+            if (srcIndex < 0 || srcIndex >= textureSize)
                 continue;
-            }
-
-            if (destIndex < 0 || destIndex >= canvas.width*canvas.height) {
-                continue;
-            }
 
             // HACK: Accidental motion blur while messing around
             // Color srcColor = texture.pixels[srcIndex];
@@ -220,7 +220,7 @@ pubfunc void DrawTextureEx(Texture canvas, Texture texture, Vec2 pos, Rect src) 
             // pixels[destIndex] = finalColor;
             
             Color srcColor = texture.pixels[srcIndex];
-            float alpha = (0x000000FF & srcColor) / 255.f;
+            uchar alpha = srcColor & 0x000000FF;
             Color finalColor = BlendColors(pixels[destIndex], srcColor, alpha);
             pixels[destIndex] = finalColor;
         }
@@ -279,43 +279,30 @@ pubfunc void DrawWeirdTestGradient(Texture canvas) {
     DRAWCALL(canvas, DrawRectangle);
 }
 
-pubfunc Color RGBA(uchar r, uchar g, uchar b, uchar a)
+pubfunc inline Color RGBA(uchar r, uchar g, uchar b, uchar a)
 {
     return (r << 24) | (g << 16) | (b << 8) | a;
 }
 
-pubfunc Color RGB(uchar r, uchar g, uchar b)
+pubfunc inline Color RGB(uchar r, uchar g, uchar b)
 {
     return RGBA(r, g, b, 255);
 }
 
-pubfunc Color BlendColors(Color color1, Color color2, float percent)
+pubfunc inline Color BlendColors(Color src, Color dst, uchar t)
 {
-    // TODO: cleanup
-    unsigned char r1, g1, b1, a1;
-    unsigned char r2, g2, b2, a2;
-    unsigned char r3, g3, b3, a3;
-    
-    // Extract the RGBA components of color1
-    r1 = (color1 >> 24) & 0xFF;
-    g1 = (color1 >> 16) & 0xFF;
-    b1 = (color1 >> 8) & 0xFF;
-    a1 = color1 & 0xFF;
-    
-    // Extract the RGBA components of color2
-    r2 = (color2 >> 24) & 0xFF;
-    g2 = (color2 >> 16) & 0xFF;
-    b2 = (color2 >> 8) & 0xFF;
-    a2 = color2 & 0xFF;
-    
-    // Calculate the blended RGBA components
-    r3 = (unsigned char)((1 - percent) * r1 + percent * r2);
-    g3 = (unsigned char)((1 - percent) * g1 + percent * g2);
-    b3 = (unsigned char)((1 - percent) * b1 + percent * b2);
-    a3 = (unsigned char)((1 - percent) * a1 + percent * a2);
-    
-    // Combine the blended RGBA components into a single unsigned int
-    return (r3 << 24) | (g3 << 16) | (b3 << 8) | a3;
+    assert(t <= 255);
+    const Color s = 255 - t;
+    return (
+        (((((src >> 0)  & 0xff) * s +
+           ((dst >> 0)  & 0xff) * t) >> 8)) |
+        (((((src >> 8)  & 0xff) * s +
+           ((dst >> 8)  & 0xff) * t)     )  & ~0xff) |
+        (((((src >> 16) & 0xff) * s +
+           ((dst >> 16) & 0xff) * t) << 8)  & ~0xffff) |
+        (((((src >> 24) & 0xff) * s +
+           ((dst >> 24) & 0xff) * t) << 16) & ~0xffffff)
+    );
 }
 
 // NOTE: Taken from https://github.com/tsoding/olive.c/blob/master/olive.c
@@ -355,4 +342,3 @@ func bool olivec_normalize_rect(int x, int y, int w, int h,
 
     return true;
 }
-
