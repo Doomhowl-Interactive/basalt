@@ -149,6 +149,7 @@ pubfunc void InitHotReloading()
     UnloadFilePathList(list);
 }
 
+// TODO: Support loading grayscale textures
 pubfunc Texture LoadTextureEx(const char* name, uchar* pixels)
 {
     int width, height;

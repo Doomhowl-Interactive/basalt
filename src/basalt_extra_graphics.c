@@ -54,55 +54,6 @@ pubfunc Texture GenerateNoiseTexture(int width, int height, Color bg, Color fg)
     return GenerateNoiseTextureEx(width, height, bg, fg, scale, seed);
 }
 
-// FIXME: SLOW AND TERRIBLE
-static struct osn_context* NoiseContext = NULL;
-pubfunc void DrawNoiseRectangle(Texture canvas, Rect region, Vec2 offset, Color bg, Color fg)
-{
-    double scale = 60;
-    if (NoiseContext == NULL)
-    {
-        int seed = GetRandomNumber();
-        open_simplex_noise(seed,&NoiseContext);
-    }
-
-    double lowest = 1000;
-    double highest = -1000;
-    double* values = malloc(region.width*region.height*sizeof(double));
-
-    // TODO: Refactor
-    // Determine ranges
-    int i = 0;
-    for (int y = 0; y < region.height; y++)
-    {
-        for (int x = 0; x < region.width; x++)
-        {
-            double xx = x + offset.x;
-            double yy = y + offset.y;
-            double val = open_simplex_noise2(NoiseContext, xx / scale, yy / scale);
-            if (lowest > val)
-                lowest = val; 
-            if (highest < val)
-                highest = val; 
-            values[i++] = val;
-        }
-    }
-
-    // Calculate colors
-    for (int y = 0; y < region.height; y++)
-    {
-        for (int x = 0; x < region.width; x++)
-        {
-            int i = y * region.width + x;
-            float percentage = (float) ((values[i] - lowest) / (highest - lowest));
-
-            int j = Clamp((y+region.y) * region.width + (x+region.x), 0, canvas.width*canvas.height);
-            canvas.pixels[j] = BlendColors(bg, fg, percentage);
-        }
-    }
-
-    free(values);
-}
-
 pubfunc void DrawTextureSheet(Texture canvas, TextureSheet sheet, int frame, Vec2 pos)
 {
     assert(sheet.texture);

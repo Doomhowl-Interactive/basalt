@@ -33,7 +33,9 @@ static const BulletPattern* Patterns[] = {
     &PlayerBullet4,
 };
 static uint SelectedPattern = 1;
+
 static float BackgroundScrollSpeed = 100.f;
+static Texture BackgroundNoiseTexture = { 0 };
 
 Texture BulletPlacholderTexture = { 0 };
 
@@ -44,6 +46,7 @@ pubfunc void InitializeGame()
     InitPlayer(Player, spawnPos);
 
     BulletPlacholderTexture = LoadTexture(SPR_BULLET_PLACEHOLDER);
+    BackgroundNoiseTexture = LoadTexture(SPR_BACKGROUND_NOISE_COL);
 }
 
 pubfunc void DisposeGame()
@@ -81,9 +84,9 @@ pubfunc void UpdateAndRenderGame(Texture canvas, float delta)
             SelectedPattern = 0;
     }
 
-    Rect window = { 0, 0, WIDTH, HEIGHT };
-    Vec2 offset = { 0.f, GetTimeElapsed()*BackgroundScrollSpeed };
-    DrawNoiseRectangle(canvas, window, offset, 0x4B486EFF, 0x07060FFF);
+    // TODO: blend at runtime 0x4B486EFF, 0x07060FFF
+    int offsetY = (int)(GetTimeElapsed()*-BackgroundScrollSpeed) % HEIGHT;
+    DrawTexture(canvas, BackgroundNoiseTexture, 0.f, -offsetY);
 
     Scene* activeScene = &Scenes[ActiveSceneID];
     UpdateAndRenderScene(activeScene, canvas, delta);

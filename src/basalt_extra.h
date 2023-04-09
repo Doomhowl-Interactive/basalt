@@ -38,7 +38,6 @@ class(TextureSheet) {
 
 pubfunc Texture GenerateNoiseTexture(int width, int height, Color bg, Color fg);
 pubfunc Texture GenerateNoiseTextureEx(int width, int height, Color bg, Color fg, double scale, int seed);
-pubfunc void DrawNoiseRectangle(Texture canvas, Rect region, Vec2 offset, Color bg, Color fg); // WARN: Only noise context at a time for now.
 
 pubfunc void DrawTextureSheet(Texture canvas, TextureSheet sheet, int frame, Vec2 pos);
 
