@@ -87,6 +87,7 @@ pubfunc void UpdateAndRenderGame(Texture canvas, float delta)
     // TODO: blend at runtime 0x4B486EFF, 0x07060FFF
     int offsetY = (int)(GetTimeElapsed()*-BackgroundScrollSpeed) % HEIGHT;
     DrawTexture(canvas, BackgroundNoiseTexture, 0.f, -offsetY);
+    DrawTexture(canvas, BackgroundNoiseTexture, 0.f, -offsetY+HEIGHT);
 
     Scene* activeScene = &Scenes[ActiveSceneID];
     UpdateAndRenderScene(activeScene, canvas, delta);
