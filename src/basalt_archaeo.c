@@ -3,25 +3,36 @@
 
 #define MAX_DRAW_CALLS 128
 
-static bool IsRunning = false;
-static int SelectedIndex = 0;
+enumdef(ArchaeoState) {
+    ARCHAEO_IDLE,
+    ARCHAEO_RECORDING,
+    ARCHAEO_OPENED
+};
 
-static Color* TargetTextureMemory = NULL;
-static uint DrawCallCount = 0;
-static Texture DrawCallTextures[MAX_DRAW_CALLS] = { 0 };
+static struct {
+    ArchaeoState state;
+    int selectedIndex;
+
+    Color* canvasPixels;
+    uint drawCallCount;
+    Texture drawCallTextures[MAX_DRAW_CALLS];
+} Archaeo = { 0 };
 
 pubfunc void DrawCallImpl(Texture canvas, const char* desc)
 {
-    if (!Config.hasArchaeo || TargetTextureMemory == NULL || TargetTextureMemory != canvas.pixels)
+    // Should this draw call be recorded?
+    if (!Config.hasArchaeo || Archaeo.state != ARCHAEO_RECORDING ||
+            Archaeo.canvasPixels == NULL || Archaeo.canvasPixels != canvas.pixels)
         return;
 
-    if (DrawCallCount < MAX_DRAW_CALLS)
+    if (Archaeo.drawCallCount < MAX_DRAW_CALLS)
     {
-        int i = DrawCallCount++;
-        if (DrawCallTextures[i].pixels == NULL)
-            DrawCallTextures[i] = InitTexture(canvas.width, canvas.height);
+        int i = Archaeo.drawCallCount++;
+        if (Archaeo.drawCallTextures[i].pixels == NULL)
+            Archaeo.drawCallTextures[i] = InitTexture(canvas.width, canvas.height);
 
-        CopyTextureInto(DrawCallTextures[i], canvas);
+        // Record this draw call
+        CopyTextureInto(Archaeo.drawCallTextures[i], canvas);
     }
 }
 
@@ -30,41 +41,50 @@ pubfunc bool UpdateAndRenderArchaeo(Texture canvas)
     if (!Config.hasArchaeo)
         return true; 
 
-    if (TargetTextureMemory == NULL)
-        TargetTextureMemory = canvas.pixels;
+    Archaeo.canvasPixels = canvas.pixels;
 
-    if (IsKeyPressed(KEY_P))
+    switch (Archaeo.state)
     {
-        IsRunning = !IsRunning;
-        if (IsRunning)
-        {
-            SelectedIndex = DrawCallCount-1;
-        }
+        case ARCHAEO_IDLE:
+            if (IsKeyPressed(KEY_P))
+            {
+                Archaeo.drawCallCount = 0;
+                Archaeo.state = ARCHAEO_RECORDING;
+
+                // Change window title
+                char title[128];
+                sprintf(title, "ARCHAEO MODE - RECORDING...");
+                SetWindowTitle(title);
+            }
+            break;
+        case ARCHAEO_RECORDING:
+            Archaeo.state = ARCHAEO_OPENED;
+            Archaeo.selectedIndex = Archaeo.drawCallCount-1;
+            break;
+        case ARCHAEO_OPENED:
+            {
+                char title[128];
+                sprintf(title, "ARCHAEO MODE - %d/%d",Archaeo.selectedIndex, Archaeo.drawCallCount-1);
+                SetWindowTitle(title);
+
+                if (IsKeyDown(KEY_P))
+                    Archaeo.state = ARCHAEO_IDLE;
+
+                if (IsKeyPressed(KEY_K))
+                    Archaeo.selectedIndex++;
+                if (IsKeyPressed(KEY_J))
+                    Archaeo.selectedIndex--;
+
+                if (Archaeo.selectedIndex < 0) Archaeo.selectedIndex = Archaeo.drawCallCount-1;
+                Archaeo.selectedIndex = Archaeo.selectedIndex % Archaeo.drawCallCount;
+
+                int bytesToCopy = canvas.width * canvas.height * sizeof(Color);
+                memcpy(canvas.pixels, Archaeo.drawCallTextures[Archaeo.selectedIndex].pixels, bytesToCopy);
+                return false;
+            }
+            break;
+        default:
+            assert(0);
     }
-
-    if (IsRunning)
-    {
-        char title[128];
-        sprintf(title, "ARCHAEO MODE - %d/%d",SelectedIndex, DrawCallCount-1);
-        SetWindowTitle(title);
-
-        if (IsKeyDown(KEY_O))
-            IsRunning = false;
-
-        if (IsKeyPressed(KEY_K))
-            SelectedIndex++;
-        if (IsKeyPressed(KEY_J))
-            SelectedIndex--;
-
-        if (SelectedIndex < 0) SelectedIndex = DrawCallCount-1;
-        SelectedIndex = SelectedIndex % DrawCallCount;
-
-        int bytesToCopy = canvas.width * canvas.height * sizeof(Color);
-        memcpy(canvas.pixels, DrawCallTextures[SelectedIndex].pixels, bytesToCopy);
-        return false;
-    }
-
-    // clear drawcalls
-    DrawCallCount = 0;
     return true;
 }
