@@ -19,11 +19,6 @@ pubfunc void DrawDot(Texture canvas, int posX, int posY, Color color) {
     canvas.pixels[i] = color;
 }
 
-pubfunc void DrawDotV(Texture canvas, Vec2 pos, Color color)
-{
-    DrawDot(canvas, pos.x, pos.y, color);
-}
-
 // TODO: Clean up required
 // NOTE: Taken from https://github.com/tsoding/olive.c/blob/master/olive.c
 pubfunc void DrawLine(Texture canvas, int startX, int startY, int endX, int endY, Color color)
@@ -89,11 +84,6 @@ pubfunc void DrawLine(Texture canvas, int startX, int startY, int endX, int endY
     }
 }
 
-pubfunc void DrawLineV(Texture canvas, Vec2 start, Vec2 end, Color color)
-{
-    DrawLine(canvas, start.x, start.y, end.x, end.y, color);
-}
-
 pubfunc void DrawRectangle(Texture canvas, int posX, int posY, int width, int height, Color color) {
     assert(canvas.pixels);
 
@@ -111,19 +101,11 @@ pubfunc void DrawRectangle(Texture canvas, int posX, int posY, int width, int he
     DRAWCALL(canvas, DrawRectangle);
 }
 
-pubfunc void DrawRectangleRec(Texture canvas, Rect rect, Color color) {
-    DrawRectangle(canvas, rect.x, rect.y, rect.width, rect.height, color);
-}
-
 pubfunc void DrawRectangleLines(Texture canvas, int posX, int posY, int width, int height, int border, Color color) {
     DrawRectangle(canvas, posX, posY, width, border, color); // top
     DrawRectangle(canvas, posX + width - border, posY, border, height, color); // right
     DrawRectangle(canvas, posX, posY + height - border, width, border, color); // bottom
     DrawRectangle(canvas, posX, posY, border, height, color); // left
-}
-
-pubfunc void DrawRectangleLinesRec(Texture canvas, Rect rect, int border, Color color) {
-    DrawRectangleLines(canvas, rect.x, rect.y, rect.width, rect.height, border, color);
 }
 
 pubfunc Texture InitTexture(int width, int height) {
@@ -177,18 +159,13 @@ pubfunc void ClearTexture(Texture canvas, Color color) {
     }
 }
 
-pubfunc void DrawTexture(Texture canvas, Texture texture, int posX, int posY) {
-    Vec2 pos = {posX, posY};
-    Rect src = {0, 0, texture.width, texture.height};
-    DrawTextureEx(canvas, texture, pos, src);
+pubfunc inline void DrawTexture(Texture canvas, Texture texture, int posX, int posY)
+{
+    DrawTextureEx(canvas, texture, posX, posY, 0, 0, texture.width, texture.height);
 }
 
-pubfunc void DrawTextureV(Texture canvas, Texture texture, Vec2 pos) {
-    Rect src = {0, 0, texture.width, texture.height};
-    DrawTextureEx(canvas, texture, pos, src);
-}
-
-pubfunc void DrawTextureEx(Texture canvas, Texture texture, Vec2 pos, Rect src)
+pubfunc void DrawTextureEx(Texture canvas, Texture texture, int posX, int posY, int srcX,
+                         int srcY, int srcWidth, int srcHeight)
 {
     assert(canvas.pixels);
 
@@ -199,18 +176,18 @@ pubfunc void DrawTextureEx(Texture canvas, Texture texture, Vec2 pos, Rect src)
     int canvasSize = canvas.width*canvas.height;
     int textureSize = texture.width*texture.height;
 
-    for (int y = 0; y < src.height; y++)
+    for (int y = 0; y < srcWidth; y++)
     {
-        for (int x = 0; x < src.width; x++)
+        for (int x = 0; x < srcWidth; x++)
         {
-            int xx = pos.x + x;
-            int yy = pos.y + y;
+            int xx = posX + x;
+            int yy = posY + y;
 
             int destIndex = yy * canvas.width + xx;
             if (destIndex < 0 || destIndex >= canvasSize)
                 continue;
 
-            int srcIndex = (src.y + y) * texture.width + (src.x + x);
+            int srcIndex = (srcY + y) * texture.width + (srcX + x);
             if (srcIndex < 0 || srcIndex >= textureSize)
                 continue;
 
@@ -233,22 +210,24 @@ func bool olivec_normalize_rect(int x, int y, int w, int h,
                                 Olivec_Normalized_Rect *nr);
 
 // NOTE: Taken from https://github.com/tsoding/olive.c/blob/master/olive.c
-pubfunc void DrawTextureScaled(Texture canvas, Texture texture, Rect region) {
+pubfunc void DrawTextureScaled(Texture canvas, Texture texture, int destX, int destY,
+                               int destWidth, int destHeight)
+{
     assert(texture.pixels);
     assert(canvas.pixels);
 
     Olivec_Normalized_Rect nr = { 0 };
-    if (!olivec_normalize_rect(region.x, region.y, region.width, region.height,
+    if (!olivec_normalize_rect(destX, destY, destWidth, destHeight,
                                canvas.width, canvas.height, &nr)) return;
 
     int xa = nr.ox1;
-    if (region.width < 0) xa = nr.ox2;
+    if (destWidth < 0) xa = nr.ox2;
     int ya = nr.oy1;
-    if (region.height < 0) ya = nr.oy2;
+    if (destHeight < 0) ya = nr.oy2;
     for (int y = nr.y1; y <= nr.y2; ++y) {
         for (int x = nr.x1; x <= nr.x2; ++x) {
-            size_t nx = (x - xa)*((int) texture.width)/region.width;
-            size_t ny = (y - ya)*((int) texture.height)/region.height;
+            size_t nx = (x - xa)*((int) texture.width)/destWidth;
+            size_t ny = (y - ya)*((int) texture.height)/destHeight;
             size_t srcIndex = ny * texture.width + nx;
             size_t destIndex = y * canvas.width + x;
             canvas.pixels[destIndex] = texture.pixels[srcIndex];

@@ -91,7 +91,7 @@ func void RenderOffscreenBuffer(OffscreenBuffer *buffer, int width, int height) 
     MapTextureToCorrectFormat(buffer->mappedCanvas, buffer->canvas);
 
     // FIXME: SLOW 50% performance hit
-    DrawTextureScaled(buffer->mappedCanvas2, buffer->mappedCanvas, rect);
+    DrawTextureScaled(buffer->mappedCanvas2, buffer->mappedCanvas, R2(rect));
 
     XPutImage(buffer->display, buffer->window, buffer->gc, buffer->image, 0, 0,
               0, 0, width, height);

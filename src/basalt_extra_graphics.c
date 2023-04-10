@@ -71,5 +71,5 @@ pubfunc void DrawTextureSheet(Texture canvas, TextureSheet sheet, int frame, Vec
         sheet.cellSize.x,
         sheet.cellSize.y,
     };
-    DrawTextureEx(canvas, *sheet.texture, pos, source);
+    DrawTextureEx(canvas, *sheet.texture, V2(pos), R2(source));
 }

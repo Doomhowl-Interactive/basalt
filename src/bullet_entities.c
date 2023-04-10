@@ -88,9 +88,10 @@ void UpdateAndRenderEntity(Scene* scene, Texture canvas, Entity* e, float delta)
     if (e->sprite.texture.width > 0)
     {
         if (e->sprite.texture.pixels)
-            DrawTextureV(canvas, e->sprite.texture, RectFOrigin(e->sprite.bounds));
+            DrawTextureEx(canvas, e->sprite.texture, V2(e->sprite.bounds),
+                          0, 0, e->sprite.bounds.width, e->sprite.bounds.height);
         else
-            DrawRectangleRec(canvas, RectFToRect(e->sprite.bounds), e->sprite.tint);
+            DrawRectangle(canvas, R2(e->sprite.bounds), e->sprite.tint);
     }
 
     // PLAYER BEHAVIOUR
@@ -122,12 +123,12 @@ void UpdateAndRenderEntity(Scene* scene, Texture canvas, Entity* e, float delta)
         // set weapon into correct position
         Vec2 center = RectFCenter(e->sprite.bounds);
         center = Vec2Offset(center, weapon->spawner.offsetFromParent);
-        SetEntityCenter(weapon, center.x, center.y);
+        SetEntityCenter(weapon, V2(center));
 
         // draw normal (debugging)
         Vec2 weaponCenter = GetEntityCenter(weapon);
         Vec2 end = Vec2Offset(weaponCenter, Vec2Scale(weapon->spawner.normal, 10.f)); 
-        DrawLineV(canvas, weaponCenter, end, 0x0000AAFF);
+        DrawLine(canvas, V2(weaponCenter), V2(end), 0x0000AAFF);
 
         // spawn bullets on interval
         if (weapon->spawner.spawnTimer > weapon->spawner.interval)
