@@ -4,11 +4,14 @@
 
 BULLET void InitPlayer(Entity* e, Vec2 pos)
 {
+    DEBUG("Spawned player at %f %f", pos.x, pos.y);
+    e->sprite.texture = PlayerTexture;
     e->type = TAG_PLAYER;
     SetEntityCenter(e, pos.x - 48 / 2, pos.y);
     e->sprite.tint = 0x00FF00FF;
     e->ship.moveSpeed = 200;
-    SetEntitySize(e, 32, 32);
+    SetEntitySize(e, PlayerTexture.width, PlayerTexture.height);
+    assert(PlayerTexture.width > 0 || PlayerTexture.height > 0);
 
     // Bullet spawners
     double outwardsAngleDeg = 40;
@@ -38,6 +41,8 @@ BULLET void InitPlayer(Entity* e, Vec2 pos)
 BULLET void InitBullet(Entity* e, const BulletPattern* pattern, Vec2 pos, Vec2 normal)
 {
     assert(pattern);
+
+    // DEBUG("Spawned bullet at %f %f", pos.x, pos.y);
 
     // set sprite
     e->type = TAG_BULLET;

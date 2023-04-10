@@ -109,7 +109,8 @@ void UpdateAndRenderEntity(Scene* scene, Texture canvas, Entity* e, float delta)
         if (IsKeyDown(KEY_S))
             vel->y += moveSpeed;
 
-        INFO("%f %f %f %f", e->sprite.bounds.x, e->sprite.bounds.y, e->sprite.bounds.width, e->sprite.bounds.height);
+        // INFO("%f %f %f %f (%f %f)", e->sprite.bounds.x, e->sprite.bounds.y,
+        //                             e->sprite.bounds.width, e->sprite.bounds.height, vel->x, vel->y);
     }
 
     // WEAPON BEHAVIOUR
@@ -121,7 +122,7 @@ void UpdateAndRenderEntity(Scene* scene, Texture canvas, Entity* e, float delta)
         // set weapon into correct position
         Vec2 center = RectFCenter(e->sprite.bounds);
         center = Vec2Offset(center, weapon->spawner.offsetFromParent);
-        SetEntityCenter(e, center.x, center.y);
+        SetEntityCenter(weapon, center.x, center.y);
 
         // draw normal (debugging)
         Vec2 weaponCenter = GetEntityCenter(weapon);

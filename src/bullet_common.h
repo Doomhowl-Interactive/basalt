@@ -123,6 +123,7 @@ BULLET void InitBullet(Entity* e, const BulletPattern* pattern, Vec2 pos, Vec2 n
 // bullet_tests.c
 platfunc void UnitTestBullet();
 
+extern Texture PlayerTexture;
 extern Texture BulletPlacholderTexture;
 extern const BulletPattern PlayerBullet;
 extern const BulletPattern PlayerBullet2;

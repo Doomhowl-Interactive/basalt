@@ -34,18 +34,20 @@ static float BackgroundScrollSpeed = 100.f;
 static Texture BackgroundNoiseTexture = { 0 };
 
 Texture BulletPlacholderTexture = { 0 };
+Texture PlayerTexture = { 0 };
 
 pubfunc void InitializeGame()
 {
     if (Config.hasUnitTesting)
         UnitTestBullet();
 
+    BulletPlacholderTexture = LoadTexture(SPR_BULLET_PLACEHOLDER);
+    BackgroundNoiseTexture = LoadTexture(SPR_BACKGROUND_NOISE_COL);
+    PlayerTexture = LoadTexture(SPR_SHIP_PLAYER);
+
     Player = CreateEntity(&Scenes[SCENE_GAME]);
     Vec2 spawnPos = {WIDTH / 2, HEIGHT / 1.2f};
     InitPlayer(Player, spawnPos);
-
-    BulletPlacholderTexture = LoadTexture(SPR_BULLET_PLACEHOLDER);
-    BackgroundNoiseTexture = LoadTexture(SPR_BACKGROUND_NOISE_COL);
 }
 
 pubfunc void DisposeGame()
