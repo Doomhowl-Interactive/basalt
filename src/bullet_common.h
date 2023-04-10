@@ -120,6 +120,9 @@ BULLET bool RunBulletPattern(Entity* e, float delta);
 BULLET void InitPlayer(Entity* e, Vec2 pos);
 BULLET void InitBullet(Entity* e, const BulletPattern* pattern, Vec2 pos, Vec2 normal);
 
+// bullet_tests.c
+platfunc void UnitTestBullet();
+
 extern Texture BulletPlacholderTexture;
 extern const BulletPattern PlayerBullet;
 extern const BulletPattern PlayerBullet2;

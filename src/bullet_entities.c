@@ -52,13 +52,11 @@ BULLET Vec2 GetEntityCenter(Entity* e)
 
 BULLET void SetEntitySize(Entity* e, uint width, uint height)
 {
-    float posX = e->sprite.bounds.x;
-    float posY = e->sprite.bounds.y;
-
+    Vec2 center = GetEntityCenter(e);
+    e->sprite.bounds.x = center.x - width * 0.5f;
+    e->sprite.bounds.y = center.y - height * 0.5f;
     e->sprite.bounds.width = width;
     e->sprite.bounds.height = height;
-
-    SetEntityCenter(e, posX, posY);
 }
 
 BULLET void ResetEntityVelocity(Entity *e)
@@ -95,7 +93,7 @@ void UpdateAndRenderEntity(Scene* scene, Texture canvas, Entity* e, float delta)
             DrawRectangleRec(canvas, RectFToRect(e->sprite.bounds), e->sprite.tint);
     }
 
-    // Player behaviour
+    // PLAYER BEHAVIOUR
     if (COMPARE(e->type,TAG_PLAYER))
     {
         float moveSpeed = e->ship.moveSpeed;
@@ -103,21 +101,15 @@ void UpdateAndRenderEntity(Scene* scene, Texture canvas, Entity* e, float delta)
         vel->y = 0;
 
         if (IsKeyDown(KEY_A))
-        {
             vel->x -= moveSpeed;
-        }
         if (IsKeyDown(KEY_D))
-        {
             vel->x += moveSpeed;
-        }
         if (IsKeyDown(KEY_W))
-        {
             vel->y -= moveSpeed;
-        }
         if (IsKeyDown(KEY_S))
-        {
             vel->y += moveSpeed;
-        }
+
+        INFO("%f %f %f %f", e->sprite.bounds.x, e->sprite.bounds.y, e->sprite.bounds.width, e->sprite.bounds.height);
     }
 
     // WEAPON BEHAVIOUR

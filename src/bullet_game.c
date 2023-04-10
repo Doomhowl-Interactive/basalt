@@ -37,6 +37,9 @@ Texture BulletPlacholderTexture = { 0 };
 
 pubfunc void InitializeGame()
 {
+    if (Config.hasUnitTesting)
+        UnitTestBullet();
+
     Player = CreateEntity(&Scenes[SCENE_GAME]);
     Vec2 spawnPos = {WIDTH / 2, HEIGHT / 1.2f};
     InitPlayer(Player, spawnPos);
