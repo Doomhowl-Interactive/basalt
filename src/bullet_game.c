@@ -1,6 +1,6 @@
-#include "basalt.h"
 #include "basalt_extra.h"
 #include "temple_assets.h"
+#include "bullet_common.h"
 
 #include <math.h>
 #include <stdio.h>
@@ -12,10 +12,6 @@ const char* GAME_TITLE = "Bullethell game";
 const uint TPS = 25;
 
 #define SKY_COLOR 0x000000FF
-
-#include "bullet_entities.c"
-#include "bullet_patterns.c"
-
 #define SCENE_GAME              0
 #define SCENE_BULLET_PREVIEW    1
 #define SCENE_COUNT             2

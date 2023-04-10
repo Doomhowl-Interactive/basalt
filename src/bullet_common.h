@@ -112,13 +112,15 @@ BULLET void ResetEntityVelocity(Entity *e);
 BULLET void UpdateAndRenderEntity(Scene* scene, Texture canvas, Entity* e, float delta);
 BULLET uint UpdateAndRenderScene(Scene* scene, Texture canvas, float delta);
 
-BULLET void InitPlayer(Entity* e, Vec2 pos);
-BULLET void InitBullet(Entity* e, const BulletPattern* patterns, Vec2 pos, Vec2 normal);
-
 // bullet_patterns.c
 BULLET bool RunBulletPattern(Entity* e, float delta);
+
+// bullet_factories.c
+BULLET void InitPlayer(Entity* e, Vec2 pos);
+BULLET void InitBullet(Entity* e, const BulletPattern* pattern, Vec2 pos, Vec2 normal);
 
 extern Texture BulletPlacholderTexture;
 extern const BulletPattern PlayerBullet;
 extern const BulletPattern PlayerBullet2;
 extern const BulletPattern PlayerBullet3;
+extern const BulletPattern PlayerBullet4;

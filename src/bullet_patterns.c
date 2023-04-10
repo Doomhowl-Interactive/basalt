@@ -1,49 +1,12 @@
 #include "basalt_extra.h"
 #include "bullet_common.h"
 
+#include <math.h>
+
 #define DIFFICULTY 2
 
 #define PATTERN
 #define ENDING
-
-uint GetBulletPatternActionCount(BulletPattern* pattern)
-{
-    for (uint index = 0; index < MAX_ENTITIES; index++)
-    {
-        if (pattern->actions[index].function == NULL)
-            return index;
-    }
-    return MAX_ENTITIES;
-}
-
-BULLET bool RunBulletPattern(Entity* e, float delta)
-{
-    BulletPattern* pattern = &e->bullet.pattern;
-
-    if (pattern->count == 0)
-        pattern->count = GetBulletPatternActionCount(pattern);
-
-    if (e->bullet.curPatternIndex >= pattern->count)
-        return true;
-
-    BulletAction action = pattern->actions[e->bullet.curPatternIndex];
-    assert(action.function);
-    e->bullet.data.timer += delta;
-    e->bullet.data.delta = delta;
-    e->sprite.tint = action.tint;
-
-    // process bullet action
-    BulletActionFunc actionFunc = action.function;
-    (*actionFunc)(e, &e->bullet.data, DIFFICULTY, action.parameters);
-
-    BulletActionEndFunc endFunc = action.endFunction;
-    if ((*endFunc)(e, &e->bullet.data, DIFFICULTY, action.parameters))
-    {
-        // on bullet action done
-        e->bullet.curPatternIndex++;
-    }
-    return false;
-}
 
 ENDING bool EndBulletOOB(Entity* e, BulletData* data, int difficulty, const int* args)
 {
@@ -116,6 +79,46 @@ PATTERN void MoveBulletSnake(Entity* e, BulletData* data, int difficulty, const 
 
     e->physics.vel.x = cos(data->timer*segWidth)*power;
     e->physics.vel.y = yFlip * ABS(float, sin(data->timer*segWidth)*power);
+}
+
+// core system
+uint GetBulletPatternActionCount(BulletPattern* pattern)
+{
+    for (uint index = 0; index < MAX_ENTITIES; index++)
+    {
+        if (pattern->actions[index].function == NULL)
+            return index;
+    }
+    return MAX_ENTITIES;
+}
+
+BULLET bool RunBulletPattern(Entity* e, float delta)
+{
+    BulletPattern* pattern = &e->bullet.pattern;
+
+    if (pattern->count == 0)
+        pattern->count = GetBulletPatternActionCount(pattern);
+
+    if (e->bullet.curPatternIndex >= pattern->count)
+        return true;
+
+    BulletAction action = pattern->actions[e->bullet.curPatternIndex];
+    assert(action.function);
+    e->bullet.data.timer += delta;
+    e->bullet.data.delta = delta;
+    e->sprite.tint = action.tint;
+
+    // process bullet action
+    BulletActionFunc actionFunc = action.function;
+    (*actionFunc)(e, &e->bullet.data, DIFFICULTY, action.parameters);
+
+    BulletActionEndFunc endFunc = action.endFunction;
+    if ((*endFunc)(e, &e->bullet.data, DIFFICULTY, action.parameters))
+    {
+        // on bullet action done
+        e->bullet.curPatternIndex++;
+    }
+    return false;
 }
 
 const BulletPattern PlayerBullet = {
