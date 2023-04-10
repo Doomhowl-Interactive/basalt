@@ -66,10 +66,104 @@ pubfunc int Clamp(int value, int min, int max) {
     return value;
 }
 
+pubfunc inline Vec2 RectFOrigin(RectF rectf)
+{
+    Vec2 origin = {
+        rectf.x,
+        rectf.y,
+    };
+    return origin;
+}
+
+pubfunc inline Vec2 RectFCenter(RectF rectf)
+{
+    Vec2 res = {
+        rectf.x + rectf.width * 0.5f,
+        rectf.y + rectf.height * 0.5f,
+    };
+    return res;
+}
+
+pubfunc inline Point RectOrigin(Rect rect)
+{
+    Point origin = {
+        rect.x,
+        rect.y,
+    };
+    return origin;
+}
+
+pubfunc inline Point RectCenter(Rect rect)
+{
+    Point res = {
+        rect.x + rect.width / 2,
+        rect.y + rect.height / 2,
+    };
+    return res;
+}
+
+pubfunc inline Rect RectFToRect(RectF rectf)
+{
+    Rect rect = {
+        (int) rectf.x,
+        (int) rectf.y,
+        (int) rectf.width,
+        (int) rectf.height,
+    };
+    return rect;
+}
+
+pubfunc inline RectF RectToRectF(Rect rect)
+{
+    RectF rectf = {
+        (float) rect.x,
+        (float) rect.y,
+        (float) rect.width,
+        (float) rect.height,
+    };
+    return rectf;
+}
+
+pubfunc inline Point Vec2ToPoint(Vec2 v2)
+{
+    Point p = {
+        (int) v2.x,
+        (int) v2.y
+    };
+    return p;
+}
+
+pubfunc inline Vec2 PointToVec2(Point point)
+{
+    Vec2 v2 = {
+        (int) point.x,
+        (int) point.y
+    };
+    return v2;
+}
+
+pubfunc extern Vec2 Vec2Offset(Vec2 src, Vec2 offset)
+{
+    Vec2 v2 = {
+        src.x + offset.x,
+        src.y + offset.y,
+    };
+    return v2;
+}
+
+pubfunc extern Vec2 Vec2Scale(Vec2 src, float scale)
+{
+    Vec2 v2 = {
+        src.x * scale,
+        src.y * scale,
+    };
+    return v2;
+
+}
+
 pubfunc Vec2 Vec2Normalize(Vec2 v2)
 {
     float mag = Vec2Magnitude(v2);
-
     Vec2 norm;
     norm.x = v2.x / mag;
     norm.y = v2.y / mag;

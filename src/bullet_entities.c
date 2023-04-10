@@ -39,21 +39,26 @@ BULLET void DestroyEntity(Entity* e)
     memset(e, 0, sizeof(Entity));
 }
 
-BULLET void SetEntitySize(Entity* e, uint width, uint height)
+BULLET void SetEntityCenter(Entity* e, float x, float y)
 {
-    e->sprite.texture.width = width;
-    e->sprite.texture.height = height;
+    e->sprite.bounds.x = x - e->sprite.bounds.width * 0.5f;
+    e->sprite.bounds.y = y - e->sprite.bounds.height * 0.5f;
 }
 
-BULLET Rect GetEntityBounds(Entity e)
+BULLET Vec2 GetEntityCenter(Entity* e)
 {
-    Rect bounds = {
-        e.sprite.pos.x,
-        e.sprite.pos.y,
-        e.sprite.source.width == 0 ? e.sprite.texture.width:e.sprite.source.width,
-        e.sprite.source.height == 0 ? e.sprite.texture.height:e.sprite.source.height
-    };
-    return bounds;
+    return RectFCenter(e->sprite.bounds);
+}
+
+BULLET void SetEntitySize(Entity* e, uint width, uint height)
+{
+    float posX = e->sprite.bounds.x;
+    float posY = e->sprite.bounds.y;
+
+    e->sprite.bounds.width = width;
+    e->sprite.bounds.height = height;
+
+    SetEntityCenter(e, posX, posY);
 }
 
 BULLET void ResetEntityVelocity(Entity *e)
@@ -85,14 +90,9 @@ void UpdateAndRenderEntity(Scene* scene, Texture canvas, Entity* e, float delta)
     if (e->sprite.texture.width > 0)
     {
         if (e->sprite.texture.pixels)
-        {
-            DrawTextureV(canvas, e->sprite.texture, e->sprite.pos);
-        }
+            DrawTextureV(canvas, e->sprite.texture, RectFOrigin(e->sprite.bounds));
         else
-        {
-            Rect bounds = GetEntityBounds(*e);
-            DrawRectangleRec(canvas, bounds, e->sprite.tint);
-        }
+            DrawRectangleRec(canvas, RectFToRect(e->sprite.bounds), e->sprite.tint);
     }
 
     // Player behaviour
@@ -127,25 +127,20 @@ void UpdateAndRenderEntity(Scene* scene, Texture canvas, Entity* e, float delta)
         if (weapon == NULL) continue;
 
         // set weapon into correct position
-        Rect bounds = GetEntityBounds(*e);
-        float centerX = bounds.x + bounds.width * 0.5f;
-        float centerY = bounds.y + bounds.height * 0.5f;
-        weapon->sprite.pos.x = centerX + weapon->spawner.offsetFromParent.x;
-        weapon->sprite.pos.y = centerY + weapon->spawner.offsetFromParent.y;
+        Vec2 center = RectFCenter(e->sprite.bounds);
+        center = Vec2Offset(center, weapon->spawner.offsetFromParent);
+        SetEntityCenter(e, center.x, center.y);
 
         // draw normal (debugging)
-#if 1
-        Vec2 end;
-        end.x = weapon->sprite.pos.x + weapon->spawner.normal.x * 10;
-        end.y = weapon->sprite.pos.y + weapon->spawner.normal.y * 10;
-        DrawLineV(canvas, weapon->sprite.pos, end, 0x0000AAFF);
-#endif
+        Vec2 weaponCenter = GetEntityCenter(weapon);
+        Vec2 end = Vec2Offset(weaponCenter, Vec2Scale(weapon->spawner.normal, 10.f)); 
+        DrawLineV(canvas, weaponCenter, end, 0x0000AAFF);
 
         // spawn bullets on interval
         if (weapon->spawner.spawnTimer > weapon->spawner.interval)
         {
             Entity* bul = CreateEntity(scene);
-            InitBullet(bul, weapon->spawner.patternToSpawn, weapon->sprite.pos, weapon->spawner.normal);
+            InitBullet(bul, weapon->spawner.patternToSpawn, weaponCenter, weapon->spawner.normal);
             weapon->spawner.spawnTimer = 0.f;
         }
         weapon->spawner.spawnTimer += delta;
@@ -159,8 +154,8 @@ void UpdateAndRenderEntity(Scene* scene, Texture canvas, Entity* e, float delta)
     }
 
     // apply movement
-    e->sprite.pos.x += vel->x*delta;
-    e->sprite.pos.y += vel->y*delta;
+    e->sprite.bounds.x += vel->x*delta;
+    e->sprite.bounds.y += vel->y*delta;
     
     // apply drag
     // float offsetX = e->physics.drag * delta * SIGN(float, vel->x);

@@ -5,7 +5,7 @@
 BULLET void InitPlayer(Entity* e, Vec2 pos)
 {
     e->type = TAG_PLAYER;
-    e->sprite.pos = (Vec2) { pos.x - 48 / 2, pos.y };
+    SetEntityCenter(e, pos.x - 48 / 2, pos.y);
     e->sprite.tint = 0x00FF00FF;
     e->ship.moveSpeed = 200;
     SetEntitySize(e, 32, 32);
@@ -41,12 +41,10 @@ BULLET void InitBullet(Entity* e, const BulletPattern* pattern, Vec2 pos, Vec2 n
 
     // set sprite
     e->type = TAG_BULLET;
-    e->sprite.pos.x = pos.x;
-    e->sprite.pos.y = pos.y;
-    e->sprite.source.x = 0;
-    e->sprite.source.y = 0;
-    e->sprite.source.width = pattern->texture->width;
-    e->sprite.source.height = pattern->texture->height;
+    SetEntityCenter(e, pos.x, pos.y);
+    SetEntitySize(e, pattern->texture->width, pattern->texture->height);
+    e->sprite.sourceOffset.x = 0;
+    e->sprite.sourceOffset.y = 0;
     e->sprite.texture = *pattern->texture;
 
     // copy bullet pattern

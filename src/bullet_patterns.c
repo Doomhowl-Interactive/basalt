@@ -10,10 +10,9 @@
 
 ENDING bool EndBulletOOB(Entity* e, BulletData* data, int difficulty, const int* args)
 {
+    Vec2 pos = GetEntityCenter(e);;
     const int OOB = 100;
-    int x = e->sprite.pos.x;
-    int y = e->sprite.pos.y;
-    return (x < -OOB || y < -OOB || x > WIDTH+OOB || y > HEIGHT+OOB);
+    return (pos.x < -OOB || pos.y < -OOB || pos.x > WIDTH+OOB || pos.y > HEIGHT+OOB);
 }
 
 // TODO: Add end condition instead of passing duration integer everywhere
@@ -37,8 +36,9 @@ PATTERN void MoveBulletOceanWave(Entity* e, BulletData* data, int difficulty, co
     ResetEntityVelocity(e);
     float distance = data->timer * power;
 
-    e->sprite.pos.x = (data->origin.x + data->normal.x * distance) + cos(data->timer*10) * segWidth;
-    e->sprite.pos.y = (data->origin.y + data->normal.y * distance) + sin(data->timer*10) * segHeight;
+    float centerX = (data->origin.x + data->normal.x * distance) + cos(data->timer*10) * segWidth;
+    float centerY = (data->origin.y + data->normal.y * distance) + sin(data->timer*10) * segHeight;
+    SetEntityCenter(e, centerX, centerY);
 }
 
 PATTERN void MoveBulletSowing(Entity* e, BulletData* data, int difficulty, const int* args)
@@ -52,8 +52,9 @@ PATTERN void MoveBulletSowing(Entity* e, BulletData* data, int difficulty, const
 
     float distance = data->timer * power;
 
-    e->sprite.pos.x = (data->origin.x + data->normal.x * distance) + cos(data->timer*speed) * segWidth;
-    e->sprite.pos.y = (data->origin.y + data->normal.y * distance);
+    float centerX = (data->origin.x + data->normal.x * distance) + cos(data->timer*speed) * segWidth;
+    float centerY = (data->origin.y + data->normal.y * distance);
+    SetEntityCenter(e, centerX, centerY);
 }
 
 PATTERN void MoveBulletStaircase(Entity* e, BulletData* data, int difficulty, const int* args)
@@ -66,8 +67,10 @@ PATTERN void MoveBulletStaircase(Entity* e, BulletData* data, int difficulty, co
     ResetEntityVelocity(e);
 
     float distance = data->timer * power;
-    e->sprite.pos.x = (data->origin.x + data->normal.x * distance);
-    e->sprite.pos.y = (data->origin.y + data->normal.y * distance) + cos(data->timer*speed) * segWidth;
+    Vec2 center = GetEntityCenter(e);
+    float centerX = center.x = (data->origin.x + data->normal.x * distance);
+    float centerY = center.y = (data->origin.y + data->normal.y * distance) + cos(data->timer*speed) * segWidth;
+    SetEntityCenter(e, centerX, centerY);
 }
 
 PATTERN void MoveBulletSnake(Entity* e, BulletData* data, int difficulty, const int* args)

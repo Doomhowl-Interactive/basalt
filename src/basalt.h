@@ -60,12 +60,18 @@ extern const uint MAX_ENTITIES;
 #define platfunc
 #define wasmfunc
 
-class(Rect)
-{
+class(Rect) {
     int x;
     int y;
     int width;
     int height;
+};
+
+class(RectF) {
+    float x;
+    float y;
+    float width;
+    float height;
 };
 
 class(Point) {
@@ -124,6 +130,24 @@ pubfunc int Clamp(int value, int min, int max);
 pubfunc int GetRandomNumber(); // WARN: read implementation 
 pubfunc int GetRealRandomNumber();
 
+pubfunc extern Vec2 RectFOrigin(RectF rectf);
+#define RectFOriginPoint(F) Vec2ToPoint(RectFOrigin(F))
+pubfunc extern Vec2 RectFCenter(RectF rectf);
+#define RectFCenterPoint(F) Vec2ToPoint(RectFCenter(F))
+
+pubfunc extern Point RectOrigin(Rect rect);
+#define RectOriginVec2(R) PointToVec2(RectOrigin(R))
+pubfunc extern Point RectCenter(Rect rect);
+#define RectCenterVec2(R) PointToVec2(RectCenter(R))
+
+pubfunc extern Rect RectFToRect(RectF rectf);
+pubfunc extern RectF RectToRectF(Rect rect);
+
+pubfunc extern Point Vec2ToPoint(Vec2 v2);
+pubfunc extern Vec2 PointToVec2(Point point);
+
+pubfunc extern Vec2 Vec2Offset(Vec2 src, Vec2 offset);
+pubfunc extern Vec2 Vec2Scale(Vec2 src, float scale);
 pubfunc Vec2 Vec2Normalize(Vec2 v2);
 pubfunc float Vec2Magnitude(Vec2 v2);
 

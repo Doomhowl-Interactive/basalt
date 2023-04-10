@@ -56,9 +56,9 @@ struct Entity {
     EntityType type;
 
     struct {
-        Vec2 pos;
+        RectF bounds;
         Color tint;
-        Rect source;
+        Point sourceOffset;
         Texture texture;
     } sprite;
 
@@ -105,8 +105,9 @@ BULLET void ClearEntities(Scene* scene);
 BULLET Entity* CreateEntity(Scene* scene);
 BULLET void DestroyEntity(Entity* e);
 
+BULLET void SetEntityCenter(Entity* e, float x, float y);
+BULLET Vec2 GetEntityCenter(Entity* e);
 BULLET void SetEntitySize(Entity* e, uint width, uint height);
-BULLET Rect GetEntityBounds(Entity e);
 BULLET void ResetEntityVelocity(Entity *e);
 
 BULLET void UpdateAndRenderEntity(Scene* scene, Texture canvas, Entity* e, float delta);
