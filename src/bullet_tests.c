@@ -69,6 +69,6 @@ TEST(Transformations)
 
 platfunc void UnitTestBullet()
 {
-    INFO("Doing unit of bullet tests");
+    INFO("Doing unit tests of bulletgame");
     TestTransformations();
 }
