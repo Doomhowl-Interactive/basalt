@@ -35,10 +35,10 @@ TEST(Transformations)
         SetEntitySize(&e, 5,3);
         SetEntityCenter(&e, 10,10);
 
-        CHECK(e.sprite.bounds.x == 10.f - 2.5f, "SetEntityCenter (X)");
-        CHECK(e.sprite.bounds.y == 10.f - 1.5f, "SetEntityCenter (Y)");
-        CHECK(e.sprite.bounds.width == 5, "SetEntityCenter (Width)");
-        CHECK(e.sprite.bounds.height == 3, "SetEntityCenter (Height)");
+        CHECK(e.bounds.x == 10.f - 2.5f, "SetEntityCenter (X)");
+        CHECK(e.bounds.y == 10.f - 1.5f, "SetEntityCenter (Y)");
+        CHECK(e.bounds.width == 5, "SetEntityCenter (Width)");
+        CHECK(e.bounds.height == 3, "SetEntityCenter (Height)");
     }
 
     { // reverse order
@@ -46,10 +46,10 @@ TEST(Transformations)
         SetEntityCenter(&e, 10,10);
         SetEntitySize(&e, 5,3);
 
-        CHECK(e.sprite.bounds.x == 10.f - 2.5f, "Reverse SetEntityCenter (X)");
-        CHECK(e.sprite.bounds.y == 10.f - 1.5f, "Reverse SetEntityCenter (Y)");
-        CHECK(e.sprite.bounds.width == 5, "Reverse SetEntityCenter (Width)");
-        CHECK(e.sprite.bounds.height == 3, "Reverse SetEntityCenter (Height)");
+        CHECK(e.bounds.x == 10.f - 2.5f, "Reverse SetEntityCenter (X)");
+        CHECK(e.bounds.y == 10.f - 1.5f, "Reverse SetEntityCenter (Y)");
+        CHECK(e.bounds.width == 5, "Reverse SetEntityCenter (Width)");
+        CHECK(e.bounds.height == 3, "Reverse SetEntityCenter (Height)");
     }
 
     { // multiple operations 
@@ -59,10 +59,10 @@ TEST(Transformations)
         SetEntitySize(&e, 10,5);
         SetEntityCenter(&e, 5,5);
 
-        CHECK(e.sprite.bounds.x == 5.f - 5.f, "Multiple SetEntityCenter (X)");
-        CHECK(e.sprite.bounds.y == 5.f - 2.5f, "Multiple SetEntityCenter (Y)");
-        CHECK(e.sprite.bounds.width == 10, "Multiple SetEntityCenter (Width)");
-        CHECK(e.sprite.bounds.height == 5, "Multiple SetEntityCenter (Height)");
+        CHECK(e.bounds.x == 5.f - 5.f, "Multiple SetEntityCenter (X)");
+        CHECK(e.bounds.y == 5.f - 2.5f, "Multiple SetEntityCenter (Y)");
+        CHECK(e.bounds.width == 10, "Multiple SetEntityCenter (Width)");
+        CHECK(e.bounds.height == 5, "Multiple SetEntityCenter (Height)");
     }
 
 } END;

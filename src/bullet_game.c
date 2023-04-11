@@ -76,9 +76,9 @@ pubfunc void UpdateAndRenderGame(Texture canvas, float delta)
         uint patternIndex = SelectedPattern++;
         for (int i = 0; i < MAX_SPAWNERS; i++)
         {
-            Entity* weapon = Player->weapon.spawners[i];
-            if (weapon == NULL) continue;
-            weapon->spawner.patternToSpawn = Patterns[patternIndex];
+            BulletSpawner* spawner = &Player->bulletSpawners[i];
+            if (spawner == NULL) continue;
+            spawner->patternToSpawn = Patterns[patternIndex];
         }
 
         if (SelectedPattern >= PATTERN_COUNT)

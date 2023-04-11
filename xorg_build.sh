@@ -15,7 +15,7 @@ fi
 ./embedder ../assets ../src/assets_custom.dat.c
 
 # build game
-time gcc -ggdb -Werror -O3 ../src/basalt_*.c ../src/bullet_*.c ../src/xorg_basalt.c ../src/assets_custom.dat.c \
+gcc -ggdb -Werror -O3 ../src/basalt_*.c ../src/bullet_*.c ../src/xorg_basalt.c ../src/assets_custom.dat.c \
         -lX11 -lm -lXext -o basalt_linux_rel.x11 
 
 cd ..

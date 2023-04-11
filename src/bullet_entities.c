@@ -29,7 +29,6 @@ BULLET Entity* CreateEntity(Scene* scene)
             return entity;
         }
     }
-
     assert(0);
     return NULL;
 }
@@ -41,28 +40,28 @@ BULLET void DestroyEntity(Entity* e)
 
 BULLET void SetEntityCenter(Entity* e, float x, float y)
 {
-    e->sprite.bounds.x = x - e->sprite.bounds.width * 0.5f;
-    e->sprite.bounds.y = y - e->sprite.bounds.height * 0.5f;
+    e->bounds.x = x - e->bounds.width * 0.5f;
+    e->bounds.y = y - e->bounds.height * 0.5f;
 }
 
 BULLET Vec2 GetEntityCenter(Entity* e)
 {
-    return RectFCenter(e->sprite.bounds);
+    return RectFCenter(e->bounds);
 }
 
 BULLET void SetEntitySize(Entity* e, uint width, uint height)
 {
     Vec2 center = GetEntityCenter(e);
-    e->sprite.bounds.x = center.x - width * 0.5f;
-    e->sprite.bounds.y = center.y - height * 0.5f;
-    e->sprite.bounds.width = width;
-    e->sprite.bounds.height = height;
+    e->bounds.x = center.x - width * 0.5f;
+    e->bounds.y = center.y - height * 0.5f;
+    e->bounds.width = width;
+    e->bounds.height = height;
 }
 
 BULLET void ResetEntityVelocity(Entity *e)
 {
-    e->physics.vel.x = 0;
-    e->physics.vel.y = 0;
+    e->vel.x = 0;
+    e->vel.y = 0;
 }
 
 void UpdateAndRenderEntity(Scene* scene, Texture canvas, Entity* e, float delta)
@@ -70,7 +69,7 @@ void UpdateAndRenderEntity(Scene* scene, Texture canvas, Entity* e, float delta)
     e->timeAlive += delta;
 
     // Shortcuts
-    Vec2* vel = &e->physics.vel;
+    Vec2* vel = &e->vel;
 
     // Entity drawing
     // TODO: Put in entity struct
@@ -85,19 +84,19 @@ void UpdateAndRenderEntity(Scene* scene, Texture canvas, Entity* e, float delta)
     }
     timer += delta;
 
-    if (e->sprite.texture.width > 0)
+    if (e->texture.width > 0)
     {
-        if (e->sprite.texture.pixels)
-            DrawTextureEx(canvas, e->sprite.texture, V2(e->sprite.bounds),
-                          0, 0, e->sprite.bounds.width, e->sprite.bounds.height);
+        if (e->texture.pixels)
+            DrawTextureEx(canvas, e->texture, V2(e->bounds),
+                          0, 0, e->bounds.width, e->bounds.height);
         else
-            DrawRectangle(canvas, R2(e->sprite.bounds), e->sprite.tint);
+            DrawRectangle(canvas, R2(e->bounds), e->tint);
     }
 
     // PLAYER BEHAVIOUR
     if (COMPARE(e->type,TAG_PLAYER))
     {
-        float moveSpeed = e->ship.moveSpeed;
+        float moveSpeed = e->moveSpeed;
         vel->x = 0;
         vel->y = 0;
 
@@ -114,30 +113,28 @@ void UpdateAndRenderEntity(Scene* scene, Texture canvas, Entity* e, float delta)
         //                             e->sprite.bounds.width, e->sprite.bounds.height, vel->x, vel->y);
     }
 
+    Vec2 center = RectFCenter(e->bounds);
+
     // WEAPON BEHAVIOUR
     for (uint i = 0; i < MAX_SPAWNERS; i++)
     {
-        Entity* weapon = e->weapon.spawners[i];
-        if (weapon == NULL) continue;
-
-        // set weapon into correct position
-        Vec2 center = RectFCenter(e->sprite.bounds);
-        center = Vec2Offset(center, weapon->spawner.offsetFromParent);
-        SetEntityCenter(weapon, V2(center));
+        BulletSpawner* weapon = &e->bulletSpawners[i];
+        if (weapon->patternToSpawn == NULL) continue;
 
         // draw normal (debugging)
-        Vec2 weaponCenter = GetEntityCenter(weapon);
-        Vec2 end = Vec2Offset(weaponCenter, Vec2Scale(weapon->spawner.normal, 10.f)); 
+        Vec2 weaponCenter = Vec2Offset(center, weapon->offset);
+        Vec2 end = Vec2Offset(weaponCenter, Vec2Scale(weapon->normal, 10.f)); 
         DrawLine(canvas, V2(weaponCenter), V2(end), 0x0000AAFF);
 
         // spawn bullets on interval
-        if (weapon->spawner.spawnTimer > weapon->spawner.interval)
+        // HACK: Avoid entity overload
+        if (weapon->interval > 0.f && weapon->spawnTimer > weapon->interval)
         {
             Entity* bul = CreateEntity(scene);
-            InitBullet(bul, weapon->spawner.patternToSpawn, weaponCenter, weapon->spawner.normal);
-            weapon->spawner.spawnTimer = 0.f;
+            InitBullet(bul, weapon->patternToSpawn, weaponCenter, weapon->normal);
+            weapon->spawnTimer = 0.f;
         }
-        weapon->spawner.spawnTimer += delta;
+        weapon->spawnTimer += delta;
     }
 
     // Bullet behaviour
@@ -148,8 +145,8 @@ void UpdateAndRenderEntity(Scene* scene, Texture canvas, Entity* e, float delta)
     }
 
     // apply movement
-    e->sprite.bounds.x += vel->x*delta;
-    e->sprite.bounds.y += vel->y*delta;
+    e->bounds.x += vel->x*delta;
+    e->bounds.y += vel->y*delta;
     
     // apply drag
     // float offsetX = e->physics.drag * delta * SIGN(float, vel->x);

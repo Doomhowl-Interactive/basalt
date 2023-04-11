@@ -22,8 +22,8 @@ PATTERN void MoveBulletStraight(Entity* e, BulletData* data, int difficulty, con
 
     float power = 150 + difficulty * 30;
 
-    e->physics.vel.x = data->normal.x*power;
-    e->physics.vel.y = data->normal.y*power;
+    e->vel.x = data->normal.x*power;
+    e->vel.y = data->normal.y*power;
 }
 
 PATTERN void MoveBulletOceanWave(Entity* e, BulletData* data, int difficulty, const int* args)
@@ -80,8 +80,8 @@ PATTERN void MoveBulletSnake(Entity* e, BulletData* data, int difficulty, const 
 
     float power = 150 + difficulty * 30;
 
-    e->physics.vel.x = cos(data->timer*segWidth)*power;
-    e->physics.vel.y = yFlip * ABS(float, sin(data->timer*segWidth)*power);
+    e->vel.x = cos(data->timer*segWidth)*power;
+    e->vel.y = yFlip * ABS(float, sin(data->timer*segWidth)*power);
 }
 
 // core system
@@ -97,29 +97,29 @@ uint GetBulletPatternActionCount(BulletPattern* pattern)
 
 BULLET bool RunBulletPattern(Entity* e, float delta)
 {
-    BulletPattern* pattern = &e->bullet.pattern;
+    BulletPattern* pattern = &e->bulletPattern;
 
     if (pattern->count == 0)
         pattern->count = GetBulletPatternActionCount(pattern);
 
-    if (e->bullet.curPatternIndex >= pattern->count)
+    if (pattern->index >= pattern->count)
         return true;
 
-    BulletAction action = pattern->actions[e->bullet.curPatternIndex];
+    BulletAction action = pattern->actions[pattern->index];
     assert(action.function);
-    e->bullet.data.timer += delta;
-    e->bullet.data.delta = delta;
-    e->sprite.tint = action.tint;
+    e->bulletData.timer += delta;
+    e->bulletData.delta = delta;
+    e->tint = action.tint;
 
     // process bullet action
     BulletActionFunc actionFunc = action.function;
-    (*actionFunc)(e, &e->bullet.data, DIFFICULTY, action.parameters);
+    (*actionFunc)(e, &e->bulletData, DIFFICULTY, action.parameters);
 
     BulletActionEndFunc endFunc = action.endFunction;
-    if ((*endFunc)(e, &e->bullet.data, DIFFICULTY, action.parameters))
+    if ((*endFunc)(e, &e->bulletData, DIFFICULTY, action.parameters))
     {
         // on bullet action done
-        e->bullet.curPatternIndex++;
+        pattern->index++;
     }
     return false;
 }

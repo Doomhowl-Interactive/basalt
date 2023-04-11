@@ -1,7 +1,7 @@
 #pragma once
 #include "bullet_assets.h"
 
-#define MAX_ENTITIES 256
+#define MAX_ENTITIES 1024
 #define MAX_SPAWNERS 32
 #define MAX_PATTERNS 16
 #define MAX_BULLET_SLOTS 16
@@ -33,18 +33,27 @@ typedef struct BulletData {
 typedef void (*BulletActionFunc)(Entity* entity, BulletData* data, int difficulty, const int* args);
 typedef bool (*BulletActionEndFunc)(Entity* entity, BulletData* data, int difficulty, const int* args);
 
-typedef struct BulletAction {
+class(BulletAction) {
     BulletActionFunc function;
     BulletActionEndFunc endFunction;
     Color tint;
     int parameters[MAX_PARAMETERS];
-} BulletAction;
+};
 
-typedef struct BulletPattern {
+class(BulletPattern) {
     BulletAction actions[MAX_PATTERNS];
     Texture* texture;
     uint count;
-} BulletPattern;
+    uint index;
+};
+
+class(BulletSpawner) {
+    Vec2 offset;
+    Vec2 normal;
+    float interval;
+    float spawnTimer;
+    const BulletPattern* patternToSpawn;
+};
 
 // TODO: Use regions for sprites
 struct Entity {
@@ -55,44 +64,28 @@ struct Entity {
     EntityID id;
     EntityType type;
 
-    struct {
-        RectF bounds;
-        Color tint;
-        Point sourceOffset;
-        Texture texture;
-    } sprite;
+    // sprite
+    RectF bounds;
+    Color tint;
+    Point sourceOffset;
+    Texture texture;
 
-    struct {
-        Vec2 vel;
-        float drag;
-    } physics;
+    // physics
+    Vec2 vel;
 
-    struct {
-        float moveSpeed;
-    } ship;
+    // ship
+    float moveSpeed;
     
-    struct {
-        uint maxHealth;
-        uint health;
-    } alive;
+    // health
+    uint maxHealth;
+    uint health;
 
-    struct {
-        BulletData data;
-        BulletPattern pattern;
-        uint curPatternIndex;
-    } bullet;
+    // bullet
+    BulletData bulletData;
+    BulletPattern bulletPattern;
 
-    struct {
-        Vec2 offsetFromParent;
-        Vec2 normal;
-        float interval;
-        float spawnTimer;
-        const BulletPattern* patternToSpawn;
-    } spawner;
-
-    struct {
-        Entity* spawners[MAX_SPAWNERS];
-    } weapon;
+    // spawner
+    BulletSpawner bulletSpawners[MAX_SPAWNERS];
 };
 
 struct Scene {
