@@ -28,7 +28,7 @@ BULLET void InitPlayer(Entity* e, Vec2 pos)
         spawner->normal.x = cos(DEG2RAD(angle));
         spawner->normal.y = sin(DEG2RAD(angle));
         spawner->offset = Vec2Scale(spawner->normal,distanceFromPlayer);
-        spawner->patternToSpawn = &PlayerBullet;
+        spawner->patternToSpawn = GetBulletPatternByName("PlayerBullet1");
     }
 }
 

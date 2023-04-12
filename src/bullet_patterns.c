@@ -124,50 +124,87 @@ BULLET bool RunBulletPattern(Entity* e, float delta)
     return false;
 }
 
-const BulletPattern PlayerBullet = {
+const BulletPattern BulletPatterns[] = {
     {
+        "PlayerBullet1",
         {
-            MoveBulletStraight,
-            EndBulletOOB,
-            0xFFBB00FF,
-            { 5 },
-        }
+            {
+                MoveBulletStraight,
+                EndBulletOOB,
+                0xFFBB00FF,
+                { 5 },
+            }
+        },
+        &BulletPlacholderTexture,
     },
-    &BulletPlacholderTexture,
+    {
+        "PlayerBullet2",
+        {
+            {
+                MoveBulletOceanWave,
+                EndBulletOOB,
+                0xAAAAFFFF,
+                { 40, 40 }
+            }
+        },
+        &BulletPlacholderTexture,
+    },
+    {
+        "PlayerBullet3",
+        {
+            {
+                MoveBulletStaircase,
+                EndBulletOOB,
+                0x0022DDFF,
+                { 10, -1 }
+            }
+        },
+        &BulletPlacholderTexture
+    },
+    {
+        "PlayerBullet4",
+        {
+            {
+                MoveBulletSnake,
+                EndBulletOOB,
+                0x22FF22FF,
+                { 10, -1 }
+            }
+        },
+        &BulletPlacholderTexture
+    },
+    { NULL }
 };
 
-const BulletPattern PlayerBullet2 = {
-    {
-        {
-            MoveBulletOceanWave,
-            EndBulletOOB,
-            0xAAAAFFFF,
-            { 40, 40 }
-        }
-    },
-    &BulletPlacholderTexture,
-};
+BULLET const BulletPattern* GetBulletPattern(usize index)
+{
+    usize count = GetBulletPatternCount();
+    if (index < count)
+        return &BulletPatterns[index];
 
-const BulletPattern PlayerBullet3 = {
-    {
-        {
-            MoveBulletStaircase,
-            EndBulletOOB,
-            0x0022DDFF,
-            { 10, -1 }
-        }
-    },
-    &BulletPlacholderTexture
-};
+    WARN("Did not find bullet pattern indexed %d", index);
+    return &BulletPatterns[0];
+}
 
-const BulletPattern PlayerBullet4 = {
+BULLET const BulletPattern* GetBulletPatternByName(const char* name)
+{
+    for (const BulletPattern* pat = BulletPatterns; pat->name != NULL; pat++)
     {
-        {
-            MoveBulletSnake,
-            EndBulletOOB,
-            0x22FF22FF,
-            { 10, -1 }
-        }
-    },
-    &BulletPlacholderTexture
-};
+        if (strcmp(pat->name,name) == 0)
+            return pat;
+    }
+    WARN("Did not find bullet pattern with name %s", name);
+    return GetBulletPattern(0);
+}
+
+BULLET usize GetBulletPatternCount()
+{
+    static usize counter = 0;
+    if (counter == 0)
+    {
+        for (const BulletPattern* pat = BulletPatterns; pat->name != NULL; pat++)
+            counter++;
+    }
+    return counter;
+}
+

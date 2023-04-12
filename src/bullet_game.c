@@ -20,14 +20,6 @@ static uint ActiveSceneID     = 0;
 static Scene Scenes[SCENE_COUNT] = { 0 };
 
 static Entity* Player = NULL;
-
-#define PATTERN_COUNT 4
-static const BulletPattern* Patterns[] = {
-    &PlayerBullet,
-    &PlayerBullet2,
-    &PlayerBullet3,
-    &PlayerBullet4,
-};
 static uint SelectedPattern = 1;
 
 static float BackgroundScrollSpeed = 100.f;
@@ -78,10 +70,10 @@ pubfunc void UpdateAndRenderGame(Texture canvas, float delta)
         {
             BulletSpawner* spawner = &Player->bulletSpawners[i];
             if (spawner == NULL) continue;
-            spawner->patternToSpawn = Patterns[patternIndex];
+            spawner->patternToSpawn = GetBulletPattern(patternIndex);
         }
 
-        if (SelectedPattern >= PATTERN_COUNT)
+        if (SelectedPattern >= GetBulletPatternCount())
             SelectedPattern = 0;
     }
 

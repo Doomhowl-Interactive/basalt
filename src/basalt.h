@@ -195,6 +195,7 @@ class(Texture) {
 extern uchar* LIST_TEXTURES[];  // WARN: Terminate with NULL-pointer
 extern uint LIST_TAGS[];        // WARN: Terminate with -1
 
+// TODO: Change to retreive texture, that uses cache system
 #define LoadTexture(X) LoadTextureEx(#X,X)
 pubfunc Texture LoadTextureEx(const char* name, uchar* pixels);
 

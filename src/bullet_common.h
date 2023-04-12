@@ -2,8 +2,9 @@
 #include "bullet_assets.h"
 
 #define MAX_ENTITIES 1024
+#define MAX_PATTERNS 128 
 #define MAX_SPAWNERS 32
-#define MAX_PATTERNS 16
+#define MAX_ACTIONS 16
 #define MAX_BULLET_SLOTS 16
 #define MAX_PARAMETERS 16
 
@@ -41,7 +42,8 @@ class(BulletAction) {
 };
 
 class(BulletPattern) {
-    BulletAction actions[MAX_PATTERNS];
+    const char* name;
+    BulletAction actions[MAX_ACTIONS];
     Texture* texture;
     uint count;
     uint index;
@@ -108,6 +110,9 @@ BULLET uint UpdateAndRenderScene(Scene* scene, Texture canvas, float delta);
 
 // bullet_patterns.c
 BULLET bool RunBulletPattern(Entity* e, float delta);
+BULLET const BulletPattern* GetBulletPattern(usize index);
+BULLET const BulletPattern* GetBulletPatternByName(const char* name);
+BULLET usize GetBulletPatternCount();
 
 // bullet_factories.c
 BULLET void InitPlayer(Entity* e, Vec2 pos);
@@ -116,9 +121,6 @@ BULLET void InitBullet(Entity* e, const BulletPattern* pattern, Vec2 pos, Vec2 n
 // bullet_tests.c
 platfunc void UnitTestBullet();
 
+// TODO: Remove
 extern Texture PlayerTexture;
 extern Texture BulletPlacholderTexture;
-extern const BulletPattern PlayerBullet;
-extern const BulletPattern PlayerBullet2;
-extern const BulletPattern PlayerBullet3;
-extern const BulletPattern PlayerBullet4;
