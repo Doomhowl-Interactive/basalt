@@ -1,7 +1,8 @@
 #include "basalt.h"
 #include "basalt_plat.h"
-
 #include <string.h>
+
+#define BLEND_VALUE 180 
 
 // NOTE: Taken from https://github.com/tsoding/olive.c/blob/master/olive.c
 typedef struct {
@@ -123,7 +124,8 @@ pubfunc void DrawText(Texture canvas, const char* text, int posX, int posY, Colo
     DrawBitmapText(PixelFont, canvas, text, posX, posY, color);
 }
 
-pubfunc void DrawBitmapText(BitmapFont font, Texture canvas, const char* text, int posX, int posY, Color color)
+pubfunc void DrawBitmapText(BitmapFont font, Texture canvas, const char* text,
+                            int posX, int posY, Color tint)
 {
     int x = posX;
     int y = posY;
@@ -152,7 +154,7 @@ pubfunc void DrawBitmapText(BitmapFont font, Texture canvas, const char* text, i
                     font.cellWidth,
                     font.cellHeight
                 };
-                DrawTextureEx(canvas, font.texture, x, y, R2(src));
+                DrawTextureEx(canvas, font.texture, x, y, R2(src), tint);
                 x += font.cellWidth;
                 break;
         }
@@ -210,13 +212,13 @@ pubfunc void ClearTexture(Texture canvas, Color color) {
     }
 }
 
-pubfunc inline void DrawTexture(Texture canvas, Texture texture, int posX, int posY)
+pubfunc inline void DrawTexture(Texture canvas, Texture texture, int posX, int posY, Color tint)
 {
-    DrawTextureEx(canvas, texture, posX, posY, 0, 0, texture.width, texture.height);
+    DrawTextureEx(canvas, texture, posX, posY, 0, 0, texture.width, texture.height, tint);
 }
 
 pubfunc void DrawTextureEx(Texture canvas, Texture texture, int posX, int posY, int srcX,
-                         int srcY, int srcWidth, int srcHeight)
+                         int srcY, int srcWidth, int srcHeight, Color tint)
 {
     assert(canvas.pixels);
 
@@ -249,6 +251,8 @@ pubfunc void DrawTextureEx(Texture canvas, Texture texture, int posX, int posY, 
             
             Color srcColor = texture.pixels[srcIndex];
             uchar alpha = srcColor & 0x000000FF;
+            if (tint != WHITE)
+                srcColor = BlendColors(srcColor, tint, BLEND_VALUE);
             Color finalColor = BlendColors(pixels[destIndex], srcColor, alpha);
             pixels[destIndex] = finalColor;
         }
@@ -262,7 +266,7 @@ func bool olivec_normalize_rect(int x, int y, int w, int h,
 
 // NOTE: Taken from https://github.com/tsoding/olive.c/blob/master/olive.c
 pubfunc void DrawTextureScaled(Texture canvas, Texture texture, int destX, int destY,
-                               int destWidth, int destHeight)
+                               int destWidth, int destHeight, Color tint)
 {
     assert(texture.pixels);
     assert(canvas.pixels);
@@ -281,7 +285,10 @@ pubfunc void DrawTextureScaled(Texture canvas, Texture texture, int destX, int d
             size_t ny = (y - ya)*((int) texture.height)/destHeight;
             size_t srcIndex = ny * texture.width + nx;
             size_t destIndex = y * canvas.width + x;
-            canvas.pixels[destIndex] = texture.pixels[srcIndex];
+            Color color = texture.pixels[srcIndex];
+            if (tint != WHITE)
+                color = BlendColors(color, tint, BLEND_VALUE);
+            canvas.pixels[destIndex] = color;
         }
     }
     DRAWCALL(canvas, DrawRectangle);
@@ -322,6 +329,11 @@ pubfunc inline Color RGB(uchar r, uchar g, uchar b)
 pubfunc inline Color BlendColors(Color src, Color dst, uchar t)
 {
     assert(t <= 255);
+    if (t == 255)
+        return dst;
+    if (t == 0)
+        return src;
+
     const Color s = 255 - t;
     return (
         (((((src >> 0)  & 0xff) * s +

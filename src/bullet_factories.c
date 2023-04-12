@@ -8,7 +8,7 @@ BULLET void InitPlayer(Entity* e, Vec2 pos)
     e->texture = PlayerTexture;
     e->type = TAG_PLAYER;
     SetEntityCenter(e, pos.x - 48 / 2, pos.y);
-    e->tint = 0x00FF00FF;
+    e->tint = WHITE;
     e->moveSpeed = 200;
     SetEntitySize(e, PlayerTexture.width, PlayerTexture.height);
     assert(PlayerTexture.width > 0 || PlayerTexture.height > 0);

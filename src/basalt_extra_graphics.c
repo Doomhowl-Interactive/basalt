@@ -54,7 +54,8 @@ pubfunc Texture GenerateNoiseTexture(int width, int height, Color bg, Color fg)
     return GenerateNoiseTextureEx(width, height, bg, fg, scale, seed);
 }
 
-pubfunc void DrawTextureSheet(Texture canvas, TextureSheet sheet, int frame, Vec2 pos)
+pubfunc void DrawTextureSheet(Texture canvas, TextureSheet sheet, int frame, Vec2 pos,
+                              Color tint)
 {
     assert(sheet.texture);
     assert(sheet.texture->pixels);
@@ -71,5 +72,5 @@ pubfunc void DrawTextureSheet(Texture canvas, TextureSheet sheet, int frame, Vec
         sheet.cellSize.x,
         sheet.cellSize.y,
     };
-    DrawTextureEx(canvas, *sheet.texture, V2(pos), R2(source));
+    DrawTextureEx(canvas, *sheet.texture, V2(pos), R2(source), tint);
 }

@@ -224,10 +224,20 @@ class(EngineConfig) {
 extern EngineConfig Config;
 
 // Graphics drawing (basalt_graphics.c)
-pubfunc void DrawDot(Texture canvas, int posX, int posY, Color color);
-pubfunc void DrawLine(Texture canvas, int startX, int startY, int endX, int endY, Color color);
-pubfunc void DrawRectangle(Texture canvas, int posX, int posY, int width, int height, Color color);
-pubfunc void DrawRectangleLines(Texture canvas, int posX, int posY, int width, int height, int border, Color color);
+#define WHITE   0xFFFFFFFF
+#define BLACK   0x000000FF
+#define BLANK   0xFFFFFF00
+
+#define RED     0xFF0000FF
+#define GREEN   0x00FF00FF
+#define BLUE    0x0000FFFF
+#define YELLOW  0xFFFF00FF
+#define PURPLE  0x00FFFFFF
+
+pubfunc void DrawDot(Texture canvas, int posX, int posY, Color tint);
+pubfunc void DrawLine(Texture canvas, int startX, int startY, int endX, int endY, Color tint);
+pubfunc void DrawRectangle(Texture canvas, int posX, int posY, int width, int height, Color tint);
+pubfunc void DrawRectangleLines(Texture canvas, int posX, int posY, int width, int height, int border, Color tint);
 pubfunc void DrawWeirdTestGradient(Texture canvas);
 
 class(BitmapFont)
@@ -240,7 +250,7 @@ class(BitmapFont)
     const char* symbols;
 };
 
-pubfunc void DrawBitmapFontSymbol(BitmapFont font, int posX, int posY, char symbol);
+pubfunc void DrawBitmapFontSymbol(BitmapFont font, int posX, int posY, char symbol, Color color);
 pubfunc void DrawText(Texture canvas, const char* text, int posX, int posY, Color color);
 pubfunc void DrawBitmapText(BitmapFont font, Texture canvas, const char* text, int posX, int posY, Color color);
 
@@ -253,12 +263,12 @@ pubfunc void DisposeTexture(Texture texture);
 // NOTE: What is the correct format you might ask? I have no idea, found out after trial-and-error.
 pubfunc void MapTextureToCorrectFormat(Texture dest, Texture src);
 
-pubfunc void ClearTexture(Texture canvas, Color color);
+pubfunc void ClearTexture(Texture canvas, Color tint);
 pubfunc void DrawTextureEx(Texture canvas, Texture texture, int posX, int posY, int srcX,
-                           int srcY, int srcWidth, int srcHeight);
-pubfunc extern void DrawTexture(Texture canvas, Texture texture, int posX, int posY); // TODO: Add tint support
+                           int srcY, int srcWidth, int srcHeight, Color tint);
+pubfunc extern void DrawTexture(Texture canvas, Texture texture, int posX, int posY, Color tint);
 pubfunc void DrawTextureScaled(Texture canvas, Texture texture, int destX, int destY,
-                               int destWidth, int destHeight);
+                               int destWidth, int destHeight, Color tint);
 
 pubfunc extern Color RGB(uchar r, uchar g, uchar b);
 pubfunc extern Color RGBA(uchar r, uchar g, uchar b, uchar a); // NOTE: Format RR GG BB AA

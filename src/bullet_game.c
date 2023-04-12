@@ -79,8 +79,8 @@ pubfunc void UpdateAndRenderGame(Texture canvas, float delta)
 
     // TODO: blend at runtime 0x4B486EFF, 0x07060FFF
     int offsetY = (int)(GetTimeElapsed()*-BackgroundScrollSpeed) % HEIGHT;
-    DrawTexture(canvas, BackgroundNoiseTexture, 0.f, -offsetY);
-    DrawTexture(canvas, BackgroundNoiseTexture, 0.f, -offsetY+HEIGHT);
+    DrawTexture(canvas, BackgroundNoiseTexture, 0.f, -offsetY, WHITE);
+    DrawTexture(canvas, BackgroundNoiseTexture, 0.f, -offsetY+HEIGHT, WHITE);
 
     Scene* activeScene = &Scenes[ActiveSceneID];
     UpdateAndRenderEditor(activeScene, canvas, delta);
@@ -90,5 +90,5 @@ pubfunc void UpdateAndRenderGame(Texture canvas, float delta)
     static char info[128];
     float fps = 1.f / delta;
     sprintf(info, "FPS %1.3f", fps);
-    DrawText(canvas, info, 10, 10, fps < 30 ? 0xFF0000FF:0x00FF00FF);
+    DrawText(canvas, info, 10, 10, fps < 30 ? RED:GREEN);
 }

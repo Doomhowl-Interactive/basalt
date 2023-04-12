@@ -88,7 +88,7 @@ void UpdateAndRenderEntity(Scene* scene, Texture canvas, Entity* e, float delta)
     {
         if (e->texture.pixels)
             DrawTextureEx(canvas, e->texture, V2(e->bounds),
-                          0, 0, e->bounds.width, e->bounds.height);
+                          0, 0, e->bounds.width, e->bounds.height, e->tint);
         else
             DrawRectangle(canvas, R2(e->bounds), e->tint);
     }
