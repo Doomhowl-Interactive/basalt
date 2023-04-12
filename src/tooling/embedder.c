@@ -101,7 +101,7 @@ void AppendFileCode(String* code, char* file) {
     // write code header
     {
         char header[64];
-        sprintf(header, "unsigned char %s[] = {\n", assetName, size);
+        sprintf(header, "const uchar %s[] = {\n", assetName, size);
         AppendString(code, header);
     }
 
@@ -147,6 +147,9 @@ void EncodeFolder(char* folder, char* outputFile) {
 
     String code = MakeString();
     FilePathList files = GetFolderFiles(folder, ".png");
+
+    // write include
+    AppendString(&code, "#include <basalt.h>\n");
 
     for (int i = 0; i < files.count; i++) {
         AppendFileCode(&code, files.strings[i]);

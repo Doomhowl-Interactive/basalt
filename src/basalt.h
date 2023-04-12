@@ -190,7 +190,7 @@ class(Texture) {
     int height;
     Color* pixels;
 };
-extern uchar SPR_PIXELFONT[];
+extern const uchar SPR_PIXELFONT[];
 
 // TODO: Change to retreive texture, that uses cache system
 #define LoadTexture(X) LoadTextureEx(#X,X)
