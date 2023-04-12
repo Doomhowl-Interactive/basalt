@@ -118,6 +118,9 @@ BULLET usize GetBulletPatternCount();
 BULLET void InitPlayer(Entity* e, Vec2 pos);
 BULLET void InitBullet(Entity* e, const BulletPattern* pattern, Vec2 pos, Vec2 normal);
 
+// bullet_editor.c
+BULLET void UpdateAndRenderEditor(Scene* activeScene, Texture canvas, float delta);
+
 // bullet_tests.c
 platfunc void UnitTestBullet();
 

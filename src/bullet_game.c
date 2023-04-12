@@ -83,5 +83,6 @@ pubfunc void UpdateAndRenderGame(Texture canvas, float delta)
     DrawTexture(canvas, BackgroundNoiseTexture, 0.f, -offsetY+HEIGHT);
 
     Scene* activeScene = &Scenes[ActiveSceneID];
+    UpdateAndRenderEditor(activeScene, canvas, delta);
     UpdateAndRenderScene(activeScene, canvas, delta);
 }
