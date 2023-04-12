@@ -150,7 +150,7 @@ pubfunc void InitHotReloading()
 }
 
 // TODO: Support loading grayscale textures
-pubfunc Texture LoadTextureEx(const char* name, uchar* pixels)
+pubfunc Texture LoadTextureEx(const char* name, const uchar* pixels)
 {
     int width, height;
     int channels = 0;

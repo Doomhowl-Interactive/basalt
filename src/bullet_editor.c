@@ -1,7 +1,7 @@
 #include "basalt_extra.h"
 #include "bullet_common.h"
 
-static bool IsOpened = true;
+static bool IsOpened = false;
 
 BULLET void UpdateAndRenderEditor(Scene* activeScene, Texture canvas, float delta)
 {

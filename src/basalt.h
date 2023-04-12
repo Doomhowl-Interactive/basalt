@@ -194,7 +194,7 @@ extern const uchar SPR_PIXELFONT[];
 
 // TODO: Change to retreive texture, that uses cache system
 #define LoadTexture(X) LoadTextureEx(#X,X)
-pubfunc Texture LoadTextureEx(const char* name, uchar* pixels);
+pubfunc Texture LoadTextureEx(const char* name, const uchar* pixels);
 
 // Platform dependent stuff
 pubfunc Point GetMousePosition();
@@ -230,7 +230,19 @@ pubfunc void DrawRectangle(Texture canvas, int posX, int posY, int width, int he
 pubfunc void DrawRectangleLines(Texture canvas, int posX, int posY, int width, int height, int border, Color color);
 pubfunc void DrawWeirdTestGradient(Texture canvas);
 
+class(BitmapFont)
+{
+    Texture texture;
+    uint cols;
+    uint rows;
+    uint cellWidth;
+    uint cellHeight;
+    const char* symbols;
+};
+
+pubfunc void DrawBitmapFontSymbol(BitmapFont font, int posX, int posY, char symbol);
 pubfunc void DrawText(Texture canvas, const char* text, int posX, int posY, Color color);
+pubfunc void DrawBitmapText(BitmapFont font, Texture canvas, const char* text, int posX, int posY, Color color);
 
 pubfunc Texture InitTexture(int width, int height);
 pubfunc Texture CopyTexture(Texture source);

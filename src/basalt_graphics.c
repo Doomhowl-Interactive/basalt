@@ -108,13 +108,55 @@ pubfunc void DrawRectangleLines(Texture canvas, int posX, int posY, int width, i
     DrawRectangle(canvas, posX, posY, border, height, color); // left
 }
 
-static Texture PixelFontTexture = { 0 };
+static BitmapFont PixelFont = { 0 };
 pubfunc void DrawText(Texture canvas, const char* text, int posX, int posY, Color color)
 {
-    if (PixelFontTexture.pixels == NULL)
-        PixelFontTexture = LoadTexture(SPR_PIXELFONT);
+    if (PixelFont.texture.pixels == NULL)
+    {
+        PixelFont.texture = LoadTexture(SPR_PIXELFONT);
+        PixelFont.cols = 8;
+        PixelFont.rows = 8;
+        PixelFont.cellWidth = 8;
+        PixelFont.cellHeight = 8;
+        PixelFont.symbols = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789.!";
+    }
+    DrawBitmapText(PixelFont, canvas, text, posX, posY, color);
+}
 
-    DrawTexture(canvas, PixelFontTexture, posX, posY);
+pubfunc void DrawBitmapText(BitmapFont font, Texture canvas, const char* text, int posX, int posY, Color color)
+{
+    int x = posX;
+    int y = posY;
+    for (uint i = 0; i < strlen(text); i++)
+    {
+        char symbol = text[i];
+        switch (symbol)
+        {
+            case '\n': // multiline
+                y += font.cellHeight;
+                x = posX;
+                break;
+            case ' ':
+                x += font.cellWidth;
+                break;
+            default:
+                char* found = strchr(font.symbols, symbol);
+                if (found == NULL)
+                    found = (char*) font.symbols;
+                uint symbolIndex = (uint) (found - font.symbols);
+                uint cellX = symbolIndex % font.cols;
+                uint cellY = symbolIndex / font.rows;
+                Rect src = {
+                    cellX*font.cellWidth,
+                    cellY*font.cellHeight,
+                    font.cellWidth,
+                    font.cellHeight
+                };
+                DrawTextureEx(canvas, font.texture, x, y, R2(src));
+                x += font.cellWidth;
+                break;
+        }
+    }
 }
 
 pubfunc Texture InitTexture(int width, int height) {
