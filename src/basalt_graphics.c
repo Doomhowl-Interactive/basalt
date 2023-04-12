@@ -127,6 +127,9 @@ pubfunc void DrawText(Texture canvas, const char* text, int posX, int posY, Colo
 pubfunc void DrawBitmapText(BitmapFont font, Texture canvas, const char* text,
                             int posX, int posY, Color tint)
 {
+    if (text == NULL)
+        text = (const char*) "NULL";
+
     int x = posX;
     int y = posY;
     for (uint i = 0; i < strlen(text); i++)

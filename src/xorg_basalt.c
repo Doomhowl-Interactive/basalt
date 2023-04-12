@@ -218,8 +218,12 @@ int main(int argc, char **argv) {
             unsigned int maskResult = 0;
             if (XQueryPointer(display, win, &rootWinResult, &childWinResult, &rootMouseX, &rootMouseY,
                           &childMouseX, &childMouseY, &maskResult)){
-                Input.mousePos.x = childMouseX;
-                Input.mousePos.y = childMouseY;
+
+                float scaleX = WIDTH / (float)width;
+                float scaleY = HEIGHT / (float)height;
+
+                Input.mousePos.x = childMouseX*scaleX;
+                Input.mousePos.y = childMouseY*scaleY;
 
                 // HACK: might not work while pressing multiple mouse buttons
                 Input.isMouseDown = maskResult == 272;

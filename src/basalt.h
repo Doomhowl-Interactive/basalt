@@ -237,7 +237,8 @@ extern EngineConfig Config;
 pubfunc void DrawDot(Texture canvas, int posX, int posY, Color tint);
 pubfunc void DrawLine(Texture canvas, int startX, int startY, int endX, int endY, Color tint);
 pubfunc void DrawRectangle(Texture canvas, int posX, int posY, int width, int height, Color tint);
-pubfunc void DrawRectangleLines(Texture canvas, int posX, int posY, int width, int height, int border, Color tint);
+pubfunc void DrawRectangleLines(Texture canvas, int posX, int posY, int width, int height,
+                                int border, Color tint);
 pubfunc void DrawWeirdTestGradient(Texture canvas);
 
 class(BitmapFont)

@@ -83,12 +83,12 @@ pubfunc void UpdateAndRenderGame(Texture canvas, float delta)
     DrawTexture(canvas, BackgroundNoiseTexture, 0.f, -offsetY+HEIGHT, WHITE);
 
     Scene* activeScene = &Scenes[ActiveSceneID];
-    UpdateAndRenderEditor(activeScene, canvas, delta);
     UpdateAndRenderScene(activeScene, canvas, delta);
+    UpdateAndRenderEditor(activeScene, canvas, delta);
 
     // draw fps
     static char info[128];
     float fps = 1.f / delta;
     sprintf(info, "FPS %1.3f", fps);
-    DrawText(canvas, info, 10, 10, fps < 30 ? RED:GREEN);
+    DrawText(canvas, info, 10, HEIGHT-20, fps < 30 ? RED:GREEN);
 }
