@@ -243,17 +243,12 @@ pubfunc void DrawTextureEx(Texture canvas, Texture texture, int posX, int posY, 
             int srcIndex = (srcY + y) * texture.width + (srcX + x);
             if (srcIndex < 0 || srcIndex >= textureSize)
                 continue;
-
-            // HACK: Accidental motion blur while messing around
-            // Color srcColor = texture.pixels[srcIndex];
-            // Color finalColor = BlendColors(pixels[destIndex], srcColor, 0.5f);
-            // pixels[destIndex] = finalColor;
             
             Color srcColor = texture.pixels[srcIndex];
             uchar alpha = srcColor & 0x000000FF;
-            if (tint != WHITE)
-                srcColor = BlendColors(srcColor, tint, BLEND_VALUE);
-            Color finalColor = BlendColors(pixels[destIndex], srcColor, alpha);
+            Color tintedColor = srcColor = BlendColors(srcColor, tint, BLEND_VALUE);
+            Color finalColor = BlendColors(pixels[destIndex], tintedColor, alpha);
+
             pixels[destIndex] = finalColor;
         }
     }
@@ -331,7 +326,7 @@ pubfunc inline Color BlendColors(Color src, Color dst, uchar t)
     assert(t <= 255);
     if (t == 255)
         return dst;
-    if (t == 0)
+    if (t == 0 || dst == WHITE)
         return src;
 
     const Color s = 255 - t;
