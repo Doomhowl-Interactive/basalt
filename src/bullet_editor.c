@@ -13,4 +13,6 @@ BULLET void UpdateAndRenderEditor(Scene* activeScene, Texture canvas, float delt
 
     if (!IsOpened)
         return; 
+
+    DrawText(canvas, "Hello editor!", 50,50, 0xFF00FFFF);
 }

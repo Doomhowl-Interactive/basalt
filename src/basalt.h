@@ -190,10 +190,7 @@ class(Texture) {
     int height;
     Color* pixels;
 };
-
-// required data for map editor
-extern uchar* LIST_TEXTURES[];  // WARN: Terminate with NULL-pointer
-extern uint LIST_TAGS[];        // WARN: Terminate with -1
+extern uchar SPR_PIXELFONT[];
 
 // TODO: Change to retreive texture, that uses cache system
 #define LoadTexture(X) LoadTextureEx(#X,X)
@@ -231,8 +228,9 @@ pubfunc void DrawDot(Texture canvas, int posX, int posY, Color color);
 pubfunc void DrawLine(Texture canvas, int startX, int startY, int endX, int endY, Color color);
 pubfunc void DrawRectangle(Texture canvas, int posX, int posY, int width, int height, Color color);
 pubfunc void DrawRectangleLines(Texture canvas, int posX, int posY, int width, int height, int border, Color color);
-
 pubfunc void DrawWeirdTestGradient(Texture canvas);
+
+pubfunc void DrawText(Texture canvas, const char* text, int posX, int posY, Color color);
 
 pubfunc Texture InitTexture(int width, int height);
 pubfunc Texture CopyTexture(Texture source);
@@ -246,7 +244,7 @@ pubfunc void MapTextureToCorrectFormat(Texture dest, Texture src);
 pubfunc void ClearTexture(Texture canvas, Color color);
 pubfunc void DrawTextureEx(Texture canvas, Texture texture, int posX, int posY, int srcX,
                            int srcY, int srcWidth, int srcHeight);
-pubfunc extern void DrawTexture(Texture canvas, Texture texture, int posX, int posY);
+pubfunc extern void DrawTexture(Texture canvas, Texture texture, int posX, int posY); // TODO: Add tint support
 pubfunc void DrawTextureScaled(Texture canvas, Texture texture, int destX, int destY,
                                int destWidth, int destHeight);
 

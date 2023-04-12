@@ -108,6 +108,15 @@ pubfunc void DrawRectangleLines(Texture canvas, int posX, int posY, int width, i
     DrawRectangle(canvas, posX, posY, border, height, color); // left
 }
 
+static Texture PixelFontTexture = { 0 };
+pubfunc void DrawText(Texture canvas, const char* text, int posX, int posY, Color color)
+{
+    if (PixelFontTexture.pixels == NULL)
+        PixelFontTexture = LoadTexture(SPR_PIXELFONT);
+
+    DrawTexture(canvas, PixelFontTexture, posX, posY);
+}
+
 pubfunc Texture InitTexture(int width, int height) {
     Texture tex;
     tex.width = width;
