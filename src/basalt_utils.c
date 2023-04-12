@@ -136,8 +136,8 @@ pubfunc inline Point Vec2ToPoint(Vec2 v2)
 pubfunc inline Vec2 PointToVec2(Point point)
 {
     Vec2 v2 = {
-        (int) point.x,
-        (int) point.y
+        (float) point.x,
+        (float) point.y
     };
     return v2;
 }

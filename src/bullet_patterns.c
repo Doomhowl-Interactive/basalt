@@ -207,4 +207,3 @@ BULLET usize GetBulletPatternCount()
     }
     return counter;
 }
-
