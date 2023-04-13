@@ -154,7 +154,7 @@ void EncodeFolder(char* folder, char* outputFile)
     FilePathList files = GetFolderFiles(folder, ".png");
 
     // write include
-    AppendString(&code, "#include <basalt.h>\n");
+    AppendString(&code, "#include \"basalt.h\"\n");
 
     for (int i = 0; i < files.count; i++) {
         AppendFileCode(&code, files.strings[i]);

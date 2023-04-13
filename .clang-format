@@ -37,7 +37,7 @@ BraceWrapping:
     IndentBraces: false
 DerivePointerAlignment: false
 PointerAlignment: Left
-SortIncludes: true
+SortIncludes: false
 Cpp11BracedListStyle: false
 IncludeCategories:
     - Regex: "<[/[:alnum:].]+>"

@@ -1,8 +1,7 @@
-#include <synchapi.h>
-#include <windows.h>
-
 #include "basalt.h"
 #include "basalt_plat.h"
+
+#include <windows.h>
 
 class(WindowContext)
 {
