@@ -1,23 +1,22 @@
 // Reference: X11 App in C with Xlib - Tsoding Daily
 // https://youtu.be/764fnfEb1_c
 
-#include <X11/Xutil.h>
 #include <X11/Xlib.h>
+#include <X11/Xutil.h>
 #include <X11/extensions/render.h>
-
-#include <stdio.h>
 #include <assert.h>
 #include <stdint.h>
-
-#include <time.h>
+#include <stdio.h>
 #include <sys/time.h>
+#include <time.h>
 #include <unistd.h>
 
 #include "basalt.h"
 #include "basalt_plat.h"
 
-class(OffscreenBuffer) {
-    Display *display;
+class(OffscreenBuffer)
+{
+    Display* display;
     Window window;
     Texture canvas;
     Texture mappedCanvas;
@@ -25,31 +24,30 @@ class(OffscreenBuffer) {
 
     GC gc;
     uchar* pixels;
-    XImage *image;
+    XImage* image;
     char title[128];
 };
 
-GameContext Context     = { 0 };
-GameInput Input         = { 0 };
+GameContext Context = { 0 };
+GameInput Input = { 0 };
 
 static OffscreenBuffer ActiveBuffer = { 0 };
 
-pubfunc void SetWindowTitle(const char* title) {
+pubfunc void SetWindowTitle(const char* title)
+{
     if (ActiveBuffer.display != NULL) {
         // check if changed
-        if (strcmp(ActiveBuffer.title, title) != 0)
-        {
+        if (strcmp(ActiveBuffer.title, title) != 0) {
             strcpy(ActiveBuffer.title, title);
-            XStoreName(ActiveBuffer.display,
-                       ActiveBuffer.window,
-                       title);
+            XStoreName(ActiveBuffer.display, ActiveBuffer.window, title);
         }
     } else {
         ERR("Failed to set change window title!\n");
     }
 }
 
-func Size GetMonitorSize(Display* display) {
+func Size GetMonitorSize(Display* display)
+{
     int screen = DefaultScreen(display);
     Size size;
     size.width = DisplayWidth(display, screen);
@@ -57,9 +55,9 @@ func Size GetMonitorSize(Display* display) {
     return size;
 }
 
-func OffscreenBuffer InitOffscreenBuffer(Display *display, Window window,
-                                           Texture canvas) {
-    OffscreenBuffer buffer = {0};
+func OffscreenBuffer InitOffscreenBuffer(Display* display, Window window, Texture canvas)
+{
+    OffscreenBuffer buffer = { 0 };
     buffer.display = display;
     buffer.window = window;
     buffer.gc = XCreateGC(display, window, 0, NULL);
@@ -72,17 +70,24 @@ func OffscreenBuffer InitOffscreenBuffer(Display *display, Window window,
     buffer.mappedCanvas2 = InitTexture(size.width, size.height);
     DEBUG("Allocated two textures for monitor size %d x %d", size.width, size.height);
 
-    XWindowAttributes wAttribs = {0};
+    XWindowAttributes wAttribs = { 0 };
     XGetWindowAttributes(display, window, &wAttribs);
 
-    buffer.image = XCreateImage(display, wAttribs.visual, wAttribs.depth, ZPixmap, 0,
-                               (char *)buffer.mappedCanvas2.pixels,
-                               buffer.mappedCanvas2.width, buffer.mappedCanvas2.height,
-                               32, buffer.mappedCanvas2.width * sizeof(uint32_t));
+    buffer.image = XCreateImage(display,
+                                wAttribs.visual,
+                                wAttribs.depth,
+                                ZPixmap,
+                                0,
+                                (char*)buffer.mappedCanvas2.pixels,
+                                buffer.mappedCanvas2.width,
+                                buffer.mappedCanvas2.height,
+                                32,
+                                buffer.mappedCanvas2.width * sizeof(uint32_t));
     return buffer;
 }
 
-func void RenderOffscreenBuffer(OffscreenBuffer *buffer, int width, int height) {
+func void RenderOffscreenBuffer(OffscreenBuffer* buffer, int width, int height)
+{
     assert(buffer->mappedCanvas.pixels && buffer->canvas.pixels);
 
     Rect rect = { 0, 0, MIN(width, buffer->mappedCanvas2.width), MIN(height, buffer->mappedCanvas2.height) };
@@ -93,19 +98,18 @@ func void RenderOffscreenBuffer(OffscreenBuffer *buffer, int width, int height) 
     // FIXME: SLOW 50% performance hit
     DrawTextureScaled(buffer->mappedCanvas2, buffer->mappedCanvas, R2(rect), WHITE);
 
-    XPutImage(buffer->display, buffer->window, buffer->gc, buffer->image, 0, 0,
-              0, 0, width, height);
+    XPutImage(buffer->display, buffer->window, buffer->gc, buffer->image, 0, 0, 0, 0, width, height);
 }
 
-func void HandleKeyEvent(XEvent event, bool pressed){
+func void HandleKeyEvent(XEvent event, bool pressed)
+{
     KeySym sym = XLookupKeysym(&event.xkey, 0);
     KeySym upperSym, lowerSym;
     XConvertCase(sym, &lowerSym, &upperSym);
     char* string = XKeysymToString(upperSym);
 
     // HACK: ignore special characters (for now)
-    if (string[1] == '\0')
-    {
+    if (string[1] == '\0') {
         char key = string[0];
         Input.pressedKeys[key] = pressed;
 
@@ -119,15 +123,14 @@ func void HandleKeyEvent(XEvent event, bool pressed){
 func void DumpKeyboardTable()
 {
     DEBUG("Dumping key table");
-    for (int i = 33; i < 90; i++)
-    {
+    for (int i = 33; i < 90; i++) {
         DEBUG("key: %d %c %d", i, i, Input.pressedKeys[i]);
     }
     DEBUG("==================");
 }
 
-int main(int argc, char **argv) {
-
+int main(int argc, char** argv)
+{
     // Check launch arguments first
     if (!ParseLaunchArguments(argc, argv))
         return EXIT_SUCCESS;
@@ -145,15 +148,13 @@ int main(int argc, char **argv) {
     // HACK: make the window the size of the entire monitor so the DC is big enough
 
     // if only things were that simple...
-    Window win = XCreateSimpleWindow(display, RootWindow(display, DefaultScreen(display)), 10,
-                                     10, size.width, size.height, 0, 0, 255);
+    Window win = XCreateSimpleWindow(display, RootWindow(display, DefaultScreen(display)), 10, 10, size.width, size.height, 0, 0, 255);
 
     // === make window closing work (it's a big deal for some reason)
     Atom wmDeleteWindow = XInternAtom(display, "WM_DELETE_WINDOW", false);
     XSetWMProtocols(display, win, &wmDeleteWindow, 1);
 
-    XSelectInput(display, win,
-                 ExposureMask | KeyPressMask | KeyReleaseMask | ResizeRedirectMask);
+    XSelectInput(display, win, ExposureMask | KeyPressMask | KeyReleaseMask | ResizeRedirectMask);
 
     Texture canvas = InitTexture(WIDTH, HEIGHT);
 
@@ -176,7 +177,7 @@ int main(int argc, char **argv) {
     int width = WIDTH;
     int height = HEIGHT;
 
-    double maxFps = Config.unlockedFramerate ? 10000:60;
+    double maxFps = Config.unlockedFramerate ? 10000 : 60;
     double prevDelta = 0.f;
     double delta = 1.0 / maxFps;
     double fps = maxFps;
@@ -186,29 +187,27 @@ int main(int argc, char **argv) {
             XNextEvent(display, &event);
 
             switch (event.type) {
-            case KeyPress:
-                {
+                case KeyPress: {
                     HandleKeyEvent(event, true);
                     if (IsKeyPressed(KEY_Q))
                         Context.shouldClose = true;
 
                     if (IsKeyPressed(KEY_L))
                         DumpKeyboardTable();
-                }
-                break;
-            case KeyRelease:
-                HandleKeyEvent(event, false);
-                break;
-            case ClientMessage:
-                if ((Atom)event.xclient.data.l[0] == wmDeleteWindow) {
-                    DEBUG("Closing window...");
-                    Context.shouldClose = true;
-                }
-                break;
-            case ResizeRequest: {
-                width = event.xresizerequest.width;
-                height = event.xresizerequest.height;
-            } break;
+                } break;
+                case KeyRelease:
+                    HandleKeyEvent(event, false);
+                    break;
+                case ClientMessage:
+                    if ((Atom)event.xclient.data.l[0] == wmDeleteWindow) {
+                        DEBUG("Closing window...");
+                        Context.shouldClose = true;
+                    }
+                    break;
+                case ResizeRequest: {
+                    width = event.xresizerequest.width;
+                    height = event.xresizerequest.height;
+                } break;
             }
 
             // poll the mouse
@@ -216,19 +215,16 @@ int main(int argc, char **argv) {
             int rootMouseX, rootMouseY;
             int childMouseX, childMouseY;
             unsigned int maskResult = 0;
-            if (XQueryPointer(display, win, &rootWinResult, &childWinResult, &rootMouseX, &rootMouseY,
-                          &childMouseX, &childMouseY, &maskResult)){
-
+            if (XQueryPointer(display, win, &rootWinResult, &childWinResult, &rootMouseX, &rootMouseY, &childMouseX, &childMouseY, &maskResult)) {
                 float scaleX = WIDTH / (float)width;
                 float scaleY = HEIGHT / (float)height;
 
-                Input.mousePos.x = childMouseX*scaleX;
-                Input.mousePos.y = childMouseY*scaleY;
+                Input.mousePos.x = childMouseX * scaleX;
+                Input.mousePos.y = childMouseY * scaleY;
 
                 // HACK: might not work while pressing multiple mouse buttons
                 Input.isMouseDown = maskResult == 272;
             }
-
         }
 
         struct timeval startTime;
@@ -236,8 +232,7 @@ int main(int argc, char **argv) {
 
         // Set window title to fps and delta-time
         static double timer = 0.f;
-        if (timer > 0.2)
-        {
+        if (timer > 0.2) {
             // set window title to framerate
             char title[200] = { 0 };
             sprintf(title, "%s - %d FPS - %f delta", GAME_TITLE, (int)fps, delta);
@@ -248,13 +243,12 @@ int main(int argc, char **argv) {
         timer += delta;
 
         // draw graphics
-        if (UpdateAndRenderArchaeo(canvas))
-        {
+        if (UpdateAndRenderArchaeo(canvas)) {
             // HACK: Prevent delta spikes from breaking the game
-            if (delta > 1){
+            if (delta > 1) {
                 delta = prevDelta;
             }
-            UpdateAndRenderGame(canvas, (float) delta);
+            UpdateAndRenderGame(canvas, (float)delta);
             Context.frameIndex++;
             Context.timeElapsed += delta;
         }

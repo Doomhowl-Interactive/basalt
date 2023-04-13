@@ -1,3 +1,4 @@
+#include "basalt.h"
 #include "basalt_extra.h"
 #include "bullet_common.h"
 
@@ -13,21 +14,34 @@ class(EditorTab)
 };
 
 func void DrawMainTab(Scene* activeScene, Texture canvas, float delta);
+func void DrawAssetTab(Scene* activeScene, Texture canvas, float delta);
 func void DrawPatternsTab(Scene* activeScene, Texture canvas, float delta);
-static const EditorTab EditorTabs[] = {
-    {"Main", DrawMainTab },
-    {"Patterns", DrawPatternsTab },
-    { NULL }
-};
+static const EditorTab EditorTabs[] = { { "Main", DrawMainTab }, { "Assets", DrawAssetTab }, { "Patterns", DrawPatternsTab }, { NULL } };
 
 func void DrawMainTab(Scene* activeScene, Texture canvas, float delta)
 {
-    DrawText(canvas, "Hello editor!", 50,50, YELLOW);
+    DrawText(canvas, "Hello editor!", 50, 50, YELLOW);
+}
+
+func void DrawAssetTab(Scene* activeScene, Texture canvas, float delta)
+{
+    int x = 50;
+    int y = 50;
+    uint count = 0;
+    Texture* textures = GetLoadedTextures();
+    for (Texture* texture = textures; texture->name != NULL; texture++) {
+        DrawText(canvas, texture->name, x, y, WHITE);
+        y += 30;
+        count++;
+    }
+    static char countText[64];
+    sprintf(countText, "Texture count %u", count);
+    DrawText(canvas, countText, x, y, GRAY);
 }
 
 func void DrawPatternsTab(Scene* activeScene, Texture canvas, float delta)
 {
-    DrawText(canvas, "Bullet patterns", 50,50, PURPLE);
+    DrawText(canvas, "Bullet patterns", 50, 50, PURPLE);
 }
 
 func void DrawEditorTabs(Scene* activeScene, Texture canvas, float delta, const EditorTab* tabs)
@@ -35,9 +49,8 @@ func void DrawEditorTabs(Scene* activeScene, Texture canvas, float delta, const 
     static Color bgColor = 0x111111FF;
     static Color fgColor = 0xAAAAAAFF;
     static uint tabWidth = 0;
-    static uint tabHeight= 20;
-    if (tabWidth == 0)
-    {
+    static uint tabHeight = 20;
+    if (tabWidth == 0) {
         uint tabCount = 0;
         for (const EditorTab* tab = tabs; tab->name != NULL; tab++)
             tabCount++;
@@ -47,12 +60,11 @@ func void DrawEditorTabs(Scene* activeScene, Texture canvas, float delta, const 
     }
 
     uint i = 0;
-    for (const EditorTab* tab = tabs; tab->name != NULL; tab++)
-    {
+    for (const EditorTab* tab = tabs; tab->name != NULL; tab++) {
         bool isSelected = SelectedTabIndex == i;
 
-        Color bg = isSelected ? BlendColors(bgColor,GREEN,50):bgColor;
-        Color fg = isSelected ? BlendColors(fgColor,GREEN,50):fgColor;
+        Color bg = isSelected ? BlendColors(bgColor, GREEN, 50) : bgColor;
+        Color fg = isSelected ? BlendColors(fgColor, GREEN, 50) : fgColor;
 
         uint x = tabWidth * i;
         DrawRectangle(canvas, x, 0, tabWidth, tabHeight, bg);
@@ -74,14 +86,13 @@ func void DrawEditorTabs(Scene* activeScene, Texture canvas, float delta, const 
 
 BULLET void UpdateAndRenderEditor(Scene* activeScene, Texture canvas, float delta)
 {
-    if (IsKeyPressed(KEY_Y))
-    {
+    if (IsKeyPressed(KEY_Y)) {
         IsOpened = !IsOpened;
-        INFO("%s editor", IsOpened ? "Opened":"Closed");
+        INFO("%s editor", IsOpened ? "Opened" : "Closed");
     }
 
     if (!IsOpened)
-        return; 
+        return;
 
     DrawEditorTabs(activeScene, canvas, delta, EditorTabs);
 }

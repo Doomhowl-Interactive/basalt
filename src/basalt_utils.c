@@ -1,41 +1,38 @@
-#include "basalt.h"
+#include <ctype.h>
 #include <math.h>
 #include <stdio.h>
 #include <string.h>
-#include <ctype.h>
-
-#include <time.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <time.h>
+
+#include "basalt.h"
 
 #if defined(_WIN64) || defined(_WIN32)
-#include "external/dirent.h"
+# include "external/dirent.h"
 #else
-#include <dirent.h>
+# include <dirent.h>
 #endif
 
 static usize PrevRNGFrame = 0;
 static usize RNGOffset = 0;
 
 // NOTE: Random numbers aren't actually random, they're based on frame index
-// in order to make reproducable tests 
+// in order to make reproducable tests
 // If you want "real" random numbers, use GetRealRandomNumber()
 pubfunc int GetRandomNumber()
 {
 #ifndef BASALT_NO_ENGINE
     usize curFrame = GetFrameIndex();
-    if (PrevRNGFrame == curFrame)
-    {
+    if (PrevRNGFrame == curFrame) {
         RNGOffset++;
-    }
-    else
-    {
+    } else {
         RNGOffset += 0;
         PrevRNGFrame = curFrame;
     }
 
     // TODO: This could be better
-    int rng = ((curFrame * 69696420) << 2) * (525+RNGOffset);
+    int rng = ((curFrame * 69696420) << 2) * (525 + RNGOffset);
     return rng;
 #else
     return GetRealRandomNumber();
@@ -48,13 +45,15 @@ pubfunc int GetRealRandomNumber()
     return rng;
 }
 
-pubfunc bool IsLittleEndian() {
+pubfunc bool IsLittleEndian()
+{
     volatile uint i = 0x01234567;
     bool littleEndian = *((uchar*)(&i)) == 0x67;
     return littleEndian;
 }
 
-pubfunc int Clamp(int value, int min, int max) {
+pubfunc int Clamp(int value, int min, int max)
+{
     if (value < min) {
         return min;
     }
@@ -105,10 +104,10 @@ pubfunc inline Point RectCenter(Rect rect)
 pubfunc inline Rect RectFToRect(RectF rectf)
 {
     Rect rect = {
-        (int) rectf.x,
-        (int) rectf.y,
-        (int) rectf.width,
-        (int) rectf.height,
+        (int)rectf.x,
+        (int)rectf.y,
+        (int)rectf.width,
+        (int)rectf.height,
     };
     return rect;
 }
@@ -116,29 +115,23 @@ pubfunc inline Rect RectFToRect(RectF rectf)
 pubfunc inline RectF RectToRectF(Rect rect)
 {
     RectF rectf = {
-        (float) rect.x,
-        (float) rect.y,
-        (float) rect.width,
-        (float) rect.height,
+        (float)rect.x,
+        (float)rect.y,
+        (float)rect.width,
+        (float)rect.height,
     };
     return rectf;
 }
 
 pubfunc inline Point Vec2ToPoint(Vec2 v2)
 {
-    Point p = {
-        (int) v2.x,
-        (int) v2.y
-    };
+    Point p = { (int)v2.x, (int)v2.y };
     return p;
 }
 
 pubfunc inline Vec2 PointToVec2(Point point)
 {
-    Vec2 v2 = {
-        (float) point.x,
-        (float) point.y
-    };
+    Vec2 v2 = { (float)point.x, (float)point.y };
     return v2;
 }
 
@@ -158,7 +151,6 @@ pubfunc extern Vec2 Vec2Scale(Vec2 src, float scale)
         src.y * scale,
     };
     return v2;
-
 }
 
 pubfunc Vec2 Vec2Normalize(Vec2 v2)
@@ -177,7 +169,7 @@ pubfunc float Vec2Magnitude(Vec2 v2)
     assert(0);
     return 0.f;
 #else
-    return sqrt(v2.x*v2.x + v2.y*v2.y);
+    return sqrt(v2.x * v2.x + v2.y * v2.y);
 #endif
 }
 
@@ -193,20 +185,18 @@ pubfunc StringArray InitStringArray()
 pubfunc void StoreString(StringArray* arr, char* text)
 {
     if (arr->strings == NULL)
-        arr->strings = (char**) calloc(sizeof(char*),arr->capacity);
+        arr->strings = (char**)calloc(sizeof(char*), arr->capacity);
 
-    if (arr->count == arr->capacity)
-    {
+    if (arr->count == arr->capacity) {
         arr->capacity += 20;
-        arr->strings = (char**) realloc(arr->strings, sizeof(char*) * arr->capacity);
+        arr->strings = (char**)realloc(arr->strings, sizeof(char*) * arr->capacity);
     }
     arr->strings[arr->count++] = strdup(text);
 }
 
 pubfunc void DisposeStringArray(StringArray* arr)
 {
-    if (arr->strings != NULL)
-    {
+    if (arr->strings != NULL) {
         for (usize i = 0; i < arr->count; i++)
             free(arr->strings[i]);
 
@@ -215,19 +205,21 @@ pubfunc void DisposeStringArray(StringArray* arr)
 }
 
 // string implementation
-pubfunc String MakeString(){
+pubfunc String MakeString()
+{
     String str = { 0 };
     str.capacity = 128;
     return str;
 }
 
-pubfunc String* AppendString(String* str, const char* add) {
+pubfunc String* AppendString(String* str, const char* add)
+{
     size_t addLen = strlen(add);
     str->size += addLen;
 
     // allocate string
     if (str->text == NULL) {
-        str->capacity = str->size + 1; // +1 for null terminator
+        str->capacity = str->size + 1;  // +1 for null terminator
         str->text = (char*)malloc(str->capacity * sizeof(char));
     }
 
@@ -237,22 +229,24 @@ pubfunc String* AppendString(String* str, const char* add) {
         str->text = (char*)realloc(str->text, str->capacity * sizeof(char));
     }
 
-    char* head = &str->text[str->size - addLen]; // calculate head position
+    char* head = &str->text[str->size - addLen];  // calculate head position
     strcpy(head, add);
 
     return str;
 }
 
-pubfunc void UnloadString(String* str) {
+pubfunc void UnloadString(String* str)
+{
     str->size = 0;
     str->capacity = 100;
-    if (str->text){
+    if (str->text) {
         free(str->text);
     }
 }
 
-pubfunc void ToUppercase(char* str) {
-    while (*str){
+pubfunc void ToUppercase(char* str)
+{
+    while (*str) {
         *str = toupper(*str);
         str++;
     }
@@ -260,13 +254,13 @@ pubfunc void ToUppercase(char* str) {
 
 // FIXME: Untested
 #define MAX_PADDING_LENGTH 256
-static char PaddingCache[MAX_PADDING_LENGTH]; 
+static char PaddingCache[MAX_PADDING_LENGTH];
 pubfunc const char* PadStringRight(const char* text, char symbol, usize length)
 {
     memset(PaddingCache, symbol, length);
     PaddingCache[length] = '\0';
 
-    int len = MIN(MAX_PADDING_LENGTH, MIN(strlen(text),length));
+    int len = MIN(MAX_PADDING_LENGTH, MIN(strlen(text), length));
     memcpy(PaddingCache, text, len);
 
     return PaddingCache;
@@ -274,8 +268,7 @@ pubfunc const char* PadStringRight(const char* text, char symbol, usize length)
 
 pubfunc const char* GetFirstExistingFolder(const char** folders)
 {
-    for (const char* folder = folders[0]; folder != NULL; folder++)
-    {
+    for (const char* folder = folders[0]; folder != NULL; folder++) {
         if (folder != NULL && FolderExists(folder))
             return folder;
     }
@@ -301,32 +294,33 @@ pubfunc ulong GetFileModifiedTime(const char* filePath)
 }
 
 // raylib.h (rcore.c)
-pubfunc const char *GetFileName(const char *filePath)
+pubfunc const char* GetFileName(const char* filePath)
 {
-    const char *fileName = NULL;
-    if (filePath != NULL) fileName = strpbrk(filePath, "\\/");
+    const char* fileName = NULL;
+    if (filePath != NULL)
+        fileName = strpbrk(filePath, "\\/");
 
-    if (!fileName) return filePath;
+    if (!fileName)
+        return filePath;
 
     return fileName + 1;
 }
 
 // raylib.h (rcore.c)
-pubfunc const char *GetFileStem(const char *filePath)
+pubfunc const char* GetFileStem(const char* filePath)
 {
-    #define MAX_FILENAMEWITHOUTEXT_LENGTH   256
+#define MAX_FILENAMEWITHOUTEXT_LENGTH 256
 
     static char fileName[MAX_FILENAMEWITHOUTEXT_LENGTH] = { 0 };
     memset(fileName, 0, MAX_FILENAMEWITHOUTEXT_LENGTH);
 
-    if (filePath != NULL) strcpy(fileName, GetFileName(filePath));   // Get filename with extension
+    if (filePath != NULL)
+        strcpy(fileName, GetFileName(filePath));  // Get filename with extension
 
-    int size = (int)strlen(fileName);   // Get size in bytes
+    int size = (int)strlen(fileName);  // Get size in bytes
 
-    for (int i = 0; (i < size) && (i < MAX_FILENAMEWITHOUTEXT_LENGTH); i++)
-    {
-        if (fileName[i] == '.')
-        {
+    for (int i = 0; (i < size) && (i < MAX_FILENAMEWITHOUTEXT_LENGTH); i++) {
+        if (fileName[i] == '.') {
             // NOTE: We break on first '.' found
             fileName[i] = '\0';
             break;
@@ -336,13 +330,14 @@ pubfunc const char *GetFileStem(const char *filePath)
     return fileName;
 }
 
-pubfunc bool FileHasExtension(const char* name, const char* ext) {
+pubfunc bool FileHasExtension(const char* name, const char* ext)
+{
     int cmp = strcmp(name + strlen(name) - strlen(ext), ext);
     return cmp == 0;
 }
 
-pubfunc FilePathList GetFolderFiles(const char* folder, const char* ext) {
-
+pubfunc FilePathList GetFolderFiles(const char* folder, const char* ext)
+{
     FilePathList list = { 0 };
     list.count = 0;
     list.capacity = 20;
@@ -350,14 +345,13 @@ pubfunc FilePathList GetFolderFiles(const char* folder, const char* ext) {
     DIR* dir;
     struct dirent* ent;
     if ((dir = opendir(folder)) != NULL) {
-        list.strings = (char**) malloc(list.capacity * sizeof(char*));
+        list.strings = (char**)malloc(list.capacity * sizeof(char*));
         while ((ent = readdir(dir)) != NULL) {
             if (FileHasExtension(ent->d_name, ext)) {
-
                 // expand FilePathList if needed
                 if (list.count == list.capacity) {
                     list.capacity *= 2;
-                    list.strings = (char**) realloc(list.strings,list.capacity * sizeof(char*));
+                    list.strings = (char**)realloc(list.strings, list.capacity * sizeof(char*));
                 }
 
                 char fullName[MAX_PATH_LENGTH];
@@ -366,16 +360,16 @@ pubfunc FilePathList GetFolderFiles(const char* folder, const char* ext) {
             }
         }
         closedir(dir);
-    }
-    else {
-        fprintf(stderr,"Unable to open directory\n");
+    } else {
+        fprintf(stderr, "Unable to open directory\n");
         exit(EXIT_FAILURE);
     }
 
     return list;
 }
 
-pubfunc void UnloadFilePathList(FilePathList list) {
+pubfunc void UnloadFilePathList(FilePathList list)
+{
     for (size_t i = 0; i < list.count; i++) {
         free(list.strings[i]);
     }

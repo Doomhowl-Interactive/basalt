@@ -1,35 +1,37 @@
+#include <synchapi.h>
+#include <windows.h>
+
 #include "basalt.h"
 #include "basalt_plat.h"
-#include <windows.h>
-#include <synchapi.h>
 
-class(WindowContext){
+class(WindowContext)
+{
     HWND window;
 };
 
-class(OffscreenBuffer) {
+class(OffscreenBuffer)
+{
     // NOTE: pixels are 32-bits wide, AA RR GG BB
     BITMAPINFO info;
     Texture mappedCanvas;
     Texture mappedCanvas2;
 };
 
-GameContext Context                     = { 0 };
-GameInput Input                         = { 0 };
+GameContext Context = { 0 };
+GameInput Input = { 0 };
 
-static WindowContext Window             = { 0 };
+static WindowContext Window = { 0 };
 static OffscreenBuffer GlobalBackbuffer = { 0 };
 
 #define MAX_TITLE_LEN 128
-pubfunc void SetWindowTitle(const char* title) {
+pubfunc void SetWindowTitle(const char* title)
+{
     // check if changed
     char curTitle[MAX_TITLE_LEN];
-    if (GetWindowTextA(Window.window, curTitle, MAX_TITLE_LEN) != 0){
+    if (GetWindowTextA(Window.window, curTitle, MAX_TITLE_LEN) != 0) {
         if (strcmp(curTitle, title) != 0)
             SetWindowTextA(Window.window, title);
-    }
-    else
-    {
+    } else {
         ERR("Failed to set change window title!\n");
     }
 }
@@ -37,9 +39,10 @@ pubfunc void SetWindowTitle(const char* title) {
 func void OpenSystemConsole();
 func void CloseSystemConsole();
 
-func usize GetMicroseconds(){
+func usize GetMicroseconds()
+{
     LARGE_INTEGER frequency;
-    QueryPerformanceFrequency(&frequency); 
+    QueryPerformanceFrequency(&frequency);
 
     LARGE_INTEGER now;
     QueryPerformanceCounter(&now);
@@ -49,12 +52,14 @@ func usize GetMicroseconds(){
     return now.QuadPart;
 }
 
-func void SleepMicroseconds(usize micros){
+func void SleepMicroseconds(usize micros)
+{
     usize millis = micros / 1000;
     Sleep(millis);
 }
 
-func Size GetWindowSize(HWND window) {
+func Size GetWindowSize(HWND window)
+{
     RECT clientRect;
     GetClientRect(window, &clientRect);
     Size size = {
@@ -64,8 +69,8 @@ func Size GetWindowSize(HWND window) {
     return (size);
 }
 
-func void ResizeDIBSection(OffscreenBuffer *buffer, int width, int height) {
-
+func void ResizeDIBSection(OffscreenBuffer* buffer, int width, int height)
+{
     // switch out screen textures for correctly sized ones
     DisposeTexture(Context.canvas);
     Context.canvas = InitTexture(width, height);
@@ -85,16 +90,15 @@ func void ResizeDIBSection(OffscreenBuffer *buffer, int width, int height) {
 func void HandleKeyEvent(WPARAM wParam, bool pressed)
 {
     // filter out other stuff
-    char key = (char) wParam;
+    char key = (char)wParam;
     Input.pressedKeys[key] = pressed;
 
     if (pressed)
         Input.pressedKeysOnce[key] = true;
 }
 
-static void DisplayBufferInWindow(HDC deviceContext, int winWidth,
-                                  int winHeight, OffscreenBuffer buffer) {
-
+static void DisplayBufferInWindow(HDC deviceContext, int winWidth, int winHeight, OffscreenBuffer buffer)
+{
     CopyTextureInto(buffer.mappedCanvas, Context.canvas);
     MapTextureToCorrectFormat(buffer.mappedCanvas2, buffer.mappedCanvas);
 
@@ -103,60 +107,61 @@ static void DisplayBufferInWindow(HDC deviceContext, int winWidth,
                   dest: X, Y, Width, Height,
                   source: X, Y, Width, Height,
                   */
-                  0, 0, winWidth, winHeight, 0, 0, buffer.mappedCanvas2.width,
-                  buffer.mappedCanvas2.height, buffer.mappedCanvas2.pixels, &buffer.info,
-                  DIB_RGB_COLORS, SRCCOPY);
+                  0,
+                  0,
+                  winWidth,
+                  winHeight,
+                  0,
+                  0,
+                  buffer.mappedCanvas2.width,
+                  buffer.mappedCanvas2.height,
+                  buffer.mappedCanvas2.pixels,
+                  &buffer.info,
+                  DIB_RGB_COLORS,
+                  SRCCOPY);
 }
 
-LRESULT CALLBACK MainWindowCallback(HWND window, UINT message, WPARAM wParam,
-                                    LPARAM lParam) {
+LRESULT CALLBACK MainWindowCallback(HWND window, UINT message, WPARAM wParam, LPARAM lParam)
+{
     LRESULT result = 0;
 
     switch (message) {
-    case WM_CLOSE:
-        Context.shouldClose = true;
-        break;
-    case WM_ACTIVATEAPP:
-        OutputDebugStringA("WM_ACTIVATEAPP\n");
-        break;
-    case WM_DESTROY:
-        Context.shouldClose = true;
-        break;
-    case WM_PAINT:
-        {
+        case WM_CLOSE:
+            Context.shouldClose = true;
+            break;
+        case WM_ACTIVATEAPP:
+            OutputDebugStringA("WM_ACTIVATEAPP\n");
+            break;
+        case WM_DESTROY:
+            Context.shouldClose = true;
+            break;
+        case WM_PAINT: {
             PAINTSTRUCT paint;
             HDC deviceContext = BeginPaint(window, &paint);
             Size size = GetWindowSize(window);
-            DisplayBufferInWindow(deviceContext, size.width, size.height,
-                                  GlobalBackbuffer);
+            DisplayBufferInWindow(deviceContext, size.width, size.height, GlobalBackbuffer);
             EndPaint(window, &paint);
-        }
-        break;
-    case WM_KEYDOWN:
-        {
+        } break;
+        case WM_KEYDOWN: {
             HandleKeyEvent(wParam, true);
             if (IsKeyPressed(KEY_Q))
                 Context.shouldClose = true;
-        }
-        break;
-    case WM_KEYUP:
-        HandleKeyEvent(wParam, false);
-        break;
-    default:
-        {
+        } break;
+        case WM_KEYUP:
+            HandleKeyEvent(wParam, false);
+            break;
+        default: {
             // handle other messages we don't care about
             result = DefWindowProc(window, message, wParam, lParam);
-        }
-        break;
+        } break;
     }
 
     return (result);
 }
 
-int CALLBACK WinMain(HINSTANCE instance, HINSTANCE prevInstance,
-                     LPSTR commandLine, int showCode) {
-
-    WNDCLASS windowClass = {0};
+int CALLBACK WinMain(HINSTANCE instance, HINSTANCE prevInstance, LPSTR commandLine, int showCode)
+{
+    WNDCLASS windowClass = { 0 };
 
     ResizeDIBSection(&GlobalBackbuffer, WIDTH, HEIGHT);
 
@@ -166,10 +171,18 @@ int CALLBACK WinMain(HINSTANCE instance, HINSTANCE prevInstance,
     windowClass.lpszClassName = "HandmadeHerowindowClass";
 
     if (RegisterClassA(&windowClass)) {
-        HWND window = CreateWindowExA(
-            0, windowClass.lpszClassName, "Handmade Hero",
-            WS_OVERLAPPEDWINDOW | WS_VISIBLE, CW_USEDEFAULT, CW_USEDEFAULT,
-            WIDTH, HEIGHT, 0, 0, instance, 0);
+        HWND window = CreateWindowExA(0,
+                                      windowClass.lpszClassName,
+                                      "Handmade Hero",
+                                      WS_OVERLAPPEDWINDOW | WS_VISIBLE,
+                                      CW_USEDEFAULT,
+                                      CW_USEDEFAULT,
+                                      WIDTH,
+                                      HEIGHT,
+                                      0,
+                                      0,
+                                      instance,
+                                      0);
         Window.window = window;
 
         // Check launch arguments first
@@ -187,7 +200,7 @@ int CALLBACK WinMain(HINSTANCE instance, HINSTANCE prevInstance,
 
             InitializeGame();
 
-            double maxFps = Config.unlockedFramerate ? 10000:60;
+            double maxFps = Config.unlockedFramerate ? 10000 : 60;
             double delta = 1.0 / maxFps;
             double fps = maxFps;
             while (!Context.shouldClose) {
@@ -199,11 +212,11 @@ int CALLBACK WinMain(HINSTANCE instance, HINSTANCE prevInstance,
                 GetCursorPos(&p);
                 ScreenToClient(window, &p);
 
-                float scaleX = size.width / (float) WIDTH;
-                float scaleY = size.height / (float) HEIGHT;
+                float scaleX = size.width / (float)WIDTH;
+                float scaleY = size.height / (float)HEIGHT;
 
-                Input.mousePos.x = Clamp(p.x/scaleX, 0, WIDTH);
-                Input.mousePos.y = Clamp(p.y/scaleY, 0, HEIGHT);
+                Input.mousePos.x = Clamp(p.x / scaleX, 0, WIDTH);
+                Input.mousePos.y = Clamp(p.y / scaleY, 0, HEIGHT);
 
                 while (PeekMessage(&message, 0, 0, 0, PM_REMOVE)) {
                     if (message.message == WM_QUIT)
@@ -217,12 +230,11 @@ int CALLBACK WinMain(HINSTANCE instance, HINSTANCE prevInstance,
                 usize startTime = GetMicroseconds();
 
                 // do updateing and drawing
-                UpdateAndRenderGame(Context.canvas, (float) delta);
+                UpdateAndRenderGame(Context.canvas, (float)delta);
                 Context.frameIndex++;
                 Context.timeElapsed += delta;
 
-                DisplayBufferInWindow(deviceContext, size.width, size.height,
-                                      GlobalBackbuffer);
+                DisplayBufferInWindow(deviceContext, size.width, size.height, GlobalBackbuffer);
 
                 // brake engine to respect frame rate cap
                 usize interTime = GetMicroseconds();
@@ -241,8 +253,7 @@ int CALLBACK WinMain(HINSTANCE instance, HINSTANCE prevInstance,
 
                 // set window title
                 static double timer = 0.f;
-                if (timer > 0.2)
-                {
+                if (timer > 0.2) {
                     // set window title to framerate
                     char title[200] = { 0 };
                     sprintf(title, "%s - %d FPS - %f delta", GAME_TITLE, (int)fps, delta);
@@ -267,22 +278,21 @@ int CALLBACK WinMain(HINSTANCE instance, HINSTANCE prevInstance,
 }
 
 static bool AllocatedConsole = false;
-func void OpenSystemConsole() {
-    if (!AllocatedConsole || AllocConsole())
-    {
+func void OpenSystemConsole()
+{
+    if (!AllocatedConsole || AllocConsole()) {
         freopen("CONIN$", "r", stdin);
         freopen("CONOUT$", "w", stdout);
-        freopen("CONOUT$", "w", stderr); 
+        freopen("CONOUT$", "w", stderr);
         AllocatedConsole = true;
-    }
-    else
-    {
+    } else {
         ERR("Failed to allocate console!");
     }
     printf("Allocated Windows console");
 }
 
-func void CloseSystemConsole() {
+func void CloseSystemConsole()
+{
     if (AllocatedConsole)
         FreeConsole();
 }

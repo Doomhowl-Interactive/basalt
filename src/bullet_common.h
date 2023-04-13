@@ -1,4 +1,5 @@
 #pragma once
+#include "basalt.h"
 #include "bullet_assets.h"
 
 #define MAX_ENTITIES 1024

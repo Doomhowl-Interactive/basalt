@@ -1,6 +1,7 @@
+#include <math.h>
+
 #include "basalt_extra.h"
 #include "bullet_common.h"
-#include <math.h>
 
 BULLET void InitPlayer(Entity* e, Vec2 pos)
 {
@@ -19,15 +20,14 @@ BULLET void InitPlayer(Entity* e, Vec2 pos)
     uint spawnerCount = 5;
 
     double anglePerSpawner = outwardsAngleDeg / spawnerCount;
-    for (uint i = 0; i < spawnerCount; i++)
-    {
+    for (uint i = 0; i < spawnerCount; i++) {
         double angle = -90 - outwardsAngleDeg * 0.5f + anglePerSpawner * i + anglePerSpawner * 0.5f;
 
-        BulletSpawner* spawner = &e->bulletSpawners[i]; 
+        BulletSpawner* spawner = &e->bulletSpawners[i];
         spawner->interval = 0.1f;
         spawner->normal.x = cos(DEG2RAD(angle));
         spawner->normal.y = sin(DEG2RAD(angle));
-        spawner->offset = Vec2Scale(spawner->normal,distanceFromPlayer);
+        spawner->offset = Vec2Scale(spawner->normal, distanceFromPlayer);
         spawner->patternToSpawn = GetBulletPatternByName("PlayerBullet1");
     }
 }

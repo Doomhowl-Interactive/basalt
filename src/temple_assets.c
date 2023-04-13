@@ -1,35 +1,21 @@
-#define FOX_CELL_SIZE {17,32}
+#define FOX_CELL_SIZE                                                          \
+  { 17, 32 }
 #define FOX_ANIM_FPS 15.f
 
 extern Texture foxSprite;
 
 const TextureSheet ANIM_FOX_IDLE = {
-    STRING(ANIM_FOX_IDLE),
-    &foxSprite,
-    {68,64},
-    FOX_CELL_SIZE,
-    1,
-    PLAY_LOOP,
+    STRING(ANIM_FOX_IDLE), &foxSprite, {68, 64}, FOX_CELL_SIZE, 1, PLAY_LOOP,
     FOX_ANIM_FPS,
 };
 
 const TextureSheet ANIM_FOX_WALK = {
-    STRING(ANIM_FOX_WALK),
-    &foxSprite,
-    {0,0},
-    FOX_CELL_SIZE,
-    3,
-    PLAY_PING_PONG,
-    FOX_ANIM_FPS,
+    STRING(ANIM_FOX_WALK), &foxSprite,   {0, 0}, FOX_CELL_SIZE, 3,
+    PLAY_PING_PONG,        FOX_ANIM_FPS,
 };
 
 const TextureSheet ANIM_FOX_STOP = {
-    STRING(ANIM_FOX_STOP),
-    &foxSprite,
-    {68, 0},
-    FOX_CELL_SIZE,
-    2,
-    PLAY_ONCE,
+    STRING(ANIM_FOX_STOP), &foxSprite, {68, 0}, FOX_CELL_SIZE, 2, PLAY_ONCE,
     FOX_ANIM_FPS * 0.5,
 };
 

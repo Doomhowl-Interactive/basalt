@@ -4,6 +4,8 @@ game engine for c cavemen
 
 Slowly solidifying [Magma Game Engine](https://github.com/bramtechs/RaylibMagmaEngine) and [dream-emu](https://github.com/bramtechs/dream-emu).
 
+Inspired by [Handmade Hero](https://handmadehero.org/).
+
 ## Screenshots
 ![Preview](screenshots/preview-bullethell.gif)
 

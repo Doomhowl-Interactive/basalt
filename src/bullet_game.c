@@ -1,3 +1,4 @@
+#include "basalt.h"
 #include "basalt_extra.h"
 #include "temple_assets.h"
 #include "bullet_common.h"
@@ -33,9 +34,9 @@ pubfunc void InitializeGame()
     if (Config.hasUnitTesting)
         UnitTestBullet();
 
-    BulletPlacholderTexture = LoadTexture(SPR_BULLET_PLACEHOLDER);
-    BackgroundNoiseTexture = LoadTexture(SPR_BACKGROUND_NOISE_COL);
-    PlayerTexture = LoadTexture(SPR_SHIP_PLAYER);
+    BulletPlacholderTexture = RequestTexture(SPR_BULLET_PLACEHOLDER);
+    BackgroundNoiseTexture = RequestTexture(SPR_BACKGROUND_NOISE_COL);
+    PlayerTexture = RequestTexture(SPR_SHIP_PLAYER);
 
     Player = CreateEntity(&Scenes[SCENE_GAME]);
     Vec2 spawnPos = {WIDTH / 2, HEIGHT / 1.2f};

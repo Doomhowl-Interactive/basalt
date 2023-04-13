@@ -1,130 +1,66 @@
 #include "basalt_extra.h"
 
-enumdef(LevelType) {
-    LEVEL_NORMAL,
-    LEVEL_BONUS,
-    LEVEL_BOSS
-};
+enumdef(LevelType){LEVEL_NORMAL, LEVEL_BONUS, LEVEL_BOSS};
 
 class(LevelLayout) {
-    const char* layout;
-    uint width;
-    uint height;
+  const char *layout;
+  uint width;
+  uint height;
 };
 
 class(LevelInfo) {
-    const char* shortName;
-    const char* displayName;
-    const LevelLayout* layout;
-    uint minScore;
-    uint maxTime;
-    LevelType type;
+  const char *shortName;
+  const char *displayName;
+  const LevelLayout *layout;
+  uint minScore;
+  uint maxTime;
+  LevelType type;
 };
 
 const static LevelInfo MAP_LEVEL001 = {
-    "01",
-    "UNNAMED LEVEL",
-    NULL,
-    10000,
-    180,
-    LEVEL_NORMAL,
+    "01", "UNNAMED LEVEL", NULL, 10000, 180, LEVEL_NORMAL,
 };
 
 const static LevelInfo MAP_LEVEL002 = {
-    "02",
-    "UNNAMED LEVEL",
-    NULL,
-    10000,
-    180,
-    LEVEL_NORMAL,
+    "02", "UNNAMED LEVEL", NULL, 10000, 180, LEVEL_NORMAL,
 };
 
 const static LevelInfo MAP_LEVEL003 = {
-    "03",
-    "UNNAMED LEVEL",
-    NULL,
-    10000,
-    180,
-    LEVEL_NORMAL,
+    "03", "UNNAMED LEVEL", NULL, 10000, 180, LEVEL_NORMAL,
 };
 
 const static LevelInfo MAP_LEVEL004 = {
-    "04",
-    "UNNAMED LEVEL",
-    NULL,
-    10000,
-    180,
-    LEVEL_NORMAL,
+    "04", "UNNAMED LEVEL", NULL, 10000, 180, LEVEL_NORMAL,
 };
 
 const static LevelInfo MAP_LEVEL005 = {
-    "05",
-    "UNNAMED LEVEL",
-    NULL,
-    10000,
-    180,
-    LEVEL_NORMAL,
+    "05", "UNNAMED LEVEL", NULL, 10000, 180, LEVEL_NORMAL,
 };
 
 const static LevelInfo MAP_LEVEL006 = {
-    "06",
-    "UNNAMED LEVEL",
-    NULL,
-    10000,
-    180,
-    LEVEL_NORMAL,
+    "06", "UNNAMED LEVEL", NULL, 10000, 180, LEVEL_NORMAL,
 };
 
 const static LevelInfo MAP_LEVEL007 = {
-    "07",
-    "UNNAMED LEVEL",
-    NULL,
-    10000,
-    180,
-    LEVEL_NORMAL,
+    "07", "UNNAMED LEVEL", NULL, 10000, 180, LEVEL_NORMAL,
 };
 
 const static LevelInfo MAP_LEVEL008 = {
-    "08",
-    "UNNAMED LEVEL",
-    NULL,
-    10000,
-    180,
-    LEVEL_NORMAL,
+    "08", "UNNAMED LEVEL", NULL, 10000, 180, LEVEL_NORMAL,
 };
 
 const static LevelInfo MAP_LEVEL009 = {
-    "09",
-    "UNNAMED LEVEL",
-    NULL,
-    10000,
-    180,
-    LEVEL_NORMAL,
+    "09", "UNNAMED LEVEL", NULL, 10000, 180, LEVEL_NORMAL,
 };
 
 const static LevelInfo MAP_END_BOSS = {
-    "10",
-    "UNNAMED LEVEL",
-    NULL,
-    10000,
-    180,
-    LEVEL_BOSS,
+    "10", "UNNAMED LEVEL", NULL, 10000, 180, LEVEL_BOSS,
 };
 
 const static LevelInfo MAP_BONUS_CAVE = {
-    "A",
-    "UNNAMED BONUS LEVEL",
-    NULL,
-    10000,
-    180,
-    LEVEL_BONUS,
+    "A", "UNNAMED BONUS LEVEL", NULL, 10000, 180, LEVEL_BONUS,
 };
 
 const static LevelInfo MAP_BONUS_PIT = {
-    "B",
-    "UNNAMED BONUS LEVEL",
-    NULL,
-    10000,
-    180,
-    LEVEL_BONUS,
+    "B", "UNNAMED BONUS LEVEL", NULL, 10000, 180, LEVEL_BONUS,
 };

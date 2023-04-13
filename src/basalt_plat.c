@@ -44,4 +44,3 @@ pubfunc double GetTimeElapsed()
 {
     return Context.timeElapsed;
 }
-

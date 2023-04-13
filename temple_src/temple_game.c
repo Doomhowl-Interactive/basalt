@@ -87,7 +87,7 @@ Entity* CreateEntity()
 
 void InitPlayer(Entity* e, Vec2 pos)
 {
-    foxSprite = LoadTexture(SPR_PLAYER_FOX);
+    foxSprite = RequestTexture(SPR_PLAYER_FOX);
     e->pos = pos;
     e->type = ENTITY_PLAYER | ENTITY_PHYSICS_BODY;
     e->tint = WHITE;
@@ -96,7 +96,7 @@ void InitPlayer(Entity* e, Vec2 pos)
 void InitBlock(Entity* e, Vec2 tilePos)
 {
     if (blockSprite.width == 0)
-        blockSprite = LoadTexture(SPR_BLOCK);
+        blockSprite = RequestTexture(SPR_BLOCK);
 
     e->pos = (Vec2) {
         tilePos.x * blockSprite.width,
