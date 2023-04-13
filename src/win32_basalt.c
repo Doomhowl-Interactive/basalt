@@ -260,6 +260,9 @@ int CALLBACK WinMain(HINSTANCE instance, HINSTANCE prevInstance, LPSTR commandLi
                     timer = 0.0;
                 }
                 timer += delta;
+
+                // clear keys held down
+                memset(Input.pressedKeysOnce, 0, sizeof(Input.pressedKeysOnce));
             }
         } else {
             // TODO(casey): Logging
