@@ -7,7 +7,7 @@ Slowly solidifying [Magma Game Engine](https://github.com/bramtechs/RaylibMagmaE
 Inspired by [Handmade Hero](https://handmadehero.org/).
 
 ## Screenshots
-![Preview](screenshots/preview-bullethell.gif)
+![Preview](screenshots/screenshot.png)
 
 ## New goals
 - C over C++ (support both types of compilers)

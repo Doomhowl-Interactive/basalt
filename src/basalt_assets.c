@@ -1,11 +1,15 @@
 #include <time.h>
-
-#include "basalt.h"
+#include <string.h>
 
 #define STB_IMAGE_IMPLEMENTATION
 #define STBI_NO_HDR
 #define STBI_NO_LINEAR
 #include "external/stb_image.h"
+
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include "external/stb_image_write.h"
+
+#include "basalt.h"
 
 class(AssetEntry)
 {
@@ -48,10 +52,10 @@ func void LoadTextureFromStbData(Texture texture, uchar* data, int channels)
         // (by trial and error lol)
         uchar* comps = (uchar*)texture.pixels;
         for (int i = 0; i < texture.width * texture.height; i++) {
-            ((uchar*)texture.pixels)[i * 4 + 0] = data[i * 4 + 3];
-            ((uchar*)texture.pixels)[i * 4 + 1] = data[i * 4 + 2];
-            ((uchar*)texture.pixels)[i * 4 + 2] = data[i * 4 + 1];
-            ((uchar*)texture.pixels)[i * 4 + 3] = data[i * 4 + 0];
+            comps[i * 4 + 0] = data[i * 4 + 3];
+            comps[i * 4 + 1] = data[i * 4 + 2];
+            comps[i * 4 + 2] = data[i * 4 + 1];
+            comps[i * 4 + 3] = data[i * 4 + 0];
         }
     } else {
         ERR("Unexpected amount of channels in image (%d)!", channels);
@@ -184,6 +188,50 @@ BASALT Texture RequestTextureEx(const char* name, const uchar* pixels)
 BASALT Texture* GetLoadedTextures()
 {
     return LoadedTextures;
+}
+
+static const char* ScreenshotDirs[] = {
+    "screenshots",
+    ".",
+    "/tmp",
+    NULL,
+};
+
+BASALT void TakeScreenshot(Texture canvas)
+{
+    assert(canvas.pixels);
+
+    const char* outputFolder = NULL;
+    for (const char** dir = ScreenshotDirs; *dir != NULL; dir++) {
+        if (FolderExists(*dir)) {
+            outputFolder = *dir;
+            break;
+        }
+    }
+    if (outputFolder == NULL) {
+        ERR("Could not find a valid directory to save screenshot");
+    }
+
+    char filePath[MAX_PATH_LENGTH];
+    strcpy(filePath, outputFolder);
+
+    char fileName[256];
+    sprintf(fileName, "/screenshot_%d_%lu.png", (int)time(NULL), GetFrameIndex());
+
+    strcat(filePath, fileName);
+
+    DEBUG("Saving screenshot to %s...", filePath);
+
+    Texture canvasCopy = InitTexture(canvas.width, canvas.height);
+    SwapTextureChannels(canvasCopy, canvas, 3, 2, 1, 0);
+
+    int strideBytes = sizeof(Color) * canvasCopy.width;
+    if (stbi_write_png(filePath, canvasCopy.width, canvasCopy.height, 4, canvasCopy.pixels, strideBytes) == 0) {
+        ERR("Could not write canvas into %s", filePath);
+    }
+    DisposeTexture(canvasCopy);
+
+    INFO("Saved screenshot at %s", filePath);
 }
 
 // baked in assets (yes we really put every byte of a PNG in here)

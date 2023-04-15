@@ -277,8 +277,8 @@ BASALT const char* GetFirstExistingFolder(const char** folders)
 
 BASALT bool FolderExists(const char* folder)
 {
-    DIR* dir;
-    if ((dir = opendir(folder)) != NULL) {
+    DIR* dir = opendir(folder);
+    if (dir != NULL) {
         closedir(dir);
         return true;
     }

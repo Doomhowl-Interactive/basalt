@@ -204,21 +204,30 @@ BASALT void DisposeTexture(Texture texture)
     }
 }
 
-BASALT void MapTextureToCorrectFormat(Texture dest, Texture src)
+BASALT void SwapTextureChannels(Texture dest, Texture src, uchar first, uchar second, uchar third, uchar fourth)
 {
-    // TODO: Add collective assert method, also write assert that prints values
     assert(dest.width == src.width && dest.height == src.height);
     assert(dest.pixels);
     assert(src.pixels);
 
+    assert(first < 4);
+    assert(second < 4);
+    assert(third < 4);
+    assert(fourth < 4);
+
     uchar* destPixels = (uchar*)dest.pixels;
     uchar* srcPixels = (uchar*)src.pixels;
     for (int i = 0; i < dest.width * dest.height; i++) {
-        destPixels[i * 4 + 0] = srcPixels[i * 4 + 1];
-        destPixels[i * 4 + 1] = srcPixels[i * 4 + 2];
-        destPixels[i * 4 + 2] = srcPixels[i * 4 + 3];
-        destPixels[i * 4 + 3] = srcPixels[i * 4 + 0];
+        destPixels[i * 4 + 0] = srcPixels[i * 4 + first];
+        destPixels[i * 4 + 1] = srcPixels[i * 4 + second];
+        destPixels[i * 4 + 2] = srcPixels[i * 4 + third];
+        destPixels[i * 4 + 3] = srcPixels[i * 4 + fourth];
     }
+}
+
+BASALT inline void MapTextureToCorrectFormat(Texture dest, Texture src)
+{
+    SwapTextureChannels(dest, src, 1, 2, 3, 0);
 }
 
 BASALT void ClearTexture(Texture canvas, Color color)
@@ -234,7 +243,15 @@ BASALT inline void DrawTexture(Texture canvas, Texture texture, int posX, int po
     DrawTextureEx(canvas, texture, posX, posY, 0, 0, texture.width, texture.height, tint);
 }
 
-BASALT void DrawTextureEx(Texture canvas, Texture texture, int posX, int posY, int srcX, int srcY, int srcWidth, int srcHeight, Color tint)
+BASALT void DrawTextureEx(Texture canvas,
+                          Texture texture,
+                          int posX,
+                          int posY,
+                          int srcX,
+                          int srcY,
+                          int srcWidth,
+                          int srcHeight,
+                          Color tint)
 {
     assert(canvas.pixels);
 
@@ -269,10 +286,17 @@ BASALT void DrawTextureEx(Texture canvas, Texture texture, int posX, int posY, i
     DRAWCALL(canvas, DrawRectangle);
 }
 
-func bool olivec_normalize_rect(int x, int y, int w, int h, size_t canvas_width, size_t canvas_height, Olivec_Normalized_Rect* nr);
+func bool olivec_normalize_rect(int x,
+                                int y,
+                                int w,
+                                int h,
+                                size_t canvas_width,
+                                size_t canvas_height,
+                                Olivec_Normalized_Rect* nr);
 
 // NOTE: Taken from https://github.com/tsoding/olive.c/blob/master/olive.c
-BASALT void DrawTextureScaled(Texture canvas, Texture texture, int destX, int destY, int destWidth, int destHeight, Color tint)
+BASALT void
+DrawTextureScaled(Texture canvas, Texture texture, int destX, int destY, int destWidth, int destHeight, Color tint)
 {
     assert(texture.pixels);
     assert(canvas.pixels);
@@ -344,13 +368,15 @@ BASALT inline Color BlendColors(Color src, Color dst, uchar t)
         return src;
 
     const Color s = 255 - t;
-    return ((((((src >> 0) & 0xff) * s + ((dst >> 0) & 0xff) * t) >> 8)) | (((((src >> 8) & 0xff) * s + ((dst >> 8) & 0xff) * t)) & ~0xff)
+    return ((((((src >> 0) & 0xff) * s + ((dst >> 0) & 0xff) * t) >> 8))
+            | (((((src >> 8) & 0xff) * s + ((dst >> 8) & 0xff) * t)) & ~0xff)
             | (((((src >> 16) & 0xff) * s + ((dst >> 16) & 0xff) * t) << 8) & ~0xffff)
             | (((((src >> 24) & 0xff) * s + ((dst >> 24) & 0xff) * t) << 16) & ~0xffffff));
 }
 
 // NOTE: Taken from https://github.com/tsoding/olive.c/blob/master/olive.c
-func bool olivec_normalize_rect(int x, int y, int w, int h, size_t canvas_width, size_t canvas_height, Olivec_Normalized_Rect* nr)
+func bool
+olivec_normalize_rect(int x, int y, int w, int h, size_t canvas_width, size_t canvas_height, Olivec_Normalized_Rect* nr)
 {
     // No need to render empty rectangle
     if (w == 0)

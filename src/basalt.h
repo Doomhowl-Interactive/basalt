@@ -201,7 +201,7 @@ BASALT bool FolderExists(const char* folder);
 // WARN: The following 2 functions use cached memory.
 // The result gets overwritten on future calls.
 BASALT long GetFileModifiedTime(const char* filePath);  // NOTE: Get seconds since epoch a file was last changed.
-                                                         // Returns 0 if file doesn't exists.
+                                                        // Returns 0 if file doesn't exists.
 BASALT const char* GetFileName(const char* filePath);
 BASALT const char* GetFileStem(const char* filePath);
 BASALT const char* GetFirstExistingFolder(const char** folders);  // NOTE: Returns NULL when none exist,
@@ -223,7 +223,9 @@ extern const uchar SPR_PIXELFONT[];
 #define RequestTexture(X) RequestTextureEx(#X, X)
 BASALT Texture RequestTextureEx(const char* name, const uchar* pixels);
 BASALT Texture* GetLoadedTextures();  // NOTE: Returns null ended array of loaded/cached textures
+BASALT void TakeScreenshot(Texture canvas);
 
+BASALT void TakeScreenshot();
 // Platform dependent stuff
 BASALT Point GetMousePosition();
 BASALT void SetWindowTitle(const char* title);
@@ -264,12 +266,6 @@ extern EngineConfig Config;
 #define YELLOW 0xFFFF00FF
 #define PURPLE 0x00FFFFFF
 
-BASALT void DrawDot(Texture canvas, int posX, int posY, Color tint);
-BASALT void DrawLine(Texture canvas, int startX, int startY, int endX, int endY, Color tint);
-BASALT void DrawRectangle(Texture canvas, int posX, int posY, int width, int height, Color tint);
-BASALT void DrawRectangleLines(Texture canvas, int posX, int posY, int width, int height, int border, Color tint);
-BASALT void DrawWeirdTestGradient(Texture canvas);
-
 class(BitmapFont)
 {
     Texture texture;
@@ -279,6 +275,12 @@ class(BitmapFont)
     uint cellHeight;
     const char* symbols;
 };
+
+BASALT void DrawDot(Texture canvas, int posX, int posY, Color tint);
+BASALT void DrawLine(Texture canvas, int startX, int startY, int endX, int endY, Color tint);
+BASALT void DrawRectangle(Texture canvas, int posX, int posY, int width, int height, Color tint);
+BASALT void DrawRectangleLines(Texture canvas, int posX, int posY, int width, int height, int border, Color tint);
+BASALT void DrawWeirdTestGradient(Texture canvas);
 
 BASALT void DrawBitmapFontSymbol(BitmapFont font, int posX, int posY, char symbol, Color color);
 BASALT void DrawText(Texture canvas, const char* text, int posX, int posY, Color color);
@@ -291,7 +293,8 @@ BASALT void DisposeTexture(Texture texture);
 
 // Texture pixels are in ABGR (big endian), use this to convert to correct colors for XImage
 // NOTE: What is the correct format you might ask? I have no idea, found out after trial-and-error.
-BASALT void MapTextureToCorrectFormat(Texture dest, Texture src);
+BASALT extern void MapTextureToCorrectFormat(Texture dest, Texture src);
+BASALT void SwapTextureChannels(Texture dest, Texture src, uchar first, uchar second, uchar third, uchar fourth);
 
 BASALT void ClearTexture(Texture canvas, Color tint);
 BASALT void DrawTextureEx(Texture canvas,
@@ -303,6 +306,7 @@ BASALT void DrawTextureEx(Texture canvas,
                           int srcWidth,
                           int srcHeight,
                           Color tint);
+
 BASALT extern void DrawTexture(Texture canvas, Texture texture, int posX, int posY, Color tint);
 BASALT void
 DrawTextureScaled(Texture canvas, Texture texture, int destX, int destY, int destWidth, int destHeight, Color tint);
