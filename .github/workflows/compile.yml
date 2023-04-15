@@ -16,7 +16,7 @@ jobs:
     - name: compile
       shell: cmd
       run: | 
-        call build_windows_modern.bat
+        call windows_modern_build.bat
 
   ubuntu:
     name: Compile on Ubuntu
