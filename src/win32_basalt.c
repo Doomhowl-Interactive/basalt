@@ -23,7 +23,7 @@ static WindowContext Window = { 0 };
 static OffscreenBuffer GlobalBackbuffer = { 0 };
 
 #define MAX_TITLE_LEN 128
-pubfunc void SetWindowTitle(const char* title)
+BASALT void SetWindowTitle(const char* title)
 {
     // check if changed
     char curTitle[MAX_TITLE_LEN];

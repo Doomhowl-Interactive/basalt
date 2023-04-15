@@ -19,7 +19,7 @@ static Texture smallBlockSprite;
 #include "temple_assets.c"
 #include "temple_levels.c"
 
-pubfunc void InitializeGame()
+BASALT void InitializeGame()
 {
     foxSprite = RequestTexture(SPR_PLAYER_FOX);
     blockSprite = RequestTexture(SPR_BLOCK);
@@ -27,12 +27,12 @@ pubfunc void InitializeGame()
     colorSprite = RequestTexture(SPR_RGBA);
 }
 
-pubfunc void DisposeGame()
+BASALT void DisposeGame()
 {
     WARN("TODO: dispose game properly");
 }
 
-pubfunc void UpdateAndRenderGame(Texture canvas, float delta)
+BASALT void UpdateAndRenderGame(Texture canvas, float delta)
 {
     static const TextureSheet* anims[] = { &ANIM_FOX_IDLE, &ANIM_FOX_WALK, &ANIM_FOX_STOP, &ANIM_FOX_JUMP, &ANIM_FOX_LAND };
     static float timers[5];

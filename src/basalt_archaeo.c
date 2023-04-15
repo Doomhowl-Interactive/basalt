@@ -15,7 +15,7 @@ static struct {
     Texture drawCallTextures[MAX_DRAW_CALLS];
 } Archaeo = { 0 };
 
-pubfunc void DrawCallImpl(Texture canvas, const char* desc)
+BASALT void DrawCallImpl(Texture canvas, const char* desc)
 {
     // Should this draw call be recorded?
     if (!Config.hasArchaeo || Archaeo.state != ARCHAEO_RECORDING || Archaeo.canvasPixels == NULL || Archaeo.canvasPixels != canvas.pixels)
@@ -31,7 +31,7 @@ pubfunc void DrawCallImpl(Texture canvas, const char* desc)
     }
 }
 
-pubfunc bool UpdateAndRenderArchaeo(Texture canvas)
+BASALT bool UpdateAndRenderArchaeo(Texture canvas)
 {
     if (!Config.hasArchaeo)
         return true;

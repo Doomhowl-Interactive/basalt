@@ -20,7 +20,7 @@ static usize RNGOffset = 0;
 // NOTE: Random numbers aren't actually random, they're based on frame index
 // in order to make reproducable tests
 // If you want "real" random numbers, use GetRealRandomNumber()
-pubfunc int GetRandomNumber()
+BASALT int GetRandomNumber()
 {
 #ifndef BASALT_NO_ENGINE
     usize curFrame = GetFrameIndex();
@@ -39,20 +39,20 @@ pubfunc int GetRandomNumber()
 #endif
 }
 
-pubfunc int GetRealRandomNumber()
+BASALT int GetRealRandomNumber()
 {
     int rng = rand();
     return rng;
 }
 
-pubfunc bool IsLittleEndian()
+BASALT bool IsLittleEndian()
 {
     volatile uint i = 0x01234567;
     bool littleEndian = *((uchar*)(&i)) == 0x67;
     return littleEndian;
 }
 
-pubfunc int Clamp(int value, int min, int max)
+BASALT int Clamp(int value, int min, int max)
 {
     if (value < min) {
         return min;
@@ -65,7 +65,7 @@ pubfunc int Clamp(int value, int min, int max)
     return value;
 }
 
-pubfunc inline Vec2 RectFOrigin(RectF rectf)
+BASALT inline Vec2 RectFOrigin(RectF rectf)
 {
     Vec2 origin = {
         rectf.x,
@@ -74,7 +74,7 @@ pubfunc inline Vec2 RectFOrigin(RectF rectf)
     return origin;
 }
 
-pubfunc inline Vec2 RectFCenter(RectF rectf)
+BASALT inline Vec2 RectFCenter(RectF rectf)
 {
     Vec2 res = {
         rectf.x + rectf.width * 0.5f,
@@ -83,7 +83,7 @@ pubfunc inline Vec2 RectFCenter(RectF rectf)
     return res;
 }
 
-pubfunc inline Point RectOrigin(Rect rect)
+BASALT inline Point RectOrigin(Rect rect)
 {
     Point origin = {
         rect.x,
@@ -92,7 +92,7 @@ pubfunc inline Point RectOrigin(Rect rect)
     return origin;
 }
 
-pubfunc inline Point RectCenter(Rect rect)
+BASALT inline Point RectCenter(Rect rect)
 {
     Point res = {
         rect.x + rect.width / 2,
@@ -101,7 +101,7 @@ pubfunc inline Point RectCenter(Rect rect)
     return res;
 }
 
-pubfunc inline Rect RectFToRect(RectF rectf)
+BASALT inline Rect RectFToRect(RectF rectf)
 {
     Rect rect = {
         (int)rectf.x,
@@ -112,7 +112,7 @@ pubfunc inline Rect RectFToRect(RectF rectf)
     return rect;
 }
 
-pubfunc inline RectF RectToRectF(Rect rect)
+BASALT inline RectF RectToRectF(Rect rect)
 {
     RectF rectf = {
         (float)rect.x,
@@ -123,19 +123,19 @@ pubfunc inline RectF RectToRectF(Rect rect)
     return rectf;
 }
 
-pubfunc inline Point Vec2ToPoint(Vec2 v2)
+BASALT inline Point Vec2ToPoint(Vec2 v2)
 {
     Point p = { (int)v2.x, (int)v2.y };
     return p;
 }
 
-pubfunc inline Vec2 PointToVec2(Point point)
+BASALT inline Vec2 PointToVec2(Point point)
 {
     Vec2 v2 = { (float)point.x, (float)point.y };
     return v2;
 }
 
-pubfunc extern Vec2 Vec2Offset(Vec2 src, Vec2 offset)
+BASALT extern Vec2 Vec2Offset(Vec2 src, Vec2 offset)
 {
     Vec2 v2 = {
         src.x + offset.x,
@@ -144,7 +144,7 @@ pubfunc extern Vec2 Vec2Offset(Vec2 src, Vec2 offset)
     return v2;
 }
 
-pubfunc extern Vec2 Vec2Scale(Vec2 src, float scale)
+BASALT extern Vec2 Vec2Scale(Vec2 src, float scale)
 {
     Vec2 v2 = {
         src.x * scale,
@@ -153,7 +153,7 @@ pubfunc extern Vec2 Vec2Scale(Vec2 src, float scale)
     return v2;
 }
 
-pubfunc Vec2 Vec2Normalize(Vec2 v2)
+BASALT Vec2 Vec2Normalize(Vec2 v2)
 {
     float mag = Vec2Magnitude(v2);
     Vec2 norm;
@@ -162,7 +162,7 @@ pubfunc Vec2 Vec2Normalize(Vec2 v2)
     return norm;
 }
 
-pubfunc float Vec2Magnitude(Vec2 v2)
+BASALT float Vec2Magnitude(Vec2 v2)
 {
     // Pythagorean theorem
 #ifdef BASALT_NO_ENGINE
@@ -173,7 +173,7 @@ pubfunc float Vec2Magnitude(Vec2 v2)
 #endif
 }
 
-pubfunc StringArray InitStringArray()
+BASALT StringArray InitStringArray()
 {
     StringArray s;
     s.strings = NULL;
@@ -182,7 +182,7 @@ pubfunc StringArray InitStringArray()
     return s;
 }
 
-pubfunc void StoreString(StringArray* arr, char* text)
+BASALT void StoreString(StringArray* arr, char* text)
 {
     if (arr->strings == NULL)
         arr->strings = (char**)calloc(sizeof(char*), arr->capacity);
@@ -194,7 +194,7 @@ pubfunc void StoreString(StringArray* arr, char* text)
     arr->strings[arr->count++] = strdup(text);
 }
 
-pubfunc void DisposeStringArray(StringArray* arr)
+BASALT void DisposeStringArray(StringArray* arr)
 {
     if (arr->strings != NULL) {
         for (usize i = 0; i < arr->count; i++)
@@ -205,14 +205,14 @@ pubfunc void DisposeStringArray(StringArray* arr)
 }
 
 // string implementation
-pubfunc String MakeString()
+BASALT String MakeString()
 {
     String str = { 0 };
     str.capacity = 128;
     return str;
 }
 
-pubfunc String* AppendString(String* str, const char* add)
+BASALT String* AppendString(String* str, const char* add)
 {
     size_t addLen = strlen(add);
     str->size += addLen;
@@ -235,7 +235,7 @@ pubfunc String* AppendString(String* str, const char* add)
     return str;
 }
 
-pubfunc void UnloadString(String* str)
+BASALT void UnloadString(String* str)
 {
     str->size = 0;
     str->capacity = 100;
@@ -244,7 +244,7 @@ pubfunc void UnloadString(String* str)
     }
 }
 
-pubfunc void ToUppercase(char* str)
+BASALT void ToUppercase(char* str)
 {
     while (*str) {
         *str = toupper(*str);
@@ -255,7 +255,7 @@ pubfunc void ToUppercase(char* str)
 // FIXME: Untested
 #define MAX_PADDING_LENGTH 256
 static char PaddingCache[MAX_PADDING_LENGTH];
-pubfunc const char* PadStringRight(const char* text, char symbol, usize length)
+BASALT const char* PadStringRight(const char* text, char symbol, usize length)
 {
     memset(PaddingCache, symbol, length);
     PaddingCache[length] = '\0';
@@ -266,7 +266,7 @@ pubfunc const char* PadStringRight(const char* text, char symbol, usize length)
     return PaddingCache;
 }
 
-pubfunc const char* GetFirstExistingFolder(const char** folders)
+BASALT const char* GetFirstExistingFolder(const char** folders)
 {
     for (const char* folder = folders[0]; folder != NULL; folder++) {
         if (folder != NULL && FolderExists(folder))
@@ -275,7 +275,7 @@ pubfunc const char* GetFirstExistingFolder(const char** folders)
     return NULL;
 }
 
-pubfunc bool FolderExists(const char* folder)
+BASALT bool FolderExists(const char* folder)
 {
     DIR* dir;
     if ((dir = opendir(folder)) != NULL) {
@@ -285,7 +285,7 @@ pubfunc bool FolderExists(const char* folder)
     return false;
 }
 
-pubfunc ulong GetFileModifiedTime(const char* filePath)
+BASALT ulong GetFileModifiedTime(const char* filePath)
 {
     struct stat attr;
     stat(filePath, &attr);
@@ -294,7 +294,7 @@ pubfunc ulong GetFileModifiedTime(const char* filePath)
 }
 
 // raylib.h (rcore.c)
-pubfunc const char* GetFileName(const char* filePath)
+BASALT const char* GetFileName(const char* filePath)
 {
     const char* fileName = NULL;
     if (filePath != NULL)
@@ -307,7 +307,7 @@ pubfunc const char* GetFileName(const char* filePath)
 }
 
 // raylib.h (rcore.c)
-pubfunc const char* GetFileStem(const char* filePath)
+BASALT const char* GetFileStem(const char* filePath)
 {
 #define MAX_FILENAMEWITHOUTEXT_LENGTH 256
 
@@ -330,13 +330,13 @@ pubfunc const char* GetFileStem(const char* filePath)
     return fileName;
 }
 
-pubfunc bool FileHasExtension(const char* name, const char* ext)
+BASALT bool FileHasExtension(const char* name, const char* ext)
 {
     int cmp = strcmp(name + strlen(name) - strlen(ext), ext);
     return cmp == 0;
 }
 
-pubfunc FilePathList GetFolderFiles(const char* folder, const char* ext)
+BASALT FilePathList GetFolderFiles(const char* folder, const char* ext)
 {
     FilePathList list = { 0 };
     list.count = 0;
@@ -368,7 +368,7 @@ pubfunc FilePathList GetFolderFiles(const char* folder, const char* ext)
     return list;
 }
 
-pubfunc void UnloadFilePathList(FilePathList list)
+BASALT void UnloadFilePathList(FilePathList list)
 {
     for (size_t i = 0; i < list.count; i++) {
         free(list.strings[i]);

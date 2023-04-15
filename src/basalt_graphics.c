@@ -17,7 +17,7 @@ typedef struct {
     int oy1, oy2;
 } Olivec_Normalized_Rect;
 
-pubfunc void DrawDot(Texture canvas, int posX, int posY, Color color)
+BASALT void DrawDot(Texture canvas, int posX, int posY, Color color)
 {
     int i = posY * canvas.width + posX;
     canvas.pixels[i] = color;
@@ -25,7 +25,7 @@ pubfunc void DrawDot(Texture canvas, int posX, int posY, Color color)
 
 // TODO: Clean up required
 // NOTE: Taken from https://github.com/tsoding/olive.c/blob/master/olive.c
-pubfunc void DrawLine(Texture canvas, int startX, int startY, int endX, int endY, Color color)
+BASALT void DrawLine(Texture canvas, int startX, int startY, int endX, int endY, Color color)
 {
     int x1 = startX;
     int x2 = endX;
@@ -96,7 +96,7 @@ pubfunc void DrawLine(Texture canvas, int startX, int startY, int endX, int endY
     }
 }
 
-pubfunc void DrawRectangle(Texture canvas, int posX, int posY, int width, int height, Color color)
+BASALT void DrawRectangle(Texture canvas, int posX, int posY, int width, int height, Color color)
 {
     assert(canvas.pixels);
 
@@ -114,7 +114,7 @@ pubfunc void DrawRectangle(Texture canvas, int posX, int posY, int width, int he
     DRAWCALL(canvas, DrawRectangle);
 }
 
-pubfunc void DrawRectangleLines(Texture canvas, int posX, int posY, int width, int height, int border, Color color)
+BASALT void DrawRectangleLines(Texture canvas, int posX, int posY, int width, int height, int border, Color color)
 {
     DrawRectangle(canvas, posX, posY, width, border, color);  // top
     DrawRectangle(canvas, posX + width - border, posY, border, height,
@@ -125,7 +125,7 @@ pubfunc void DrawRectangleLines(Texture canvas, int posX, int posY, int width, i
 }
 
 static BitmapFont PixelFont = { 0 };
-pubfunc void DrawText(Texture canvas, const char* text, int posX, int posY, Color color)
+BASALT void DrawText(Texture canvas, const char* text, int posX, int posY, Color color)
 {
     if (PixelFont.texture.pixels == NULL) {
         PixelFont.texture = RequestTexture(SPR_PIXELFONT);
@@ -138,7 +138,7 @@ pubfunc void DrawText(Texture canvas, const char* text, int posX, int posY, Colo
     DrawBitmapText(PixelFont, canvas, text, posX, posY, color);
 }
 
-pubfunc void DrawBitmapText(BitmapFont font, Texture canvas, const char* text, int posX, int posY, Color tint)
+BASALT void DrawBitmapText(BitmapFont font, Texture canvas, const char* text, int posX, int posY, Color tint)
 {
     if (text == NULL)
         text = (const char*)"NULL";
@@ -172,7 +172,7 @@ pubfunc void DrawBitmapText(BitmapFont font, Texture canvas, const char* text, i
     }
 }
 
-pubfunc Texture InitTexture(int width, int height)
+BASALT Texture InitTexture(int width, int height)
 {
     Texture tex;
     tex.width = width;
@@ -181,14 +181,14 @@ pubfunc Texture InitTexture(int width, int height)
     return tex;
 }
 
-pubfunc Texture CopyTexture(Texture source)
+BASALT Texture CopyTexture(Texture source)
 {
     Texture new = InitTexture(source.width, source.height);
     CopyTextureInto(new, source);
     return new;
 }
 
-pubfunc void CopyTextureInto(Texture dest, Texture source)
+BASALT void CopyTextureInto(Texture dest, Texture source)
 {
     assert(dest.width == source.width && dest.height == source.height);
     assert(dest.pixels);
@@ -197,14 +197,14 @@ pubfunc void CopyTextureInto(Texture dest, Texture source)
     memcpy(dest.pixels, source.pixels, source.width * source.height * sizeof(Color));
 }
 
-pubfunc void DisposeTexture(Texture texture)
+BASALT void DisposeTexture(Texture texture)
 {
     if (texture.pixels) {
         free(texture.pixels);
     }
 }
 
-pubfunc void MapTextureToCorrectFormat(Texture dest, Texture src)
+BASALT void MapTextureToCorrectFormat(Texture dest, Texture src)
 {
     // TODO: Add collective assert method, also write assert that prints values
     assert(dest.width == src.width && dest.height == src.height);
@@ -221,7 +221,7 @@ pubfunc void MapTextureToCorrectFormat(Texture dest, Texture src)
     }
 }
 
-pubfunc void ClearTexture(Texture canvas, Color color)
+BASALT void ClearTexture(Texture canvas, Color color)
 {
     assert(canvas.pixels);
     for (int i = 0; i < canvas.width * canvas.height; i++) {
@@ -229,12 +229,12 @@ pubfunc void ClearTexture(Texture canvas, Color color)
     }
 }
 
-pubfunc inline void DrawTexture(Texture canvas, Texture texture, int posX, int posY, Color tint)
+BASALT inline void DrawTexture(Texture canvas, Texture texture, int posX, int posY, Color tint)
 {
     DrawTextureEx(canvas, texture, posX, posY, 0, 0, texture.width, texture.height, tint);
 }
 
-pubfunc void DrawTextureEx(Texture canvas, Texture texture, int posX, int posY, int srcX, int srcY, int srcWidth, int srcHeight, Color tint)
+BASALT void DrawTextureEx(Texture canvas, Texture texture, int posX, int posY, int srcX, int srcY, int srcWidth, int srcHeight, Color tint)
 {
     assert(canvas.pixels);
 
@@ -272,7 +272,7 @@ pubfunc void DrawTextureEx(Texture canvas, Texture texture, int posX, int posY, 
 func bool olivec_normalize_rect(int x, int y, int w, int h, size_t canvas_width, size_t canvas_height, Olivec_Normalized_Rect* nr);
 
 // NOTE: Taken from https://github.com/tsoding/olive.c/blob/master/olive.c
-pubfunc void DrawTextureScaled(Texture canvas, Texture texture, int destX, int destY, int destWidth, int destHeight, Color tint)
+BASALT void DrawTextureScaled(Texture canvas, Texture texture, int destX, int destY, int destWidth, int destHeight, Color tint)
 {
     assert(texture.pixels);
     assert(canvas.pixels);
@@ -302,7 +302,7 @@ pubfunc void DrawTextureScaled(Texture canvas, Texture texture, int destX, int d
     DRAWCALL(canvas, DrawRectangle);
 }
 
-pubfunc void DrawWeirdTestGradient(Texture canvas)
+BASALT void DrawWeirdTestGradient(Texture canvas)
 {
     assert(canvas.pixels);
 
@@ -325,17 +325,17 @@ pubfunc void DrawWeirdTestGradient(Texture canvas)
     DRAWCALL(canvas, DrawRectangle);
 }
 
-pubfunc inline Color RGBA(uchar r, uchar g, uchar b, uchar a)
+BASALT inline Color RGBA(uchar r, uchar g, uchar b, uchar a)
 {
     return (r << 24) | (g << 16) | (b << 8) | a;
 }
 
-pubfunc inline Color RGB(uchar r, uchar g, uchar b)
+BASALT inline Color RGB(uchar r, uchar g, uchar b)
 {
     return RGBA(r, g, b, 255);
 }
 
-pubfunc inline Color BlendColors(Color src, Color dst, uchar t)
+BASALT inline Color BlendColors(Color src, Color dst, uchar t)
 {
     assert(t <= 255);
     if (t == 255)

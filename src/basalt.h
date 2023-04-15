@@ -63,7 +63,7 @@ extern const uint MAX_ENTITIES;
 #define MIN(X, Y) (X < Y ? X : Y)
 
 #define func      static
-#define pubfunc
+#define BASALT
 #define platfunc
 #define wasmfunc
 
@@ -160,54 +160,54 @@ typedef StringArray FilePathList;
 #define DEG2RAD(Y) ((Y)*PI / 180)
 #define RAD2DEG(X) ((X)*180.0 / PI)
 
-pubfunc int Clamp(int value, int min, int max);
-pubfunc int GetRandomNumber();  // WARN: read implementation
-pubfunc int GetRealRandomNumber();
+BASALT int Clamp(int value, int min, int max);
+BASALT int GetRandomNumber();  // WARN: read implementation
+BASALT int GetRealRandomNumber();
 
-pubfunc extern Vec2 RectFOrigin(RectF rectf);
+BASALT extern Vec2 RectFOrigin(RectF rectf);
 #define RectFOriginPoint(F) Vec2ToPoint(RectFOrigin(F))
-pubfunc extern Vec2 RectFCenter(RectF rectf);
+BASALT extern Vec2 RectFCenter(RectF rectf);
 #define RectFCenterPoint(F) Vec2ToPoint(RectFCenter(F))
 
-pubfunc extern Point RectOrigin(Rect rect);
+BASALT extern Point RectOrigin(Rect rect);
 #define RectOriginVec2(R) PointToVec2(RectOrigin(R))
-pubfunc extern Point RectCenter(Rect rect);
+BASALT extern Point RectCenter(Rect rect);
 #define RectCenterVec2(R) PointToVec2(RectCenter(R))
 
-pubfunc extern Rect RectFToRect(RectF rectf);
-pubfunc extern RectF RectToRectF(Rect rect);
+BASALT extern Rect RectFToRect(RectF rectf);
+BASALT extern RectF RectToRectF(Rect rect);
 
-pubfunc extern Point Vec2ToPoint(Vec2 v2);
-pubfunc extern Vec2 PointToVec2(Point point);
+BASALT extern Point Vec2ToPoint(Vec2 v2);
+BASALT extern Vec2 PointToVec2(Point point);
 
-pubfunc extern Vec2 Vec2Offset(Vec2 src, Vec2 offset);
-pubfunc extern Vec2 Vec2Scale(Vec2 src, float scale);
-pubfunc Vec2 Vec2Normalize(Vec2 v2);
-pubfunc float Vec2Magnitude(Vec2 v2);
+BASALT extern Vec2 Vec2Offset(Vec2 src, Vec2 offset);
+BASALT extern Vec2 Vec2Scale(Vec2 src, float scale);
+BASALT Vec2 Vec2Normalize(Vec2 v2);
+BASALT float Vec2Magnitude(Vec2 v2);
 
-pubfunc StringArray InitStringArray();
-pubfunc void StoreString(StringArray* arr, char* text);
-pubfunc void DisposeStringArray(StringArray* arr);
+BASALT StringArray InitStringArray();
+BASALT void StoreString(StringArray* arr, char* text);
+BASALT void DisposeStringArray(StringArray* arr);
 
-pubfunc String MakeString();
-pubfunc void UnloadString(String* str);
-pubfunc String* AppendString(String* str, const char* add);
-pubfunc void ToUppercase(char* str);
-pubfunc const char* PadStringRight(const char* text, char symbol, usize length);
+BASALT String MakeString();
+BASALT void UnloadString(String* str);
+BASALT String* AppendString(String* str, const char* add);
+BASALT void ToUppercase(char* str);
+BASALT const char* PadStringRight(const char* text, char symbol, usize length);
 
-pubfunc bool FileHasExtension(const char* name, const char* ext);
-pubfunc bool FolderExists(const char* folder);
+BASALT bool FileHasExtension(const char* name, const char* ext);
+BASALT bool FolderExists(const char* folder);
 
 // WARN: The following 2 functions use cached memory.
 // The result gets overwritten on future calls.
-pubfunc ulong GetFileModifiedTime(const char* filePath);  // NOTE: Get seconds since epoch a file was last changed.
+BASALT ulong GetFileModifiedTime(const char* filePath);  // NOTE: Get seconds since epoch a file was last changed.
                                                           // Returns 0 if file doesn't exists.
-pubfunc const char* GetFileName(const char* filePath);
-pubfunc const char* GetFileStem(const char* filePath);
-pubfunc const char* GetFirstExistingFolder(const char** folders);  // NOTE: Returns NULL when none exist,
+BASALT const char* GetFileName(const char* filePath);
+BASALT const char* GetFileStem(const char* filePath);
+BASALT const char* GetFirstExistingFolder(const char** folders);  // NOTE: Returns NULL when none exist,
                                                                    // pass NULL ended array
-pubfunc FilePathList GetFolderFiles(const char* folder, const char* ext);
-pubfunc void UnloadFilePathList(FilePathList list);
+BASALT FilePathList GetFolderFiles(const char* folder, const char* ext);
+BASALT void UnloadFilePathList(FilePathList list);
 
 // Asset handling (basalt_assets.c)
 class(Texture)
@@ -221,24 +221,24 @@ extern const uchar SPR_PIXELFONT[];
 
 // TODO: Change to retreive texture, that uses cache system
 #define RequestTexture(X) RequestTextureEx(#X, X)
-pubfunc Texture RequestTextureEx(const char* name, const uchar* pixels);
-pubfunc Texture* GetLoadedTextures();  // NOTE: Returns null ended array of loaded/cached textures
+BASALT Texture RequestTextureEx(const char* name, const uchar* pixels);
+BASALT Texture* GetLoadedTextures();  // NOTE: Returns null ended array of loaded/cached textures
 
 // Platform dependent stuff
-pubfunc Point GetMousePosition();
-pubfunc void SetWindowTitle(const char* title);
+BASALT Point GetMousePosition();
+BASALT void SetWindowTitle(const char* title);
 
-pubfunc usize GetFrameIndex();    // NOTE: Get number of frames elapsed since the start of the simulation.
-pubfunc double GetTimeElapsed();  // NOTE: Get time elapsed since the start of the simulation.
+BASALT usize GetFrameIndex();    // NOTE: Get number of frames elapsed since the start of the simulation.
+BASALT double GetTimeElapsed();  // NOTE: Get time elapsed since the start of the simulation.
 
-pubfunc bool IsMouseDown();
-pubfunc bool IsMouseUp();
+BASALT bool IsMouseDown();
+BASALT bool IsMouseUp();
 
-pubfunc bool IsKeyDown(Key code);
-pubfunc bool IsKeyUp(Key code);
+BASALT bool IsKeyDown(Key code);
+BASALT bool IsKeyUp(Key code);
 
-pubfunc bool IsKeyPressed(Key code);
-pubfunc bool IsKeyReleased(Key code);
+BASALT bool IsKeyPressed(Key code);
+BASALT bool IsKeyReleased(Key code);
 
 // Engine configuration (basalt_config.c)
 class(EngineConfig)
@@ -264,11 +264,11 @@ extern EngineConfig Config;
 #define YELLOW 0xFFFF00FF
 #define PURPLE 0x00FFFFFF
 
-pubfunc void DrawDot(Texture canvas, int posX, int posY, Color tint);
-pubfunc void DrawLine(Texture canvas, int startX, int startY, int endX, int endY, Color tint);
-pubfunc void DrawRectangle(Texture canvas, int posX, int posY, int width, int height, Color tint);
-pubfunc void DrawRectangleLines(Texture canvas, int posX, int posY, int width, int height, int border, Color tint);
-pubfunc void DrawWeirdTestGradient(Texture canvas);
+BASALT void DrawDot(Texture canvas, int posX, int posY, Color tint);
+BASALT void DrawLine(Texture canvas, int startX, int startY, int endX, int endY, Color tint);
+BASALT void DrawRectangle(Texture canvas, int posX, int posY, int width, int height, Color tint);
+BASALT void DrawRectangleLines(Texture canvas, int posX, int posY, int width, int height, int border, Color tint);
+BASALT void DrawWeirdTestGradient(Texture canvas);
 
 class(BitmapFont)
 {
@@ -280,32 +280,32 @@ class(BitmapFont)
     const char* symbols;
 };
 
-pubfunc void DrawBitmapFontSymbol(BitmapFont font, int posX, int posY, char symbol, Color color);
-pubfunc void DrawText(Texture canvas, const char* text, int posX, int posY, Color color);
-pubfunc void DrawBitmapText(BitmapFont font, Texture canvas, const char* text, int posX, int posY, Color color);
+BASALT void DrawBitmapFontSymbol(BitmapFont font, int posX, int posY, char symbol, Color color);
+BASALT void DrawText(Texture canvas, const char* text, int posX, int posY, Color color);
+BASALT void DrawBitmapText(BitmapFont font, Texture canvas, const char* text, int posX, int posY, Color color);
 
-pubfunc Texture InitTexture(int width, int height);
-pubfunc Texture CopyTexture(Texture source);
-pubfunc void CopyTextureInto(Texture dest, Texture source);
-pubfunc void DisposeTexture(Texture texture);
+BASALT Texture InitTexture(int width, int height);
+BASALT Texture CopyTexture(Texture source);
+BASALT void CopyTextureInto(Texture dest, Texture source);
+BASALT void DisposeTexture(Texture texture);
 
 // Texture pixels are in ABGR (big endian), use this to convert to correct colors for XImage
 // NOTE: What is the correct format you might ask? I have no idea, found out after trial-and-error.
-pubfunc void MapTextureToCorrectFormat(Texture dest, Texture src);
+BASALT void MapTextureToCorrectFormat(Texture dest, Texture src);
 
-pubfunc void ClearTexture(Texture canvas, Color tint);
-pubfunc void DrawTextureEx(Texture canvas, Texture texture, int posX, int posY, int srcX, int srcY, int srcWidth, int srcHeight, Color tint);
-pubfunc extern void DrawTexture(Texture canvas, Texture texture, int posX, int posY, Color tint);
-pubfunc void DrawTextureScaled(Texture canvas, Texture texture, int destX, int destY, int destWidth, int destHeight, Color tint);
+BASALT void ClearTexture(Texture canvas, Color tint);
+BASALT void DrawTextureEx(Texture canvas, Texture texture, int posX, int posY, int srcX, int srcY, int srcWidth, int srcHeight, Color tint);
+BASALT extern void DrawTexture(Texture canvas, Texture texture, int posX, int posY, Color tint);
+BASALT void DrawTextureScaled(Texture canvas, Texture texture, int destX, int destY, int destWidth, int destHeight, Color tint);
 
-pubfunc extern Color RGB(uchar r, uchar g, uchar b);
-pubfunc extern Color RGBA(uchar r, uchar g, uchar b, uchar a);  // NOTE: Format RR GG BB AA
-pubfunc extern Color BlendColors(Color src, Color dest, uchar t);
+BASALT extern Color RGB(uchar r, uchar g, uchar b);
+BASALT extern Color RGBA(uchar r, uchar g, uchar b, uchar a);  // NOTE: Format RR GG BB AA
+BASALT extern Color BlendColors(Color src, Color dest, uchar t);
 
 // Main game methods (for example: temple_game.c)
-pubfunc void InitializeGame();
-pubfunc void DisposeGame();
-pubfunc void UpdateAndRenderGame(Texture canvas, float delta);
+BASALT void InitializeGame();
+BASALT void DisposeGame();
+BASALT void UpdateAndRenderGame(Texture canvas, float delta);
 
 // Key definitions
 #define KEY_A 'A'

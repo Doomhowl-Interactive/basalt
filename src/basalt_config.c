@@ -61,7 +61,7 @@ func bool HasArgument(int argc, char** argv, Option o)
     return false;
 }
 
-pubfunc bool ParseLaunchArguments(int argc, char** argv)
+BASALT bool ParseLaunchArguments(int argc, char** argv)
 {
     for (Option* o = Options; o->shortArg != NULL; o++)
     {

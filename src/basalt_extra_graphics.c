@@ -4,7 +4,7 @@
 #define OPEN_SIMPLEX_NOISE_IMPLEMENTATION
 #include "external/open-simplex-noise.h"
 
-pubfunc Texture GenerateNoiseTextureEx(int width, int height, Color bg, Color fg, double scale, int seed)
+BASALT Texture GenerateNoiseTextureEx(int width, int height, Color bg, Color fg, double scale, int seed)
 {
     Texture texture = InitTexture(width, height);
 
@@ -43,14 +43,14 @@ pubfunc Texture GenerateNoiseTextureEx(int width, int height, Color bg, Color fg
     return texture;
 }
 
-pubfunc Texture GenerateNoiseTexture(int width, int height, Color bg, Color fg)
+BASALT Texture GenerateNoiseTexture(int width, int height, Color bg, Color fg)
 {
     int seed = GetRandomNumber();
     double scale = 60;
     return GenerateNoiseTextureEx(width, height, bg, fg, scale, seed);
 }
 
-pubfunc void DrawTextureSheet(Texture canvas, TextureSheet sheet, int frame, Vec2 pos, Color tint)
+BASALT void DrawTextureSheet(Texture canvas, TextureSheet sheet, int frame, Vec2 pos, Color tint)
 {
     assert(sheet.texture);
     assert(sheet.texture->pixels);

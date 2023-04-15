@@ -33,7 +33,7 @@ GameInput Input = { 0 };
 
 static OffscreenBuffer ActiveBuffer = { 0 };
 
-pubfunc void SetWindowTitle(const char* title)
+BASALT void SetWindowTitle(const char* title)
 {
     if (ActiveBuffer.display != NULL) {
         // check if changed

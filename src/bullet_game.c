@@ -29,7 +29,7 @@ static Texture BackgroundNoiseTexture = { 0 };
 Texture BulletPlacholderTexture = { 0 };
 Texture PlayerTexture = { 0 };
 
-pubfunc void InitializeGame()
+BASALT void InitializeGame()
 {
     if (Config.hasUnitTesting)
         UnitTestBullet();
@@ -43,12 +43,12 @@ pubfunc void InitializeGame()
     InitPlayer(Player, spawnPos);
 }
 
-pubfunc void DisposeGame()
+BASALT void DisposeGame()
 {
     WARN("TODO: dispose game properly");
 }
 
-pubfunc void UpdateAndRenderGame(Texture canvas, float delta)
+BASALT void UpdateAndRenderGame(Texture canvas, float delta)
 {
     if (IsKeyPressed(KEY_I))
     {

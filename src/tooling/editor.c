@@ -46,18 +46,18 @@ func void DrawGrid(Texture canvas, Camera camera, Color color, int gridSize, int
     }
 }
 
-pubfunc void InitializeGame()
+BASALT void InitializeGame()
 {
     Editor.camera = (Camera){ 0, 0 };
     Editor.gridSize = 16;
 }
 
-pubfunc void DisposeGame()
+BASALT void DisposeGame()
 {
     WARN("TODO: dispose game properly");
 }
 
-pubfunc void UpdateAndRenderGame(Texture canvas, float delta)
+BASALT void UpdateAndRenderGame(Texture canvas, float delta)
 {
     ClearTexture(canvas, BG_COLOR);
     DrawGrid(canvas, Editor.camera, GRID_COLOR, Editor.gridSize, 1);
