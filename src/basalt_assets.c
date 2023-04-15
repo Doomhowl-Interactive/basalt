@@ -12,7 +12,7 @@ class(AssetEntry)
     char filePath[MAX_PATH_LENGTH];
     char assetName[MAX_PATH_LENGTH];
     double lastPollTime;
-    ulong lastEditTime;
+    long lastEditTime;
 };
 
 #define HOTLOAD_INTERVAL 2.0
@@ -109,7 +109,7 @@ BASALT void InitHotReloading()
     const char* folder = GetFirstExistingFolder(AssetFolders);
     INFO("Found asset folder at %s", folder);
     FilePathList list = GetFolderFiles(folder, ".png");
-    INFO("Found %d textures to be hot-reloaded", list.count);
+    INFO("Found %lu textures to be hot-reloaded", list.count);
 
     // Map to AssetEntries
     AssetEntryCount = list.count;

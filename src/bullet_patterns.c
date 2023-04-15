@@ -151,7 +151,7 @@ BULLET const BulletPattern* GetBulletPattern(usize index)
     if (index < count)
         return &BulletPatterns[index];
 
-    WARN("Did not find bullet pattern indexed %d", index);
+    WARN("Did not find bullet pattern indexed %lu", index);
     return &BulletPatterns[0];
 }
 

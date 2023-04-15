@@ -11,7 +11,7 @@ OBJS := $(SRCS:%=$(BUILD_DIR)/%.o) $(BUILD_DIR)/$(SRC_DIR)/assets_custom.dat.c.o
 
 INC_FLAGS := $(addprefix -I,$(SRC_DIR))
 
-CFLAGS := $(INC_FLAGS) -ggdb -Werror -O$(LEVEL)
+CFLAGS := $(INC_FLAGS) -ggdb -Wall -O$(LEVEL)
 LDFLAGS := -lX11 -lm -lXext
 
 build: $(BUILD_DIR)/$(TARGET_EXEC)

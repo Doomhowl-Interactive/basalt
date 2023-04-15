@@ -285,12 +285,19 @@ BASALT bool FolderExists(const char* folder)
     return false;
 }
 
-BASALT ulong GetFileModifiedTime(const char* filePath)
+BASALT long GetFileModifiedTime(const char* filePath)
 {
+#ifndef BASALT_NO_ENGINE
     struct stat attr;
-    stat(filePath, &attr);
-    ulong modifiedTime = attr.st_mtime;
+    if (stat(filePath, &attr) == -1) {
+        WARN("Failed to determine modifiedTime of %s", filePath);
+        return 0;
+    }
+    long modifiedTime = attr.st_mtime;
     return modifiedTime;
+#else
+    return 0;
+#endif
 }
 
 // raylib.h (rcore.c)
@@ -354,8 +361,8 @@ BASALT FilePathList GetFolderFiles(const char* folder, const char* ext)
                     list.strings = (char**)realloc(list.strings, list.capacity * sizeof(char*));
                 }
 
-                char fullName[MAX_PATH_LENGTH];
-                snprintf(fullName, MAX_PATH_LENGTH, "%s/%s", folder, ent->d_name);
+                char fullName[MAX_PATH_LENGTH + 300];
+                snprintf(fullName, MAX_PATH_LENGTH + 300, "%s/%s", folder, ent->d_name);
                 list.strings[list.count++] = strdup(fullName);
             }
         }

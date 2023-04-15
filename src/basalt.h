@@ -30,8 +30,8 @@ typedef uchar Key;
 
 #define MAX_PATH_LENGTH 128
 
-#define MAX(X, Y)       (X > Y ? X : Y)
-#define MIN(X, Y)       (X < Y ? X : Y)
+#define MAX(X, Y) (X > Y ? X : Y)
+#define MIN(X, Y) (X < Y ? X : Y)
 
 #define SWAP(T, a, b) \
  do { \
@@ -40,7 +40,7 @@ typedef uchar Key;
   b = t; \
  } while (0)
 #define SIGN(T, x) ((T)((x) > 0) - (T)((x) < 0))
-#define ABS(T, x)  (SIGN(T, x) * (x))
+#define ABS(T, x) (SIGN(T, x) * (x))
 
 extern const uint WIDTH;
 extern const uint HEIGHT;
@@ -62,7 +62,7 @@ extern const uint MAX_ENTITIES;
 #define MAX(X, Y) (X > Y ? X : Y)
 #define MIN(X, Y) (X < Y ? X : Y)
 
-#define func      static
+#define func static
 #define BASALT
 #define platfunc
 #define wasmfunc
@@ -149,11 +149,11 @@ typedef StringArray FilePathList;
  printf("\n")
 
 // Ergonomic macros
-#define V2(V)  V.x, V.y
+#define V2(V) V.x, V.y
 #define _V2(V) V->x, V->y
-#define P2(P)  P.x, P.y
+#define P2(P) P.x, P.y
 #define _P2(P) P->x, P->y
-#define R2(R)  R.x, R.y, R.width, R.height
+#define R2(R) R.x, R.y, R.width, R.height
 #define _R2(R) R.x, R.y, R.width, R.height
 
 // Utility functions (basalt_utils.c)
@@ -200,12 +200,12 @@ BASALT bool FolderExists(const char* folder);
 
 // WARN: The following 2 functions use cached memory.
 // The result gets overwritten on future calls.
-BASALT ulong GetFileModifiedTime(const char* filePath);  // NOTE: Get seconds since epoch a file was last changed.
-                                                          // Returns 0 if file doesn't exists.
+BASALT long GetFileModifiedTime(const char* filePath);  // NOTE: Get seconds since epoch a file was last changed.
+                                                         // Returns 0 if file doesn't exists.
 BASALT const char* GetFileName(const char* filePath);
 BASALT const char* GetFileStem(const char* filePath);
 BASALT const char* GetFirstExistingFolder(const char** folders);  // NOTE: Returns NULL when none exist,
-                                                                   // pass NULL ended array
+                                                                  // pass NULL ended array
 BASALT FilePathList GetFolderFiles(const char* folder, const char* ext);
 BASALT void UnloadFilePathList(FilePathList list);
 
@@ -253,14 +253,14 @@ class(EngineConfig)
 extern EngineConfig Config;
 
 // Graphics drawing (basalt_graphics.c)
-#define WHITE  0xFFFFFFFF
-#define GRAY   0xAAAAAAAA
-#define BLACK  0x000000FF
-#define BLANK  0xFFFFFF00
+#define WHITE 0xFFFFFFFF
+#define GRAY 0xAAAAAAAA
+#define BLACK 0x000000FF
+#define BLANK 0xFFFFFF00
 
-#define RED    0xFF0000FF
-#define GREEN  0x00FF00FF
-#define BLUE   0x0000FFFF
+#define RED 0xFF0000FF
+#define GREEN 0x00FF00FF
+#define BLUE 0x0000FFFF
 #define YELLOW 0xFFFF00FF
 #define PURPLE 0x00FFFFFF
 
@@ -294,9 +294,18 @@ BASALT void DisposeTexture(Texture texture);
 BASALT void MapTextureToCorrectFormat(Texture dest, Texture src);
 
 BASALT void ClearTexture(Texture canvas, Color tint);
-BASALT void DrawTextureEx(Texture canvas, Texture texture, int posX, int posY, int srcX, int srcY, int srcWidth, int srcHeight, Color tint);
+BASALT void DrawTextureEx(Texture canvas,
+                          Texture texture,
+                          int posX,
+                          int posY,
+                          int srcX,
+                          int srcY,
+                          int srcWidth,
+                          int srcHeight,
+                          Color tint);
 BASALT extern void DrawTexture(Texture canvas, Texture texture, int posX, int posY, Color tint);
-BASALT void DrawTextureScaled(Texture canvas, Texture texture, int destX, int destY, int destWidth, int destHeight, Color tint);
+BASALT void
+DrawTextureScaled(Texture canvas, Texture texture, int destX, int destY, int destWidth, int destHeight, Color tint);
 
 BASALT extern Color RGB(uchar r, uchar g, uchar b);
 BASALT extern Color RGBA(uchar r, uchar g, uchar b, uchar a);  // NOTE: Format RR GG BB AA
