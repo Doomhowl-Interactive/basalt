@@ -89,7 +89,7 @@ func void ResizeDIBSection(OffscreenBuffer* buffer, int width, int height)
 func void HandleKeyEvent(WPARAM wParam, bool pressed)
 {
     // filter out other stuff
-    char key = (char)wParam;
+    uchar key = (uchar)wParam;
     Input.pressedKeys[key] = pressed;
 
     if (pressed)

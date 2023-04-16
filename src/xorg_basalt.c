@@ -110,7 +110,7 @@ func void HandleKeyEvent(XEvent event, bool pressed)
 
     // HACK: ignore special characters (for now)
     if (string[1] == '\0') {
-        char key = string[0];
+        uchar key = (uchar) string[0];
         Input.pressedKeys[key] = pressed;
 
         if (pressed)
