@@ -1,18 +1,19 @@
 #include <math.h>
 
+#include "basalt.h"
 #include "basalt_extra.h"
 #include "bullet_common.h"
 
 BULLET void InitPlayer(Entity* e, Vec2 pos)
 {
     DEBUG("Spawned player at %f %f", pos.x, pos.y);
-    e->texture = PlayerTexture;
+    e->texture = RequestTexture(SPR_SHIP_PLAYER);
     e->type = TAG_PLAYER;
     SetEntityCenter(e, pos.x - 48 / 2, pos.y);
     e->tint = WHITE;
     e->moveSpeed = 200;
-    SetEntitySize(e, PlayerTexture.width, PlayerTexture.height);
-    assert(PlayerTexture.width > 0 || PlayerTexture.height > 0);
+    SetEntitySize(e, e->texture.width, e->texture.height);
+    assert(e->bounds.width > 0 && e->bounds.height > 0);
 
     // Bullet spawners
     double outwardsAngleDeg = 40;
@@ -40,11 +41,11 @@ BULLET void InitBullet(Entity* e, const BulletPattern* pattern, Vec2 pos, Vec2 n
 
     // set sprite
     e->type = TAG_BULLET;
+    e->texture = RequestTexture(pattern->texture);
     SetEntityCenter(e, pos.x, pos.y);
-    SetEntitySize(e, pattern->texture->width, pattern->texture->height);
+    SetEntitySize(e, e->texture.width, e->texture.height);
     e->sourceOffset.x = 0;
     e->sourceOffset.y = 0;
-    e->texture = *pattern->texture;
 
     // copy bullet pattern
     e->bulletPattern = *pattern;

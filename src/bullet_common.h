@@ -45,7 +45,7 @@ class(BulletAction) {
 class(BulletPattern) {
     const char* name;
     BulletAction actions[MAX_ACTIONS];
-    Texture* texture;
+    const uchar* texture;
     uint count;
     uint index;
 };
@@ -125,7 +125,3 @@ BULLET void UpdateAndRenderEditor(Scene* activeScene, Texture canvas, float delt
 
 // bullet_tests.c
 platfunc void UnitTestBullet();
-
-// TODO: Remove
-extern Texture PlayerTexture;
-extern Texture BulletPlacholderTexture;

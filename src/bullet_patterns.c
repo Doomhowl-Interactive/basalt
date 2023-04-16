@@ -122,28 +122,27 @@ BULLET bool RunBulletPattern(Entity* e, float delta)
     return false;
 }
 
-const BulletPattern BulletPatterns[] = {
-    {
-        "PlayerBullet1",
-        {
+const BulletPattern BulletPatterns[]
+    = { {
+            "PlayerBullet1",
             {
-                MoveBulletStraight,
-                EndBulletOOB,
-                0xFFBB00FF,
-                { 5 },
+                {
+                    MoveBulletStraight,
+                    EndBulletOOB,
+                    0xFFBB00FF,
+                    { 5 },
+                },
             },
+            SPR_BULLET_PLACEHOLDER,
         },
-        &BulletPlacholderTexture,
-    },
-    {
-        "PlayerBullet2",
-        { { MoveBulletOceanWave, EndBulletOOB, 0xAAAAFFFF, { 40, 40 } } },
-        &BulletPlacholderTexture,
-    },
-    { "PlayerBullet3", { { MoveBulletStaircase, EndBulletOOB, 0x0022DDFF, { 10, -1 } } }, &BulletPlacholderTexture },
-    { "PlayerBullet4", { { MoveBulletSnake, EndBulletOOB, 0x22FF22FF, { 10, -1 } } }, &BulletPlacholderTexture },
-    { NULL }
-};
+        {
+            "PlayerBullet2",
+            { { MoveBulletOceanWave, EndBulletOOB, 0xAAAAFFFF, { 40, 40 } } },
+            SPR_BULLET_PLACEHOLDER,
+        },
+        { "PlayerBullet3", { { MoveBulletStaircase, EndBulletOOB, 0x0022DDFF, { 10, -1 } } }, SPR_BULLET_PLACEHOLDER },
+        { "PlayerBullet4", { { MoveBulletSnake, EndBulletOOB, 0x22FF22FF, { 10, -1 } } }, SPR_BULLET_PLACEHOLDER },
+        { NULL } };
 
 BULLET const BulletPattern* GetBulletPattern(usize index)
 {
