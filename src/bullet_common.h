@@ -92,7 +92,6 @@ struct Entity {
 };
 
 struct Scene {
-    uint id;
     Entity entities[MAX_ENTITIES];
 };
 
@@ -121,7 +120,11 @@ BULLET void InitBullet(Entity* e, const BulletPattern* pattern, Vec2 pos, Vec2 n
 
 // bullet_editor.c
 BULLET bool IsEditorOpen();
+BULLET Rect GetEditorTabContentRegion(); // NOTE: Gets a Rectangle of the screen without the toolbar at the top
 BULLET void UpdateAndRenderEditor(Scene* activeScene, Texture canvas, float delta);
+
+// bullet_editor_patterns.c
+BULLET void UpdateAndRenderPatternEditor(Texture canvas, float delta);
 
 // bullet_tests.c
 platfunc void UnitTestBullet();

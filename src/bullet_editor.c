@@ -2,6 +2,11 @@
 #include "basalt_extra.h"
 #include "bullet_common.h"
 
+const Color tabBGColor = 0x111111FF;
+const Color tabFGColor = 0xAAAAAAFF;
+static int tabWidth = 0;
+static int tabHeight = 20;
+
 static bool IsOpened = false;
 static uint SelectedTabIndex = 0;
 
@@ -16,7 +21,8 @@ class(EditorTab)
 func void DrawMainTab(Scene* activeScene, Texture canvas, float delta);
 func void DrawAssetTab(Scene* activeScene, Texture canvas, float delta);
 func void DrawPatternsTab(Scene* activeScene, Texture canvas, float delta);
-static const EditorTab EditorTabs[] = { { "Main", DrawMainTab }, { "Assets", DrawAssetTab }, { "Patterns", DrawPatternsTab }, { NULL } };
+static const EditorTab EditorTabs[]
+    = { { "Main", DrawMainTab }, { "Assets", DrawAssetTab }, { "Patterns", DrawPatternsTab }, { NULL } };
 
 func void DrawMainTab(Scene* activeScene, Texture canvas, float delta)
 {
@@ -42,14 +48,11 @@ func void DrawAssetTab(Scene* activeScene, Texture canvas, float delta)
 func void DrawPatternsTab(Scene* activeScene, Texture canvas, float delta)
 {
     DrawText(canvas, "Bullet patterns", 50, 50, PURPLE);
+    UpdateAndRenderPatternEditor(canvas, delta);
 }
 
 func void DrawEditorTabs(Scene* activeScene, Texture canvas, float delta, const EditorTab* tabs)
 {
-    static Color bgColor = 0x111111FF;
-    static Color fgColor = 0xAAAAAAFF;
-    static uint tabWidth = 0;
-    static uint tabHeight = 20;
     if (tabWidth == 0) {
         uint tabCount = 0;
         for (const EditorTab* tab = tabs; tab->name != NULL; tab++)
@@ -63,8 +66,8 @@ func void DrawEditorTabs(Scene* activeScene, Texture canvas, float delta, const 
     for (const EditorTab* tab = tabs; tab->name != NULL; tab++) {
         bool isSelected = SelectedTabIndex == i;
 
-        Color bg = isSelected ? BlendColors(bgColor, GREEN, 50) : bgColor;
-        Color fg = isSelected ? BlendColors(fgColor, GREEN, 50) : fgColor;
+        Color bg = isSelected ? BlendColors(tabBGColor, GREEN, 50) : tabBGColor;
+        Color fg = isSelected ? BlendColors(tabFGColor, GREEN, 50) : tabFGColor;
 
         uint x = tabWidth * i;
         DrawRectangle(canvas, x, 0, tabWidth, tabHeight, bg);
@@ -95,6 +98,11 @@ BULLET void UpdateAndRenderEditor(Scene* activeScene, Texture canvas, float delt
         return;
 
     DrawEditorTabs(activeScene, canvas, delta, EditorTabs);
+}
+
+BULLET Rect GetEditorTabContentRegion()
+{
+    return (Rect){ 0, tabHeight, WIDTH, HEIGHT - tabHeight };
 }
 
 BULLET bool IsEditorOpen()

@@ -100,8 +100,6 @@ BASALT void HotReloadTexture(Texture texture)
                 ERR("Failed to hot-swap texture %s", entry->assetName);
             }
         }
-    } else if (GetFrameIndex() % 300 == 0) {
-        WARN("Can't find original asset of %s, hotloading not supported!", texture.name);
     }
 }
 

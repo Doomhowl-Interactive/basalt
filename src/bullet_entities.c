@@ -3,8 +3,6 @@
 
 #include <string.h>
 
-// TODO: Use regions for sprites instead of top-left pos
-
 BULLET void ClearEntities(Scene* scene)
 {
     assert(scene);
