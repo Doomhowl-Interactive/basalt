@@ -8,6 +8,7 @@ class(PatternEditor)
     BulletSpawner* spawner;
     Texture buffer;
     Scene scene;
+    usize patternIndex;
 };
 static PatternEditor Context = { 0 };
 
@@ -40,6 +41,11 @@ func void DrawScreenGrid(Texture canvas, uint cellWidth, uint cellHeight, Color 
 
 BULLET void UpdateAndRenderPatternEditor(Texture canvas, float delta)
 {
+    static usize PatternCount = 0;
+    if (PatternCount == 0){
+        PatternCount = GetBulletPatternCount();
+    }
+
     if (Context.spawner == NULL) {
         InitPatternEditor();
     }
@@ -55,9 +61,32 @@ BULLET void UpdateAndRenderPatternEditor(Texture canvas, float delta)
     // Draw info
     Rect contentRegion = GetEditorTabContentRegion();
 
-    char gridSizeText[16];
-    sprintf(gridSizeText, "%ux%u", gridSize, gridSize);
-    DrawText(Context.buffer, gridSizeText, 10, contentRegion.y + 10, PURPLE);
+    const BulletPattern* curPattern = GetBulletPattern(Context.patternIndex);
+
+    char infoText[512];
+    sprintf(infoText, "%ux%u\n%s\n\n", gridSize, gridSize, curPattern->name);
+
+    // Draw list of bullet patterns
+    for (usize i = 0; i < PatternCount; i++){
+        const BulletPattern* pattern = GetBulletPattern(i);
+        // FIXME: SLOW
+        if (i == Context.patternIndex) {
+            strcat(infoText, "SELECTED ");
+        }
+        strcat(infoText, pattern->name);
+        strcat(infoText, "\n");
+    }
+
+    if (IsKeyPressed(KEY_J)){
+        Context.patternIndex++;
+    }
+    if (IsKeyPressed(KEY_K)){
+        Context.patternIndex--;
+    }
+    Context.patternIndex %= PatternCount;
+    Context.spawner->patternToSpawn = curPattern;
+
+    DrawText(Context.buffer, infoText, 10, contentRegion.y + 10, PURPLE);
 
     // Draw result
     DrawTextureEx(canvas, Context.buffer, contentRegion.x, contentRegion.y, R2(contentRegion), WHITE);
