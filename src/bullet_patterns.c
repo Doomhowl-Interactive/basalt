@@ -1,5 +1,6 @@
 #include <math.h>
 
+#include "basalt.h"
 #include "basalt_extra.h"
 #include "bullet_common.h"
 
@@ -15,11 +16,38 @@ ENDING bool EndBulletOOB(Entity* e, BulletData* data, int difficulty, const int*
     return (pos.x < -OOB || pos.y < -OOB || pos.x > WIDTH + OOB || pos.y > HEIGHT + OOB);
 }
 
-// TODO: Add end condition instead of passing duration integer everywhere
+ENDING bool EndBulletTimer(Entity* e, BulletData* data, int difficulty, const int* args)
+{
+    return (data->timer > args[0]);
+}
+
+ENDING bool EndBulletInstantly(Entity* e, BulletData* data, int difficulty, const int* args)
+{
+    return true;
+}
+
+PATTERN void SplitBulletCircle(Entity* e, BulletData* data, int difficulty, const int* args)
+{
+    int amount = args[0];
+    float degsPerSeg = 360.f / amount;
+    for (usize i = 0; i < amount; i++) {
+        float rads = DEG2RAD(degsPerSeg * i);
+        Vec2 normal = {
+            cos(rads),
+            sin(rads),
+        };
+
+        // Copy pattern from parent, but skip current action.
+        Entity* ent = CreateEntity(e->scene);
+        BulletPattern pattern = e->bulletPattern;
+        pattern.index++;
+        Vec2 spawnPos = GetEntityCenter(e);
+        InitBullet(ent, &pattern, spawnPos, normal);
+    }
+}
+
 PATTERN void MoveBulletStraight(Entity* e, BulletData* data, int difficulty, const int* args)
 {
-    int duration = args[0];
-
     float power = 150 + difficulty * 30;
 
     e->vel.x = data->normal.x * power;
@@ -123,7 +151,64 @@ BULLET bool RunBulletPattern(Entity* e, float delta)
 }
 
 const BulletPattern BulletPatterns[]
-    = { {
+    = { { "Firework",
+          {
+              {
+                  MoveBulletStraight,
+                  EndBulletTimer,
+                  0xFFAAAAFF,
+                  { 1 },
+              },
+              {
+                  SplitBulletCircle,
+                  EndBulletInstantly,
+                  0xFFAAAAFF,
+                  { 30 },
+              },
+              {
+                  MoveBulletStraight,
+                  EndBulletOOB,
+                  0xFF0000FF,
+                  { 10 },
+              },
+          } 
+        },
+        { "Firework-Double",
+          {
+              {
+                  MoveBulletStraight,
+                  EndBulletTimer,
+                  0xFFAAAAFF,
+                  { 1 },
+              },
+              {
+                  SplitBulletCircle,
+                  EndBulletInstantly,
+                  0xAAFFAAFF,
+                  { 5 },
+              },
+              {
+                  MoveBulletStraight,
+                  EndBulletTimer,
+                  0xFF0000FF,
+                  { 1 },
+              },
+              {
+                  SplitBulletCircle,
+                  EndBulletInstantly,
+                  0x00FFAAFF,
+                  { 3 },
+              },
+              {
+                  MoveBulletStraight,
+                  EndBulletOOB,
+                  0x0000FFFF,
+                  { 10 },
+              },
+          } 
+        }
+    ,
+        {
             "PlayerBullet1",
             {
                 {

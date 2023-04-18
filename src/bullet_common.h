@@ -2,8 +2,7 @@
 #include "basalt.h"
 #include "bullet_assets.h"
 
-#define MAX_ENTITIES 1024
-#define MAX_PATTERNS 128 
+#define MAX_PATTERNS 128
 #define MAX_SPAWNERS 32
 #define MAX_ACTIONS 16
 #define MAX_BULLET_SLOTS 16

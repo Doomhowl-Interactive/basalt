@@ -1,3 +1,4 @@
+#include "basalt.h"
 #include "basalt_extra.h"
 #include "bullet_common.h"
 
@@ -27,6 +28,7 @@ BULLET Entity* CreateEntity(Scene* scene)
             return entity;
         }
     }
+    ERR("Reached more than %d entities!",MAX_ENTITIES);
     assert(0);
     return NULL;
 }

@@ -5,6 +5,7 @@
 
 class(PatternEditor)
 {
+    Entity* spawnerEntity;
     BulletSpawner* spawner;
     Texture buffer;
     Scene scene;
@@ -20,11 +21,11 @@ void InitPatternEditor()
     Context.buffer = InitTexture(WIDTH, HEIGHT);
 
     // Spawn bullet spawner in the center of the scene
-    Entity* spawner = CreateEntity(&Context.scene);
-    SetEntityCenter(spawner, WIDTH * 0.5f, HEIGHT * 0.5f);
-    Context.spawner = &spawner->bulletSpawners[0];
+    Context.spawnerEntity = CreateEntity(&Context.scene);
+    SetEntityCenter(Context.spawnerEntity, WIDTH * 0.5f, HEIGHT * 0.5f);
+    Context.spawner = &Context.spawnerEntity->bulletSpawners[0];
     Context.spawner->patternToSpawn = GetBulletPattern(0);
-    Context.spawner->interval = 0.2f;
+    Context.spawner->interval = 2.f;
     Context.spawner->normal = (Vec2){ 0, 0.5f };
 }
 
@@ -51,6 +52,16 @@ BULLET void UpdateAndRenderPatternEditor(Texture canvas, float delta)
     }
 
     ClearTexture(Context.buffer, 0x181818FF);
+
+    // Aim bulletspawner at the cursor
+    Point mouse = GetMousePosition();
+    Vec2 center = GetEntityCenter(Context.spawnerEntity);
+    Vec2 direction = {
+        mouse.x - center.x,
+        mouse.y - center.y
+    };
+    Vec2 norm = Vec2Normalize(direction);
+    Context.spawner->normal = norm;
 
     // Draw grid
     const uint gridSize = 32;

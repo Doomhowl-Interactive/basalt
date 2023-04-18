@@ -28,6 +28,8 @@ typedef uchar Key;
 
 #endif
 
+// FIXME: Don't create scenes on the stack or you'll run out of memory.
+#define MAX_ENTITIES 100000
 #define MAX_PATH_LENGTH 128
 
 #define MAX(X, Y) (X > Y ? X : Y)
@@ -47,7 +49,6 @@ extern const uint HEIGHT;
 extern const char* GAME_TITLE;
 
 extern const uint TPS;
-extern const uint MAX_ENTITIES;
 
 // NOTE: Blursed macros that will make people mad,
 // but it allows easy grepping/search
