@@ -6,8 +6,6 @@ Slowly solidifying [Magma Game Engine](https://github.com/bramtechs/RaylibMagmaE
 
 Inspired by [Handmade Hero](https://handmadehero.org/).
 
-## Videos
-![Capture](screenshots/capture.mp4)
 ## Screenshots
 ![Preview](screenshots/screenshot.png)
 
