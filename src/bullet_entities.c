@@ -19,6 +19,8 @@ func void InitEntity(Entity* entity, Scene* scene)
     entity->id = nextID++;
     entity->scene = scene;
     entity->isActive = true;
+    entity->frameInterval = 0.2f;
+    entity->tint = WHITE;
 }
 
 #define ENTITIES_PER_PAGE 1024
@@ -112,22 +114,18 @@ void UpdateAndRenderEntity(Scene* scene, Texture canvas, Entity* e, float delta)
     Vec2* vel = &e->vel;
 
     // Entity drawing
-    // TODO: Put in entity struct
-    static float frameInterval = 0.2f;
-    static float timer = 0.f;
-    static int frameID = 0;
-
-    if (timer > frameInterval) {
-        timer = 0.f;
-        frameID++;
+    if (e->timer > e->frameInterval) {
+        e->timer = 0.f;
+        e->frameID++;
     }
-    timer += delta;
+    e->timer += delta;
 
     if (e->texture.width > 0) {
-        if (e->texture.pixels)
+        if (e->texture.pixels) {
             DrawTextureEx(canvas, e->texture, V2(e->bounds), 0, 0, e->bounds.width, e->bounds.height, e->tint);
-        else
+        } else {
             DrawRectangle(canvas, R2(e->bounds), e->tint);
+        }
     }
 
     // PLAYER BEHAVIOUR
@@ -136,17 +134,18 @@ void UpdateAndRenderEntity(Scene* scene, Texture canvas, Entity* e, float delta)
         vel->x = 0;
         vel->y = 0;
 
-        if (IsKeyDown(KEY_A))
+        if (IsKeyDown(KEY_A)) {
             vel->x -= moveSpeed;
-        if (IsKeyDown(KEY_D))
+        }
+        if (IsKeyDown(KEY_D)) {
             vel->x += moveSpeed;
-        if (IsKeyDown(KEY_W))
+        }
+        if (IsKeyDown(KEY_W)) {
             vel->y -= moveSpeed;
-        if (IsKeyDown(KEY_S))
+        }
+        if (IsKeyDown(KEY_S)) {
             vel->y += moveSpeed;
-
-        // INFO("%f %f %f %f (%f %f)", e->sprite.bounds.x, e->sprite.bounds.y,
-        //                             e->sprite.bounds.width, e->sprite.bounds.height, vel->x, vel->y);
+        }
     }
 
     Vec2 center = RectFCenter(e->bounds);
@@ -163,7 +162,6 @@ void UpdateAndRenderEntity(Scene* scene, Texture canvas, Entity* e, float delta)
         DrawLine(canvas, V2(weaponCenter), V2(end), 0x0000AAFF);
 
         // spawn bullets on interval
-        // HACK: Avoid entity overload
         if (weapon->interval > 0.f && weapon->spawnTimer > weapon->interval) {
             Entity* bul = CreateEntity(scene);
             InitBullet(bul, weapon->patternToSpawn, weaponCenter, weapon->normal);
@@ -174,8 +172,9 @@ void UpdateAndRenderEntity(Scene* scene, Texture canvas, Entity* e, float delta)
 
     // Bullet behaviour
     if (COMPARE(e->type, TAG_BULLET)) {
-        if (RunBulletPattern(e, delta))
+        if (RunBulletPattern(e, delta)) {
             DestroyEntity(e);
+        }
     }
 
     // apply movement

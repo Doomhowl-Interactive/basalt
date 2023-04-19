@@ -50,6 +50,7 @@ extern const char* GAME_TITLE;
 
 extern const uint TPS;
 
+// TODO: Ditch these macros
 // NOTE: Blursed macros that will make people mad,
 // but it allows easy grepping/search
 #define class(X) \

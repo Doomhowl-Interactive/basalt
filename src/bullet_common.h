@@ -72,6 +72,11 @@ struct Entity {
     Point sourceOffset;
     Texture texture;
 
+    // sprite animation
+    float frameInterval;
+    float timer;
+    int frameID;
+
     // physics
     Vec2 vel;
 

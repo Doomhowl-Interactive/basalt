@@ -1,8 +1,7 @@
 # Things to do
 Automatically generated. Do not edit by hand!
 
-## src/bullet_entities.c (3 items)
-- [ ] TODO: Use regions for sprites instead of top-left pos
+## src/bullet_entities.c (2 items)
 - [ ] TODO: Put in entity struct
 - [ ] HACK: Avoid entity overload
 
@@ -12,6 +11,9 @@ Automatically generated. Do not edit by hand!
 
 ## src/bullet_tests.c (1 items)
 - [ ] TODO: DRY
+
+## src/bullet_editor_patterns.c (1 items)
+- [ ] FIXME: SLOW
 
 ## src/win32_basalt.c (2 items)
 - [ ] TODO(casey): Logging
@@ -27,9 +29,6 @@ Automatically generated. Do not edit by hand!
 - [ ] HACK: resize window to game size
 - [ ] HACK: might not work while pressing multiple mouse buttons
 - [ ] HACK: Prevent delta spikes from breaking the game
-
-## src/bullet_patterns.c (1 items)
-- [ ] TODO: Add end condition instead of passing duration integer everywhere
 
 ## src/basalt_assets.c (2 items)
 - [ ] HACK: Copy the texture into the correct color order
