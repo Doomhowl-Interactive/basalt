@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include "basalt.h"
 #include "basalt_extra.h"
 #include "bullet_common.h"
@@ -26,7 +27,9 @@ static const EditorTab EditorTabs[]
 
 func void DrawMainTab(Scene* activeScene, Texture canvas, float delta)
 {
-    DrawText(canvas, "Hello editor!", 50, 50, YELLOW);
+    char text[100];
+    sprintf(text, "Active entities %lu", GetEntityCount());
+    DrawText(canvas, text, 50, 50, YELLOW);
 }
 
 func void DrawAssetTab(Scene* activeScene, Texture canvas, float delta)

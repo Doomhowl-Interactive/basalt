@@ -168,12 +168,18 @@ void UpdateAndRenderEntity(Scene* scene, Texture canvas, Entity* e, float delta)
     // vel->y -= MIN(offsetY, vel->y);
 }
 
-uint UpdateAndRenderScene(Scene* scene, Texture canvas, float delta)
+
+static usize LastCount = 0;
+usize GetEntityCount(){
+    return LastCount;
+}
+
+usize UpdateAndRenderScene(Scene* scene, Texture canvas, float delta)
 {
-    uint count = 0;
-    for (uint i = 0; i < MAX_ENTITY_PAGES; i++) {
+    usize count = 0;
+    for (usize i = 0; i < MAX_ENTITY_PAGES; i++) {
         if (scene->entities[i] != NULL) {
-            for (uint j = 0; j < ENTITIES_PER_PAGE; j++) {
+            for (usize j = 0; j < ENTITIES_PER_PAGE; j++) {
                 assert(scene->entities[i]);
                 Entity* e = &scene->entities[i][j];
                 assert(e);
@@ -186,5 +192,6 @@ uint UpdateAndRenderScene(Scene* scene, Texture canvas, float delta)
             break;
         }
     }
+    LastCount = count;
     return count;
 }

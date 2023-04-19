@@ -104,9 +104,10 @@ BULLET void SetEntityCenter(Entity* e, float x, float y);
 BULLET Vec2 GetEntityCenter(Entity* e);
 BULLET void SetEntitySize(Entity* e, uint width, uint height);
 BULLET void ResetEntityVelocity(Entity *e);
+BULLET usize GetEntityCount();
 
 BULLET void UpdateAndRenderEntity(Scene* scene, Texture canvas, Entity* e, float delta);
-BULLET uint UpdateAndRenderScene(Scene* scene, Texture canvas, float delta);
+BULLET usize UpdateAndRenderScene(Scene* scene, Texture canvas, float delta);
 
 // bullet_patterns.c
 BULLET bool RunBulletPattern(Entity* e, float delta);
