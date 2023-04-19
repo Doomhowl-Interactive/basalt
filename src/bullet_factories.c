@@ -35,7 +35,7 @@ BULLET void InitPlayer(Entity* e, Vec2 pos)
 
 BULLET void InitBullet(Entity* e, const BulletPattern* pattern, Vec2 pos, Vec2 normal)
 {
-    assert(pattern);
+    assert(e);
 
     // DEBUG("Spawned bullet at %f %f", pos.x, pos.y);
 

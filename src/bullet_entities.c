@@ -2,33 +2,50 @@
 #include "basalt_extra.h"
 #include "bullet_common.h"
 
+#include <stdlib.h>
 #include <string.h>
 
 BULLET void ClearEntities(Scene* scene)
 {
     assert(scene);
 
-    memset(scene->entities, 0, sizeof(Entity)*MAX_ENTITIES);
+    memset(scene->entities, 0, sizeof(Entity) * MAX_ENTITIES);
     INFO("Cleared all entities!");
 }
 
+func void InitEntity(Entity* entity, Scene* scene)
+{
+    static usize nextID = 0;
+    entity->id = nextID++;
+    entity->scene = scene;
+    entity->isActive = true;
+}
+
+#define ENTITIES_PER_PAGE 1024
 BULLET Entity* CreateEntity(Scene* scene)
 {
     assert(scene);
 
-    // get next available entity
-    for (uint i = 0; i < MAX_ENTITIES; i++)
-    {
-        Entity* entity = &scene->entities[i];
-        if (!entity->isActive)
-        {
-            entity->id = i;
-            entity->scene = scene;
-            entity->isActive = true;
-            return entity;
+    // TODO: Free pages that are inactive
+
+    for (usize i = 0; i < MAX_ENTITY_PAGES; i++) {
+        // Allocate the page if it doesn't exist
+        if (scene->entities[i] == NULL) {
+            scene->entities[i] = calloc(ENTITIES_PER_PAGE, sizeof(Entity));
+            DEBUG("Allocated new entity page");
+        }
+
+        // Find first available slot in this page
+        for (usize j = 0; j < ENTITIES_PER_PAGE; j++) {
+            Entity* entity = &scene->entities[i][j];
+            assert(entity);
+            if (!entity->isActive) {
+                InitEntity(entity, scene);
+                return entity;
+            }
         }
     }
-    ERR("Reached more than %d entities!",MAX_ENTITIES);
+    ERR("Ran out of pages to store entities in.");
     assert(0);
     return NULL;
 }
@@ -58,7 +75,7 @@ BULLET void SetEntitySize(Entity* e, uint width, uint height)
     e->bounds.height = height;
 }
 
-BULLET void ResetEntityVelocity(Entity *e)
+BULLET void ResetEntityVelocity(Entity* e)
 {
     e->vel.x = 0;
     e->vel.y = 0;
@@ -77,25 +94,21 @@ void UpdateAndRenderEntity(Scene* scene, Texture canvas, Entity* e, float delta)
     static float timer = 0.f;
     static int frameID = 0;
 
-    if (timer > frameInterval)
-    {
+    if (timer > frameInterval) {
         timer = 0.f;
         frameID++;
     }
     timer += delta;
 
-    if (e->texture.width > 0)
-    {
+    if (e->texture.width > 0) {
         if (e->texture.pixels)
-            DrawTextureEx(canvas, e->texture, V2(e->bounds),
-                          0, 0, e->bounds.width, e->bounds.height, e->tint);
+            DrawTextureEx(canvas, e->texture, V2(e->bounds), 0, 0, e->bounds.width, e->bounds.height, e->tint);
         else
             DrawRectangle(canvas, R2(e->bounds), e->tint);
     }
 
     // PLAYER BEHAVIOUR
-    if (COMPARE(e->type,TAG_PLAYER))
-    {
+    if (COMPARE(e->type, TAG_PLAYER)) {
         float moveSpeed = e->moveSpeed;
         vel->x = 0;
         vel->y = 0;
@@ -116,20 +129,19 @@ void UpdateAndRenderEntity(Scene* scene, Texture canvas, Entity* e, float delta)
     Vec2 center = RectFCenter(e->bounds);
 
     // WEAPON BEHAVIOUR
-    for (uint i = 0; i < MAX_SPAWNERS; i++)
-    {
+    for (uint i = 0; i < MAX_SPAWNERS; i++) {
         BulletSpawner* weapon = &e->bulletSpawners[i];
-        if (weapon->patternToSpawn == NULL) continue;
+        if (weapon->patternToSpawn == NULL)
+            continue;
 
         // draw normal (debugging)
         Vec2 weaponCenter = Vec2Offset(center, weapon->offset);
-        Vec2 end = Vec2Offset(weaponCenter, Vec2Scale(weapon->normal, 10.f)); 
+        Vec2 end = Vec2Offset(weaponCenter, Vec2Scale(weapon->normal, 10.f));
         DrawLine(canvas, V2(weaponCenter), V2(end), 0x0000AAFF);
 
         // spawn bullets on interval
         // HACK: Avoid entity overload
-        if (weapon->interval > 0.f && weapon->spawnTimer > weapon->interval)
-        {
+        if (weapon->interval > 0.f && weapon->spawnTimer > weapon->interval) {
             Entity* bul = CreateEntity(scene);
             InitBullet(bul, weapon->patternToSpawn, weaponCenter, weapon->normal);
             weapon->spawnTimer = 0.f;
@@ -138,16 +150,15 @@ void UpdateAndRenderEntity(Scene* scene, Texture canvas, Entity* e, float delta)
     }
 
     // Bullet behaviour
-    if (COMPARE(e->type,TAG_BULLET))
-    {
+    if (COMPARE(e->type, TAG_BULLET)) {
         if (RunBulletPattern(e, delta))
             DestroyEntity(e);
     }
 
     // apply movement
-    e->bounds.x += vel->x*delta;
-    e->bounds.y += vel->y*delta;
-    
+    e->bounds.x += vel->x * delta;
+    e->bounds.y += vel->y * delta;
+
     // apply drag
     // float offsetX = e->physics.drag * delta * SIGN(float, vel->x);
     // vel->x -= MIN(offsetX, vel->x);
@@ -158,13 +169,18 @@ void UpdateAndRenderEntity(Scene* scene, Texture canvas, Entity* e, float delta)
 uint UpdateAndRenderScene(Scene* scene, Texture canvas, float delta)
 {
     uint count = 0;
-    for (uint i = 0; i < MAX_ENTITIES; i++)
-    {
-        Entity* e = &scene->entities[i];
-        if (e->isActive)
-        {
-            UpdateAndRenderEntity(scene, canvas, e, delta);
-            count++;
+    for (uint i = 0; i < MAX_ENTITY_PAGES; i++) {
+        if (scene->entities[i] != NULL) {
+            for (uint j = 0; j < MAX_ENTITIES; j++) {
+                Entity* e = &scene->entities[i][j];
+                assert(e);
+                if (e->isActive) {
+                    UpdateAndRenderEntity(scene, canvas, e, delta);
+                    count++;
+                }
+            }
+        } else {
+            break;
         }
     }
     return count;

@@ -90,8 +90,9 @@ struct Entity {
     BulletSpawner bulletSpawners[MAX_SPAWNERS];
 };
 
+#define MAX_ENTITY_PAGES 128
 struct Scene {
-    Entity entities[MAX_ENTITIES];
+    Entity* entities[MAX_ENTITY_PAGES];
 };
 
 // bullet_entities.c
