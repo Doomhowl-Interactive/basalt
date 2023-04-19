@@ -13,11 +13,10 @@ static uint SelectedTabIndex = 0;
 
 typedef void (*EditorTabFunc)(Scene* activeScene, Texture canvas, float delta);
 
-class(EditorTab)
-{
+typedef struct EditorTab {
     const char* name;
     EditorTabFunc function;
-};
+} EditorTab;
 
 func void DrawMainTab(Scene* activeScene, Texture canvas, float delta);
 func void DrawAssetTab(Scene* activeScene, Texture canvas, float delta);

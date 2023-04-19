@@ -50,17 +50,6 @@ extern const char* GAME_TITLE;
 
 extern const uint TPS;
 
-// TODO: Ditch these macros
-// NOTE: Blursed macros that will make people mad,
-// but it allows easy grepping/search
-#define class(X) \
- typedef struct X X; \
- struct X
-
-#define enumdef(X) \
- typedef enum X X; \
- enum X
-
 #define MAX(X, Y) (X > Y ? X : Y)
 #define MIN(X, Y) (X < Y ? X : Y)
 
@@ -69,60 +58,54 @@ extern const uint TPS;
 #define platfunc
 #define wasmfunc
 
-class(Rect)
-{
+typedef struct Rect {
     int x;
     int y;
     int width;
     int height;
-};
+} Rect;
 
-class(RectF)
-{
+typedef struct RectF {
     float x;
     float y;
     float width;
     float height;
-};
+} RectF;
 
-class(Point)
-{
+typedef struct Point {
     int x;
     int y;
-};
+} Point;
 
-class(Size)
-{
+typedef struct Size {
     int width;
     int height;
-};
+} Size;
 
-class(Vec2)
-{
+typedef struct Vec2 {
     float x;
     float y;
-};
+} Vec2;
 
-class(Vec3)
-{
+typedef struct Vec3 {
     float x;
     float y;
     float z;
-};
+} Vec3;
 
-class(String)
-{
+typedef struct String {
     size_t size;
     size_t capacity;
     char* text;
-};
+} String;
 
-class(StringArray)
-{
+typedef struct StringArray {
     char** strings;
     usize count;
     usize capacity;
-};
+} StringArray;
+
+// TODO: Remove typedef
 typedef StringArray FilePathList;
 
 #ifdef WASM
@@ -212,13 +195,12 @@ BASALT FilePathList GetFolderFiles(const char* folder, const char* ext);
 BASALT void UnloadFilePathList(FilePathList list);
 
 // Asset handling (basalt_assets.c)
-class(Texture)
-{
+typedef struct Texture {
     const char* name;
     int width;
     int height;
     Color* pixels;
-};
+} Texture;
 extern const uchar SPR_PIXELFONT[];
 
 // TODO: Change to retreive texture, that uses cache system
@@ -245,15 +227,13 @@ BASALT bool IsKeyPressed(Key code);
 BASALT bool IsKeyReleased(Key code);
 
 // Engine configuration (basalt_config.c)
-class(EngineConfig)
-{
+typedef struct EngineConfig {
     bool hasArchaeo;
     bool hasHotloading;
     bool hasUnitTesting;
     bool hasConsole;
     bool unlockedFramerate;
-};
-
+} EngineConfig;
 extern EngineConfig Config;
 
 // Graphics drawing (basalt_graphics.c)
@@ -268,15 +248,14 @@ extern EngineConfig Config;
 #define YELLOW 0xFFFF00FF
 #define PURPLE 0x00FFFFFF
 
-class(BitmapFont)
-{
+typedef struct BitmapFont {
     Texture texture;
     uint cols;
     uint rows;
     uint cellWidth;
     uint cellHeight;
     const char* symbols;
-};
+} BitmapFont;
 
 BASALT void DrawDot(Texture canvas, int posX, int posY, Color tint);
 BASALT void DrawLine(Texture canvas, int startX, int startY, int endX, int endY, Color tint);

@@ -14,8 +14,7 @@
 #include "basalt.h"
 #include "basalt_plat.h"
 
-class(OffscreenBuffer)
-{
+typedef struct OffscreenBuffer {
     Display* display;
     Window window;
     Texture canvas;
@@ -26,7 +25,7 @@ class(OffscreenBuffer)
     uchar* pixels;
     XImage* image;
     char title[128];
-};
+} OffscreenBuffer;
 
 GameContext Context = { 0 };
 GameInput Input = { 0 };
@@ -110,7 +109,7 @@ func void HandleKeyEvent(XEvent event, bool pressed)
 
     // HACK: ignore special characters (for now)
     if (string[1] == '\0') {
-        uchar key = (uchar) string[0];
+        uchar key = (uchar)string[0];
         Input.pressedKeys[key] = pressed;
 
         if (pressed)
@@ -148,7 +147,8 @@ int main(int argc, char** argv)
     // HACK: make the window the size of the entire monitor so the DC is big enough
 
     // if only things were that simple...
-    Window win = XCreateSimpleWindow(display, RootWindow(display, DefaultScreen(display)), 10, 10, size.width, size.height, 0, 0, 255);
+    Window win = XCreateSimpleWindow(
+        display, RootWindow(display, DefaultScreen(display)), 10, 10, size.width, size.height, 0, 0, 255);
 
     // === make window closing work (it's a big deal for some reason)
     Atom wmDeleteWindow = XInternAtom(display, "WM_DELETE_WINDOW", false);
@@ -215,7 +215,15 @@ int main(int argc, char** argv)
             int rootMouseX, rootMouseY;
             int childMouseX, childMouseY;
             unsigned int maskResult = 0;
-            if (XQueryPointer(display, win, &rootWinResult, &childWinResult, &rootMouseX, &rootMouseY, &childMouseX, &childMouseY, &maskResult)) {
+            if (XQueryPointer(display,
+                              win,
+                              &rootWinResult,
+                              &childWinResult,
+                              &rootMouseX,
+                              &rootMouseY,
+                              &childMouseX,
+                              &childMouseY,
+                              &maskResult)) {
                 float scaleX = WIDTH / (float)width;
                 float scaleY = HEIGHT / (float)height;
 

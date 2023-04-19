@@ -3,14 +3,13 @@
 #include "basalt_extra.h"
 #include "bullet_common.h"
 
-class(PatternEditor)
-{
+typedef struct PatternEditor {
     Entity* spawnerEntity;
     BulletSpawner* spawner;
     Texture buffer;
     Scene scene;
     usize patternIndex;
-};
+} PatternEditor;
 static PatternEditor Context = { 0 };
 
 void InitPatternEditor()
@@ -43,7 +42,7 @@ func void DrawScreenGrid(Texture canvas, uint cellWidth, uint cellHeight, Color 
 BULLET void UpdateAndRenderPatternEditor(Texture canvas, float delta)
 {
     static usize PatternCount = 0;
-    if (PatternCount == 0){
+    if (PatternCount == 0) {
         PatternCount = GetBulletPatternCount();
     }
 
@@ -56,10 +55,7 @@ BULLET void UpdateAndRenderPatternEditor(Texture canvas, float delta)
     // Aim bulletspawner at the cursor
     Point mouse = GetMousePosition();
     Vec2 center = GetEntityCenter(Context.spawnerEntity);
-    Vec2 direction = {
-        mouse.x - center.x,
-        mouse.y - center.y
-    };
+    Vec2 direction = { mouse.x - center.x, mouse.y - center.y };
     Vec2 norm = Vec2Normalize(direction);
     Context.spawner->normal = norm;
 
@@ -78,7 +74,7 @@ BULLET void UpdateAndRenderPatternEditor(Texture canvas, float delta)
     sprintf(infoText, "%ux%u\n%s\n\n", gridSize, gridSize, curPattern->name);
 
     // Draw list of bullet patterns
-    for (usize i = 0; i < PatternCount; i++){
+    for (usize i = 0; i < PatternCount; i++) {
         const BulletPattern* pattern = GetBulletPattern(i);
         // FIXME: SLOW
         if (i == Context.patternIndex) {
@@ -88,10 +84,10 @@ BULLET void UpdateAndRenderPatternEditor(Texture canvas, float delta)
         strcat(infoText, "\n");
     }
 
-    if (IsKeyPressed(KEY_J)){
+    if (IsKeyPressed(KEY_J)) {
         Context.patternIndex++;
     }
-    if (IsKeyPressed(KEY_K)){
+    if (IsKeyPressed(KEY_K)) {
         Context.patternIndex--;
     }
     Context.patternIndex %= PatternCount;

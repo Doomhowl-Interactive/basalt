@@ -12,22 +12,20 @@
 #endif
 
 // engine
-class(GameInput)
-{
+typedef struct GameInput {
     bool pressedKeys[256];
     bool pressedKeysOnce[256];
     bool isMouseDown;
     Point mousePos;
-};
+} GameInput;
 
-class(GameContext)
-{
+typedef struct GameContext {
     bool shouldClose;
     usize frameIndex;
     double timeElapsed;
 
     Texture canvas;
-};
+} GameContext;
 
 extern GameInput Input;
 extern GameContext Context;

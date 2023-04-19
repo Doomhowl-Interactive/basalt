@@ -11,13 +11,12 @@
 
 #include "basalt.h"
 
-class(AssetEntry)
-{
+typedef struct AssetEntry {
     char filePath[MAX_PATH_LENGTH];
     char assetName[MAX_PATH_LENGTH];
     double lastPollTime;
     long lastEditTime;
-};
+} AssetEntry;
 
 #define HOTLOAD_INTERVAL 2.0
 

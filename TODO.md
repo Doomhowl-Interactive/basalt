@@ -1,10 +1,6 @@
 # Things to do
 Automatically generated. Do not edit by hand!
 
-## src/bullet_entities.c (2 items)
-- [ ] TODO: Put in entity struct
-- [ ] HACK: Avoid entity overload
-
 ## src/basalt_utils.c (2 items)
 - [ ] TODO: This could be better
 - [ ] FIXME: Untested

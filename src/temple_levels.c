@@ -1,21 +1,21 @@
 #include "basalt_extra.h"
 
-enumdef(LevelType){LEVEL_NORMAL, LEVEL_BONUS, LEVEL_BOSS};
+typedef enum LevelType { LEVEL_NORMAL, LEVEL_BONUS, LEVEL_BOSS } LevelType;
 
-class(LevelLayout) {
-  const char *layout;
-  uint width;
-  uint height;
-};
+typedef struct LevelLayout {
+    const char* layout;
+    uint width;
+    uint height;
+} LevelLayout;
 
-class(LevelInfo) {
-  const char *shortName;
-  const char *displayName;
-  const LevelLayout *layout;
-  uint minScore;
-  uint maxTime;
-  LevelType type;
-};
+typedef struct LevelInfo {
+    const char* shortName;
+    const char* displayName;
+    const LevelLayout* layout;
+    uint minScore;
+    uint maxTime;
+    LevelType type;
+} LevelInfo;
 
 const static LevelInfo MAP_LEVEL001 = {
     "01", "UNNAMED LEVEL", NULL, 10000, 180, LEVEL_NORMAL,

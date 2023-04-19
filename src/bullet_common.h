@@ -8,10 +8,10 @@
 #define MAX_BULLET_SLOTS 16
 #define MAX_PARAMETERS 16
 
-#define TAG_PLAYER      (1 << 0)
-#define TAG_BULLET      (1 << 1)
+#define TAG_PLAYER (1 << 0)
+#define TAG_BULLET (1 << 1)
 
-#define COMPARE(X,Y) ((X & Y) == Y)
+#define COMPARE(X, Y) ((X & Y) == Y)
 #define BULLET
 
 typedef uint EntityID;
@@ -34,28 +34,28 @@ typedef struct BulletData {
 typedef void (*BulletActionFunc)(Entity* entity, BulletData* data, int difficulty, const int* args);
 typedef bool (*BulletActionEndFunc)(Entity* entity, BulletData* data, int difficulty, const int* args);
 
-class(BulletAction) {
+typedef struct BulletAction {
     BulletActionFunc function;
     BulletActionEndFunc endFunction;
     Color tint;
     int parameters[MAX_PARAMETERS];
-};
+} BulletAction;
 
-class(BulletPattern) {
+typedef struct BulletPattern {
     const char* name;
     BulletAction actions[MAX_ACTIONS];
     const uchar* texture;
     uint count;
     uint index;
-};
+} BulletPattern;
 
-class(BulletSpawner) {
+typedef struct BulletSpawner {
     Vec2 offset;
     Vec2 normal;
     float interval;
     float spawnTimer;
     const BulletPattern* patternToSpawn;
-};
+} BulletSpawner;
 
 // TODO: Use regions for sprites
 struct Entity {
@@ -72,7 +72,6 @@ struct Entity {
     Point sourceOffset;
     Texture texture;
 
-    // sprite animation
     float frameInterval;
     float timer;
     int frameID;
@@ -82,7 +81,7 @@ struct Entity {
 
     // ship
     float moveSpeed;
-    
+
     // health
     uint maxHealth;
     uint health;
@@ -108,7 +107,7 @@ BULLET void DestroyEntity(Entity* e);
 BULLET void SetEntityCenter(Entity* e, float x, float y);
 BULLET Vec2 GetEntityCenter(Entity* e);
 BULLET void SetEntitySize(Entity* e, uint width, uint height);
-BULLET void ResetEntityVelocity(Entity *e);
+BULLET void ResetEntityVelocity(Entity* e);
 BULLET usize GetEntityCount();
 
 BULLET void UpdateAndRenderEntity(Scene* scene, Texture canvas, Entity* e, float delta);
@@ -126,7 +125,7 @@ BULLET void InitBullet(Entity* e, const BulletPattern* pattern, Vec2 pos, Vec2 n
 
 // bullet_editor.c
 BULLET bool IsEditorOpen();
-BULLET Rect GetEditorTabContentRegion(); // NOTE: Gets a Rectangle of the screen without the toolbar at the top
+BULLET Rect GetEditorTabContentRegion();  // NOTE: Gets a Rectangle of the screen without the toolbar at the top
 BULLET void UpdateAndRenderEditor(Scene* activeScene, Texture canvas, float delta);
 
 // bullet_editor_patterns.c

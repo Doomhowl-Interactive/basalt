@@ -3,18 +3,16 @@
 
 #include <windows.h>
 
-class(WindowContext)
-{
+typedef struct WindowContext {
     HWND window;
-};
+} WindowContext;
 
-class(OffscreenBuffer)
-{
+typedef struct OffscreenBuffer {
     // NOTE: pixels are 32-bits wide, AA RR GG BB
     BITMAPINFO info;
     Texture mappedCanvas;
     Texture mappedCanvas2;
-};
+} OffscreenBuffer;
 
 GameContext Context = { 0 };
 GameInput Input = { 0 };
