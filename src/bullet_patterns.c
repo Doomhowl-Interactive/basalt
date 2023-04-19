@@ -151,7 +151,30 @@ BULLET bool RunBulletPattern(Entity* e, float delta)
 }
 
 const BulletPattern BulletPatterns[]
-    = { { "Firework",
+    = { 
+        { "Stresstest",
+          {
+              {
+                  MoveBulletStraight,
+                  EndBulletTimer,
+                  0xFFAFFFFF,
+                  { 1 },
+              },
+              {
+                  SplitBulletCircle,
+                  EndBulletInstantly,
+                  0xFFAAAAFF,
+                  { 300 },
+              },
+              {
+                  MoveBulletStraight,
+                  EndBulletOOB,
+                  0xFFAFFFFF,
+                  { 10 },
+              },
+          } },
+
+        { "Firework",
           {
               {
                   MoveBulletStraight,
@@ -171,8 +194,7 @@ const BulletPattern BulletPatterns[]
                   0xFF0000FF,
                   { 10 },
               },
-          } 
-        },
+          } },
         { "Firework-Double",
           {
               {
@@ -205,9 +227,7 @@ const BulletPattern BulletPatterns[]
                   0x0000FFFF,
                   { 10 },
               },
-          } 
-        }
-    ,
+          } },
         {
             "PlayerBullet1",
             {
