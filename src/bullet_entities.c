@@ -32,11 +32,13 @@ BULLET Entity* CreateEntity(Scene* scene)
         // Allocate the page if it doesn't exist
         if (scene->entities[i] == NULL) {
             scene->entities[i] = calloc(ENTITIES_PER_PAGE, sizeof(Entity));
+            assert(scene->entities[i]);
             DEBUG("Allocated new entity page");
         }
 
         // Find first available slot in this page
         for (usize j = 0; j < ENTITIES_PER_PAGE; j++) {
+            assert(scene->entities[i]);
             Entity* entity = &scene->entities[i][j];
             assert(entity);
             if (!entity->isActive) {
@@ -171,7 +173,8 @@ uint UpdateAndRenderScene(Scene* scene, Texture canvas, float delta)
     uint count = 0;
     for (uint i = 0; i < MAX_ENTITY_PAGES; i++) {
         if (scene->entities[i] != NULL) {
-            for (uint j = 0; j < MAX_ENTITIES; j++) {
+            for (uint j = 0; j < ENTITIES_PER_PAGE; j++) {
+                assert(scene->entities[i]);
                 Entity* e = &scene->entities[i][j];
                 assert(e);
                 if (e->isActive) {
