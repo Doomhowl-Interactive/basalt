@@ -22,11 +22,32 @@ func void InitEntity(Entity* entity, Scene* scene)
 }
 
 #define ENTITIES_PER_PAGE 1024
+func void FreeEmptyPages(Scene* scene)
+{
+    for (usize i = MAX_ENTITY_PAGES - 1; i > 0; i--) {
+        if (scene->entities[i] != NULL) {
+            bool isEmpty = true;
+            for (usize j = 0; j < ENTITIES_PER_PAGE; j++) {
+                if (scene->entities[i][j].isActive) {
+                    isEmpty = false;
+                    break;
+                }
+            }
+            if (isEmpty) {
+                free(scene->entities[i]);
+                DEBUG("Freed entity page");
+            } else {
+                break;
+            }
+        }
+    }
+}
+
 BULLET Entity* CreateEntity(Scene* scene)
 {
     assert(scene);
 
-    // TODO: Free pages that are inactive
+    // FreeEmptyPages(scene);
 
     for (usize i = 0; i < MAX_ENTITY_PAGES; i++) {
         // Allocate the page if it doesn't exist
@@ -168,9 +189,9 @@ void UpdateAndRenderEntity(Scene* scene, Texture canvas, Entity* e, float delta)
     // vel->y -= MIN(offsetY, vel->y);
 }
 
-
 static usize LastCount = 0;
-usize GetEntityCount(){
+usize GetEntityCount()
+{
     return LastCount;
 }
 

@@ -151,8 +151,7 @@ BULLET bool RunBulletPattern(Entity* e, float delta)
 }
 
 const BulletPattern BulletPatterns[]
-    = { 
-        { "Stresstest",
+    = { { "Stresstest",
           {
               {
                   MoveBulletStraight,
