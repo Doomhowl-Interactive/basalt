@@ -261,12 +261,12 @@ BASALT void DrawTextureEx(Texture canvas,
     int canvasSize = canvas.width * canvas.height;
     int textureSize = texture.width * texture.height;
 
-    for (int destY = MAX(0, posY); destY < MIN(posY + srcHeight, HEIGHT); destY++) {
-        for (int destX = MAX(0, posX); destX < MIN(posX + srcWidth, WIDTH); destX++) {
-            int srcX = destX - posX;
-            int srcY = destY - posY;
+    for (int destY = MAX(0, posY); destY < Clamp(posY + srcHeight, 0, HEIGHT); destY++) {
+        for (int destX = MAX(0, posX); destX < Clamp(posX + srcWidth, 0, WIDTH); destX++) {
+            int sourceX = destX - posX + srcX;
+            int sourceY = destY - posY + srcY;
 
-            int srcIndex = srcY * texture.width + srcX;
+            int srcIndex = sourceY * texture.width + sourceX;
             int destIndex = destY * canvas.width + destX;
 
             Color srcColor = texture.pixels[srcIndex];
