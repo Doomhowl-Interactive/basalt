@@ -1,3 +1,5 @@
+module tooling.embedder_locale;
+
 import std.getopt;
 import std.stdio;
 import std.path;
