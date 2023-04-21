@@ -8,7 +8,7 @@
 
 const uint WIDTH = 800;
 const uint HEIGHT = 600;
-const char* GAME_TITLE = "Bullethell game";
+const char* GAME_TITLE = "Guardians Of The Holy Fire";
 
 const uint TPS = 25;
 
