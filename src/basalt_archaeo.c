@@ -4,7 +4,7 @@
 
 #define MAX_DRAW_CALLS 128
 
-enumdef(ArchaeoState){ ARCHAEO_IDLE, ARCHAEO_RECORDING, ARCHAEO_OPENED };
+typedef enum ArchaeoState { ARCHAEO_IDLE, ARCHAEO_RECORDING, ARCHAEO_OPENED } ArchaeoState;
 
 static struct {
     ArchaeoState state;
@@ -18,7 +18,8 @@ static struct {
 BASALT void DrawCallImpl(Texture canvas, const char* desc)
 {
     // Should this draw call be recorded?
-    if (!Config.hasArchaeo || Archaeo.state != ARCHAEO_RECORDING || Archaeo.canvasPixels == NULL || Archaeo.canvasPixels != canvas.pixels)
+    if (!Config.hasArchaeo || Archaeo.state != ARCHAEO_RECORDING || Archaeo.canvasPixels == NULL
+        || Archaeo.canvasPixels != canvas.pixels)
         return;
 
     if (Archaeo.drawCallCount < MAX_DRAW_CALLS) {
