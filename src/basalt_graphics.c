@@ -23,72 +23,64 @@ BASALT void DrawDot(Texture canvas, int posX, int posY, Color color)
     canvas.pixels[i] = color;
 }
 
-// TODO: Clean up required
 // NOTE: Taken from https://github.com/tsoding/olive.c/blob/master/olive.c
 BASALT void DrawLine(Texture canvas, int startX, int startY, int endX, int endY, Color color)
 {
-    int x1 = startX;
-    int x2 = endX;
-    int y1 = startY;
-    int y2 = endY;
-
-    int dx = x2 - x1;
-    int dy = y2 - y1;
+    int dx = endX - startX;
+    int dy = endY - startY;
 
     // If both of the differences are 0 there will be a division by 0 below.
     if (dx == 0 && dy == 0) {
-        if (0 <= x1 && x1 < (int)canvas.width && 0 <= y1 && y1 < (int)canvas.height) {
-            DrawDot(canvas, x1, y1, color);
+        if (0 <= startX && startX < (int)canvas.width && 0 <= startY && startY < (int)canvas.height) {
+            DrawDot(canvas, startX, startY, color);
         }
         return;
     }
 
     if (ABS(int, dx) > ABS(int, dy)) {
-        if (x1 > x2) {
-            SWAP(int, x1, x2);
-            SWAP(int, y1, y2);
+        if (startX > endX) {
+            SWAP(int, startX, endX);
+            SWAP(int, startY, endY);
         }
 
         // Cull out invisible line
-        if (x1 > (int)canvas.width)
+        if (startX > (int)canvas.width)
             return;
-        if (x2 < 0)
+        if (endX < 0)
             return;
 
         // Clamp the line to the boundaries
-        if (x1 < 0)
-            x1 = 0;
-        if (x2 >= (int)canvas.width)
-            x2 = (int)canvas.width - 1;
+        if (startX < 0)
+            startX = 0;
+        if (endX >= (int)canvas.width)
+            endX = (int)canvas.width - 1;
 
-        for (int x = x1; x <= x2; ++x) {
-            int y = dy * (x - x1) / dx + y1;
-            // TODO: move boundary checks out side of the loops in olivec_draw_line
+        for (int x = startX; x <= endX; ++x) {
+            int y = dy * (x - startX) / dx + startY;
             if (0 <= y && y < (int)canvas.height) {
                 DrawDot(canvas, x, y, color);
             }
         }
     } else {
-        if (y1 > y2) {
-            SWAP(int, x1, x2);
-            SWAP(int, y1, y2);
+        if (startY > endY) {
+            SWAP(int, startX, endX);
+            SWAP(int, startY, endY);
         }
 
         // Cull out invisible line
-        if (y1 > (int)canvas.height)
+        if (startY > (int)canvas.height)
             return;
-        if (y2 < 0)
+        if (endY < 0)
             return;
 
         // Clamp the line to the boundaries
-        if (y1 < 0)
-            y1 = 0;
-        if (y2 >= (int)canvas.height)
-            y2 = (int)canvas.height - 1;
+        if (startY < 0)
+            startY = 0;
+        if (endY >= (int)canvas.height)
+            endY = (int)canvas.height - 1;
 
-        for (int y = y1; y <= y2; ++y) {
-            int x = dx * (y - y1) / dy + x1;
-            // TODO: move boundary checks out side of the loops in olivec_draw_line
+        for (int y = startY; y <= endY; ++y) {
+            int x = dx * (y - startY) / dy + startX;
             if (0 <= x && x < (int)canvas.width) {
                 DrawDot(canvas, x, y, color);
             }
