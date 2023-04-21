@@ -9,8 +9,11 @@ Inspired by [Handmade Hero](https://handmadehero.org/).
 ## Screenshots
 ![Preview](screenshots/screenshot.png)
 
+## YouTube
+![rendering bug](https://www.youtube.com/watch?v=2KmvfEhxi5c)
+
 ## New goals
-- C over C++ (support both types of compilers)
+- C over C++ (support both types of compilers + some tooling is written in D)
 - Platform agnostic (POSIX-compliant)
 - Batteries included, no downloading dependencies/libraries.
 - Embed game assets into executable (instead of seperate file)
