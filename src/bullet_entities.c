@@ -37,6 +37,7 @@ func void FreeEmptyPages(Scene* scene)
             }
             if (isEmpty) {
                 free(scene->entities[i]);
+                scene->entities[i] = NULL;
                 DEBUG("Freed entity page");
             } else {
                 break;
@@ -49,7 +50,7 @@ BULLET Entity* CreateEntity(Scene* scene)
 {
     assert(scene);
 
-    // FreeEmptyPages(scene);
+    FreeEmptyPages(scene);
 
     for (usize i = 0; i < MAX_ENTITY_PAGES; i++) {
         // Allocate the page if it doesn't exist
