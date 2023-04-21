@@ -261,18 +261,13 @@ BASALT void DrawTextureEx(Texture canvas,
     int canvasSize = canvas.width * canvas.height;
     int textureSize = texture.width * texture.height;
 
-    for (int y = 0; y < srcHeight; y++) {
-        for (int x = 0; x < srcWidth; x++) {
-            int xx = posX + x;
-            int yy = posY + y;
+    for (int destY = MAX(0, posY); destY < MIN(posY + srcHeight, HEIGHT); destY++) {
+        for (int destX = MAX(0, posX); destX < MIN(posX + srcWidth, WIDTH); destX++) {
+            int srcX = destX - posX;
+            int srcY = destY - posY;
 
-            int destIndex = yy * canvas.width + xx;
-            if (destIndex < 0 || destIndex >= canvasSize)
-                continue;
-
-            int srcIndex = (srcY + y) * texture.width + (srcX + x);
-            if (srcIndex < 0 || srcIndex >= textureSize)
-                continue;
+            int srcIndex = srcY * texture.width + srcX;
+            int destIndex = destY * canvas.width + destX;
 
             Color srcColor = texture.pixels[srcIndex];
             uchar alpha = srcColor & 0x000000FF;
@@ -282,6 +277,7 @@ BASALT void DrawTextureEx(Texture canvas,
             pixels[destIndex] = finalColor;
         }
     }
+
     DRAWCALL(canvas, DrawRectangle);
 }
 
