@@ -27,12 +27,11 @@ BASALT int GetRandomNumber()
     if (PrevRNGFrame == curFrame) {
         RNGOffset++;
     } else {
-        RNGOffset += 0;
+        RNGOffset = 0;
         PrevRNGFrame = curFrame;
     }
 
-    // TODO: This could be better
-    int rng = ((curFrame * 69696420) << 2) * (525 + RNGOffset);
+    int rng = ((curFrame + RNGOffset * 69696420) << 2);
     return rng;
 #else
     return GetRealRandomNumber();
