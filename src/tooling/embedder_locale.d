@@ -23,30 +23,26 @@ void logDebug(string msg)
 struct Sentence
 {
     string[] locales;
-    ulong hash;
+    string primary;
 
     this(string csvLine)
     {
-        locales = csvLine.split(";");
-        hash = computeHash();
+        auto cols = csvLine.split(";");
+        if (cols.length == 0){
+            throw new Error("Invalid CSV line " ~ csvLine);
+        }
+        primary = cols[0];
+        locales = cols;
     }
 
-    string primary()
+    string toString() const
     {
-        if (locales.length > 0)
-        {
-            return locales[0];
-        }
-        else
-        {
-            throw new Error("Sentence does not have any text.");
-        }
+        return format("%ul: %s", toHash(), primary);
     }
 
-    string toString()
+    size_t toHash() const @nogc @safe pure nothrow
     {
-        string first = locales.empty ? "(Nothing)" : locales[0];
-        return format("%ul: %s", hash, first);
+        return typeid(primary).getHash(&primary);
     }
 
     bool opEquals(R)(const R other) const
@@ -64,19 +60,6 @@ struct Sentence
             }
         }
         return false;
-    }
-
-    private auto computeHash()
-    {
-        if (locales.length > 0)
-        {
-            string first = primary();
-            return typeid(first).getHash(&first);
-        }
-        else
-        {
-            throw new Error("Sentence does not have any text.");
-        }
     }
 }
 
