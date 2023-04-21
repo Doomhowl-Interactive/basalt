@@ -106,10 +106,9 @@ BASALT void DrawRectangle(Texture canvas, int posX, int posY, int width, int hei
     int i = posY * canvas.width + posX;
     for (int y = MAX(0, posY); y < MIN(posY + height, canvas.height); y++) {
         for (int x = MAX(0, posX); x < MIN(posX + width, canvas.width); x++) {
-            canvas.pixels[i++] = color;
+            int j = y * canvas.width + x;
+            canvas.pixels[j] = color;
         }
-        i -= width;
-        i += canvas.width;
     }
     DRAWCALL(canvas, DrawRectangle);
 }
@@ -262,7 +261,7 @@ BASALT void DrawTextureEx(Texture canvas,
     int canvasSize = canvas.width * canvas.height;
     int textureSize = texture.width * texture.height;
 
-    for (int y = 0; y < srcWidth; y++) {
+    for (int y = 0; y < srcHeight; y++) {
         for (int x = 0; x < srcWidth; x++) {
             int xx = posX + x;
             int yy = posY + y;
