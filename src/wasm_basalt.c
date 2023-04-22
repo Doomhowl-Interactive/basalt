@@ -1,18 +1,11 @@
 #include "basalt.h"
 #include "basalt_extra.h"
-
-#define WASM_STDLIB_IMPLEMENTATION
-#include "../src/assets_custom.dat.c"
-#include "../src/basalt_assets.c"
-#include "../src/basalt_extra_graphics.c"
-#include "../src/basalt_graphics.c"
-#include "../src/temple_game.c"
-#include "../src/wasm_stdlib.h"
+#define WASM
 
 Texture Canvas = { 0 };
 int FrameNumber = 0;
 
-wasmfunc bool InitWASM()
+WASM bool InitWASM()
 {
     Canvas.width = WIDTH;
     Canvas.height = HEIGHT;
@@ -20,22 +13,22 @@ wasmfunc bool InitWASM()
     return true;
 }
 
-wasmfunc int GetWASMCanvasWidth()
+WASM int GetWASMCanvasWidth()
 {
     return Canvas.width;
 }
 
-wasmfunc int GetWASMCanvasHeight()
+WASM int GetWASMCanvasHeight()
 {
     return Canvas.height;
 }
 
-wasmfunc uchar* GetWASMCanvas()
+WASM uchar* GetWASMCanvas()
 {
     return (uchar*)Canvas.pixels;
 }
 
-wasmfunc int UpdateAndRenderWASM(float delta)
+WASM int UpdateAndRenderWASM(float delta)
 {
     UpdateAndRenderGame(Canvas, delta);
 
@@ -48,12 +41,12 @@ wasmfunc int UpdateAndRenderWASM(float delta)
     return FrameNumber++;
 }
 
-wasmfunc float PollWASMMousePosition(float mouseX, float mouseY)
+WASM float PollWASMMousePosition(float mouseX, float mouseY)
 {
     return mouseX * mouseY;
 }
 
-wasmfunc int LifeAndTheUniverse()
+WASM int LifeAndTheUniverse()
 {
     int a = 42;
     return a;

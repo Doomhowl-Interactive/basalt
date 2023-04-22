@@ -75,7 +75,7 @@ TEST(Transformations)
 }
 END;
 
-platfunc void UnitTestBullet()
+BULLET void UnitTestBullet()
 {
     INFO("Doing unit tests of bulletgame");
     TestTransformations();

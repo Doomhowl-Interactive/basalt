@@ -1,5 +1,6 @@
 #pragma once
 #include "basalt.h"
+#define PLATFORM
 
 ////////
 // Methods that games shouldn't need, so engine only stuff.
@@ -31,17 +32,17 @@ extern GameInput Input;
 extern GameContext Context;
 
 // basalt_tooling.c
-platfunc bool UpdateAndRenderArchaeo(Texture canvas);
+PLATFORM bool UpdateAndRenderArchaeo(Texture canvas);
 #define DRAWCALL(X, Y) DrawCallImpl(X, #Y)
-platfunc void DrawCallImpl(Texture canvas, const char* desc);
+PLATFORM void DrawCallImpl(Texture canvas, const char* desc);
 
 // basalt_utils.c
-platfunc bool ParseLaunchArguments(int argc, char** argv);  // NOTE: Returns true if engine should continue running
-platfunc bool IsLittleEndian();
+PLATFORM bool ParseLaunchArguments(int argc, char** argv);  // NOTE: Returns true if engine should continue running
+PLATFORM bool IsLittleEndian();
 
 // basalt_tests.c
-platfunc void UnitTest();
+PLATFORM void UnitTest();
 
 // basalt_assets.c
-platfunc void InitHotReloading();
-platfunc void HotReloadTexture(Texture texture);
+PLATFORM void InitHotReloading();
+PLATFORM void HotReloadTexture(Texture texture);

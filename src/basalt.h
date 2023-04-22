@@ -52,8 +52,6 @@ extern const uint TPS;
 
 #define func static
 #define BASALT
-#define platfunc
-#define wasmfunc
 
 typedef struct Rect {
     int x;

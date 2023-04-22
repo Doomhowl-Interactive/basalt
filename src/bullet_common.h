@@ -156,4 +156,4 @@ BULLET void UpdateAndRenderEditor(Scene* activeScene, Texture canvas, float delt
 BULLET void UpdateAndRenderPatternEditor(Texture canvas, float delta);
 
 // bullet_tests.c
-platfunc void UnitTestBullet();
+BULLET void UnitTestBullet();

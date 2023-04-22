@@ -94,7 +94,7 @@ TEST(StringPadding)
 }
 END;
 
-platfunc void UnitTest()
+BASALT void UnitTest()
 {
     INFO("Doing unit tests");
     TestByteReading();
