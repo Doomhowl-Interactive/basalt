@@ -8,7 +8,7 @@
 
 const uint WIDTH = 800;
 const uint HEIGHT = 600;
-const char* GAME_TITLE = "Guardians Of The Holy Fire";
+const char* GAME_TITLE = "Guardians Of The Cursed Fire";
 
 const uint TPS = 25;
 
@@ -41,6 +41,10 @@ BASALT void InitializeGame()
     Player = CreateEntity(&Scenes[SCENE_GAME]);
     Vec2 spawnPos = { WIDTH / 2, HEIGHT / 1.2f };
     InitPlayer(Player, spawnPos);
+
+    if (GetRealRandomNumber() % 1000 == 699) {
+        GAME_TITLE = "Guardians Of Ur Mum";
+    }
 }
 
 BASALT void DisposeGame()
