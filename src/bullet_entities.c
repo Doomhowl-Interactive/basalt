@@ -52,7 +52,11 @@ BULLET Entity* CreateEntity(Scene* scene)
 {
     assert(scene);
 
-    FreeEmptyPages(scene);
+    static double prevFreeTime = 0;
+    if (GetTimeElapsed() > prevFreeTime + 10) {
+        FreeEmptyPages(scene);
+        prevFreeTime = GetTimeElapsed();
+    }
 
     for (usize i = 0; i < MAX_ENTITY_PAGES; i++) {
         // Allocate the page if it doesn't exist
@@ -130,7 +134,7 @@ void UpdateAndRenderEntity(Scene* scene, Texture canvas, Entity* e, float delta)
             DrawRectangle(canvas, R2(e->bounds), e->tint);
         }
     }
- 
+
     Vec2 center = RectFCenter(e->bounds);
 
     // WEAPON BEHAVIOUR
