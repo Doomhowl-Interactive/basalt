@@ -1,7 +1,6 @@
 #include <math.h>
 
 #include "basalt.h"
-#include "basalt_extra.h"
 #include "bullet_common.h"
 
 #define PATTERN

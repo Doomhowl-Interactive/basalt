@@ -79,7 +79,6 @@ BULLET Entity* CreateEntity(Scene* scene)
     }
     ERR("Ran out of pages to store entities in.");
     assert(0);
-    return NULL;
 }
 
 BULLET void DestroyEntity(Entity* e)

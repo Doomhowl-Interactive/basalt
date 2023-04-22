@@ -49,7 +49,7 @@ BASALT bool UpdateAndRenderArchaeo(Texture canvas)
     Archaeo.canvasPixels = canvas.pixels;
 
     switch (Archaeo.state) {
-        case ARCHAEO_IDLE:
+        case ARCHAEO_IDLE: {
             if (IsKeyPressed(KEY_P)) {
                 Archaeo.drawCallCount = 0;
                 Archaeo.state = ARCHAEO_RECORDING;
@@ -60,10 +60,12 @@ BASALT bool UpdateAndRenderArchaeo(Texture canvas)
                 SetWindowTitle(title);
             }
             break;
-        case ARCHAEO_RECORDING:
+        }
+        case ARCHAEO_RECORDING: {
             Archaeo.state = ARCHAEO_OPENED;
             Archaeo.selectedIndex = Archaeo.drawCallCount - 1;
             break;
+        }
         case ARCHAEO_OPENED: {
             char title[128];
             sprintf(title, "ARCHAEO MODE - %d/%d", Archaeo.selectedIndex, Archaeo.drawCallCount - 1);
@@ -77,15 +79,17 @@ BASALT bool UpdateAndRenderArchaeo(Texture canvas)
             if (IsKeyPressed(KEY_J))
                 Archaeo.selectedIndex--;
 
-            if (Archaeo.selectedIndex < 0)
+            assert(Archaeo.drawCallCount > 0);
+            if (Archaeo.selectedIndex < 0) {
                 Archaeo.selectedIndex = Archaeo.drawCallCount - 1;
+            }
             Archaeo.selectedIndex = Archaeo.selectedIndex % Archaeo.drawCallCount;
 
             DrawCall* drawCall = &Archaeo.drawCalls[Archaeo.selectedIndex];
             int bytesToCopy = canvas.width * canvas.height * sizeof(Color);
             memcpy(canvas.pixels, drawCall->texture.pixels, bytesToCopy);
             return false;
-        } break;
+        }
         default:
             assert(0);
     }

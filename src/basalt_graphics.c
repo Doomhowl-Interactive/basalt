@@ -95,7 +95,6 @@ BASALT void DrawRectangle(Texture canvas, int posX, int posY, int width, int hei
     // assume color is opaque
     color |= 0x000000FF;
 
-    int i = posY * canvas.width + posX;
     for (int y = MAX(0, posY); y < MIN(posY + height, canvas.height); y++) {
         for (int x = MAX(0, posX); x < MIN(posX + width, canvas.width); x++) {
             int j = y * canvas.width + x;
@@ -250,9 +249,6 @@ BASALT void DrawTextureEx(Texture canvas,
     HotReloadTexture(texture);
 
     Color* pixels = (Color*)canvas.pixels;
-    int canvasSize = canvas.width * canvas.height;
-    int textureSize = texture.width * texture.height;
-
     for (int destY = MAX(0, posY); destY < Clamp(posY + srcHeight, 0, HEIGHT); destY++) {
         for (int destX = MAX(0, posX); destX < Clamp(posX + srcWidth, 0, WIDTH); destX++) {
             int sourceX = destX - posX + srcX;
@@ -263,7 +259,7 @@ BASALT void DrawTextureEx(Texture canvas,
 
             Color srcColor = texture.pixels[srcIndex];
             uchar alpha = srcColor & 0x000000FF;
-            Color tintedColor = srcColor = BlendColors(srcColor, tint, BLEND_VALUE);
+            Color tintedColor = BlendColors(srcColor, tint, BLEND_VALUE);
             Color finalColor = BlendColors(pixels[destIndex], tintedColor, alpha);
 
             pixels[destIndex] = finalColor;

@@ -31,7 +31,7 @@ extern GameInput Input;
 extern GameContext Context;
 
 // basalt_tooling.c
-platfunc bool UpdateAndRenderArchaeo();
+platfunc bool UpdateAndRenderArchaeo(Texture canvas);
 #define DRAWCALL(X, Y) DrawCallImpl(X, #Y)
 platfunc void DrawCallImpl(Texture canvas, const char* desc);
 

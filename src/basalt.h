@@ -32,8 +32,8 @@ typedef uchar Key;
 #define MAX_ENTITIES 100000
 #define MAX_PATH_LENGTH 128
 
-#define MAX(X, Y) (X > Y ? X : Y)
-#define MIN(X, Y) (X < Y ? X : Y)
+#define MAX(X, Y) ((X) > (Y) ? (X) : (Y))
+#define MIN(X, Y) ((X) < (Y) ? (X) : (Y))
 
 #define SWAP(T, a, b) \
  do { \
@@ -49,9 +49,6 @@ extern const uint HEIGHT;
 extern const char* GAME_TITLE;
 
 extern const uint TPS;
-
-#define MAX(X, Y) (X > Y ? X : Y)
-#define MIN(X, Y) (X < Y ? X : Y)
 
 #define func static
 #define BASALT

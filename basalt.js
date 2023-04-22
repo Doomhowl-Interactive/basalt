@@ -36,7 +36,7 @@ async function start() {
 
     // check wasm integrity
     const lifeUniverse = game.instance.exports.LifeAndTheUniverse();
-    if (lifeUniverse != 42) {
+    if (lifeUniverse !== 42) {
         console.warn("Binary is probably corrupted!");
     }
 
