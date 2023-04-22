@@ -4,29 +4,27 @@
 #include "basalt_extra.h"
 #include "bullet_common.h"
 
-#define DIFFICULTY 2
-
 #define PATTERN
 #define ENDING
 
-ENDING bool EndBulletOOB(Entity* e, BulletData* data, int difficulty, const int* args)
+ENDING bool EndBulletOOB(Entity* e, ActionData* data, const int* args)
 {
     Vec2 pos = GetEntityCenter(e);
     const int OOB = 100;
     return (pos.x < -OOB || pos.y < -OOB || pos.x > WIDTH + OOB || pos.y > HEIGHT + OOB);
 }
 
-ENDING bool EndBulletTimer(Entity* e, BulletData* data, int difficulty, const int* args)
+ENDING bool EndBulletTimer(Entity* e, ActionData* data, const int* args)
 {
     return (data->timer > args[0]);
 }
 
-ENDING bool EndBulletInstantly(Entity* e, BulletData* data, int difficulty, const int* args)
+ENDING bool EndBulletInstantly(Entity* e, ActionData* data, const int* args)
 {
     return true;
 }
 
-PATTERN void SplitBulletCircle(Entity* e, BulletData* data, int difficulty, const int* args)
+PATTERN void SplitBulletCircle(Entity* e, ActionData* data, const int* args)
 {
     int amount = args[0];
     float degsPerSeg = 360.f / amount;
@@ -46,20 +44,20 @@ PATTERN void SplitBulletCircle(Entity* e, BulletData* data, int difficulty, cons
     }
 }
 
-PATTERN void MoveBulletStraight(Entity* e, BulletData* data, int difficulty, const int* args)
+PATTERN void MoveBulletStraight(Entity* e, ActionData* data, const int* args)
 {
-    float power = 150 + difficulty * 30;
+    float power = 150 + data->difficulty * 30;
 
     e->vel.x = data->normal.x * power;
     e->vel.y = data->normal.y * power;
 }
 
-PATTERN void MoveBulletOceanWave(Entity* e, BulletData* data, int difficulty, const int* args)
+PATTERN void MoveBulletOceanWave(Entity* e, ActionData* data, const int* args)
 {
     int segWidth = args[0];
     int segHeight = args[1];
 
-    float power = 150 + difficulty * 30;
+    float power = 150 + data->difficulty * 30;
 
     ResetEntityVelocity(e);
     float distance = data->timer * power;
@@ -69,12 +67,12 @@ PATTERN void MoveBulletOceanWave(Entity* e, BulletData* data, int difficulty, co
     SetEntityCenter(e, centerX, centerY);
 }
 
-PATTERN void MoveBulletSowing(Entity* e, BulletData* data, int difficulty, const int* args)
+PATTERN void MoveBulletSowing(Entity* e, ActionData* data, const int* args)
 {
     int segWidth = args[0];
     int speed = args[1];
 
-    float power = 150 + difficulty * 30;
+    float power = 150 + data->difficulty * 30;
 
     ResetEntityVelocity(e);
 
@@ -85,12 +83,12 @@ PATTERN void MoveBulletSowing(Entity* e, BulletData* data, int difficulty, const
     SetEntityCenter(e, centerX, centerY);
 }
 
-PATTERN void MoveBulletStaircase(Entity* e, BulletData* data, int difficulty, const int* args)
+PATTERN void MoveBulletStaircase(Entity* e, ActionData* data, const int* args)
 {
     int segWidth = args[0];
     int speed = args[1];
 
-    float power = 150 + difficulty * 30;
+    float power = 150 + data->difficulty * 30;
 
     ResetEntityVelocity(e);
 
@@ -101,12 +99,12 @@ PATTERN void MoveBulletStaircase(Entity* e, BulletData* data, int difficulty, co
     SetEntityCenter(e, centerX, centerY);
 }
 
-PATTERN void MoveBulletSnake(Entity* e, BulletData* data, int difficulty, const int* args)
+PATTERN void MoveBulletSnake(Entity* e, ActionData* data, const int* args)
 {
     int segWidth = args[0];
     int yFlip = args[1];
 
-    float power = 150 + difficulty * 30;
+    float power = 150 + data->difficulty * 30;
 
     e->vel.x = cos(data->timer * segWidth) * power;
     e->vel.y = yFlip * ABS(float, sin(data->timer * segWidth) * power);
@@ -115,16 +113,19 @@ PATTERN void MoveBulletSnake(Entity* e, BulletData* data, int difficulty, const 
 // core system
 uint GetBulletPatternActionCount(BulletPattern* pattern)
 {
-    for (uint index = 0; index < MAX_ENTITIES; index++) {
+    for (uint index = 0; index < MAX_ACTIONS; index++) {
         if (pattern->actions[index].function == NULL)
             return index;
     }
-    return MAX_ENTITIES;
+    return MAX_ACTIONS;
 }
 
 BULLET bool RunBulletPattern(Entity* e, float delta)
 {
     BulletPattern* pattern = &e->bulletPattern;
+    pattern->data.timer += delta;
+    pattern->data.delta = delta;
+    pattern->data.difficulty = GameDifficulty;
 
     if (pattern->count == 0)
         pattern->count = GetBulletPatternActionCount(pattern);
@@ -134,16 +135,14 @@ BULLET bool RunBulletPattern(Entity* e, float delta)
 
     BulletAction action = pattern->actions[pattern->index];
     assert(action.function);
-    e->bulletData.timer += delta;
-    e->bulletData.delta = delta;
     e->tint = action.tint;
 
     // process bullet action
     BulletActionFunc actionFunc = action.function;
-    (*actionFunc)(e, &e->bulletData, DIFFICULTY, action.parameters);
+    (*actionFunc)(e, &pattern->data, action.parameters);
 
     BulletActionEndFunc endFunc = action.endFunction;
-    if ((*endFunc)(e, &e->bulletData, DIFFICULTY, action.parameters)) {
+    if ((*endFunc)(e, &pattern->data, action.parameters)) {
         // on bullet action done
         pattern->index++;
     }

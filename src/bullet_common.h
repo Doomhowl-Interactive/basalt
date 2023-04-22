@@ -14,25 +14,29 @@
 #define COMPARE(X, Y) ((X & Y) == Y)
 #define BULLET
 
+extern usize GameDifficulty;
+
 typedef uint EntityID;
 typedef uint EntityType;
 
 typedef struct Entity Entity;
 typedef struct Scene Scene;
 
-typedef struct BulletData {
+// Some generic RAM to put data in
+typedef struct ActionData {
     float timer;
     Vec2 origin;
     Vec2 normal;
     float delta;
 
+    int difficulty;
     int ints[MAX_BULLET_SLOTS];
     bool bools[MAX_BULLET_SLOTS];
     float floats[MAX_BULLET_SLOTS];
-} BulletData;
+} ActionData;
 
-typedef void (*BulletActionFunc)(Entity* entity, BulletData* data, int difficulty, const int* args);
-typedef bool (*BulletActionEndFunc)(Entity* entity, BulletData* data, int difficulty, const int* args);
+typedef void (*BulletActionFunc)(Entity* entity, ActionData* data, const int* args);
+typedef bool (*BulletActionEndFunc)(Entity* entity, ActionData* data, const int* args);
 
 typedef struct BulletAction {
     BulletActionFunc function;
@@ -41,12 +45,29 @@ typedef struct BulletAction {
     int parameters[MAX_PARAMETERS];
 } BulletAction;
 
+typedef bool (*EntityAIActionFunc)(Entity* entity, ActionData* data, const int* args);
+
+typedef struct EntityAIAction {
+    EntityAIActionFunc function;
+    int parameters[MAX_PARAMETERS];
+} EntityAIAction;
+
+typedef struct EntityAIBehaviour {
+    const char* name;
+    EntityAIAction actions[MAX_ACTIONS];
+    ActionData data;
+    uint count;
+    uint index;
+} EntityAIBehaviour;
+
 typedef struct BulletPattern {
     const char* name;
     BulletAction actions[MAX_ACTIONS];
     const uchar* texture;
+    ActionData data;
     uint count;
     uint index;
+
 } BulletPattern;
 
 typedef struct BulletSpawner {
@@ -87,11 +108,13 @@ struct Entity {
     uint health;
 
     // bullet
-    BulletData bulletData;
     BulletPattern bulletPattern;
 
     // spawner
     BulletSpawner bulletSpawners[MAX_SPAWNERS];
+
+    // ai
+    EntityAIBehaviour ai;
 };
 
 #define MAX_ENTITY_PAGES 128
@@ -118,6 +141,12 @@ BULLET bool RunBulletPattern(Entity* e, float delta);
 BULLET const BulletPattern* GetBulletPattern(usize index);
 BULLET const BulletPattern* GetBulletPatternByName(const char* name);
 BULLET usize GetBulletPatternCount();
+
+// bullet_ai.c
+BULLET bool RunEntityAI(Entity* e, float delta);
+BULLET const EntityAIBehaviour* GetShipAIBehaviour(usize index);
+BULLET const BulletPattern* GetShipAIBehaviourByName(const char* name);
+BULLET usize GetShipAIBehaviourCount();
 
 // bullet_factories.c
 BULLET void InitPlayer(Entity* e, Vec2 pos);

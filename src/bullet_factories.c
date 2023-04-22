@@ -49,7 +49,7 @@ BULLET void InitBullet(Entity* e, const BulletPattern* pattern, Vec2 pos, Vec2 n
 
     // copy bullet pattern
     e->bulletPattern = *pattern;
-    e->bulletData.origin = pos;
-    e->bulletData.normal = normal;
+    e->bulletPattern.data.origin = pos;
+    e->bulletPattern.data.normal = normal;
     e->tint = 0xFFFFFFFF;
 }

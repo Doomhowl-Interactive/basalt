@@ -5,6 +5,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+// TODO: Deprecate tags
+
 BULLET void ClearEntities(Scene* scene)
 {
     assert(scene);
@@ -177,6 +179,9 @@ void UpdateAndRenderEntity(Scene* scene, Texture canvas, Entity* e, float delta)
             DestroyEntity(e);
         }
     }
+
+    // Ship ai behaviour
+    RunEntityAI(e, delta);
 
     // apply movement
     e->bounds.x += vel->x * delta;

@@ -29,6 +29,8 @@ static Texture BackgroundNoiseTexture = { 0 };
 Texture BulletPlacholderTexture = { 0 };
 Texture PlayerTexture = { 0 };
 
+usize GameDifficulty = 2;
+
 BASALT void InitializeGame()
 {
     if (Config.hasUnitTesting)
