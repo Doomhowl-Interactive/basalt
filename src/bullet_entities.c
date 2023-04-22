@@ -130,27 +130,7 @@ void UpdateAndRenderEntity(Scene* scene, Texture canvas, Entity* e, float delta)
             DrawRectangle(canvas, R2(e->bounds), e->tint);
         }
     }
-
-    // PLAYER BEHAVIOUR
-    if (COMPARE(e->type, TAG_PLAYER)) {
-        float moveSpeed = e->moveSpeed;
-        vel->x = 0;
-        vel->y = 0;
-
-        if (IsKeyDown(KEY_A)) {
-            vel->x -= moveSpeed;
-        }
-        if (IsKeyDown(KEY_D)) {
-            vel->x += moveSpeed;
-        }
-        if (IsKeyDown(KEY_W)) {
-            vel->y -= moveSpeed;
-        }
-        if (IsKeyDown(KEY_S)) {
-            vel->y += moveSpeed;
-        }
-    }
-
+ 
     Vec2 center = RectFCenter(e->bounds);
 
     // WEAPON BEHAVIOUR
@@ -174,10 +154,8 @@ void UpdateAndRenderEntity(Scene* scene, Texture canvas, Entity* e, float delta)
     }
 
     // Bullet behaviour
-    if (COMPARE(e->type, TAG_BULLET)) {
-        if (RunBulletPattern(e, delta)) {
-            DestroyEntity(e);
-        }
+    if (RunBulletPattern(e, delta)) {
+        DestroyEntity(e);
     }
 
     // Ship ai behaviour

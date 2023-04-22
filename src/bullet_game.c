@@ -71,20 +71,6 @@ BASALT void UpdateAndRenderGame(Texture canvas, float delta)
         TakeScreenshot(canvas);
     }
 
-    // switch between bullet types for testing
-    if (IsKeyPressed(KEY_E)) {
-        uint patternIndex = SelectedPattern++;
-        for (int i = 0; i < MAX_SPAWNERS; i++) {
-            BulletSpawner* spawner = &Player->bulletSpawners[i];
-            if (spawner == NULL)
-                continue;
-            spawner->patternToSpawn = GetBulletPattern(patternIndex);
-        }
-
-        if (SelectedPattern >= GetBulletPatternCount())
-            SelectedPattern = 0;
-    }
-
     // TODO: blend at runtime 0x4B486EFF, 0x07060FFF
     int offsetY = (int)(GetTimeElapsed() * -BackgroundScrollSpeed) % HEIGHT;
     DrawTexture(canvas, BackgroundNoiseTexture, 0.f, -offsetY, WHITE);

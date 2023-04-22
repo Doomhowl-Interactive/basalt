@@ -2,9 +2,11 @@
 #include "basalt_extra.h"
 #include "bullet_common.h"
 
+#define AI
+
 // TODO Implement player movement using the AI system
 
-usize GetEntityAIActionCount(const EntityAIBehaviour* behaviour)
+usize GetEntityAIActionCount(const EntityAI* behaviour)
 {
     for (uint index = 0; index < MAX_ACTIONS; index++) {
         if (behaviour->actions[index].function == NULL)
@@ -15,7 +17,7 @@ usize GetEntityAIActionCount(const EntityAIBehaviour* behaviour)
 
 BULLET bool RunEntityAI(Entity* e, float delta)
 {
-    EntityAIBehaviour* ai = &e->ai;
+    EntityAI* ai = &e->ai;
     if (ai->name == NULL) {
         return false;  // Entity has no AI, don't do anything.
     }
@@ -35,4 +37,74 @@ BULLET bool RunEntityAI(Entity* e, float delta)
         ai->index++;
     }
     return false;
+}
+
+AI bool BehavePlayer(Entity* e, ActionData* data, const int* args)
+{
+    int* patternIndex = &data->ints[0];
+
+    float moveSpeed = e->moveSpeed;
+    e->vel.x = 0;
+    e->vel.y = 0;
+
+    if (IsKeyDown(KEY_A)) {
+        e->vel.x -= moveSpeed;
+    }
+    if (IsKeyDown(KEY_D)) {
+        e->vel.x += moveSpeed;
+    }
+    if (IsKeyDown(KEY_W)) {
+        e->vel.y -= moveSpeed;
+    }
+    if (IsKeyDown(KEY_S)) {
+        e->vel.y += moveSpeed;
+    }
+
+    // switch between bullet types for testing
+    if (IsKeyPressed(KEY_E)) {
+        (*patternIndex)++;
+        if (*patternIndex >= GetBulletPatternCount())
+            *patternIndex = 0;
+
+        for (int i = 0; i < MAX_SPAWNERS; i++) {
+            BulletSpawner* spawner = &e->bulletSpawners[i];
+            if (spawner == NULL)
+                continue;
+            spawner->patternToSpawn = GetBulletPattern(*patternIndex);
+        }
+    }
+
+    return false;
+}
+
+const EntityAI EntityAIBehaviours[] = { { "PlayerMovement", { { BehavePlayer } } }, NULL };
+
+BULLET const EntityAI* GetEntityAI(usize index)
+{
+    usize count = GetEntityAICount();
+    if (index < count)
+        return &EntityAIBehaviours[index];
+
+    WARN("Did not find bullet pattern indexed %lu", index);
+    return &EntityAIBehaviours[0];
+}
+
+BULLET const EntityAI* GetEntityAIByName(const char* name)
+{
+    for (const EntityAI* beh = EntityAIBehaviours; beh->name != NULL; beh++) {
+        if (strcmp(beh->name, name) == 0)
+            return beh;
+    }
+    WARN("Did not find bullet pattern with name %s", name);
+    return GetEntityAI(0);
+}
+
+BULLET usize GetEntityAICount()
+{
+    static usize counter = 0;
+    if (counter == 0) {
+        for (const EntityAI* beh = EntityAIBehaviours; beh->name != NULL; beh++)
+            counter++;
+    }
+    return counter;
 }

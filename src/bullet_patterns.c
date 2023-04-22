@@ -127,6 +127,9 @@ BULLET bool RunBulletPattern(Entity* e, float delta)
     pattern->data.delta = delta;
     pattern->data.difficulty = GameDifficulty;
 
+    if (pattern->name == NULL)
+        return false;
+
     if (pattern->count == 0)
         pattern->count = GetBulletPatternActionCount(pattern);
 

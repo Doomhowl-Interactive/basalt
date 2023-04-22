@@ -8,12 +8,14 @@ BULLET void InitPlayer(Entity* e, Vec2 pos)
 {
     DEBUG("Spawned player at %f %f", pos.x, pos.y);
     e->texture = RequestTexture(SPR_SHIP_PLAYER);
-    e->type = TAG_PLAYER;
     SetEntityCenter(e, pos.x - 48 / 2, pos.y);
     e->tint = WHITE;
     e->moveSpeed = 200;
     SetEntitySize(e, e->texture.width, e->texture.height);
     assert(e->bounds.width > 0 && e->bounds.height > 0);
+
+    // "AI" Behaviour
+    e->ai = *GetEntityAIByName("PlayerMovement");
 
     // Bullet spawners
     double outwardsAngleDeg = 40;
@@ -40,7 +42,6 @@ BULLET void InitBullet(Entity* e, const BulletPattern* pattern, Vec2 pos, Vec2 n
     // DEBUG("Spawned bullet at %f %f", pos.x, pos.y);
 
     // set sprite
-    e->type = TAG_BULLET;
     e->texture = RequestTexture(pattern->texture);
     SetEntityCenter(e, pos.x, pos.y);
     SetEntitySize(e, e->texture.width, e->texture.height);

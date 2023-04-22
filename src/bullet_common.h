@@ -2,22 +2,17 @@
 #include "basalt.h"
 #include "bullet_assets.h"
 
+#define BULLET
+
 #define MAX_PATTERNS 128
 #define MAX_SPAWNERS 32
 #define MAX_ACTIONS 16
 #define MAX_BULLET_SLOTS 16
 #define MAX_PARAMETERS 16
 
-#define TAG_PLAYER (1 << 0)
-#define TAG_BULLET (1 << 1)
-
-#define COMPARE(X, Y) ((X & Y) == Y)
-#define BULLET
-
 extern usize GameDifficulty;
 
 typedef uint EntityID;
-typedef uint EntityType;
 
 typedef struct Entity Entity;
 typedef struct Scene Scene;
@@ -52,13 +47,13 @@ typedef struct EntityAIAction {
     int parameters[MAX_PARAMETERS];
 } EntityAIAction;
 
-typedef struct EntityAIBehaviour {
+typedef struct EntityAI {
     const char* name;
     EntityAIAction actions[MAX_ACTIONS];
     ActionData data;
     uint count;
     uint index;
-} EntityAIBehaviour;
+} EntityAI;
 
 typedef struct BulletPattern {
     const char* name;
@@ -85,7 +80,6 @@ struct Entity {
     bool isActive;
     float timeAlive;
     EntityID id;
-    EntityType type;
 
     // sprite
     RectF bounds;
@@ -114,7 +108,7 @@ struct Entity {
     BulletSpawner bulletSpawners[MAX_SPAWNERS];
 
     // ai
-    EntityAIBehaviour ai;
+    EntityAI ai;
 };
 
 #define MAX_ENTITY_PAGES 128
@@ -144,9 +138,9 @@ BULLET usize GetBulletPatternCount();
 
 // bullet_ai.c
 BULLET bool RunEntityAI(Entity* e, float delta);
-BULLET const EntityAIBehaviour* GetShipAIBehaviour(usize index);
-BULLET const BulletPattern* GetShipAIBehaviourByName(const char* name);
-BULLET usize GetShipAIBehaviourCount();
+BULLET const EntityAI* GetEntityAI(usize index);
+BULLET const EntityAI* GetEntityAIByName(const char* name);
+BULLET usize GetEntityAICount();
 
 // bullet_factories.c
 BULLET void InitPlayer(Entity* e, Vec2 pos);
