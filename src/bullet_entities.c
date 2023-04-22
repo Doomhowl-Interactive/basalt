@@ -140,7 +140,7 @@ void UpdateAndRenderEntity(Scene* scene, Texture canvas, Entity* e, float delta)
     // WEAPON BEHAVIOUR
     for (uint i = 0; i < MAX_SPAWNERS; i++) {
         BulletSpawner* weapon = &e->bulletSpawners[i];
-        if (weapon->patternToSpawn == NULL)
+        if (weapon->patternToSpawn == NULL || weapon->disabled)
             continue;
 
         // draw normal (debugging)

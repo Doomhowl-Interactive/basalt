@@ -47,6 +47,7 @@ AI bool BehavePlayer(Entity* e, ActionData* data, const int* args)
     e->vel.x = 0;
     e->vel.y = 0;
 
+    // TODO: Use arrow keys instead to rip Touhou keyboard layout
     if (IsKeyDown(KEY_A)) {
         e->vel.x -= moveSpeed;
     }
@@ -59,6 +60,11 @@ AI bool BehavePlayer(Entity* e, ActionData* data, const int* args)
     if (IsKeyDown(KEY_S)) {
         e->vel.y += moveSpeed;
     }
+
+    // shoot if pressing Z
+    // for (usize i = 0; i < MAX_SPAWNERS; i++) {
+    //     e->bulletSpawners[i].disabled = !IsKeyDown(KEY_Z);
+    // }
 
     // switch between bullet types for testing
     if (IsKeyPressed(KEY_E)) {

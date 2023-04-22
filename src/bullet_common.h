@@ -70,6 +70,7 @@ typedef struct BulletSpawner {
     Vec2 normal;
     float interval;
     float spawnTimer;
+    bool disabled;
     const BulletPattern* patternToSpawn;
 } BulletSpawner;
 

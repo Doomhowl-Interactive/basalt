@@ -302,6 +302,7 @@ BASALT void DisposeGame();
 BASALT void UpdateAndRenderGame(Texture canvas, float delta);
 
 // Key definitions
+// TODO: Find a way to translate other keyboard layouts
 #define KEY_A 'A'
 #define KEY_B 'B'
 #define KEY_C 'C'
