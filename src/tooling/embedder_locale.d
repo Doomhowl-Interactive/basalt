@@ -40,14 +40,14 @@ struct Sentence
         return format("%ul: %s", toHash(), primary);
     }
 
-    size_t toHash() const @nogc @safe pure nothrow
+    size_t toHash() const @safe nothrow
     {
         return typeid(primary).getHash(&primary);
     }
 
     bool opEquals(R)(const R other) const
     {
-        return hash == other.hash;
+        return toHash() == other.toHash();
     }
 
     bool containedIn(Sentence[ulong] iter)
@@ -73,10 +73,10 @@ Sentence[ulong] loadSentences(string csv)
         auto s = Sentence(line);
         if (s.containedIn(result))
         {
-            string msg = format("Duplicate sentence at line %d: %s",i,s.primary());
+            string msg = format("Duplicate sentence at line %d: %s",i,s.primary);
             throw new Error(msg);
         }
-        result[s.hash] = s;
+        result[s.toHash()] = s;
     }
     return result;
 }
@@ -97,7 +97,7 @@ void processLocales(string input, string output)
 {
     if (input.empty())
     {
-        throw new Error("Input folder doesn't exist!");
+        throw new Error("Input folder '" ~ input ~ "' doesn't exist!");
     }
 
     auto files = dirEntries(input, "*.csv", SpanMode.depth);
@@ -126,7 +126,7 @@ int main(string[] args)
     }
     catch (Exception ex)
     {
-        writeln(stderr, "Invalid arguments passed!");
+        stderr.writeln( "Invalid arguments passed!");
         return EXIT_FAILURE;
     }
 
@@ -137,14 +137,21 @@ int main(string[] args)
     }
     else
     {
-        try
+        if (inputFolder.empty() || destFile.empty())
         {
-            processLocales(inputFolder, destFile);
+            stderr.writeln("No inputFolder or destination file passed!");
         }
-        catch (Exception exc)
+        else
         {
-            writeln(stderr, exc.msg);
-            return EXIT_FAILURE;
+            try
+            {
+                processLocales(inputFolder, destFile);
+            }
+            catch (Exception exc)
+            {
+                stderr.writeln( exc.msg);
+                return EXIT_FAILURE;
+            }
         }
 
     }
