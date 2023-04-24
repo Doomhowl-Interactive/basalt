@@ -5,5 +5,6 @@ build_xorg
 **/.vs
 **/temp
 **/.vim
-
+dist
+node_modules
 basalt.zip

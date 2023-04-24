@@ -37,20 +37,16 @@ jobs:
                   cache: "npm"
                   cache-dependency-path: wasm/package-lock.json
             - name: Install dependencies
-              run: |
-                cd wasm
-                npm install
+              run: npm install
             - name: Build
-              run: |
-                cd wasm
-                npm run build
+              run: npm run build
             - name: Setup Pages
               uses: actions/configure-pages@v3
             - name: Upload artifact
               uses: actions/upload-pages-artifact@v1
               with:
                   # Upload dist repository
-                  path: "./wasm/dist"
+                  path: "./dist"
             - name: Deploy to GitHub Pages
               id: deployment
               uses: actions/deploy-pages@v1
