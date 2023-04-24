@@ -57,12 +57,13 @@ struct Sentence
 
     string toCode()
     {
-        string code = format("LocalizedString LOC_%u = { %s", toHash(), primary);
+        string code = "// " ~ primary ~ "\n";
+        code ~= format("const char* LOC_%u[] = { \"%s\"", toHash(), primary);
         foreach (string loc; locales)
         {
             code ~= ", \"" ~ loc ~ "\"";
         }
-        code ~= ", NULL };";
+        code ~= ", NULL };\n";
         return code;
     }
 
