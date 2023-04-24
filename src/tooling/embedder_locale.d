@@ -20,6 +20,14 @@ void logDebug(string msg)
     }
 }
 
+void stripAll(ref string[] strings)
+{
+    foreach (string str; strings)
+    {
+        str = str.strip();
+    }
+}
+
 struct Sentence
 {
     string[] locales;
@@ -27,17 +35,35 @@ struct Sentence
 
     this(string csvLine)
     {
-        auto cols = csvLine.split(";");
-        if (cols.length == 0){
+        string[] cols = csvLine.split(";");
+        if (cols.length == 0)
+        {
             throw new Error("Invalid CSV line " ~ csvLine);
         }
-        primary = cols[0];
-        locales = cols;
+        stripAll(cols);
+        this(cols);
+    }
+
+    this(string[] locales)
+    {
+        primary = locales[0];
+        locales = locales[1 .. $];
     }
 
     string toString() const
     {
         return format("%ul: %s", toHash(), primary);
+    }
+
+    string toCode()
+    {
+        string code = format("LocalizedString LOC_%u = { %s", toHash(), primary);
+        foreach (string loc; locales)
+        {
+            code ~= ", \"" ~ loc ~ "\"";
+        }
+        code ~= ", NULL };";
+        return code;
     }
 
     size_t toHash() const @safe nothrow
@@ -68,7 +94,7 @@ Sentence[ulong] loadSentencesFromFile(string file)
     return result;
 }
 
-Sentence[ulong] processLocales(string input, string output)
+Sentence[ulong] loadSentencesFromFolder(string input)
 {
     if (input.empty())
     {
@@ -78,16 +104,31 @@ Sentence[ulong] processLocales(string input, string output)
     Sentence[ulong] locales;
     foreach (file; dirEntries(input, "*.csv", SpanMode.depth))
     {
-        foreach(sent; loadSentencesFromFile(file))
+        foreach (sent; loadSentencesFromFile(file))
         {
             auto hash = sent.toHash();
-            if (hash in locales){
+            if (hash in locales)
+            {
                 throw new Error("Duplicate sentence " ~ sent.primary);
             }
             locales[hash] = sent;
         }
     }
     return locales;
+}
+
+void generateLocaleCodeFile(string inputFolder, string outputFile)
+{
+    string fileContent = "#include \"basalt.h\"\n\n";
+    Sentence[ulong] sentences = loadSentencesFromFolder(inputFolder);
+    foreach (sent; sentences)
+    {
+        fileContent ~= sent.toCode() ~ "\n";
+    }
+    fileContent ~= "\n";
+    logDebug(fileContent);
+    std.file.write(outputFile, fileContent);
+    writeln("Wrote code to " ~ outputFile);
 }
 
 int main(string[] args)
@@ -109,7 +150,7 @@ int main(string[] args)
     }
     catch (Exception ex)
     {
-        stderr.writeln( "Invalid arguments passed!");
+        stderr.writeln("Invalid arguments passed!");
         return EXIT_FAILURE;
     }
 
@@ -128,7 +169,7 @@ int main(string[] args)
         {
             try
             {
-                processLocales(inputFolder, destFile);
+                generateLocaleCodeFile(inputFolder, destFile);
             }
             catch (Exception exc)
             {
