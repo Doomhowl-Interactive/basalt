@@ -8,7 +8,7 @@ BULLET void InitPlayer(Entity* e, Vec2 pos)
 {
     DEBUG("Spawned player at %f %f", pos.x, pos.y);
     e->texture = RequestTexture(SPR_SHIP_PLAYER);
-    SetEntityCenter(e, pos.x - 48 / 2, pos.y);
+    SetEntityCenter(e, pos.x - 48.f / 2.f, pos.y);
     e->tint = WHITE;
     e->moveSpeed = 200;
     SetEntitySize(e, e->texture.width, e->texture.height);

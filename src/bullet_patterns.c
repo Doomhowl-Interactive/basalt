@@ -122,9 +122,7 @@ uint GetBulletPatternActionCount(BulletPattern* pattern)
 BULLET bool RunBulletPattern(Entity* e, float delta)
 {
     BulletPattern* pattern = &e->bulletPattern;
-    pattern->data.timer += delta;
-    pattern->data.delta = delta;
-    pattern->data.difficulty = GameDifficulty;
+    FillInActionData(&pattern->data, delta);
 
     if (pattern->name == NULL)
         return false;
@@ -147,6 +145,7 @@ BULLET bool RunBulletPattern(Entity* e, float delta)
     if ((*endFunc)(e, &pattern->data, action.parameters)) {
         // on bullet action done
         pattern->index++;
+        ResetActionData(&pattern->data);
     }
     return false;
 }
@@ -277,4 +276,16 @@ BULLET usize GetBulletPatternCount()
             counter++;
     }
     return counter;
+}
+
+BULLET void FillInActionData(ActionData* data, float delta)
+{
+    data->timer += delta;
+    data->delta = delta;
+    data->difficulty = GameDifficulty;
+}
+
+BULLET inline void ResetActionData(ActionData* data)
+{
+    memset(data, 0, sizeof(ActionData));
 }

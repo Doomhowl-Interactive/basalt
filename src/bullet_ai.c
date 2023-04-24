@@ -18,6 +18,8 @@ usize GetEntityAIActionCount(const EntityAI* behaviour)
 BULLET bool RunEntityAI(Entity* e, float delta)
 {
     EntityAI* ai = &e->ai;
+    FillInActionData(&ai->data, delta);
+
     if (ai->name == NULL) {
         return false;  // Entity has no AI, don't do anything.
     }
@@ -35,7 +37,61 @@ BULLET bool RunEntityAI(Entity* e, float delta)
     assert(actionFunc);
     if (actionFunc(e, &ai->data, action.parameters)) {
         ai->index++;
+        ResetActionData(&ai->data);
     }
+    return false;
+}
+
+AI bool FlyTowards(Entity* e, ActionData* data, const int* args)
+{
+    const int BORDER_OFFSET = 150;
+    const float DISTANCE_CHECK = 10.f;
+    const float EPSILON = 0.1f;
+
+    bool* initialized = &data->bools[0];
+    if (!(*initialized)) {
+        int flyInX = args[2];
+        int flyInY = args[3];
+
+        if (flyInX == 0 && flyInY == 0) {
+            bool fromRightSide = (GetRandomNumber() % 100) > 50;
+            flyInX = -BORDER_OFFSET;
+            if (fromRightSide) {
+                flyInX = WIDTH + BORDER_OFFSET;
+            }
+            flyInY = -BORDER_OFFSET;
+        }
+
+        SetEntityCenter(e, flyInX, flyInY);
+        *initialized = true;
+    }
+
+    assert(data->difficulty > 0);
+    float power = 100 * data->difficulty;
+    Vec2 src = GetEntityCenter(e);
+    Vec2 dest = {
+        args[0],
+        args[1],
+    };
+
+    float distanceLeft = Vec2DistanceSquared(src, dest);
+    if (distanceLeft < DISTANCE_CHECK) {
+        // TODO: Add some easing instead of instantly coming to a halt
+        e->vel.x = 0;
+        e->vel.y = 0;
+        return true;
+    }
+
+    // adjust velocity to reach the target
+    Vec2 direction = Vec2Towards(src, dest);
+    e->vel.x = direction.x * power;
+    e->vel.y = direction.y * power;
+
+    return false;
+}
+
+AI bool SidewaysEight(Entity* e, ActionData* data, const int* args)
+{
     return false;
 }
 
@@ -83,7 +139,10 @@ AI bool BehavePlayer(Entity* e, ActionData* data, const int* args)
     return false;
 }
 
-const EntityAI EntityAIBehaviours[] = { { "PlayerMovement", { { BehavePlayer } } }, NULL };
+// clang-format doesn't expand this shit
+const EntityAI EntityAIBehaviours[] = { { "PlayerMovement", { { FlyTowards, { 400, 530, 400, 670 } }, { BehavePlayer } } },
+                                        { "SidewaysEight", { { FlyTowards, { 150, 80 } }, { SidewaysEight, { 0 } } } },
+                                        NULL };
 
 BULLET const EntityAI* GetEntityAI(usize index)
 {

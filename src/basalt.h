@@ -28,7 +28,6 @@ typedef uchar Key;
 
 #endif
 
-// FIXME: Don't create scenes on the stack or you'll run out of memory.
 #define MAX_ENTITIES 100000
 #define MAX_PATH_LENGTH 128
 
@@ -141,7 +140,9 @@ typedef StringArray FilePathList;
 #define RAD2DEG(X) ((X)*180.0 / PI)
 
 BASALT int Clamp(int value, int min, int max);
-BASALT int GetRandomNumber();  // WARN: read implementation
+
+// WARN: read implementation
+BASALT int GetRandomNumber();
 BASALT int GetRealRandomNumber();
 
 BASALT extern Vec2 RectFOrigin(RectF rectf);
@@ -160,10 +161,20 @@ BASALT extern RectF RectToRectF(Rect rect);
 BASALT extern Point Vec2ToPoint(Vec2 v2);
 BASALT extern Vec2 PointToVec2(Point point);
 
-BASALT extern Vec2 Vec2Offset(Vec2 src, Vec2 offset);
+BASALT extern Vec2 Vec2Add(Vec2 src, Vec2 offset);
+BASALT extern Vec2 Vec2Subtract(Vec2 src, Vec2 offset);
 BASALT extern Vec2 Vec2Scale(Vec2 src, float scale);
-BASALT Vec2 Vec2Normalize(Vec2 v2);
-BASALT float Vec2Magnitude(Vec2 v2);
+BASALT extern Vec2 Vec2Normalize(Vec2 v2);
+BASALT extern Vec2 Vec2Negate(Vec2 v2);
+BASALT extern float Vec2Magnitude(Vec2 v2);
+
+// NOTE: Get's normalized direction from src to dest
+BASALT extern Vec2 Vec2Towards(Vec2 src, Vec2 dest);
+
+BASALT extern float Vec2DistanceSquared(Vec2 first, Vec2 second);
+
+// WARN: Taking square roots is expensive! Use Vec2DistanceSquared instead!
+BASALT extern float Vec2Distance(Vec2 first, Vec2 second);
 
 BASALT StringArray InitStringArray();
 BASALT void StoreString(StringArray* arr, char* text);
@@ -178,14 +189,17 @@ BASALT const char* PadStringRight(const char* text, char symbol, usize length);
 BASALT bool FileHasExtension(const char* name, const char* ext);
 BASALT bool FolderExists(const char* folder);
 
-// WARN: The following 2 functions use cached memory.
-// The result gets overwritten on future calls.
-BASALT long GetFileModifiedTime(const char* filePath);  // NOTE: Get seconds since epoch a file was last changed.
-                                                        // Returns 0 if file doesn't exists.
+// WARN: Uses cached memory, result gets overwritten on future calls.
+// NOTE: Get seconds since epoch a file was last changed.
+// Returns 0 if file doesn't exists.
+BASALT long GetFileModifiedTime(const char* filePath);
 BASALT const char* GetFileName(const char* filePath);
 BASALT const char* GetFileStem(const char* filePath);
-BASALT const char* GetFirstExistingFolder(const char** folders);  // NOTE: Returns NULL when none exist,
-                                                                  // pass NULL ended array
+
+// NOTE: Returns NULL when none exist,
+// pass NULL ended array
+BASALT const char* GetFirstExistingFolder(const char** folders);
+
 BASALT FilePathList GetFolderFiles(const char* folder, const char* ext);
 BASALT void UnloadFilePathList(FilePathList list);
 
@@ -201,7 +215,9 @@ extern const uchar SPR_PIXELFONT[];
 // TODO: Change to retreive texture, that uses cache system
 #define RequestTexture(X) RequestTextureEx(#X, X)
 BASALT Texture RequestTextureEx(const char* name, const uchar* pixels);
-BASALT Texture* GetLoadedTextures();  // NOTE: Returns null ended array of loaded/cached textures
+
+// NOTE: Returns null ended array of loaded/cached textures
+BASALT Texture* GetLoadedTextures();
 BASALT void TakeScreenshot(Texture canvas);
 
 BASALT void TakeScreenshot();
@@ -209,8 +225,11 @@ BASALT void TakeScreenshot();
 BASALT Point GetMousePosition();
 BASALT void SetWindowTitle(const char* title);
 
-BASALT usize GetFrameIndex();    // NOTE: Get number of frames elapsed since the start of the simulation.
-BASALT double GetTimeElapsed();  // NOTE: Get time elapsed since the start of the simulation.
+// NOTE: Get number of frames elapsed since the start of the simulation.
+BASALT usize GetFrameIndex();
+
+// NOTE: Get time elapsed since the start of the simulation.
+BASALT double GetTimeElapsed();
 
 BASALT bool IsMouseDown();
 BASALT bool IsMouseUp();
@@ -273,22 +292,13 @@ BASALT extern void MapTextureToCorrectFormat(Texture dest, Texture src);
 BASALT void SwapTextureChannels(Texture dest, Texture src, uchar first, uchar second, uchar third, uchar fourth);
 
 BASALT void ClearTexture(Texture canvas, Color tint);
-BASALT void DrawTextureEx(Texture canvas,
-                          Texture texture,
-                          int posX,
-                          int posY,
-                          int srcX,
-                          int srcY,
-                          int srcWidth,
-                          int srcHeight,
-                          Color tint);
+BASALT void DrawTextureEx(Texture canvas, Texture texture, int posX, int posY, int srcX, int srcY, int srcWidth, int srcHeight, Color tint);
 
 BASALT extern void DrawTexture(Texture canvas, Texture texture, int posX, int posY, Color tint);
-BASALT void
-DrawTextureScaled(Texture canvas, Texture texture, int destX, int destY, int destWidth, int destHeight, Color tint);
+BASALT void DrawTextureScaled(Texture canvas, Texture texture, int destX, int destY, int destWidth, int destHeight, Color tint);
 
 BASALT extern Color RGB(uchar r, uchar g, uchar b);
-BASALT extern Color RGBA(uchar r, uchar g, uchar b, uchar a);  // NOTE: Format RR GG BB AA
+BASALT extern Color RGBA(uchar r, uchar g, uchar b, uchar a);
 BASALT extern Color BlendColors(Color src, Color dest, uchar t);
 
 // Main game methods (for example: temple_game.c)

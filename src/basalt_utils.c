@@ -134,7 +134,7 @@ BASALT inline Vec2 PointToVec2(Point point)
     return v2;
 }
 
-BASALT extern Vec2 Vec2Offset(Vec2 src, Vec2 offset)
+BASALT inline Vec2 Vec2Add(Vec2 src, Vec2 offset)
 {
     Vec2 v2 = {
         src.x + offset.x,
@@ -143,7 +143,16 @@ BASALT extern Vec2 Vec2Offset(Vec2 src, Vec2 offset)
     return v2;
 }
 
-BASALT extern Vec2 Vec2Scale(Vec2 src, float scale)
+BASALT inline Vec2 Vec2Subtract(Vec2 src, Vec2 offset)
+{
+    Vec2 v2 = {
+        src.x - offset.x,
+        src.y - offset.y,
+    };
+    return v2;
+}
+
+BASALT inline Vec2 Vec2Scale(Vec2 src, float scale)
 {
     Vec2 v2 = {
         src.x * scale,
@@ -152,7 +161,7 @@ BASALT extern Vec2 Vec2Scale(Vec2 src, float scale)
     return v2;
 }
 
-BASALT Vec2 Vec2Normalize(Vec2 v2)
+BASALT inline Vec2 Vec2Normalize(Vec2 v2)
 {
     float mag = Vec2Magnitude(v2);
     Vec2 norm;
@@ -161,7 +170,7 @@ BASALT Vec2 Vec2Normalize(Vec2 v2)
     return norm;
 }
 
-BASALT float Vec2Magnitude(Vec2 v2)
+BASALT inline float Vec2Magnitude(Vec2 v2)
 {
     // Pythagorean theorem
 #ifdef BASALT_NO_ENGINE
@@ -170,6 +179,24 @@ BASALT float Vec2Magnitude(Vec2 v2)
 #else
     return sqrt(v2.x * v2.x + v2.y * v2.y);
 #endif
+}
+
+BASALT inline Vec2 Vec2Towards(Vec2 src, Vec2 dest)
+{
+    Vec2 diff = Vec2Subtract(dest, src);
+    return Vec2Normalize(diff);
+}
+
+BASALT inline float Vec2DistanceSquared(Vec2 first, Vec2 second)
+{
+    float dist = ((second.x - first.x) * (second.x - first.x)) + ((second.y - first.y) * (second.y - first.y));
+    return dist;
+}
+
+BASALT inline float Vec2Distance(Vec2 first, Vec2 second)
+{
+    float distRoot = sqrtf(Vec2DistanceSquared(first, second));
+    return distRoot;
 }
 
 BASALT StringArray InitStringArray()

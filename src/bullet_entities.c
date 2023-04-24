@@ -143,8 +143,8 @@ void UpdateAndRenderEntity(Scene* scene, Texture canvas, Entity* e, float delta)
             continue;
 
         // draw normal (debugging)
-        Vec2 weaponCenter = Vec2Offset(center, weapon->offset);
-        Vec2 end = Vec2Offset(weaponCenter, Vec2Scale(weapon->normal, 10.f));
+        Vec2 weaponCenter = Vec2Add(center, weapon->offset);
+        Vec2 end = Vec2Add(weaponCenter, Vec2Scale(weapon->normal, 10.f));
         DrawLine(canvas, V2(weaponCenter), V2(end), 0x0000AAFF);
 
         // spawn bullets on interval

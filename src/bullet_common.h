@@ -24,7 +24,7 @@ typedef struct ActionData {
     Vec2 normal;
     float delta;
 
-    int difficulty;
+    float difficulty;
     int ints[MAX_BULLET_SLOTS];
     bool bools[MAX_BULLET_SLOTS];
     float floats[MAX_BULLET_SLOTS];
@@ -136,6 +136,8 @@ BULLET bool RunBulletPattern(Entity* e, float delta);
 BULLET const BulletPattern* GetBulletPattern(usize index);
 BULLET const BulletPattern* GetBulletPatternByName(const char* name);
 BULLET usize GetBulletPatternCount();
+BULLET void FillInActionData(ActionData* data, float delta);
+BULLET extern void ResetActionData(ActionData* data);
 
 // bullet_ai.c
 BULLET bool RunEntityAI(Entity* e, float delta);
