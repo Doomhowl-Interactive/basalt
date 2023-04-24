@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build --base 'https://bramtechs.github.io/basalt/' ",
+    "build": "tsc && vite build --base 'https://bramtechs.github.io/basalt/'",
     "preview": "vite preview"
   },
   "devDependencies": {
