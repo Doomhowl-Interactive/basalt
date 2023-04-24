@@ -49,62 +49,45 @@ struct Sentence
     {
         return toHash() == other.toHash();
     }
-
-    bool containedIn(Sentence[ulong] iter)
-    {
-        foreach (Sentence o; iter)
-        {
-            if (o == this)
-            {
-                return true;
-            }
-        }
-        return false;
-    }
 }
 
-Sentence[ulong] loadSentences(string csv)
-{
-    Sentence[ulong] result;
-    string[] lines = splitLines(csv);
-    for (auto i = 0; i < lines.length; i++)
-    {
-        string line = lines[i];
-        auto s = Sentence(line);
-        if (s.containedIn(result))
-        {
-            string msg = format("Duplicate sentence at line %d: %s",i,s.primary);
-            throw new Error(msg);
-        }
-        result[s.toHash()] = s;
-    }
-    return result;
-}
-
-void processLocale(string file)
+Sentence[ulong] loadSentencesFromFile(string file)
 {
     logDebug("Processing " ~ file);
     string csvContent = readText(file);
 
-    auto sentences = loadSentences(csvContent);
-    foreach (Sentence key; sentences)
+    Sentence[ulong] result;
+    string[] lines = splitLines(csvContent);
+    for (auto i = 0; i < lines.length; i++)
     {
-        writeln(key.toString);
+        string line = lines[i];
+        auto s = Sentence(line);
+        result[s.toHash()] = s;
+        logDebug(s.toString);
     }
+    return result;
 }
 
-void processLocales(string input, string output)
+Sentence[ulong] processLocales(string input, string output)
 {
     if (input.empty())
     {
         throw new Error("Input folder '" ~ input ~ "' doesn't exist!");
     }
 
-    auto files = dirEntries(input, "*.csv", SpanMode.depth);
-    foreach (file; files)
+    Sentence[ulong] locales;
+    foreach (file; dirEntries(input, "*.csv", SpanMode.depth))
     {
-        processLocale(file);
+        foreach(sent; loadSentencesFromFile(file))
+        {
+            auto hash = sent.toHash();
+            if (hash in locales){
+                throw new Error("Duplicate sentence " ~ sent.primary);
+            }
+            locales[hash] = sent;
+        }
     }
+    return locales;
 }
 
 int main(string[] args)
@@ -118,10 +101,10 @@ int main(string[] args)
     {
         helpInformation = getopt(
             args,
-            "input", &inputFolder,
-            "output", &destFile,
-            "verbose", &isVerbose,
-            "benchmark", &benchmark
+            "input|i", &inputFolder,
+            "output|o", &destFile,
+            "verbose|v", &isVerbose,
+            "benchmark|b", &benchmark
         );
     }
     catch (Exception ex)
@@ -149,7 +132,8 @@ int main(string[] args)
             }
             catch (Exception exc)
             {
-                stderr.writeln( exc.msg);
+                stderr.writeln("Failed to process locales!");
+                stderr.writeln(exc.msg);
                 return EXIT_FAILURE;
             }
         }
