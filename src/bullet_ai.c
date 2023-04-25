@@ -92,6 +92,7 @@ AI bool FlyTowards(Entity* e, ActionData* data, const int* args)
 
 AI bool SidewaysEight(Entity* e, ActionData* data, const int* args)
 {
+    // TODO:
     return false;
 }
 
@@ -142,6 +143,7 @@ AI bool BehavePlayer(Entity* e, ActionData* data, const int* args)
 // clang-format doesn't expand this shit
 const EntityAI EntityAIBehaviours[] = { { "PlayerMovement", { { FlyTowards, { 400, 530, 400, 670 } }, { BehavePlayer } } },
                                         { "SidewaysEight", { { FlyTowards, { 150, 80 } }, { SidewaysEight, { 0 } } } },
+                                        { "FlyInTowardsColumn", { { FlyTowards, { 150, 80 } }, { SidewaysEight, { 0 } } } },
                                         NULL };
 
 BULLET const EntityAI* GetEntityAI(usize index)

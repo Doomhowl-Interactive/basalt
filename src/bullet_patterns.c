@@ -104,7 +104,6 @@ PATTERN void MoveBulletSnake(Entity* e, ActionData* data, const int* args)
     int yFlip = args[1];
 
     float power = 150 + data->difficulty * 30;
-
     e->vel.x = cos(data->timer * segWidth) * power;
     e->vel.y = yFlip * ABS(float, sin(data->timer * segWidth) * power);
 }
@@ -246,6 +245,7 @@ const BulletPattern BulletPatterns[]
         },
         { "PlayerBullet3", { { MoveBulletStaircase, EndBulletOOB, 0x0022DDFF, { 10, -1 } } }, SPR_BULLET_PLACEHOLDER },
         { "PlayerBullet4", { { MoveBulletSnake, EndBulletOOB, 0x22FF22FF, { 10, -1 } } }, SPR_BULLET_PLACEHOLDER },
+        { "SnakeBulletsDownwards", { { MoveBulletSnake, EndBulletOOB, 0x22FF22FF, { 10, 1 } } }, SPR_BULLET_PLACEHOLDER },
         { NULL } };
 
 BULLET const BulletPattern* GetBulletPattern(usize index)

@@ -147,6 +147,7 @@ BULLET usize GetEntityAICount();
 
 // bullet_factories.c
 BULLET void InitPlayer(Entity* e, Vec2 pos);
+BULLET void InitTestEnemy(Entity* e, Vec2 pos);
 BULLET void InitBullet(Entity* e, const BulletPattern* pattern, Vec2 pos, Vec2 normal);
 
 // bullet_editor.c

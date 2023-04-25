@@ -26,6 +26,9 @@ static uint SelectedPattern = 1;
 static float BackgroundScrollSpeed = 100.f;
 static Texture BackgroundNoiseTexture = { 0 };
 
+#define TEST_ENEMY_COUNT 10
+static Entity* TestEnemies[TEST_ENEMY_COUNT];
+
 Texture BulletPlacholderTexture = { 0 };
 Texture PlayerTexture = { 0 };
 
@@ -46,6 +49,12 @@ BASALT void InitializeGame()
 
     if (GetRealRandomNumber() % 1000 == 699) {
         GAME_TITLE = "Guardians Of Ur Mum";
+    }
+
+    for (int i = 0; i < TEST_ENEMY_COUNT; i++) {
+        Entity* enemy = CreateEntity(&Scenes[ActiveSceneID]);
+        InitTestEnemy(enemy, (Vec2){ 50, 50 });
+        TestEnemies[i] = enemy;
     }
 }
 
@@ -88,5 +97,5 @@ BASALT void UpdateAndRenderGame(Texture canvas, float delta)
 
     // draw the name of the pattern being shot
     const char* name = Player->bulletSpawners[0].patternToSpawn->name;
-    DrawText(canvas,name,250,HEIGHT-60, 0xFF0000FF);
+    DrawText(canvas, name, 250, HEIGHT - 60, 0xFF0000FF);
 }
