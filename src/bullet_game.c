@@ -1,16 +1,9 @@
 #include "basalt.h"
 #include "basalt_extra.h"
-#include "temple_assets.h"
 #include "bullet_common.h"
 
 #include <math.h>
 #include <stdio.h>
-
-const uint WIDTH = 800;
-const uint HEIGHT = 600;
-const char* GAME_TITLE = "Guardians Of The Cursed Fire";
-
-const uint TPS = 25;
 
 #define SKY_COLOR 0x000000FF
 #define SCENE_GAME 0
@@ -34,6 +27,15 @@ Texture PlayerTexture = { 0 };
 
 usize GameDifficulty = 2;
 
+DYNAMIC BASALT GameConfig ConfigureGame()
+{
+    GameConfig config;
+    config.title = GetRealRandomNumber() % 1000 == 699 ? "Guardians Of Ur Mum" : "Guardians Of The Cursed Fire";
+    config.width = WIDTH;
+    config.height = HEIGHT;
+    return config;
+}
+
 DYNAMIC BASALT void InitializeGame()
 {
     if (Config.hasUnitTesting)
@@ -46,10 +48,6 @@ DYNAMIC BASALT void InitializeGame()
     Player = CreateEntity(&Scenes[SCENE_GAME]);
     Vec2 spawnPos = { WIDTH / 2, HEIGHT / 1.2f };
     InitPlayer(Player, spawnPos);
-
-    if (GetRealRandomNumber() % 1000 == 699) {
-        GAME_TITLE = "Guardians Of Ur Mum";
-    }
 
     for (int i = 0; i < TEST_ENEMY_COUNT; i++) {
         Entity* enemy = CreateEntity(&Scenes[ActiveSceneID]);
@@ -81,7 +79,7 @@ DYNAMIC BASALT void UpdateAndRenderGame(Texture canvas, float delta)
     }
 
     // TODO: blend at runtime 0x4B486EFF, 0x07060FFF
-    int offsetY = (int)(GetTimeElapsed() * -BackgroundScrollSpeed) % HEIGHT;
+    int offsetY = (int)(GetTimeElapsed() * BackgroundScrollSpeed) % HEIGHT;
     DrawTexture(canvas, BackgroundNoiseTexture, 0.f, -offsetY, WHITE);
     DrawTexture(canvas, BackgroundNoiseTexture, 0.f, -offsetY + HEIGHT, WHITE);
 

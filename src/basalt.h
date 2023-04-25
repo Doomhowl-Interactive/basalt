@@ -44,12 +44,6 @@ typedef uchar Key;
 #define SIGN(T, x) ((T)((x) > 0) - (T)((x) < 0))
 #define ABS(T, x) (SIGN(T, x) * (x))
 
-extern const uint WIDTH;
-extern const uint HEIGHT;
-extern const char* GAME_TITLE;
-
-extern const uint TPS;
-
 #define func static
 #define BASALT
 
@@ -252,6 +246,13 @@ typedef struct EngineConfig {
 } EngineConfig;
 extern EngineConfig Config;
 
+typedef struct GameConfig {
+    const char* title;
+    uint width;
+    uint height;
+} GameConfig;
+extern GameConfig Game;
+
 // Graphics drawing (basalt_graphics.c)
 #define WHITE 0xFFFFFFFF
 #define GRAY 0xAAAAAAAA
@@ -304,6 +305,7 @@ BASALT extern Color RGBA(uchar r, uchar g, uchar b, uchar a);
 BASALT extern Color BlendColors(Color src, Color dest, uchar t);
 
 // Main game methods (for example: temple_game.c)
+DYNAMIC BASALT GameConfig ConfigureGame();
 DYNAMIC BASALT void InitializeGame();
 DYNAMIC BASALT void DisposeGame();
 DYNAMIC BASALT void UpdateAndRenderGame(Texture canvas, float delta);

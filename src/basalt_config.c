@@ -72,8 +72,9 @@ BASALT bool ParseLaunchArguments(int argc, char** argv)
         return false;
     }
 
-    if (EnableAll)
+    if (EnableAll) {
         memset(&Config, 1, sizeof(EngineConfig));
+    }
 
     return true;
 }

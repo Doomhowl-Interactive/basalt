@@ -29,6 +29,7 @@ typedef struct OffscreenBuffer {
 
 GameContext Context = { 0 };
 GameInput Input = { 0 };
+GameConfig Game = { 0 };
 
 static OffscreenBuffer ActiveBuffer = { 0 };
 
@@ -133,6 +134,8 @@ int main(int argc, char** argv)
     if (!ParseLaunchArguments(argc, argv))
         return EXIT_SUCCESS;
 
+    Game = ConfigureGame();
+
     DEBUG("Opening Xorg display...");
     Display* display = XOpenDisplay(NULL);
     if (display == NULL) {
@@ -154,26 +157,26 @@ int main(int argc, char** argv)
 
     XSelectInput(display, win, ExposureMask | KeyPressMask | KeyReleaseMask | ResizeRedirectMask);
 
-    Texture canvas = InitTexture(WIDTH, HEIGHT);
+    Texture canvas = InitTexture(Game.width, Game.height);
 
     ActiveBuffer = InitOffscreenBuffer(display, win, canvas);
 
     XMapWindow(display, win);
     XSync(display, false);
 
-    SetWindowTitle(GAME_TITLE);
+    SetWindowTitle(Game.title);
 
     // HACK: resize window to game size
-    int posX = size.width / 2 - WIDTH / 2;
-    int posY = size.height / 2 - HEIGHT / 2;
-    XMoveResizeWindow(display, win, posX, posY, WIDTH, HEIGHT);
+    int posX = size.width / 2 - Game.width / 2;
+    int posY = size.height / 2 - Game.height / 2;
+    XMoveResizeWindow(display, win, posX, posY, Game.width, Game.height);
 
     srand((unsigned int)time(NULL));
     InitializeGame();
     InitHotReloading();
 
-    int width = WIDTH;
-    int height = HEIGHT;
+    int width = Game.width;
+    int height = Game.height;
 
     double maxFps = Config.unlockedFramerate ? 10000 : 60;
     double prevDelta = 0.f;
@@ -217,8 +220,8 @@ int main(int argc, char** argv)
             unsigned int maskResult = 0;
             if (XQueryPointer(
                     display, win, &rootWinResult, &childWinResult, &rootMouseX, &rootMouseY, &childMouseX, &childMouseY, &maskResult)) {
-                float scaleX = (float)WIDTH / (float)width;
-                float scaleY = (float)HEIGHT / (float)height;
+                float scaleX = (float)Game.width / (float)width;
+                float scaleY = (float)Game.height / (float)height;
 
                 Input.mousePos.x = childMouseX * (int)scaleX;
                 Input.mousePos.y = childMouseY * (int)scaleY;
@@ -236,7 +239,7 @@ int main(int argc, char** argv)
         if (timer > 0.2) {
             // set window title to framerate
             char title[200] = { 0 };
-            sprintf(title, "%s - %d FPS - %f delta", GAME_TITLE, (int)fps, delta);
+            sprintf(title, "%s - %d FPS - %f delta", Game.title, (int)fps, delta);
             SetWindowTitle(title);
             timer = 0.0;
         }

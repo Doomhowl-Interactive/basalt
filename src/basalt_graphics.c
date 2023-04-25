@@ -249,8 +249,8 @@ BASALT void DrawTextureEx(Texture canvas,
     HotReloadTexture(texture);
 
     Color* pixels = (Color*)canvas.pixels;
-    for (int destY = MAX(0, posY); destY < Clamp(posY + srcHeight, 0, HEIGHT); destY++) {
-        for (int destX = MAX(0, posX); destX < Clamp(posX + srcWidth, 0, WIDTH); destX++) {
+    for (int destY = MAX(0, posY); destY < Clamp(posY + srcHeight, 0, canvas.height); destY++) {
+        for (int destX = MAX(0, posX); destX < Clamp(posX + srcWidth, 0, canvas.width); destX++) {
             int sourceX = destX - posX + srcX;
             int sourceY = destY - posY + srcY;
 

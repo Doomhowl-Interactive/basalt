@@ -11,6 +11,8 @@
 #define MAX_PARAMETERS 16
 
 extern usize GameDifficulty;
+#define WIDTH 800
+#define HEIGHT 600
 
 typedef uint EntityID;
 
