@@ -26,7 +26,7 @@ $(BUILD_DIR)/embedder: $(EMBEDDER_SRC)
 LOCALE_SRC := src/tooling/embedder_locale.d
 $(BUILD_DIR)/localegen: $(LOCALE_SRC)
 	mkdir -p $(BUILD_DIR)
-	dmd $(LOCALE_SRC) -release -of=$(BUILD_DIR)/localegen
+	dmd $(LOCALE_SRC) -O -inline -release -of=$(BUILD_DIR)/localegen
 
 # Run the embedder
 $(SRC_DIR)/assets_custom.dat.c: $(BUILD_DIR)/embedder
