@@ -85,4 +85,10 @@ BASALT void UpdateAndRenderGame(Texture canvas, float delta)
     float fps = 1.f / delta;
     sprintf(info, "FPS %1.3f", fps);
     DrawText(canvas, info, 10, HEIGHT - 20, fps < 30 ? RED : GREEN);
+
+    // draw the name of the pattern being shot
+    // HACK: Assuming player is entity 0 for now
+    Entity* player = activeScene->entities[0];
+    const char* name = player->bulletSpawners[0].patternToSpawn->name;
+    DrawText(canvas,name,250,HEIGHT-60, 0xFF0000FF);
 }

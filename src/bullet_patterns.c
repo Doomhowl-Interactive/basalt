@@ -206,7 +206,7 @@ const BulletPattern BulletPatterns[]
                   SplitBulletCircle,
                   EndBulletInstantly,
                   0xAAFFAAFF,
-                  { 5 },
+                  { 3 },
               },
               {
                   MoveBulletStraight,
@@ -218,7 +218,7 @@ const BulletPattern BulletPatterns[]
                   SplitBulletCircle,
                   EndBulletInstantly,
                   0x00FFAAFF,
-                  { 3 },
+                  { 2 },
               },
               {
                   MoveBulletStraight,
@@ -287,5 +287,7 @@ BULLET void FillInActionData(ActionData* data, float delta)
 
 BULLET inline void ResetActionData(ActionData* data)
 {
+    Vec2 oldNormal = data->normal;
     memset(data, 0, sizeof(ActionData));
+    data->normal = oldNormal;
 }
