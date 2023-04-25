@@ -34,7 +34,7 @@ Texture PlayerTexture = { 0 };
 
 usize GameDifficulty = 2;
 
-BASALT void InitializeGame()
+DYNAMIC BASALT void InitializeGame()
 {
     if (Config.hasUnitTesting)
         UnitTestBullet();
@@ -58,12 +58,12 @@ BASALT void InitializeGame()
     }
 }
 
-BASALT void DisposeGame()
+DYNAMIC BASALT void DisposeGame()
 {
     WARN("TODO: dispose game properly");
 }
 
-BASALT void UpdateAndRenderGame(Texture canvas, float delta)
+DYNAMIC BASALT void UpdateAndRenderGame(Texture canvas, float delta)
 {
     if (IsKeyPressed(KEY_I)) {
         ActiveSceneID++;

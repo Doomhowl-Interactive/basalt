@@ -5,9 +5,11 @@ TARGET_EXEC := basalt_linux.x11
 BUILD_DIR := ./build
 SRC_DIR := ./src
 
-SRCS := $(shell find $(SRC_DIR) -type f \( -name 'basalt_*.c' -o -name 'xorg_*.c' -o -name 'bullet_*.c' \))
+SRCS := $(shell find $(SRC_DIR) -type f \( -name 'basalt_*.c' -o -name 'xorg_*.c' \))
+SRCS_GAME := $(shell find $(SRC_DIR) -type f \( -name 'bullet_*.c' \))
 
 OBJS := $(SRCS:%=$(BUILD_DIR)/%.o) $(BUILD_DIR)/$(SRC_DIR)/assets_custom.dat.c.o $(BUILD_DIR)/$(SRC_DIR)/locale_custom.dat.c.o
+OBJS_GAME := $(SRCS_GAME:%=$(BUILD_DIR)/%.o)
 
 INC_FLAGS := $(addprefix -I,$(SRC_DIR))
 
@@ -36,9 +38,9 @@ $(SRC_DIR)/assets_custom.dat.c: $(BUILD_DIR)/embedder
 $(SRC_DIR)/locale_custom.dat.c: $(BUILD_DIR)/localegen
 	$(BUILD_DIR)/localegen -i ./assets -o ./src/locale_custom.dat.c
 
-# Linking step.
-$(BUILD_DIR)/$(TARGET_EXEC): $(OBJS)
-	$(CXX) $(OBJS) -o $@ $(LDFLAGS)
+# Linking step
+$(BUILD_DIR)/$(TARGET_EXEC): $(OBJS) $(OBJS_GAME)
+	$(CXX) $(OBJS) $(OBJS_GAME) -o $@ $(LDFLAGS)
 
 # Build step for C source
 $(BUILD_DIR)/%.c.o: %.c

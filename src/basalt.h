@@ -30,6 +30,7 @@ typedef uchar Key;
 
 #define MAX_ENTITIES 100000
 #define MAX_PATH_LENGTH 128
+#define DYNAMIC
 
 #define MAX(X, Y) ((X) > (Y) ? (X) : (Y))
 #define MIN(X, Y) ((X) < (Y) ? (X) : (Y))
@@ -246,6 +247,7 @@ typedef struct EngineConfig {
     bool hasHotloading;
     bool hasUnitTesting;
     bool hasConsole;
+    bool isHeadless;
     bool unlockedFramerate;
 } EngineConfig;
 extern EngineConfig Config;
@@ -302,9 +304,9 @@ BASALT extern Color RGBA(uchar r, uchar g, uchar b, uchar a);
 BASALT extern Color BlendColors(Color src, Color dest, uchar t);
 
 // Main game methods (for example: temple_game.c)
-BASALT void InitializeGame();
-BASALT void DisposeGame();
-BASALT void UpdateAndRenderGame(Texture canvas, float delta);
+DYNAMIC BASALT void InitializeGame();
+DYNAMIC BASALT void DisposeGame();
+DYNAMIC BASALT void UpdateAndRenderGame(Texture canvas, float delta);
 
 // Key definitions
 // TODO: Find a way to translate other keyboard layouts

@@ -17,17 +17,17 @@ typedef struct Option {
 static bool NeedsHelp = false;
 static bool EnableAll = false;
 
-static Option Options[]
-    = { { &Config.hasArchaeo, "-a", "--archaeo", "Enables tooling to inspect draw calls. (EXPENSIVE)" },
-        { &Config.hasHotloading, "-h", "--hotloading", "Enables hot-reloading if original asset folder is found." },
-        { &Config.hasUnitTesting, "-t", "--test", "Does unit testing before launch" },
-        { &Config.hasConsole, "-s", "--show", "Open console logs (Windows only)" },
-        { &Config.unlockedFramerate, "-u", "--unlock", "Unlocks the framerate (not recommended)" },
+static Option Options[] = { { &Config.hasArchaeo, "-a", "--archaeo", "Enables tooling to inspect draw calls. (EXPENSIVE)" },
+                            { &Config.hasHotloading, "-h", "--hotloading", "Enables hot-reloading if original asset folder is found." },
+                            { &Config.hasUnitTesting, "-t", "--test", "Does unit testing before launch" },
+                            { &Config.hasConsole, "-s", "--show", "Open console logs (Windows only)" },
+                            { &Config.unlockedFramerate, "-u", "--unlock", "Unlocks the framerate (not recommended)" },
+                            { &Config.isHeadless, "-H", "--headless", "Hot reloads game code from a dynamic library" },
 
-        { &EnableAll, "-A", "--all", "Enables all of the above." },
-        { &NeedsHelp, "-?", "--help", "Shows this help screen" },
+                            { &EnableAll, "-A", "--all", "Enables all of the above." },
+                            { &NeedsHelp, "-?", "--help", "Shows this help screen" },
 
-        { NULL, NULL } };
+                            { NULL, NULL } };
 
 func usize GetOptionCount()
 {
