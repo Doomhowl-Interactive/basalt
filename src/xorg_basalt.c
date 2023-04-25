@@ -112,10 +112,9 @@ func void HandleKeyEvent(XEvent event, bool pressed)
         uchar key = (uchar)string[0];
         Input.pressedKeys[key] = pressed;
 
-        if (pressed)
+        if (pressed) {
             Input.pressedKeysOnce[key] = true;
-
-        // DEBUG("%s %c", pressed ? "Pressed":"Released", key);
+        }
     }
 }
 
@@ -147,8 +146,7 @@ int main(int argc, char** argv)
     // HACK: make the window the size of the entire monitor so the DC is big enough
 
     // if only things were that simple...
-    Window win = XCreateSimpleWindow(
-        display, RootWindow(display, DefaultScreen(display)), 10, 10, size.width, size.height, 0, 0, 255);
+    Window win = XCreateSimpleWindow(display, RootWindow(display, DefaultScreen(display)), 10, 10, size.width, size.height, 0, 0, 255);
 
     // === make window closing work (it's a big deal for some reason)
     Atom wmDeleteWindow = XInternAtom(display, "WM_DELETE_WINDOW", false);
@@ -170,7 +168,7 @@ int main(int argc, char** argv)
     int posY = size.height / 2 - HEIGHT / 2;
     XMoveResizeWindow(display, win, posX, posY, WIDTH, HEIGHT);
 
-    srand(time(NULL));
+    srand((unsigned int)time(NULL));
     InitializeGame();
     InitHotReloading();
 
@@ -208,6 +206,8 @@ int main(int argc, char** argv)
                     width = event.xresizerequest.width;
                     height = event.xresizerequest.height;
                 } break;
+                default:
+                    break;
             }
 
             // poll the mouse
@@ -215,20 +215,13 @@ int main(int argc, char** argv)
             int rootMouseX, rootMouseY;
             int childMouseX, childMouseY;
             unsigned int maskResult = 0;
-            if (XQueryPointer(display,
-                              win,
-                              &rootWinResult,
-                              &childWinResult,
-                              &rootMouseX,
-                              &rootMouseY,
-                              &childMouseX,
-                              &childMouseY,
-                              &maskResult)) {
-                float scaleX = WIDTH / (float)width;
-                float scaleY = HEIGHT / (float)height;
+            if (XQueryPointer(
+                    display, win, &rootWinResult, &childWinResult, &rootMouseX, &rootMouseY, &childMouseX, &childMouseY, &maskResult)) {
+                float scaleX = (float)WIDTH / (float)width;
+                float scaleY = (float)HEIGHT / (float)height;
 
-                Input.mousePos.x = childMouseX * scaleX;
-                Input.mousePos.y = childMouseY * scaleY;
+                Input.mousePos.x = childMouseX * (int)scaleX;
+                Input.mousePos.y = childMouseY * (int)scaleY;
 
                 // HACK: might not work while pressing multiple mouse buttons
                 Input.isMouseDown = maskResult == 272;
@@ -268,7 +261,7 @@ int main(int argc, char** argv)
         gettimeofday(&interTime, NULL);
 
         size_t interMicros = interTime.tv_usec - startTime.tv_usec;
-        size_t maxMicros = 1.0 / maxFps * 1000000;
+        size_t maxMicros = (size_t)(1.0 / maxFps * 1000000);
         long waitMicros = maxMicros - interMicros;
         if (waitMicros > 0 && interMicros < maxMicros)
             usleep(waitMicros);
@@ -278,7 +271,7 @@ int main(int argc, char** argv)
 
         size_t elapsedMicros = endTime.tv_usec - startTime.tv_usec;
         prevDelta = delta;
-        delta = elapsedMicros / 1000000.0;
+        delta = (double)elapsedMicros / 1000000.0;
         fps = 1.0 / delta;
 
         // clear keys
