@@ -1,6 +1,7 @@
 #include "basalt.h"
 #include "basalt_extra.h"
 #include "bullet_common.h"
+#include "bullet_levels.h"
 
 #include <math.h>
 #include <stdio.h>
@@ -15,9 +16,6 @@ static Scene Scenes[SCENE_COUNT] = { 0 };
 
 static Entity* Player = NULL;
 static uint SelectedPattern = 1;
-
-static float BackgroundScrollSpeed = 100.f;
-static Texture BackgroundNoiseTexture = { 0 };
 
 #define TEST_ENEMY_COUNT 10
 static Entity* TestEnemies[TEST_ENEMY_COUNT];
@@ -43,11 +41,10 @@ DYNAMIC BASALT void InitializeGame()
         UnitTestBullet();
 
     BulletPlacholderTexture = RequestTexture(SPR_BULLET_PLACEHOLDER);
-    BackgroundNoiseTexture = RequestTexture(SPR_BACKGROUND_NOISE_COL);
     PlayerTexture = RequestTexture(SPR_SHIP_PLAYER);
 
     Player = CreateEntity(&Scenes[SCENE_GAME]);
-    Vec2 spawnPos = { WIDTH / 2, HEIGHT / 1.2f };
+    Vec2 spawnPos = { WIDTH / 2.0f, HEIGHT / 1.2f };
     InitPlayer(Player, spawnPos);
 
     for (int i = 0; i < TEST_ENEMY_COUNT; i++) {
@@ -55,6 +52,8 @@ DYNAMIC BASALT void InitializeGame()
         InitTestEnemy(enemy, (Vec2){ 50, 50 });
         TestEnemies[i] = enemy;
     }
+
+    SwitchLevel(&Level1);
 }
 
 DYNAMIC BASALT void DisposeGame()
@@ -79,14 +78,8 @@ DYNAMIC BASALT void UpdateAndRenderGame(Texture canvas, float delta)
         TakeScreenshot(canvas);
     }
 
-    // TODO: blend at runtime 0x4B486EFF, 0x07060FFF
-    int offsetY = (int)(GetTimeElapsed() * BackgroundScrollSpeed) % HEIGHT;
-    DrawTexture(canvas, BackgroundNoiseTexture, 0.f, -offsetY, WHITE);
-    DrawTexture(canvas, BackgroundNoiseTexture, 0.f, -offsetY + HEIGHT, WHITE);
-
     Scene* activeScene = &Scenes[ActiveSceneID];
-    UpdateAndRenderScene(activeScene, canvas, delta);
-    UpdateAndRenderEditor(activeScene, canvas, delta);
+    UpdateAndRenderLevel(canvas, activeScene, delta);
 
     // draw fps
     static char info[128];
