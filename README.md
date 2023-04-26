@@ -10,6 +10,3 @@ Inspired by [Handmade Hero](https://handmadehero.org/).
 
 ## Screenshots
 ![Preview](screenshots/screenshot.png)
-
-## YouTube
-![rendering bug](https://www.youtube.com/watch?v=2KmvfEhxi5c)
