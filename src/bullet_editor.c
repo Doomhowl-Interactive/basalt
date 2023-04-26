@@ -2,7 +2,6 @@
 #include "basalt.h"
 #include "basalt_extra.h"
 #include "bullet_common.h"
-#include "bullet_locale.dat.h"
 
 const Color tabBGColor = 0x111111FF;
 const Color tabFGColor = 0xAAAAAAFF;

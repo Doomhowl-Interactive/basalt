@@ -209,11 +209,6 @@ BASALT Texture RequestTextureEx(const char* name, const uchar* pixels);
 BASALT Texture* GetLoadedTextures();
 BASALT void TakeScreenshot(Texture canvas);
 
-// TODO: Localization support (basalt_locale.c)
-BASALT usize SwitchLocale(usize id);
-BASALT const char* LocString(const char* key);
-BASALT const char* MappedLocString(const char* locales, const char* primary);
-
 // Platform dependent stuff
 BASALT Point GetMousePosition();
 BASALT void SetWindowTitle(const char* title);
