@@ -35,7 +35,7 @@ $(BUILD_DIR)/embedder: $(EMBEDDER_SRC)
 LOCALE_SRC := src/tooling/embedder_locale.d
 $(BUILD_DIR)/localegen: $(LOCALE_SRC)
 	mkdir -p $(BUILD_DIR)
-	dmd $(LOCALE_SRC) -O -inline -release -of=$(BUILD_DIR)/localegen
+	dmd $(LOCALE_SRC) -O -release -g -of=$(BUILD_DIR)/localegen
 
 # Run the embedder
 $(SRC_DIR)/assets_custom.dat.c: $(BUILD_DIR)/embedder
@@ -43,7 +43,9 @@ $(SRC_DIR)/assets_custom.dat.c: $(BUILD_DIR)/embedder
 
 # Run the localization generator
 $(SRC_DIR)/locale_custom.dat.c: $(BUILD_DIR)/localegen
-	$(BUILD_DIR)/localegen -i ./assets -o ./src/locale_custom.dat.c
+	$(BUILD_DIR)/localegen -i ./assets -o ./src/locale_custom.dat.c -v
+#$(SRC_DIR)/locale_builtin.dat.c: $(BUILD_DIR)/localegen
+#	$(BUILD_DIR)/localegen -i ./assets_builtin -o ./src/locale_builtin.dat.c
 
 # Linking step (standard)
 $(BUILD_DIR)/$(TARGET_EXEC): $(OBJS) $(OBJS_GAME)

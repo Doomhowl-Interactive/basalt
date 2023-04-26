@@ -46,13 +46,17 @@ struct Sentence
 
     this(string[] locales)
     {
-        primary = locales[0];
-        locales = locales[1 .. $];
+        this.primary = locales[0];
+        this.locales = locales[1 .. $];
     }
 
     string toString() const
     {
-        return format("%ul: %s", toHash(), primary);
+        string desc = format("%ul: %s", toHash(), primary);
+        foreach (item; locales) {
+            desc ~= "," ~ item;
+        }
+        return desc;
     }
 
     string toCode()
