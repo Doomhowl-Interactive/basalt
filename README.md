@@ -1,4 +1,5 @@
-![basalt](misc/logo_original.png)
+![basalt](misc/logo_small.png)
+
 # basalt
 game engine for c cavemen 
 
