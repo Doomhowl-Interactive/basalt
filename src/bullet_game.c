@@ -1,6 +1,7 @@
 #include "basalt.h"
 #include "basalt_extra.h"
 #include "bullet_common.h"
+#include "bullet_locale.dat.h"
 
 #include <math.h>
 #include <stdio.h>
@@ -33,6 +34,7 @@ DYNAMIC BASALT GameConfig ConfigureGame()
     config.title = GetRealRandomNumber() % 1000 == 699 ? "Guardians Of Ur Mum" : "Guardians Of The Cursed Fire";
     config.width = WIDTH;
     config.height = HEIGHT;
+    config.language = 1;
     return config;
 }
 

@@ -11,7 +11,7 @@ SRCS := $(shell find $(SRC_DIR) -type f \( -name 'basalt_*.c' -o -name 'xorg_*.c
 SRCS_WASM := $(shell find $(SRC_DIR) -type f \( -name 'basalt_*.c' -o -name 'wasm_*.c' -o -name 'bullet_*.c' \))
 SRCS_GAME := $(shell find $(SRC_DIR) -type f \( -name 'bullet_*.c' \))
 
-OBJS := $(SRCS:%=$(BUILD_DIR)/%.o) $(BUILD_DIR)/$(SRC_DIR)/assets_custom.dat.c.o $(BUILD_DIR)/$(SRC_DIR)/locale_custom.dat.c.o
+OBJS := $(SRCS:%=$(BUILD_DIR)/%.o) $(BUILD_DIR)/$(SRC_DIR)/bullet_assets.dat.c.o
 OBJS_GAME := $(SRCS_GAME:%=$(BUILD_DIR)/%.o)
 OBJS_WASM := $(SRCS_WASM:%=$(BUILD_DIR)/%.wo)
 
@@ -32,18 +32,18 @@ $(BUILD_DIR)/embedder: $(EMBEDDER_SRC)
 	$(CXX) $(EMBEDDER_SRC) -O3 -o $(BUILD_DIR)/embedder
 
 # Build the localization generator
-LOCALE_SRC := src/tooling/embedder_locale.d
-$(BUILD_DIR)/localegen: $(LOCALE_SRC)
-	mkdir -p $(BUILD_DIR)
-	dmd $(LOCALE_SRC) -O -release -g -of=$(BUILD_DIR)/localegen
+# LOCALE_SRC := src/tooling/embedder_locale.d
+# $(BUILD_DIR)/localegen: $(LOCALE_SRC)
+# 	mkdir -p $(BUILD_DIR)
+# 	dmd $(LOCALE_SRC) -O -release -g -of=$(BUILD_DIR)/localegen
 
 # Run the embedder
-$(SRC_DIR)/assets_custom.dat.c: $(BUILD_DIR)/embedder
-	$(BUILD_DIR)/embedder ./assets ./src/assets_custom.dat.c
+$(SRC_DIR)/bullet_assets.dat.c: $(BUILD_DIR)/embedder
+	$(BUILD_DIR)/embedder ./assets ./src/bullet_assets.dat.c
 
 # Run the localization generator
-$(SRC_DIR)/locale_custom.dat.c: $(BUILD_DIR)/localegen
-	$(BUILD_DIR)/localegen -i ./assets -o ./src/locale_custom.dat.c -v
+# $(SRC_DIR)/bullet_locale.dat.c: $(BUILD_DIR)/localegen
+# 	$(BUILD_DIR)/localegen -i ./assets -o ./src/bullet_locale.dat
 #$(SRC_DIR)/locale_builtin.dat.c: $(BUILD_DIR)/localegen
 #	$(BUILD_DIR)/localegen -i ./assets_builtin -o ./src/locale_builtin.dat.c
 

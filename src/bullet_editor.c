@@ -2,6 +2,7 @@
 #include "basalt.h"
 #include "basalt_extra.h"
 #include "bullet_common.h"
+#include "bullet_locale.dat.h"
 
 const Color tabBGColor = 0x111111FF;
 const Color tabFGColor = 0xAAAAAAFF;
@@ -21,8 +22,7 @@ typedef struct EditorTab {
 func void DrawMainTab(Scene* activeScene, Texture canvas, float delta);
 func void DrawAssetTab(Scene* activeScene, Texture canvas, float delta);
 func void DrawPatternsTab(Scene* activeScene, Texture canvas, float delta);
-static const EditorTab EditorTabs[]
-    = { { "Main", DrawMainTab }, { "Assets", DrawAssetTab }, { "Patterns", DrawPatternsTab }, { NULL } };
+static const EditorTab EditorTabs[] = { { "Main", DrawMainTab }, { "Assets", DrawAssetTab }, { "Patterns", DrawPatternsTab }, { NULL } };
 
 func void DrawMainTab(Scene* activeScene, Texture canvas, float delta)
 {
@@ -96,8 +96,9 @@ BULLET void UpdateAndRenderEditor(Scene* activeScene, Texture canvas, float delt
         INFO("%s editor", IsOpened ? "Opened" : "Closed");
     }
 
-    if (!IsOpened)
+    if (!IsOpened) {
         return;
+    }
 
     DrawEditorTabs(activeScene, canvas, delta, EditorTabs);
 }

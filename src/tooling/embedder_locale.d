@@ -11,6 +11,8 @@ import std.algorithm;
 
 import core.stdc.stdlib;
 
+// TODO: Rewrite in C
+
 static bool isVerbose = false;
 void logDebug(string msg)
 {
@@ -22,7 +24,7 @@ void logDebug(string msg)
 
 void stripAll(ref string[] strings)
 {
-    foreach (string str; strings)
+    foreach (ref string str; strings)
     {
         str = str.strip();
     }
@@ -52,22 +54,34 @@ struct Sentence
 
     string toString() const
     {
-        string desc = format("%ul: %s", toHash(), primary);
+        string desc = format("%s: %s", toName(), primary);
         foreach (item; locales) {
             desc ~= "," ~ item;
         }
         return desc;
     }
 
+    string toName() const
+    {
+        return format("LOC_%u", toHash());
+    }
+
     string toCode()
     {
         string code = "// " ~ primary ~ "\n";
-        code ~= format("const char* LOC_%u[] = { \"%s\"", toHash(), primary);
+        code ~= format("const char %s[] = \"%s", toName(), primary);
         foreach (string loc; locales)
         {
-            code ~= ", \"" ~ loc ~ "\"";
+            code ~= "|" ~ loc;
         }
-        code ~= ", NULL };\n";
+        code ~= "\";\n";
+        return code;
+    }
+
+    string toHeaderCode()
+    {
+        string code = "// " ~ primary ~ "\n";
+        code ~= format("extern const char %s[];", toName());
         return code;
     }
 
@@ -122,15 +136,40 @@ Sentence[ulong] loadSentencesFromFolder(string input)
     return locales;
 }
 
-void generateLocaleCodeFile(string inputFolder, string outputFile)
+string generateSentenceArray(ref Sentence[ulong] sentences)
 {
-    string fileContent = "#include \"basalt.h\"\n\n";
-    Sentence[ulong] sentences = loadSentencesFromFolder(inputFolder);
+    string code = "const char** LOC_ALL = {\n";
+    foreach (sent; sentences)
+    {
+        code ~= format("    &%s,\n",sent.toName());
+    }
+    code ~= "};";
+    return code;
+}
+
+void generateLocaleHeaderFile(ref Sentence[ulong] sentences, string inputFolder, string outputFile)
+{
+    string fileContent = "#include \"basalt.h\"\n";
+    fileContent ~= "// Automatically generated, do not edit by hand!\n\n";
+    foreach (sent; sentences)
+    {
+        fileContent ~= sent.toHeaderCode() ~ "\n\n";
+    }
+    fileContent ~= "\nextern const char** LOC_ALL;\n\n";
+    logDebug(fileContent);
+    std.file.write(outputFile, fileContent);
+    writeln("Wrote header code to " ~ outputFile);
+}
+
+void generateLocaleCodeFile(ref Sentence[ulong] sentences, string inputFolder, string outputFile)
+{
+    string fileContent = "#include \"basalt.h\"\n";
+    fileContent ~= "// Automatically generated, do not edit by hand!\n\n";
     foreach (sent; sentences)
     {
         fileContent ~= sent.toCode() ~ "\n";
     }
-    fileContent ~= "\n";
+    fileContent ~= generateSentenceArray(sentences) ~ "\n";
     logDebug(fileContent);
     std.file.write(outputFile, fileContent);
     writeln("Wrote code to " ~ outputFile);
@@ -174,7 +213,9 @@ int main(string[] args)
         {
             try
             {
-                generateLocaleCodeFile(inputFolder, destFile);
+                Sentence[ulong] sentences = loadSentencesFromFolder(inputFolder);
+                generateLocaleCodeFile(sentences, inputFolder, destFile ~ ".c");
+                generateLocaleHeaderFile(sentences, inputFolder, destFile ~ ".h");
             }
             catch (Exception exc)
             {

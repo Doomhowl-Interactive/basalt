@@ -4,20 +4,20 @@
 # define PI 3.14159265358979323846
 #endif
 
-# include <assert.h>
-# include <stdbool.h>
-# include <stdint.h>
-# include <stdio.h>
-# include <stdlib.h>
-# include <string.h>
+#include <assert.h>
+#include <stdbool.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 typedef unsigned int uint;
 typedef unsigned char uchar;
 typedef size_t usize;
 
-# ifdef _WIN32
+#ifdef _WIN32
 typedef uint64_t ulong;
-# endif
+#endif
 
 typedef uint32_t Color;
 typedef uchar Key;
@@ -209,7 +209,11 @@ BASALT Texture RequestTextureEx(const char* name, const uchar* pixels);
 BASALT Texture* GetLoadedTextures();
 BASALT void TakeScreenshot(Texture canvas);
 
-BASALT void TakeScreenshot();
+// TODO: Localization support (basalt_locale.c)
+BASALT usize SwitchLocale(usize id);
+BASALT const char* LocString(const char* key);
+BASALT const char* MappedLocString(const char* locales, const char* primary);
+
 // Platform dependent stuff
 BASALT Point GetMousePosition();
 BASALT void SetWindowTitle(const char* title);
@@ -244,6 +248,7 @@ typedef struct GameConfig {
     const char* title;
     uint width;
     uint height;
+    uint language;
 } GameConfig;
 extern GameConfig Game;
 

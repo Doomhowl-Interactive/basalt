@@ -135,6 +135,7 @@ int main(int argc, char** argv)
         return EXIT_SUCCESS;
 
     Game = ConfigureGame();
+    SwitchLocale(Game.language);
 
     DEBUG("Opening Xorg display...");
     Display* display = XOpenDisplay(NULL);
