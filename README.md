@@ -1,7 +1,7 @@
 ![basalt](misc/logo_small.png)
 
 # basalt
-game engine for c cavemen 
+game engine for C cavemen 
 
 **Work-in-progress:** Windows not really support for the moment, use Linux.
 
