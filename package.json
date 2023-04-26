@@ -11,5 +11,8 @@
   "devDependencies": {
     "typescript": "^5.0.2",
     "vite": "^4.3.0"
+  },
+  "dependencies": {
+    "@bjorn3/browser_wasi_shim": "^0.2.8"
   }
 }

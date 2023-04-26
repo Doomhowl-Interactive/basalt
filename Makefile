@@ -20,6 +20,8 @@ INC_FLAGS := $(addprefix -I,$(SRC_DIR))
 CFLAGS := $(INC_FLAGS) -ggdb -Wall -O$(LEVEL) -fPIC
 LDFLAGS := -lX11 -lm -lXext
 
+CWASMFLAGS := -O2 -sEXPORTED_FUNCTIONS=LifeAndTheUniverse,InitWASM,GetWASMCanvasWidth,GetWASMCanvasHeight,GetWASMCanvas,UpdateAndRenderWASM,PollWASMMousePosition
+
 build: $(BUILD_DIR)/$(TARGET_EXEC) $(BUILD_DIR)/$(TARGET_LIB)
 wasm: $(BUILD_DIR)/$(TARGET_WASM)
 
@@ -49,8 +51,8 @@ $(BUILD_DIR)/$(TARGET_EXEC): $(OBJS) $(OBJS_GAME)
 
 # Linking step (WASM)
 $(BUILD_DIR)/$(TARGET_WASM): $(OBJS_WASM)
-	emcc $(OBJS_WASM) -o $@
-	cp $@ wasm_src/basalt.wasm
+	emcc $(OBJS_WASM) -o $@ $(CWASMFLAGS)
+	cp $@ public/basalt.wasm
 
 # Linking step (shared library)
 $(BUILD_DIR)/$(TARGET_LIB): $(OBJS_GAME)
