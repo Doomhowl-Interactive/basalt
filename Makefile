@@ -20,7 +20,8 @@ INC_FLAGS := $(addprefix -I,$(SRC_DIR))
 CFLAGS := $(INC_FLAGS) -ggdb -Wall -O$(LEVEL) -fPIC
 LDFLAGS := -lX11 -lm -lXext
 
-build: $(BUILD_DIR)/$(TARGET_EXEC) $(BUILD_DIR)/$(TARGET_LIB) $(BUILD_DIR)/$(TARGET_WASM)
+build: $(BUILD_DIR)/$(TARGET_EXEC) $(BUILD_DIR)/$(TARGET_LIB)
+wasm: $(BUILD_DIR)/$(TARGET_WASM)
 
 # Build the embedder
 EMBEDDER_SRC := src/tooling/embedder.c
