@@ -2,6 +2,8 @@
 #include "basalt_extra.h"
 #define WASM
 
+#include "bullet_common.h"
+
 Texture Canvas = { 0 };
 int FrameNumber = 0;
 
@@ -11,6 +13,12 @@ WASM bool InitWASM()
     Canvas.height = HEIGHT;
     Canvas.pixels = malloc(WIDTH * HEIGHT * sizeof(int));
     return true;
+}
+
+int main(int argc, char** argv)
+{
+    InitWASM();
+    return 0;
 }
 
 WASM int GetWASMCanvasWidth()

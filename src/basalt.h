@@ -4,10 +4,6 @@
 # define PI 3.14159265358979323846
 #endif
 
-#ifdef WASM
-# include "wasm_stdlib.h"
-#else
-
 # include <assert.h>
 # include <stdbool.h>
 # include <stdint.h>
@@ -25,8 +21,6 @@ typedef uint64_t ulong;
 
 typedef uint32_t Color;
 typedef uchar Key;
-
-#endif
 
 #define MAX_ENTITIES 100000
 #define MAX_PATH_LENGTH 128

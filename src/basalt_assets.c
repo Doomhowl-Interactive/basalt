@@ -72,7 +72,7 @@ BASALT void HotReloadTexture(Texture texture)
             return;  // polled to recently
         entry->lastPollTime = GetTimeElapsed();
 
-        ulong newEditTime = GetFileModifiedTime(entry->filePath);
+        long newEditTime = GetFileModifiedTime(entry->filePath);
         if (newEditTime > entry->lastEditTime) {
             entry->lastEditTime = newEditTime;
 
