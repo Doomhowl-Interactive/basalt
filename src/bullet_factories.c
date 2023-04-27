@@ -45,8 +45,8 @@ BULLET void InitTestEnemy(Entity* e, Vec2 pos)
     SetEntitySize(e, e->texture.width, e->texture.height);
     assert(e->bounds.width > 0 && e->bounds.height > 0);
 
-    // "AI" Behaviour
-    e->ai = *GetEntityAIByName("SidewaysEight");
+    // Move downwards
+    e->vel.y = 200;
 
     // Bullet spawners
     double outwardsAngleDeg = 40;

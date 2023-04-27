@@ -133,6 +133,43 @@ BULLET usize GetEntityCount();
 BULLET void UpdateAndRenderEntity(Scene* scene, Texture canvas, Entity* e, float delta);
 BULLET usize UpdateAndRenderScene(Scene* scene, Texture canvas, float delta);
 
+// bullet_levels.c
+#define BACKGROUND
+#define SCHEDULE
+
+#define MAX_SCHEDULED_ITEMS 256
+
+struct LevelSchedule;
+typedef void (*BackgroundRenderFunc)(Texture canvas, float delta);
+typedef void (*LevelSchedulerFunc)(int difficulty);
+typedef void (*EntityInitializerFunc)(Entity* e, Vec2 pos);
+
+typedef struct LevelScheduleItem {
+    double delayTime;
+    EntityInitializerFunc initFunc;
+    Vec2 position;
+    const char* description;
+} LevelScheduleItem;
+
+typedef struct LevelSchedule {
+    LevelScheduleItem items[MAX_SCHEDULED_ITEMS];
+    usize curIndex;
+    usize itemCount;
+    double lastScheduleTime;
+} LevelSchedule;
+
+typedef struct LevelInfo {
+    int number;
+    const char* name;
+    LevelSchedulerFunc schedulerFunc;
+    BackgroundRenderFunc backgroundFunc;
+} LevelInfo;
+
+extern const LevelInfo Level1;
+
+BULLET void SwitchLevel(const LevelInfo* level);
+BULLET bool UpdateAndRenderLevel(Texture canvas, Scene* scene, float delta);
+
 // bullet_patterns.c
 BULLET bool RunBulletPattern(Entity* e, float delta);
 BULLET const BulletPattern* GetBulletPattern(usize index);
