@@ -7,9 +7,9 @@ BUILD_DIR := ./build
 SRC_DIR := ./src
 
 SRCS := $(shell find $(SRC_DIR) -type f \( -name 'basalt_*.c' -o -name 'xorg_*.c' \))
-SRCS_GAME := $(shell find $(SRC_DIR) -type f \( -name 'bullet_*.c' \))
+SRCS_GAME := $(shell find $(SRC_DIR) -type f \( -name 'bullet_*.c' \)) $(SRC_DIR)/bullet_assets.dat.c
 
-OBJS := $(SRCS:%=$(BUILD_DIR)/%.o) $(BUILD_DIR)/$(SRC_DIR)/bullet_assets.dat.c.o
+OBJS := $(SRCS:%=$(BUILD_DIR)/%.o)
 OBJS_GAME := $(SRCS_GAME:%=$(BUILD_DIR)/%.o)
 
 INC_FLAGS := $(addprefix -I,$(SRC_DIR))
@@ -17,7 +17,8 @@ INC_FLAGS := $(addprefix -I,$(SRC_DIR))
 CFLAGS := $(INC_FLAGS) -ggdb -Wall -O$(LEVEL) -fPIC
 LDFLAGS := -lX11 -lm -lXext
 
-build: $(BUILD_DIR)/$(TARGET_EXEC) $(BUILD_DIR)/$(TARGET_LIB)
+build: $(BUILD_DIR)/$(TARGET_EXEC) 
+lib: $(BUILD_DIR)/$(TARGET_LIB)
 
 # Build the embedder
 EMBEDDER_SRC := src/tooling/embedder.c

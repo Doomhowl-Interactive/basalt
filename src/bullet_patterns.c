@@ -103,7 +103,7 @@ PATTERN void MoveBulletSnake(Entity* e, ActionData* data, const int* args)
     int segWidth = args[0];
     int yFlip = args[1];
 
-    float power = 150 + data->difficulty * 30;
+    float power = 450 + data->difficulty * 30;
     e->vel.x = cos(data->timer * segWidth) * power;
     e->vel.y = yFlip * ABS(float, sin(data->timer * segWidth) * power);
 }

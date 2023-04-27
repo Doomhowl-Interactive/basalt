@@ -15,11 +15,7 @@ BULLET void SwitchLevel(const LevelInfo* level)
 {
     // Run level scheduler
     level->schedulerFunc(GameDifficulty);
-
-    Context.schedule.lastScheduleTime = GetTimeElapsed();
     Context.currentLevel = level;
-    Context.timePassed = 0;
-
     INFO("Switched to level %s", level->name);
 }
 
@@ -76,7 +72,7 @@ func void RunScheduler(LevelSchedule* schedule, Scene* scene)
     }
 
     const LevelScheduleItem item = schedule->items[schedule->curIndex];
-    if (schedule->lastScheduleTime + item.delayTime > GetTimeElapsed()) {
+    if (GetTimeElapsed() > schedule->lastScheduleTime + item.delayTime) {
         assert(item.initFunc);
         schedule->lastScheduleTime = GetTimeElapsed();
 
