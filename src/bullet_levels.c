@@ -1,23 +1,52 @@
 #include "bullet_levels.h"
 #include "basalt.h"
 
-static const LevelLayout TrainingLevelLayout = {};
-
 // TODO: Use indices instead
 const LevelInfo Level1 = {
     0,
     "Training Ground",
-    &TrainingLevelLayout,
+    TrainingLevelLayout,
     ScrollingPurpleNoise,
 };
 
-static double LastLevelChange = 0.0;
-static const LevelInfo* CurrentLevel = NULL;
+typedef struct LevelContext {
+    double lastLevelChange;
+    const LevelInfo* currentLevel;
+} LevelContext;
+
+static LevelContext Context = { 0 };
+
+func void UpdateAndRenderBackground(Texture canvas, float delta)
+{
+    assert(Context.currentLevel);
+    if (Context.currentLevel->backgroundFunc) {
+        Context.currentLevel->backgroundFunc(canvas, delta);
+    }
+}
+
+func void UpdateAndRenderGUI(Texture canvas, float delta)
+{
+    const LevelInfo* level = Context.currentLevel;
+
+    assert(level);
+    if (GetTimeElapsed() - Context.lastLevelChange < 2.0) {
+        DrawText(canvas, level->name, 150, 150, 0xFFFF00FF);
+    }
+}
 
 BULLET void SwitchLevel(const LevelInfo* level)
 {
-    CurrentLevel = level;
-    LastLevelChange = GetTimeElapsed();
+    Context.currentLevel = level;
+    Context.lastLevelChange = GetTimeElapsed();
+}
+
+BULLET bool UpdateAndRenderLevel(Texture canvas, Scene* scene, float delta)
+{
+    UpdateAndRenderBackground(canvas, delta);
+    UpdateAndRenderScene(scene, canvas, delta);
+    UpdateAndRenderEditor(scene, canvas, delta);
+    UpdateAndRenderGUI(canvas, delta);
+    return false;
 }
 
 BACKGROUND void ScrollingPurpleNoise(Texture canvas, float delta)
@@ -30,27 +59,6 @@ BACKGROUND void ScrollingPurpleNoise(Texture canvas, float delta)
     DrawTexture(canvas, noiseTexture, 0.f, -offsetY + HEIGHT, WHITE);
 }
 
-func void UpdateAndRenderBackground(Texture canvas, float delta)
+SCHEDULE void TrainingLevelLayout(int difficulty)
 {
-    assert(CurrentLevel);
-    if (CurrentLevel->background) {
-        CurrentLevel->background(canvas, delta);
-    }
-}
-
-func void UpdateAndRenderGUI(Texture canvas, float delta)
-{
-    assert(CurrentLevel);
-    if (GetTimeElapsed() - LastLevelChange < 2.0) {
-        DrawText(canvas, CurrentLevel->name, 150, 150, 0xFFFF00FF);
-    }
-}
-
-BULLET bool UpdateAndRenderLevel(Texture canvas, Scene* scene, float delta)
-{
-    UpdateAndRenderBackground(canvas, delta);
-    UpdateAndRenderScene(scene, canvas, delta);
-    UpdateAndRenderEditor(scene, canvas, delta);
-    UpdateAndRenderGUI(canvas, delta);
-    return false;
 }

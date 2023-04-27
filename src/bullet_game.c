@@ -47,12 +47,6 @@ DYNAMIC BASALT void InitializeGame()
     Vec2 spawnPos = { WIDTH / 2.0f, HEIGHT / 1.2f };
     InitPlayer(Player, spawnPos);
 
-    for (int i = 0; i < TEST_ENEMY_COUNT; i++) {
-        Entity* enemy = CreateEntity(&Scenes[ActiveSceneID]);
-        InitTestEnemy(enemy, (Vec2){ 50, 50 });
-        TestEnemies[i] = enemy;
-    }
-
     SwitchLevel(&Level1);
 }
 
