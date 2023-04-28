@@ -4,19 +4,29 @@
 #include "basalt_extra.h"
 #include "bullet_common.h"
 
-BULLET void InitPlayer(Entity* e, Vec2 pos)
+void InitPlayerLevel1Weapon(Entity* e)
 {
-    DEBUG("Spawned player at %f %f", pos.x, pos.y);
-    e->texture = RequestTexture(SPR_SHIP_PLAYER);
-    SetEntityCenter(e, pos.x - 48.f / 2.f, pos.y);
-    e->tint = WHITE;
-    e->moveSpeed = 200;
-    SetEntitySize(e, e->texture.width, e->texture.height);
-    assert(e->bounds.width > 0 && e->bounds.height > 0);
+    double distanceFromPlayer = 45;
+    double spaceBetween = 45;
 
-    // "AI" Behaviour
-    e->ai = *GetEntityAIByName("PlayerMovement");
+    Vec2 offset = {
+        -spaceBetween*0.5f,
+        -distanceFromPlayer
+    };
 
+    for (int i = 0; i < 2; i++) {
+        BulletSpawner* spawner = &e->bulletSpawners[i];
+        spawner->interval = 0.1f;
+        spawner->normal.x = 0;
+        spawner->normal.y = -1;
+        spawner->offset = offset;
+        spawner->patternToSpawn = GetBulletPatternByName("PlayerBullet1");
+        offset.x += spaceBetween;
+    }
+}
+
+void InitPlayerLevel4Weapon(Entity* e)
+{
     // Bullet spawners
     double outwardsAngleDeg = 40;
     double distanceFromPlayer = 45;
@@ -33,6 +43,22 @@ BULLET void InitPlayer(Entity* e, Vec2 pos)
         spawner->offset = Vec2Scale(spawner->normal, distanceFromPlayer);
         spawner->patternToSpawn = GetBulletPatternByName("PlayerBullet1");
     }
+}
+
+BULLET void InitPlayer(Entity* e, Vec2 pos)
+{
+    DEBUG("Spawned player at %f %f", pos.x, pos.y);
+    e->texture = RequestTexture(SPR_SHIP_PLAYER);
+    SetEntityCenter(e, pos.x - 48.f / 2.f, pos.y);
+    e->tint = WHITE;
+    e->moveSpeed = 200;
+    SetEntitySize(e, e->texture.width, e->texture.height);
+    assert(e->bounds.width > 0 && e->bounds.height > 0);
+
+    // "AI" Behaviour
+    e->ai = *GetEntityAIByName("PlayerMovement");
+
+    InitPlayerLevel1Weapon(e);
 }
 
 BULLET void InitTestEnemy(Entity* e, Vec2 pos)
