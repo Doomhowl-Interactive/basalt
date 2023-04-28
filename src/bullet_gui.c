@@ -49,7 +49,7 @@ BULLET void UpdateAndRenderGUI(Texture canvas, Entity* player, float delta)
     UpdateAndRenderLives(canvas, player, delta);
 
     // hooks
-    AddLevelEnterHook(OnLevelEntered);
+    RunLevelEnterHook(OnLevelEntered);
 
     Context.timePassed += delta;
 }

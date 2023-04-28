@@ -32,7 +32,7 @@ BULLET void SwitchLevel(const LevelInfo* level)
     }
 }
 
-BULLET void AddLevelEnterHook(LevelInitializerFunc initFunc)
+BULLET void RunLevelEnterHook(LevelInitializerFunc initFunc)
 {
     // check if present
     for (usize i = 0; i < Context.initializerCount; i++){

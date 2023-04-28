@@ -171,7 +171,7 @@ extern const LevelInfo Level1;
 
 BULLET void SwitchLevel(const LevelInfo* level);
 BULLET bool UpdateAndRenderLevel(Texture canvas, Scene* scene, float delta);
-BULLET void AddLevelEnterHook(LevelInitializerFunc initFunc);
+BULLET void RunLevelEnterHook(LevelInitializerFunc initFunc);
 
 // bullet_patterns.c
 BULLET bool RunBulletPattern(Entity* e, float delta);
