@@ -1,11 +1,15 @@
 #include "basalt.h"
 #include "bullet_common.h"
+#define MAX_INITIALIZERS 64
 
 typedef struct LevelContext {
     double timePassed;
     LevelSchedule schedule;
 
     const LevelInfo* currentLevel;
+
+    LevelInitializerFunc initializers[MAX_INITIALIZERS];
+    usize initializerCount;
 } LevelContext;
 
 static LevelContext Context = { 0 };
@@ -16,10 +20,38 @@ BULLET void SwitchLevel(const LevelInfo* level)
     // Run level scheduler
     level->schedulerFunc(GameDifficulty);
     Context.currentLevel = level;
+
     INFO("Switched to level %s", level->name);
+
+    // Call subscribers
+    for (usize i = 0; i < Context.initializerCount; i++) {
+        LevelInitializerFunc initFunc = Context.initializers[i];
+        if (initFunc) {
+            (*initFunc)(level);
+        }
+    }
 }
 
-func void UpdateAndRenderGUI(Texture canvas, float delta);
+BULLET void AddLevelEnterHook(LevelInitializerFunc initFunc)
+{
+    // check if present
+    for (usize i = 0; i < Context.initializerCount; i++){
+        if (Context.initializers[i] == initFunc){
+            return; // already added
+        }
+    }
+
+    // make subscriber
+    if (Context.initializerCount < MAX_INITIALIZERS) {
+        Context.initializers[Context.initializerCount++] = initFunc;
+    } else {
+        ERR("Too many level initializers defined!");
+    }
+
+    // send level immediately
+    (*initFunc)(Context.currentLevel);
+}
+
 func void UpdateAndRenderBackground(Texture canvas, float delta);
 func void RunScheduler(LevelSchedule* schedule, Scene* scene);
 BULLET bool UpdateAndRenderLevel(Texture canvas, Scene* scene, float delta)
@@ -28,7 +60,8 @@ BULLET bool UpdateAndRenderLevel(Texture canvas, Scene* scene, float delta)
     UpdateAndRenderBackground(canvas, delta);
     UpdateAndRenderScene(scene, canvas, delta);
     UpdateAndRenderEditor(scene, canvas, delta);
-    UpdateAndRenderGUI(canvas, delta);
+    // HACK: Resolve player properly!
+    UpdateAndRenderGUI(canvas, scene->entities[0], delta);
     return false;
 }
 
@@ -38,16 +71,6 @@ func void UpdateAndRenderBackground(Texture canvas, float delta)
     assert(Context.currentLevel);
     if (Context.currentLevel->backgroundFunc) {
         Context.currentLevel->backgroundFunc(canvas, delta);
-    }
-}
-
-func void UpdateAndRenderGUI(Texture canvas, float delta)
-{
-    const LevelInfo* level = Context.currentLevel;
-
-    assert(level);
-    if (Context.timePassed < 2.0) {
-        DrawText(canvas, level->name, 150, 150, 0xFFFF00FF);
     }
 }
 

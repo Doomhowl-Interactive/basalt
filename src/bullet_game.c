@@ -73,6 +73,7 @@ DYNAMIC BASALT void UpdateAndRenderGame(Texture canvas, float delta)
 
     Scene* activeScene = &Scenes[ActiveSceneID];
     UpdateAndRenderLevel(canvas, activeScene, delta);
+    UpdateAndRenderGUI(canvas, Player, delta);
 
     // draw fps
     static char info[128];

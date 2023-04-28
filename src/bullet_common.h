@@ -165,10 +165,13 @@ typedef struct LevelInfo {
     BackgroundRenderFunc backgroundFunc;
 } LevelInfo;
 
+typedef void (*LevelInitializerFunc)(const LevelInfo* level);
+
 extern const LevelInfo Level1;
 
 BULLET void SwitchLevel(const LevelInfo* level);
 BULLET bool UpdateAndRenderLevel(Texture canvas, Scene* scene, float delta);
+BULLET void AddLevelEnterHook(LevelInitializerFunc initFunc);
 
 // bullet_patterns.c
 BULLET bool RunBulletPattern(Entity* e, float delta);
@@ -188,6 +191,9 @@ BULLET usize GetEntityAICount();
 BULLET void InitPlayer(Entity* e, Vec2 pos);
 BULLET void InitTestEnemy(Entity* e, Vec2 pos);
 BULLET void InitBullet(Entity* e, const BulletPattern* pattern, Vec2 pos, Vec2 normal);
+
+// bullet_gui.c
+BULLET void UpdateAndRenderGUI(Texture canvas, Entity* player, float delta);
 
 // bullet_editor.c
 BULLET bool IsEditorOpen();
