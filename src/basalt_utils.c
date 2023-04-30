@@ -261,7 +261,7 @@ BASALT String* AppendString(String* str, const char* add)
     return str;
 }
 
-BASALT void UnloadString(String* str)
+BASALT void DisposeString(String* str)
 {
     str->size = 0;
     str->capacity = 100;
@@ -274,6 +274,14 @@ BASALT void ToUppercase(char* str)
 {
     while (*str) {
         *str = toupper(*str);
+        str++;
+    }
+}
+
+BASALT void ToLowercase(char* str)
+{
+    while (*str) {
+        *str = tolower(*str);
         str++;
     }
 }
@@ -369,9 +377,9 @@ BASALT bool FileHasExtension(const char* name, const char* ext)
     return cmp == 0;
 }
 
-BASALT FilePathList GetFolderFiles(const char* folder, const char* ext)
+BASALT StringArray GetFolderFiles(const char* folder, const char* ext)
 {
-    FilePathList list = { 0 };
+    StringArray list = { 0 };
     list.count = 0;
     list.capacity = 20;
 
@@ -381,7 +389,7 @@ BASALT FilePathList GetFolderFiles(const char* folder, const char* ext)
         list.strings = (char**)malloc(list.capacity * sizeof(char*));
         while ((ent = readdir(dir)) != NULL) {
             if (FileHasExtension(ent->d_name, ext)) {
-                // expand FilePathList if needed
+                // expand StringArray if needed
                 if (list.count == list.capacity) {
                     list.capacity *= 2;
                     list.strings = (char**)realloc(list.strings, list.capacity * sizeof(char*));
@@ -399,12 +407,4 @@ BASALT FilePathList GetFolderFiles(const char* folder, const char* ext)
     }
 
     return list;
-}
-
-BASALT void UnloadFilePathList(FilePathList list)
-{
-    for (size_t i = 0; i < list.count; i++) {
-        free(list.strings[i]);
-    }
-    free(list.strings);
 }

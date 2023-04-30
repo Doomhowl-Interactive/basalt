@@ -1,4 +1,5 @@
 #include <stdint.h>
+#include <stdio.h>
 #include <time.h>
 #include <string.h>
 
@@ -9,9 +10,6 @@
 
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "external/stb_image_write.h"
-
-#define DEFLATION_IMPLEMENTATION
-#include "external/deflation.h"
 
 #include "basalt.h"
 
@@ -30,12 +28,6 @@ static AssetEntry* AssetEntries = NULL;
 static const char* AssetFolders[] = {
     "assets", "../assets", "~/dev/basalt/assets", "C:\\dev\\basalt\\assets", NULL,
 };
-
-BASALT void LoadAssetPackage(const char* name)
-{
-    int64_t count = 0;
-    read_deflate_package(name, &count);
-}
 
 func bool GetAssetEntry(const char* name, AssetEntry** result)
 {
@@ -119,7 +111,7 @@ BASALT void InitHotReloading()
 
     const char* folder = GetFirstExistingFolder(AssetFolders);
     INFO("Found asset folder at %s", folder);
-    FilePathList list = GetFolderFiles(folder, ".png");
+    StringArray list = GetFolderFiles(folder, ".png");
     INFO("Found %lu textures to be hot-reloaded", list.count);
 
     // Map to AssetEntries
@@ -128,9 +120,9 @@ BASALT void InitHotReloading()
 
     for (usize i = 0; i < AssetEntryCount; i++) {
         AssetEntry* e = &AssetEntries[i];
-        strcpy(e->filePath, list.files[i]);
+        strcpy(e->filePath, list.strings[i]);
 
-        char* fileStem = (char*)GetFileStem(list.files[i]);
+        char* fileStem = (char*)GetFileStem(list.strings[i]);
         ToUppercase(fileStem);
         strcpy(e->assetName, fileStem);
 
@@ -141,11 +133,7 @@ BASALT void InitHotReloading()
         DEBUG("HOTLOAD --> Found %s at %s (last edit %s)", e->assetName, e->filePath, formattedModTime);
     }
 
-    UnloadFilePathList(list);
-}
-
-func RawAsset GetLoadedAsset(const char* name){
-
+    DisposeStringArray(&list);
 }
 
 static uint LoadedTextureCapacity = 20;
@@ -165,16 +153,24 @@ BASALT Texture RequestTexture(const char* name)
         loadedCount++;
     }
 
+    static const char* assetFolder = NULL;
+    if (assetFolder == NULL){
+        assetFolder = GetFirstExistingFolder(AssetFolders);
+        INFO("Found asset folder at %s", assetFolder);
+    }
+
     int width, height;
     int channels = 0;
 
-    RawAsset asset = GetLoadedAsset(name);
-    uint* pixels32Bit = (uint*)asset.data;
+    // TODO cleanup
+    char* clone = strdup(name);
+    ToLowercase(clone);
+    char fullPath[128];
+    sprintf(fullPath, "./%s/%s.png",assetFolder, clone);
+    uchar* data = (uchar*)stbi_load(fullPath, &width, &height, &channels, 4);
+    free(clone);
 
-    int size = pixels32Bit[0];
-    uchar* data = (uchar*)stbi_load_from_memory((stbi_uc*)&pixels32Bit[1], size, &width, &height, &channels, 4);
-
-    DEBUG("Loaded texture %s of size %u with %d channels", name, size, channels);
+    DEBUG("Loaded texture %s of size %dx%d with %d channels", name, width, height, channels);
 
     Texture texture = InitTexture(width, height);
     texture.name = name;
@@ -183,7 +179,7 @@ BASALT Texture RequestTexture(const char* name)
         LoadTextureFromStbData(texture, data, channels);
         stbi_image_free(data);
     } else {
-        ERR("Failed to load texture %s", name);
+        ERR("Failed to load texture %s at %s", name, fullPath);
     }
 
     // store texture in cache

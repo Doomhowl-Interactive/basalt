@@ -11,8 +11,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "external/deflation.h"
-
 typedef unsigned int uint;
 typedef unsigned char uchar;
 typedef size_t usize;
@@ -169,9 +167,10 @@ BASALT void StoreString(StringArray* arr, char* text);
 BASALT void DisposeStringArray(StringArray* arr);
 
 BASALT String MakeString();
-BASALT void UnloadString(String* str);
+BASALT void DisposeString(String* str);
 BASALT String* AppendString(String* str, const char* add);
 BASALT void ToUppercase(char* str);
+BASALT void ToLowercase(char* str);
 BASALT const char* PadStringRight(const char* text, char symbol, usize length);
 
 BASALT bool FileHasExtension(const char* name, const char* ext);
@@ -188,8 +187,7 @@ BASALT const char* GetFileStem(const char* filePath);
 // pass NULL ended array
 BASALT const char* GetFirstExistingFolder(const char** folders);
 
-BASALT FilePathList GetFolderFiles(const char* folder, const char* ext);
-BASALT void UnloadFilePathList(FilePathList list);
+BASALT StringArray GetFolderFiles(const char* folder, const char* ext);
 
 // Asset handling (basalt_assets.c)
 typedef struct Texture {
@@ -200,7 +198,6 @@ typedef struct Texture {
 } Texture;
 extern const uchar SPR_PIXELFONT[];
 
-BASALT void LoadAssetPackage(const char* name);
 BASALT Texture RequestTexture(const char* name);
 
 // NOTE: Returns null ended array of loaded/cached textures

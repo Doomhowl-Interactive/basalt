@@ -39,8 +39,6 @@ DYNAMIC BASALT void InitializeGame()
     if (Config.hasUnitTesting)
         UnitTestBullet();
 
-    LoadAssetPackage("bullet_assets.def");
-
     BulletPlacholderTexture = RequestTexture("SPR_BULLET_PLACEHOLDER");
     PlayerTexture = RequestTexture("SPR_SHIP_PLAYER");
 
