@@ -1,6 +1,5 @@
 #pragma once
 #include "basalt.h"
-#include "bullet_assets.h"
 
 #define BULLET
 
@@ -60,7 +59,7 @@ typedef struct EntityAI {
 typedef struct BulletPattern {
     const char* name;
     BulletAction actions[MAX_ACTIONS];
-    const uchar* texture;
+    const char* texture;
     ActionData data;
     uint count;
     uint index;

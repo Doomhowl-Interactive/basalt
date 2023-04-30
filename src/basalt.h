@@ -11,6 +11,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "external/deflation.h"
+
 typedef unsigned int uint;
 typedef unsigned char uchar;
 typedef size_t usize;
@@ -87,9 +89,6 @@ typedef struct StringArray {
     usize count;
     usize capacity;
 } StringArray;
-
-// TODO: Remove typedef
-typedef StringArray FilePathList;
 
 #ifdef WASM
 # define INFO(...)
@@ -201,9 +200,8 @@ typedef struct Texture {
 } Texture;
 extern const uchar SPR_PIXELFONT[];
 
-// TODO: Change to retreive texture, that uses cache system
-#define RequestTexture(X) RequestTextureEx(#X, X)
-BASALT Texture RequestTextureEx(const char* name, const uchar* pixels);
+BASALT void LoadAssetPackage(const char* name);
+BASALT Texture RequestTexture(const char* name);
 
 // NOTE: Returns null ended array of loaded/cached textures
 BASALT Texture* GetLoadedTextures();

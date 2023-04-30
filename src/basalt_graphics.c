@@ -118,7 +118,7 @@ static BitmapFont PixelFont = { 0 };
 BASALT void DrawText(Texture canvas, const char* text, int posX, int posY, Color color)
 {
     if (PixelFont.texture.pixels == NULL) {
-        PixelFont.texture = RequestTexture(SPR_PIXELFONT);
+        PixelFont.texture = RequestTexture("SPR_PIXELFONT");
         PixelFont.cols = 8;
         PixelFont.rows = 8;
         PixelFont.cellWidth = 8;

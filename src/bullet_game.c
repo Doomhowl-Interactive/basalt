@@ -39,8 +39,10 @@ DYNAMIC BASALT void InitializeGame()
     if (Config.hasUnitTesting)
         UnitTestBullet();
 
-    BulletPlacholderTexture = RequestTexture(SPR_BULLET_PLACEHOLDER);
-    PlayerTexture = RequestTexture(SPR_SHIP_PLAYER);
+    LoadAssetPackage("bullet_assets.def");
+
+    BulletPlacholderTexture = RequestTexture("SPR_BULLET_PLACEHOLDER");
+    PlayerTexture = RequestTexture("SPR_SHIP_PLAYER");
 
     Player = CreateEntity(&Scenes[SCENE_GAME]);
     Vec2 spawnPos = { WIDTH / 2.0f, HEIGHT / 1.2f };
