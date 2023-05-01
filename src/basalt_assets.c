@@ -120,11 +120,11 @@ BASALT void InitHotReloading()
 
     for (usize i = 0; i < AssetEntryCount; i++) {
         AssetEntry* e = &AssetEntries[i];
-        strcpy(e->filePath, list.strings[i]);
+        CopyText(e->filePath, list.strings[i]);
 
         char* fileStem = (char*)GetFileStem(list.strings[i]);
         ToUppercase(fileStem);
-        strcpy(e->assetName, fileStem);
+        CopyText(e->assetName, fileStem);
 
         e->lastPollTime = GetTimeElapsed();
         e->lastEditTime = GetFileModifiedTime(e->filePath);
