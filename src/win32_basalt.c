@@ -252,8 +252,7 @@ int CALLBACK WinMain(HINSTANCE instance, HINSTANCE prevInstance, LPSTR commandLi
                 static double timer = 0.f;
                 if (timer > 0.2) {
                     // set window title to framerate
-                    char title[200] = { 0 };
-                    sprintf(title, "%s - %d FPS - %f delta", GAME_TITLE, (int)fps, delta);
+                    const char* title = FormatText("%s - %d FPS - %f delta", GAME_TITLE, (int)fps, delta);
                     SetWindowTitle(title);
                     timer = 0.0;
                 }

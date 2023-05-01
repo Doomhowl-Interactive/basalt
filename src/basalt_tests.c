@@ -105,7 +105,7 @@ TEST(FormatText)
     for (int i = 0; i < 50; i++) {
         const char* money2 = FormatText("I have %d dollars", 50 + i);
         char expected[100];
-        sprintf(expected, "I have %d dollars", 50 + i);
+        snprintf(expected, 100, "I have %d dollars", 50 + i);
         CHECK(strcmp(money2, expected) == 0, "Looping string format failed!");
     }
 }

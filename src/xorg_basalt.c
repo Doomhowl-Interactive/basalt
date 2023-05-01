@@ -238,8 +238,7 @@ int main(int argc, char** argv)
         static double timer = 0.f;
         if (timer > 0.2) {
             // set window title to framerate
-            char title[200] = { 0 };
-            sprintf(title, "%s - %d FPS - %f delta", Game.title, (int)fps, delta);
+            const char* title = FormatText("%s - %d FPS - %f delta", Game.title, (int)fps, delta);
             SetWindowTitle(title);
             timer = 0.0;
         }
