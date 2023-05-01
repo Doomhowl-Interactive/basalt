@@ -94,6 +94,16 @@ TEST(StringPadding)
 }
 END;
 
+TEST(FormatText)
+{
+    const char* greeting = FormatText("%s %s", "Hello", "world!");
+    CHECK(strcmp(greeting, "Hello world!") == 0, "String format failed!");
+
+    const char* money = FormatText("I have %d dollars", 50);
+    CHECK(strcmp(money, "I have 50 dollars") == 0, "String format failed!");
+}
+END;
+
 BASALT void UnitTest()
 {
     INFO("Doing unit tests");
@@ -101,4 +111,5 @@ BASALT void UnitTest()
     TestStringPadding();
     TestMath();
     TestColors();
+    TestFormatText();
 }

@@ -1,5 +1,6 @@
 #include <ctype.h>
 #include <math.h>
+#include <stdarg.h>
 #include <stdio.h>
 #include <string.h>
 #include <sys/stat.h>
@@ -228,6 +229,26 @@ BASALT void DisposeStringArray(StringArray* arr)
 
         free(arr->strings);
     }
+}
+
+// adapted from Raylib
+// WARN: Cached memory, copy for long usage!
+const char* FormatText(const char* text, ...)
+{
+#define MAX_TEXT_LEN 1024
+#define TEXT_BUFFER_COUNT 16
+
+    static char buffers[TEXT_BUFFER_COUNT][MAX_TEXT_LEN];
+    static usize curBufferIndex = 0;
+
+    char* currentBuffer = buffers[curBufferIndex++];
+    curBufferIndex %= TEXT_BUFFER_COUNT;
+
+    va_list args;
+    va_start(args, text);
+    vsnprintf(currentBuffer, MAX_TEXT_LEN, text, args);
+
+    return currentBuffer;
 }
 
 // string implementation
