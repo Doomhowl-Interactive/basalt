@@ -38,7 +38,7 @@ BASALT void SetWindowTitle(const char* title)
     if (ActiveBuffer.display != NULL) {
         // check if changed
         if (!TextIsEqual(ActiveBuffer.title, title)) {
-            strcpy(ActiveBuffer.title, title);
+            CopyText(ActiveBuffer.title, title);
             XStoreName(ActiveBuffer.display, ActiveBuffer.window, title);
         }
     } else {

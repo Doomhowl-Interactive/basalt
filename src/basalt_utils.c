@@ -266,6 +266,30 @@ BASALT inline const char* AppendText(const char* src, const char* add)
     return FormatText("%s%s", src, add);
 }
 
+// from raylib
+BASALT int CopyText(char* dst, const char* src)
+{
+    int bytes = 0;
+
+    if ((src != NULL) && (dst != NULL)) {
+        while (*src != '\0') {
+            *dst = *src;
+            dst++;
+            src++;
+
+            bytes++;
+        }
+
+        *dst = '\0';
+    }
+    return bytes;
+}
+
+BASALT inline usize TextLength(const char* text)
+{
+    return strlen(text);
+}
+
 // string implementation
 BASALT String MakeString()
 {
@@ -276,7 +300,7 @@ BASALT String MakeString()
 
 BASALT String* AppendString(String* str, const char* add)
 {
-    size_t addLen = strlen(add);
+    size_t addLen = TextLength(add);
     str->size += addLen;
 
     // allocate string
@@ -292,7 +316,7 @@ BASALT String* AppendString(String* str, const char* add)
     }
 
     char* head = &str->text[str->size - addLen];  // calculate head position
-    strcpy(head, add);
+    CopyText(head, add);
 
     return str;
 }
@@ -330,7 +354,7 @@ BASALT const char* PadStringRight(const char* text, char symbol, usize length)
     memset(PaddingCache, symbol, length);
     PaddingCache[length] = '\0';
 
-    int len = MIN(MAX_PADDING_LENGTH, MIN(strlen(text), length));
+    int len = MIN(MAX_PADDING_LENGTH, MIN(TextLength(text), length));
     memcpy(PaddingCache, text, len);
 
     return PaddingCache;
@@ -393,10 +417,10 @@ BASALT const char* GetFileStem(const char* filePath)
     static char fileName[MAX_BUFFER_LEN];
 
     if (filePath != NULL) {
-        strcpy(fileName, GetFileName(filePath));  // Get filename with extension
+        CopyText(fileName, GetFileName(filePath));  // Get filename with extension
     }
 
-    int size = (int)strlen(fileName);  // Get size in bytes
+    int size = (int)TextLength(fileName);  // Get size in bytes
 
     for (int i = 0; (i < size) && (i < MAX_BUFFER_LEN); i++) {
         if (fileName[i] == '.') {

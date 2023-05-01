@@ -135,7 +135,7 @@ BASALT void DrawBitmapText(BitmapFont font, Texture canvas, const char* text, in
 
     int x = posX;
     int y = posY;
-    for (uint i = 0; i < strlen(text); i++) {
+    for (uint i = 0; i < TextLength(text); i++) {
         char symbol = text[i];
         switch (symbol) {
             case '\n':  // multiline

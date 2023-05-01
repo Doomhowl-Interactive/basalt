@@ -170,6 +170,8 @@ BASALT void DisposeStringArray(StringArray* arr);
 BASALT const char* FormatText(const char* text, ...);
 BASALT extern bool TextIsEqual(const char* text1, const char* text2);
 BASALT extern const char* AppendText(const char* src, const char* add);
+BASALT int CopyText(char* dst, const char* src);
+BASALT extern usize TextLength(const char* text);
 
 BASALT String MakeString();
 BASALT void DisposeString(String* str);
