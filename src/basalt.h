@@ -176,8 +176,8 @@ BASALT extern usize TextLength(const char* text);
 BASALT String MakeString();
 BASALT void DisposeString(String* str);
 BASALT String* AppendString(String* str, const char* add);
-BASALT void ToUppercase(char* str);
-BASALT void ToLowercase(char* str);
+BASALT const char* ToUppercase(const char* str);
+BASALT const char* ToLowercase(const char* str);
 BASALT const char* PadStringRight(const char* text, char symbol, usize length);
 
 BASALT extern bool FileHasExtension(const char* name, const char* ext);

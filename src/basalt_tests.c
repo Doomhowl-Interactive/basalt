@@ -111,6 +111,22 @@ TEST(FormatText)
 }
 END;
 
+TEST(ToUppercase)
+{
+    const char* text = "testTEXT";
+    const char* upper = ToUppercase(text);
+    CHECK(TextIsEqual(upper, "TESTTEXT"), "ToUppercase");
+}
+END;
+
+TEST(ToLowercase)
+{
+    const char* text = "testTEXT";
+    const char* lower = ToLowercase(text);
+    CHECK(TextIsEqual(lower, "testtext"), "ToLowercase");
+}
+END;
+
 BASALT void UnitTest()
 {
     INFO("Doing unit tests");
@@ -119,4 +135,6 @@ BASALT void UnitTest()
     TestMath();
     TestColors();
     TestFormatText();
+    TestToLowercase();
+    TestToUppercase();
 }

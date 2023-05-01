@@ -330,20 +330,35 @@ BASALT void DisposeString(String* str)
     }
 }
 
-BASALT void ToUppercase(char* str)
+#define MAX_CASE_LEN 1024
+static char CaseBuffer[MAX_CASE_LEN];
+BASALT const char* ToUppercase(const char* str)
 {
-    while (*str) {
-        *str = toupper(*str);
-        str++;
+    char* dst = CaseBuffer;
+    if ((str != NULL) && (dst != NULL)) {
+        while (*str != '\0') {
+            *dst = toupper(*str);
+            dst++;
+            str++;
+        }
+
+        *dst = '\0';
     }
+    return CaseBuffer;
 }
 
-BASALT void ToLowercase(char* str)
+BASALT const char* ToLowercase(const char* str)
 {
-    while (*str) {
-        *str = tolower(*str);
-        str++;
+    char* dst = CaseBuffer;
+    if ((str != NULL) && (dst != NULL)) {
+        while (*str != '\0') {
+            *dst = tolower(*str);
+            dst++;
+            str++;
+        }
+        *dst = '\0';
     }
+    return CaseBuffer;
 }
 
 // FIXME: Untested
