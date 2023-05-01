@@ -148,8 +148,9 @@ const EntityAI EntityAIBehaviours[] = { { "PlayerMovement", { { FlyTowards, { 40
 BULLET const EntityAI* GetEntityAI(usize index)
 {
     usize count = GetEntityAICount();
-    if (index < count)
+    if (index < count) {
         return &EntityAIBehaviours[index];
+    }
 
     WARN("Did not find bullet pattern indexed %lu", index);
     return &EntityAIBehaviours[0];
@@ -158,8 +159,9 @@ BULLET const EntityAI* GetEntityAI(usize index)
 BULLET const EntityAI* GetEntityAIByName(const char* name)
 {
     for (const EntityAI* beh = EntityAIBehaviours; beh->name != NULL; beh++) {
-        if (strcmp(beh->name, name) == 0)
+        if (TextIsEqual(beh->name, name)) {
             return beh;
+        }
     }
     WARN("Did not find bullet pattern with name %s", name);
     return GetEntityAI(0);

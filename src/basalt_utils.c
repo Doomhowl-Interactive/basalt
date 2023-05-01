@@ -233,10 +233,11 @@ BASALT void DisposeStringArray(StringArray* arr)
 
 // adapted from Raylib
 // WARN: Cached memory, copy for long usage!
-const char* FormatText(const char* text, ...)
+BASALT const char* FormatText(const char* text, ...)
 {
 #define MAX_TEXT_LEN 1024
 #define TEXT_BUFFER_COUNT 16
+    assert(text);
 
     static char buffers[TEXT_BUFFER_COUNT][MAX_TEXT_LEN];
     static usize curBufferIndex = 0;
@@ -249,6 +250,20 @@ const char* FormatText(const char* text, ...)
     vsnprintf(currentBuffer, MAX_TEXT_LEN, text, args);
 
     return currentBuffer;
+}
+
+BASALT inline bool TextIsEqual(const char* text1, const char* text2)
+{
+    assert(text1);
+    assert(text2);
+    return strcmp(text1, text2) == 0;
+}
+
+BASALT inline const char* AppendText(const char* src, const char* add)
+{
+    assert(src);
+    assert(add);
+    return FormatText("%s%s", src, add);
 }
 
 // string implementation
@@ -359,11 +374,13 @@ BASALT long GetFileModifiedTime(const char* filePath)
 BASALT const char* GetFileName(const char* filePath)
 {
     const char* fileName = NULL;
-    if (filePath != NULL)
+    if (filePath != NULL) {
         fileName = strpbrk(filePath, "\\/");
+    }
 
-    if (!fileName)
+    if (!fileName) {
         return filePath;
+    }
 
     return fileName + 1;
 }
@@ -371,17 +388,17 @@ BASALT const char* GetFileName(const char* filePath)
 // raylib.h (rcore.c)
 BASALT const char* GetFileStem(const char* filePath)
 {
-#define MAX_FILENAMEWITHOUTEXT_LENGTH 256
+#define MAX_BUFFER_LEN 256
 
-    static char fileName[MAX_FILENAMEWITHOUTEXT_LENGTH] = { 0 };
-    memset(fileName, 0, MAX_FILENAMEWITHOUTEXT_LENGTH);
+    static char fileName[MAX_BUFFER_LEN];
 
-    if (filePath != NULL)
+    if (filePath != NULL) {
         strcpy(fileName, GetFileName(filePath));  // Get filename with extension
+    }
 
     int size = (int)strlen(fileName);  // Get size in bytes
 
-    for (int i = 0; (i < size) && (i < MAX_FILENAMEWITHOUTEXT_LENGTH); i++) {
+    for (int i = 0; (i < size) && (i < MAX_BUFFER_LEN); i++) {
         if (fileName[i] == '.') {
             // NOTE: We break on first '.' found
             fileName[i] = '\0';
@@ -392,10 +409,10 @@ BASALT const char* GetFileStem(const char* filePath)
     return fileName;
 }
 
-BASALT bool FileHasExtension(const char* name, const char* ext)
+BASALT inline bool FileHasExtension(const char* name, const char* ext)
 {
-    int cmp = strcmp(name + strlen(name) - strlen(ext), ext);
-    return cmp == 0;
+    const char* fileStem = GetFileStem(name);
+    return TextIsEqual(fileStem, ext);
 }
 
 BASALT StringArray GetFolderFiles(const char* folder, const char* ext)

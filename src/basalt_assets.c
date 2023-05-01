@@ -35,7 +35,7 @@ func bool GetAssetEntry(const char* name, AssetEntry** result)
     assert(AssetEntries);
     for (usize i = 0; i < AssetEntryCount; i++) {
         const char* assetName = AssetEntries[i].assetName;
-        if (strcmp(assetName, name) == 0) {
+        if (TextIsEqual(assetName, name)) {
             *result = &AssetEntries[i];
             return true;
         }
@@ -65,7 +65,7 @@ func void LoadTextureFromStbData(Texture texture, uchar* data, int channels)
 
 BASALT void HotReloadTexture(Texture texture)
 {
-    if (!Config.hasHotloading || texture.name == NULL || strcmp(texture.name, "SPR_PIXELFONT") == 0)
+    if (!Config.hasHotloading || texture.name == NULL || TextIsEqual(texture.name, "SPR_PIXELFONT"))
         return;
 
     AssetEntry* entry;
@@ -142,14 +142,18 @@ static Texture* LoadedTextures = NULL;
 // TODO: Support loading grayscale textures
 BASALT Texture RequestTexture(const char* name)
 {
+    assert(name);
+
     // try to load cached texture
-    if (LoadedTextures == NULL)
+    if (LoadedTextures == NULL) {
         LoadedTextures = calloc(LoadedTextureCapacity, sizeof(Texture));
+    }
 
     uint loadedCount = 0;
     for (Texture* texture = LoadedTextures; texture->name != NULL; texture++) {
-        if (strcmp(texture->name, name) == 0)
+        if (TextIsEqual(texture->name, name)) {
             return *texture;
+        }
         loadedCount++;
     }
 

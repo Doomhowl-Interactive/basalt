@@ -84,12 +84,12 @@ TEST(StringPadding)
     {
         const char* pad = PadStringRight("Hello world!", '.', 20);
         const char* expected = "Hello world!........";
-        CHECK(strcmp(pad, expected) == 0, "PadStringRight with dots");
+        CHECK(TextIsEqual(pad, expected), "PadStringRight with dots");
     }
     {
         const char* pad = PadStringRight("Hello world!", ' ', 20);
         const char* expected = "Hello world!        ";
-        CHECK(strcmp(pad, expected) == 0, "PadStringRight with spaces");
+        CHECK(TextIsEqual(pad, expected), "PadStringRight with spaces");
     }
 }
 END;
@@ -97,16 +97,16 @@ END;
 TEST(FormatText)
 {
     const char* greeting = FormatText("%s %s", "Hello", "world!");
-    CHECK(strcmp(greeting, "Hello world!") == 0, "String format failed!");
+    CHECK(TextIsEqual(greeting, "Hello world!"), "String format failed!");
 
     const char* money = FormatText("I have %d dollars", 50);
-    CHECK(strcmp(money, "I have 50 dollars") == 0, "String format failed!");
+    CHECK(TextIsEqual(money, "I have 50 dollars"), "String format failed!");
 
     for (int i = 0; i < 50; i++) {
         const char* money2 = FormatText("I have %d dollars", 50 + i);
         char expected[100];
         snprintf(expected, 100, "I have %d dollars", 50 + i);
-        CHECK(strcmp(money2, expected) == 0, "Looping string format failed!");
+        CHECK(TextIsEqual(money2, expected), "Looping string format failed!");
     }
 }
 END;

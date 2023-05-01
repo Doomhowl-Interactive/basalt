@@ -9,10 +9,7 @@ void InitPlayerLevel1Weapon(Entity* e)
     double distanceFromPlayer = 45;
     double spaceBetween = 45;
 
-    Vec2 offset = {
-        -spaceBetween*0.5f,
-        -distanceFromPlayer
-    };
+    Vec2 offset = { -spaceBetween * 0.5f, -distanceFromPlayer };
 
     for (int i = 0; i < 2; i++) {
         BulletSpawner* spawner = &e->bulletSpawners[i];
@@ -103,7 +100,8 @@ BULLET void InitBullet(Entity* e, const BulletPattern* pattern, Vec2 pos, Vec2 n
     // DEBUG("Spawned bullet at %f %f", pos.x, pos.y);
 
     // set sprite
-    e->texture = RequestTexture(pattern->texture);
+    const char* texture = pattern->texture == NULL ? "SPR_BULLET_PLACEHOLDER" : pattern->texture;
+    e->texture = RequestTexture(texture);
     SetEntityCenter(e, pos.x, pos.y);
     SetEntitySize(e, e->texture.width, e->texture.height);
     e->sourceOffset.x = 0;
