@@ -122,9 +122,9 @@ BASALT void InitHotReloading()
         AssetEntry* e = &AssetEntries[i];
         CopyText(e->filePath, list.strings[i]);
 
-        char* fileStem = (char*)GetFileStem(list.strings[i]);
-        ToUppercase(fileStem);
-        CopyText(e->assetName, fileStem);
+        const char* fileStem = GetFileStem(list.strings[i]);
+        const char* fileStemUpper = ToUppercase(fileStem);
+        CopyText(e->assetName, fileStemUpper);
 
         e->lastPollTime = GetTimeElapsed();
         e->lastEditTime = GetFileModifiedTime(e->filePath);
@@ -166,12 +166,9 @@ BASALT Texture RequestTexture(const char* name)
     int width, height;
     int channels = 0;
 
-    // TODO cleanup
-    char* clone = strdup(name);
-    ToLowercase(clone);
-    const char* fullPath = FormatText("./%s/%s.png", assetFolder, clone);
+    const char* nameLower = ToLowercase(name);
+    const char* fullPath = FormatText("./%s/%s.png", assetFolder, nameLower);
     uchar* data = (uchar*)stbi_load(fullPath, &width, &height, &channels, 4);
-    free(clone);
 
     DEBUG("Loaded texture %s of size %dx%d with %d channels", name, width, height, channels);
 
