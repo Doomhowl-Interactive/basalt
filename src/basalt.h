@@ -166,6 +166,9 @@ BASALT StringArray InitStringArray();
 BASALT void StoreString(StringArray* arr, char* text);
 BASALT void DisposeStringArray(StringArray* arr);
 
+// WARN: Cached memory, copy for long usage!
+BASALT const char* FormatText(const char* text, ...);
+
 BASALT String MakeString();
 BASALT void DisposeString(String* str);
 BASALT String* AppendString(String* str, const char* add);

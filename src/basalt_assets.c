@@ -154,7 +154,7 @@ BASALT Texture RequestTexture(const char* name)
     }
 
     static const char* assetFolder = NULL;
-    if (assetFolder == NULL){
+    if (assetFolder == NULL) {
         assetFolder = GetFirstExistingFolder(AssetFolders);
         INFO("Found asset folder at %s", assetFolder);
     }
@@ -165,8 +165,7 @@ BASALT Texture RequestTexture(const char* name)
     // TODO cleanup
     char* clone = strdup(name);
     ToLowercase(clone);
-    char fullPath[128];
-    sprintf(fullPath, "./%s/%s.png",assetFolder, clone);
+    const char* fullPath = FormatText("./%s/%s.png", assetFolder, clone);
     uchar* data = (uchar*)stbi_load(fullPath, &width, &height, &channels, 4);
     free(clone);
 
@@ -220,13 +219,7 @@ BASALT void TakeScreenshot(Texture canvas)
         ERR("Could not find a valid directory to save screenshot");
     }
 
-    char filePath[MAX_PATH_LENGTH];
-    strcpy(filePath, outputFolder);
-
-    char fileName[256];
-    sprintf(fileName, "/screenshot_%d_%lu.png", (int)time(NULL), GetFrameIndex());
-
-    strcat(filePath, fileName);
+    const char* filePath = FormatText("%s/screenshot_%d_%lu.png", outputFolder, (int)time(NULL), GetFrameIndex());
 
     DEBUG("Saving screenshot to %s...", filePath);
 

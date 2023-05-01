@@ -25,8 +25,7 @@ static const EditorTab EditorTabs[] = { { "Main", DrawMainTab }, { "Assets", Dra
 
 func void DrawMainTab(Scene* activeScene, Texture canvas, float delta)
 {
-    char text[100];
-    sprintf(text, "Active entities %lu", GetEntityCount());
+    const char* text = FormatText("Active entities %lu", GetEntityCount());
     DrawText(canvas, text, 50, 50, YELLOW);
 }
 
@@ -41,8 +40,7 @@ func void DrawAssetTab(Scene* activeScene, Texture canvas, float delta)
         y += 30;
         count++;
     }
-    static char countText[64];
-    sprintf(countText, "Texture count %u", count);
+    const char* countText = FormatText("Texture count %u", count);
     DrawText(canvas, countText, x, y, GRAY);
 }
 

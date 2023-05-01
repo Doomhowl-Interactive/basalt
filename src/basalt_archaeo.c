@@ -55,9 +55,7 @@ BASALT bool UpdateAndRenderArchaeo(Texture canvas)
                 Archaeo.state = ARCHAEO_RECORDING;
 
                 // Change window title
-                char title[128];
-                sprintf(title, "ARCHAEO MODE - RECORDING...");
-                SetWindowTitle(title);
+                SetWindowTitle("ARCHAEO MODE - RECORDING...");
             }
             break;
         }
@@ -67,8 +65,7 @@ BASALT bool UpdateAndRenderArchaeo(Texture canvas)
             break;
         }
         case ARCHAEO_OPENED: {
-            char title[128];
-            sprintf(title, "ARCHAEO MODE - %d/%d", Archaeo.selectedIndex, Archaeo.drawCallCount - 1);
+            const char* title = FormatText("ARCHAEO MODE - %d/%d", Archaeo.selectedIndex, Archaeo.drawCallCount - 1);
             SetWindowTitle(title);
 
             if (IsKeyPressed(KEY_P))

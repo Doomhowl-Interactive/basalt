@@ -70,13 +70,13 @@ BULLET void UpdateAndRenderPatternEditor(Texture canvas, float delta)
 
     const BulletPattern* curPattern = GetBulletPattern(Context.patternIndex);
 
-    char infoText[512];
-    sprintf(infoText, "%ux%u\n%s\n\n", gridSize, gridSize, curPattern->name);
+    char* infoText = (char*)FormatText("%ux%u\n%s\n\n", gridSize, gridSize, curPattern->name);
 
     // Draw list of bullet patterns
     for (usize i = 0; i < PatternCount; i++) {
         const BulletPattern* pattern = GetBulletPattern(i);
         // FIXME: SLOW
+        // FIX: Unsafe
         if (i == Context.patternIndex) {
             strcat(infoText, "SELECTED ");
         }
