@@ -261,8 +261,9 @@ BULLET const BulletPattern* GetBulletPattern(usize index)
 BULLET const BulletPattern* GetBulletPatternByName(const char* name)
 {
     for (const BulletPattern* pat = BulletPatterns; pat->name != NULL; pat++) {
-        if (strcmp(pat->name, name) == 0)
+        if (TextIsEqual(pat->name, name)) {
             return pat;
+        }
     }
     WARN("Did not find bullet pattern with name %s", name);
     return GetBulletPattern(0);

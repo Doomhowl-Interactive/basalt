@@ -49,11 +49,13 @@ func void PrintHelpInfo()
 func bool HasArgument(int argc, char** argv, Option o)
 {
     for (int i = 0; i < argc; i++) {
-        if (o.shortArg != NULL && strcmp(argv[i], o.shortArg) == 0)
+        if (o.shortArg != NULL && TextIsEqual(argv[i], o.shortArg)) {
             return true;
+        }
 
-        if (o.longArg != NULL && strcmp(argv[i], o.longArg) == 0)
+        if (o.longArg != NULL && TextIsEqual(argv[i], o.longArg)) {
             return true;
+        }
     }
     return false;
 }

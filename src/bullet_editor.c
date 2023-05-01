@@ -54,8 +54,9 @@ func void DrawEditorTabs(Scene* activeScene, Texture canvas, float delta, const 
 {
     if (tabWidth == 0) {
         uint tabCount = 0;
-        for (const EditorTab* tab = tabs; tab->name != NULL; tab++)
+        for (const EditorTab* tab = tabs; tab->name != NULL; tab++) {
             tabCount++;
+        }
 
         assert(tabCount > 0);
         tabWidth = WIDTH / tabCount;
@@ -74,13 +75,15 @@ func void DrawEditorTabs(Scene* activeScene, Texture canvas, float delta, const 
         DrawText(canvas, tab->name, x + 5, 5, WHITE);
 
         // Draw tab content
-        if (isSelected && tab->function != NULL)
+        if (isSelected && tab->function != NULL) {
             (*tab->function)(activeScene, canvas, delta);
+        }
 
         // Change if hovered over
         Point mouse = GetMousePosition();
-        if (mouse.x >= x && mouse.y >= 0 && mouse.x <= x + tabWidth && mouse.y <= tabHeight)
+        if (mouse.x >= x && mouse.y >= 0 && mouse.x <= x + tabWidth && mouse.y <= tabHeight) {
             SelectedTabIndex = i;
+        }
 
         i++;
     }

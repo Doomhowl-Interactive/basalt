@@ -168,6 +168,8 @@ BASALT void DisposeStringArray(StringArray* arr);
 
 // WARN: Cached memory, copy for long usage!
 BASALT const char* FormatText(const char* text, ...);
+BASALT extern bool TextIsEqual(const char* text1, const char* text2);
+BASALT extern const char* AppendText(const char* src, const char* add);
 
 BASALT String MakeString();
 BASALT void DisposeString(String* str);
@@ -176,7 +178,7 @@ BASALT void ToUppercase(char* str);
 BASALT void ToLowercase(char* str);
 BASALT const char* PadStringRight(const char* text, char symbol, usize length);
 
-BASALT bool FileHasExtension(const char* name, const char* ext);
+BASALT extern bool FileHasExtension(const char* name, const char* ext);
 BASALT bool FolderExists(const char* folder);
 
 // WARN: Uses cached memory, result gets overwritten on future calls.

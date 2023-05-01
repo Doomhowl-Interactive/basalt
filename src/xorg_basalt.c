@@ -226,8 +226,6 @@ int main(int argc, char** argv)
                 Input.mousePos.x = (int)(childMouseX * scaleX);
                 Input.mousePos.y = (int)(childMouseY * scaleY);
 
-                INFO("%d %d", Input.mousePos.x, Input.mousePos.y);
-
                 // HACK: might not work while pressing multiple mouse buttons
                 Input.isMouseDown = maskResult == 272;
             }

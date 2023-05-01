@@ -75,13 +75,8 @@ BULLET void UpdateAndRenderPatternEditor(Texture canvas, float delta)
     // Draw list of bullet patterns
     for (usize i = 0; i < PatternCount; i++) {
         const BulletPattern* pattern = GetBulletPattern(i);
-        // FIXME: SLOW
-        // FIX: Unsafe
-        if (i == Context.patternIndex) {
-            strcat(infoText, "SELECTED ");
-        }
-        strcat(infoText, pattern->name);
-        strcat(infoText, "\n");
+        const char* add = FormatText("%s%s\n", (i == Context.patternIndex) ? "SELECTED " : "", pattern->name);
+        infoText = (char*)AppendText(infoText, add);
     }
 
     if (IsKeyPressed(KEY_J)) {

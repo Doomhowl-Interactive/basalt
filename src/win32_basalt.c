@@ -26,7 +26,7 @@ BASALT void SetWindowTitle(const char* title)
     // check if changed
     char curTitle[MAX_TITLE_LEN];
     if (GetWindowTextA(Window.window, curTitle, MAX_TITLE_LEN) != 0) {
-        if (strcmp(curTitle, title) != 0)
+        if (!TextIsEqual(curTitle, title))
             SetWindowTextA(Window.window, title);
     } else {
         ERR("Failed to set change window title!\n");
