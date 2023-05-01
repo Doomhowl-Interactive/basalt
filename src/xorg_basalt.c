@@ -37,7 +37,7 @@ BASALT void SetWindowTitle(const char* title)
 {
     if (ActiveBuffer.display != NULL) {
         // check if changed
-        if (strcmp(ActiveBuffer.title, title) != 0) {
+        if (!TextIsEqual(ActiveBuffer.title, title)) {
             strcpy(ActiveBuffer.title, title);
             XStoreName(ActiveBuffer.display, ActiveBuffer.window, title);
         }
@@ -223,8 +223,10 @@ int main(int argc, char** argv)
                 float scaleX = (float)Game.width / (float)width;
                 float scaleY = (float)Game.height / (float)height;
 
-                Input.mousePos.x = childMouseX * (int)scaleX;
-                Input.mousePos.y = childMouseY * (int)scaleY;
+                Input.mousePos.x = (int)(childMouseX * scaleX);
+                Input.mousePos.y = (int)(childMouseY * scaleY);
+
+                INFO("%d %d", Input.mousePos.x, Input.mousePos.y);
 
                 // HACK: might not work while pressing multiple mouse buttons
                 Input.isMouseDown = maskResult == 272;
