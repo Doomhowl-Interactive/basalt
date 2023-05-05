@@ -195,8 +195,12 @@ BASALT inline float Vec2DistanceSquared(Vec2 first, Vec2 second)
 
 BASALT inline float Vec2Distance(Vec2 first, Vec2 second)
 {
+#ifdef BASALT_NO_ENGINE
+    return 0.f;
+#else
     float distRoot = sqrtf(Vec2DistanceSquared(first, second));
     return distRoot;
+#endif
 }
 
 BASALT StringArray InitStringArray()
