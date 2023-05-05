@@ -25,8 +25,7 @@ static const EditorTab EditorTabs[] = { { "Main", DrawMainTab }, { "Assets", Dra
 
 func void DrawMainTab(Scene* activeScene, Texture canvas, float delta)
 {
-    char text[100];
-    sprintf(text, "Active entities %lu", GetEntityCount());
+    const char* text = FormatText("Active entities %lu", GetEntityCount());
     DrawText(canvas, text, 50, 50, YELLOW);
 }
 
@@ -41,8 +40,7 @@ func void DrawAssetTab(Scene* activeScene, Texture canvas, float delta)
         y += 30;
         count++;
     }
-    static char countText[64];
-    sprintf(countText, "Texture count %u", count);
+    const char* countText = FormatText("Texture count %u", count);
     DrawText(canvas, countText, x, y, GRAY);
 }
 
@@ -56,8 +54,9 @@ func void DrawEditorTabs(Scene* activeScene, Texture canvas, float delta, const 
 {
     if (tabWidth == 0) {
         uint tabCount = 0;
-        for (const EditorTab* tab = tabs; tab->name != NULL; tab++)
+        for (const EditorTab* tab = tabs; tab->name != NULL; tab++) {
             tabCount++;
+        }
 
         assert(tabCount > 0);
         tabWidth = WIDTH / tabCount;
@@ -76,13 +75,15 @@ func void DrawEditorTabs(Scene* activeScene, Texture canvas, float delta, const 
         DrawText(canvas, tab->name, x + 5, 5, WHITE);
 
         // Draw tab content
-        if (isSelected && tab->function != NULL)
+        if (isSelected && tab->function != NULL) {
             (*tab->function)(activeScene, canvas, delta);
+        }
 
         // Change if hovered over
         Point mouse = GetMousePosition();
-        if (mouse.x >= x && mouse.y >= 0 && mouse.x <= x + tabWidth && mouse.y <= tabHeight)
+        if (mouse.x >= x && mouse.y >= 0 && mouse.x <= x + tabWidth && mouse.y <= tabHeight) {
             SelectedTabIndex = i;
+        }
 
         i++;
     }

@@ -88,9 +88,6 @@ typedef struct StringArray {
     usize capacity;
 } StringArray;
 
-// TODO: Remove typedef
-typedef StringArray FilePathList;
-
 #ifdef WASM
 # define INFO(...)
 # define WARN(...)
@@ -169,13 +166,21 @@ BASALT StringArray InitStringArray();
 BASALT void StoreString(StringArray* arr, char* text);
 BASALT void DisposeStringArray(StringArray* arr);
 
+// WARN: Cached memory, copy for long usage!
+BASALT const char* FormatText(const char* text, ...);
+BASALT extern bool TextIsEqual(const char* text1, const char* text2);
+BASALT extern const char* AppendText(const char* src, const char* add);
+BASALT int CopyText(char* dst, const char* src);
+BASALT extern usize TextLength(const char* text);
+
 BASALT String MakeString();
-BASALT void UnloadString(String* str);
+BASALT void DisposeString(String* str);
 BASALT String* AppendString(String* str, const char* add);
-BASALT void ToUppercase(char* str);
+BASALT const char* ToUppercase(const char* str);
+BASALT const char* ToLowercase(const char* str);
 BASALT const char* PadStringRight(const char* text, char symbol, usize length);
 
-BASALT bool FileHasExtension(const char* name, const char* ext);
+BASALT extern bool FileHasExtension(const char* name, const char* ext);
 BASALT bool FolderExists(const char* folder);
 
 // WARN: Uses cached memory, result gets overwritten on future calls.
@@ -189,8 +194,7 @@ BASALT const char* GetFileStem(const char* filePath);
 // pass NULL ended array
 BASALT const char* GetFirstExistingFolder(const char** folders);
 
-BASALT FilePathList GetFolderFiles(const char* folder, const char* ext);
-BASALT void UnloadFilePathList(FilePathList list);
+BASALT StringArray GetFolderFiles(const char* folder, const char* ext);
 
 // Asset handling (basalt_assets.c)
 typedef struct Texture {
@@ -201,9 +205,7 @@ typedef struct Texture {
 } Texture;
 extern const uchar SPR_PIXELFONT[];
 
-// TODO: Change to retreive texture, that uses cache system
-#define RequestTexture(X) RequestTextureEx(#X, X)
-BASALT Texture RequestTextureEx(const char* name, const uchar* pixels);
+BASALT Texture RequestTexture(const char* name);
 
 // NOTE: Returns null ended array of loaded/cached textures
 BASALT Texture* GetLoadedTextures();

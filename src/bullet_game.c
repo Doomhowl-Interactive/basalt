@@ -39,8 +39,8 @@ DYNAMIC BASALT void InitializeGame()
     if (Config.hasUnitTesting)
         UnitTestBullet();
 
-    BulletPlacholderTexture = RequestTexture(SPR_BULLET_PLACEHOLDER);
-    PlayerTexture = RequestTexture(SPR_SHIP_PLAYER);
+    BulletPlacholderTexture = RequestTexture("SPR_BULLET_PLACEHOLDER");
+    PlayerTexture = RequestTexture("SPR_SHIP_PLAYER");
 
     Player = CreateEntity(&Scenes[SCENE_GAME]);
     Vec2 spawnPos = { WIDTH / 2.0f, HEIGHT / 1.2f };
@@ -76,10 +76,9 @@ DYNAMIC BASALT void UpdateAndRenderGame(Texture canvas, float delta)
     UpdateAndRenderGUI(canvas, Player, delta);
 
     // draw fps
-    static char info[128];
     float fps = 1.f / delta;
-    sprintf(info, "FPS %1.3f", fps);
-    DrawText(canvas, info, 10, HEIGHT - 20, fps < 30 ? RED : GREEN);
+    const char* infoText = FormatText("FPS %1.3f", fps);
+    DrawText(canvas, infoText, 10, HEIGHT - 20, fps < 30 ? RED : GREEN);
 
     // draw the name of the pattern being shot
     const char* name = Player->bulletSpawners[0].patternToSpawn->name;

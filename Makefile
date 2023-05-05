@@ -7,7 +7,7 @@ BUILD_DIR := ./build
 SRC_DIR := ./src
 
 SRCS := $(shell find $(SRC_DIR) -type f \( -name 'basalt_*.c' -o -name 'xorg_*.c' \))
-SRCS_GAME := $(shell find $(SRC_DIR) -type f \( -name 'bullet_*.c' \)) $(SRC_DIR)/bullet_assets.dat.c
+SRCS_GAME := $(shell find $(SRC_DIR) -type f \( -name 'bullet_*.c' \))
 
 OBJS := $(SRCS:%=$(BUILD_DIR)/%.o)
 OBJS_GAME := $(SRCS_GAME:%=$(BUILD_DIR)/%.o)
@@ -19,16 +19,6 @@ LDFLAGS := -lX11 -lm -lXext
 
 build: $(BUILD_DIR)/$(TARGET_EXEC) 
 lib: $(BUILD_DIR)/$(TARGET_LIB)
-
-# Build the embedder
-EMBEDDER_SRC := src/tooling/embedder.c
-$(BUILD_DIR)/embedder: $(EMBEDDER_SRC)
-	mkdir -p $(BUILD_DIR)
-	$(CXX) $(EMBEDDER_SRC) -O3 -o $(BUILD_DIR)/embedder
-
-# Run the embedder
-$(SRC_DIR)/bullet_assets.dat.c: $(BUILD_DIR)/embedder
-	$(BUILD_DIR)/embedder ./assets ./src/bullet_assets.dat.c
 
 # Linking step (standard)
 $(BUILD_DIR)/$(TARGET_EXEC): $(OBJS) $(OBJS_GAME)
@@ -46,4 +36,3 @@ $(BUILD_DIR)/%.c.o: %.c
 .PHONY: clean
 clean:
 	rm -r $(BUILD_DIR)
-	rm src/*.dat.c

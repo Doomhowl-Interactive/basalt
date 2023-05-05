@@ -37,8 +37,8 @@ BASALT void SetWindowTitle(const char* title)
 {
     if (ActiveBuffer.display != NULL) {
         // check if changed
-        if (strcmp(ActiveBuffer.title, title) != 0) {
-            strcpy(ActiveBuffer.title, title);
+        if (!TextIsEqual(ActiveBuffer.title, title)) {
+            CopyText(ActiveBuffer.title, title);
             XStoreName(ActiveBuffer.display, ActiveBuffer.window, title);
         }
     } else {
@@ -223,8 +223,8 @@ int main(int argc, char** argv)
                 float scaleX = (float)Game.width / (float)width;
                 float scaleY = (float)Game.height / (float)height;
 
-                Input.mousePos.x = childMouseX * (int)scaleX;
-                Input.mousePos.y = childMouseY * (int)scaleY;
+                Input.mousePos.x = (int)(childMouseX * scaleX);
+                Input.mousePos.y = (int)(childMouseY * scaleY);
 
                 // HACK: might not work while pressing multiple mouse buttons
                 Input.isMouseDown = maskResult == 272;
@@ -238,8 +238,7 @@ int main(int argc, char** argv)
         static double timer = 0.f;
         if (timer > 0.2) {
             // set window title to framerate
-            char title[200] = { 0 };
-            sprintf(title, "%s - %d FPS - %f delta", Game.title, (int)fps, delta);
+            const char* title = FormatText("%s - %d FPS - %f delta", Game.title, (int)fps, delta);
             SetWindowTitle(title);
             timer = 0.0;
         }

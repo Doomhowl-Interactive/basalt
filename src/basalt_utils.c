@@ -1,5 +1,6 @@
 #include <ctype.h>
 #include <math.h>
+#include <stdarg.h>
 #include <stdio.h>
 #include <string.h>
 #include <sys/stat.h>
@@ -234,6 +235,65 @@ BASALT void DisposeStringArray(StringArray* arr)
     }
 }
 
+// adapted from Raylib
+// WARN: Cached memory, copy for long usage!
+BASALT const char* FormatText(const char* text, ...)
+{
+#define MAX_TEXT_LEN 1024
+#define TEXT_BUFFER_COUNT 16
+    assert(text);
+
+    static char buffers[TEXT_BUFFER_COUNT][MAX_TEXT_LEN];
+    static usize curBufferIndex = 0;
+
+    char* currentBuffer = buffers[curBufferIndex++];
+    curBufferIndex %= TEXT_BUFFER_COUNT;
+
+    va_list args;
+    va_start(args, text);
+    vsnprintf(currentBuffer, MAX_TEXT_LEN, text, args);
+
+    return currentBuffer;
+}
+
+BASALT inline bool TextIsEqual(const char* text1, const char* text2)
+{
+    assert(text1);
+    assert(text2);
+    return strcmp(text1, text2) == 0;
+}
+
+BASALT inline const char* AppendText(const char* src, const char* add)
+{
+    assert(src);
+    assert(add);
+    return FormatText("%s%s", src, add);
+}
+
+// from raylib
+BASALT int CopyText(char* dst, const char* src)
+{
+    int bytes = 0;
+
+    if ((src != NULL) && (dst != NULL)) {
+        while (*src != '\0') {
+            *dst = *src;
+            dst++;
+            src++;
+
+            bytes++;
+        }
+
+        *dst = '\0';
+    }
+    return bytes;
+}
+
+BASALT inline usize TextLength(const char* text)
+{
+    return strlen(text);
+}
+
 // string implementation
 BASALT String MakeString()
 {
@@ -244,7 +304,7 @@ BASALT String MakeString()
 
 BASALT String* AppendString(String* str, const char* add)
 {
-    size_t addLen = strlen(add);
+    size_t addLen = TextLength(add);
     str->size += addLen;
 
     // allocate string
@@ -260,12 +320,12 @@ BASALT String* AppendString(String* str, const char* add)
     }
 
     char* head = &str->text[str->size - addLen];  // calculate head position
-    strcpy(head, add);
+    CopyText(head, add);
 
     return str;
 }
 
-BASALT void UnloadString(String* str)
+BASALT void DisposeString(String* str)
 {
     str->size = 0;
     str->capacity = 100;
@@ -274,12 +334,35 @@ BASALT void UnloadString(String* str)
     }
 }
 
-BASALT void ToUppercase(char* str)
+#define MAX_CASE_LEN 1024
+static char CaseBuffer[MAX_CASE_LEN];
+BASALT const char* ToUppercase(const char* str)
 {
-    while (*str) {
-        *str = toupper(*str);
-        str++;
+    char* dst = CaseBuffer;
+    if ((str != NULL) && (dst != NULL)) {
+        while (*str != '\0') {
+            *dst = toupper(*str);
+            dst++;
+            str++;
+        }
+
+        *dst = '\0';
     }
+    return CaseBuffer;
+}
+
+BASALT const char* ToLowercase(const char* str)
+{
+    char* dst = CaseBuffer;
+    if ((str != NULL) && (dst != NULL)) {
+        while (*str != '\0') {
+            *dst = tolower(*str);
+            dst++;
+            str++;
+        }
+        *dst = '\0';
+    }
+    return CaseBuffer;
 }
 
 // FIXME: Untested
@@ -290,7 +373,7 @@ BASALT const char* PadStringRight(const char* text, char symbol, usize length)
     memset(PaddingCache, symbol, length);
     PaddingCache[length] = '\0';
 
-    int len = MIN(MAX_PADDING_LENGTH, MIN(strlen(text), length));
+    int len = MIN(MAX_PADDING_LENGTH, MIN(TextLength(text), length));
     memcpy(PaddingCache, text, len);
 
     return PaddingCache;
@@ -334,11 +417,13 @@ BASALT long GetFileModifiedTime(const char* filePath)
 BASALT const char* GetFileName(const char* filePath)
 {
     const char* fileName = NULL;
-    if (filePath != NULL)
+    if (filePath != NULL) {
         fileName = strpbrk(filePath, "\\/");
+    }
 
-    if (!fileName)
+    if (!fileName) {
         return filePath;
+    }
 
     return fileName + 1;
 }
@@ -346,17 +431,17 @@ BASALT const char* GetFileName(const char* filePath)
 // raylib.h (rcore.c)
 BASALT const char* GetFileStem(const char* filePath)
 {
-#define MAX_FILENAMEWITHOUTEXT_LENGTH 256
+#define MAX_BUFFER_LEN 256
 
-    static char fileName[MAX_FILENAMEWITHOUTEXT_LENGTH] = { 0 };
-    memset(fileName, 0, MAX_FILENAMEWITHOUTEXT_LENGTH);
+    static char fileName[MAX_BUFFER_LEN];
 
-    if (filePath != NULL)
-        strcpy(fileName, GetFileName(filePath));  // Get filename with extension
+    if (filePath != NULL) {
+        CopyText(fileName, GetFileName(filePath));  // Get filename with extension
+    }
 
-    int size = (int)strlen(fileName);  // Get size in bytes
+    int size = (int)TextLength(fileName);  // Get size in bytes
 
-    for (int i = 0; (i < size) && (i < MAX_FILENAMEWITHOUTEXT_LENGTH); i++) {
+    for (int i = 0; (i < size) && (i < MAX_BUFFER_LEN); i++) {
         if (fileName[i] == '.') {
             // NOTE: We break on first '.' found
             fileName[i] = '\0';
@@ -367,15 +452,15 @@ BASALT const char* GetFileStem(const char* filePath)
     return fileName;
 }
 
-BASALT bool FileHasExtension(const char* name, const char* ext)
+BASALT inline bool FileHasExtension(const char* name, const char* ext)
 {
-    int cmp = strcmp(name + strlen(name) - strlen(ext), ext);
-    return cmp == 0;
+    const char* fileStem = GetFileStem(name);
+    return TextIsEqual(fileStem, ext);
 }
 
-BASALT FilePathList GetFolderFiles(const char* folder, const char* ext)
+BASALT StringArray GetFolderFiles(const char* folder, const char* ext)
 {
-    FilePathList list = { 0 };
+    StringArray list = { 0 };
     list.count = 0;
     list.capacity = 20;
 
@@ -385,7 +470,7 @@ BASALT FilePathList GetFolderFiles(const char* folder, const char* ext)
         list.strings = (char**)malloc(list.capacity * sizeof(char*));
         while ((ent = readdir(dir)) != NULL) {
             if (FileHasExtension(ent->d_name, ext)) {
-                // expand FilePathList if needed
+                // expand StringArray if needed
                 if (list.count == list.capacity) {
                     list.capacity *= 2;
                     list.strings = (char**)realloc(list.strings, list.capacity * sizeof(char*));
@@ -403,12 +488,4 @@ BASALT FilePathList GetFolderFiles(const char* folder, const char* ext)
     }
 
     return list;
-}
-
-BASALT void UnloadFilePathList(FilePathList list)
-{
-    for (size_t i = 0; i < list.count; i++) {
-        free(list.strings[i]);
-    }
-    free(list.strings);
 }

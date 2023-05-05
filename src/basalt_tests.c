@@ -84,13 +84,46 @@ TEST(StringPadding)
     {
         const char* pad = PadStringRight("Hello world!", '.', 20);
         const char* expected = "Hello world!........";
-        CHECK(strcmp(pad, expected) == 0, "PadStringRight with dots");
+        CHECK(TextIsEqual(pad, expected), "PadStringRight with dots");
     }
     {
         const char* pad = PadStringRight("Hello world!", ' ', 20);
         const char* expected = "Hello world!        ";
-        CHECK(strcmp(pad, expected) == 0, "PadStringRight with spaces");
+        CHECK(TextIsEqual(pad, expected), "PadStringRight with spaces");
     }
+}
+END;
+
+TEST(FormatText)
+{
+    const char* greeting = FormatText("%s %s", "Hello", "world!");
+    CHECK(TextIsEqual(greeting, "Hello world!"), "String format failed!");
+
+    const char* money = FormatText("I have %d dollars", 50);
+    CHECK(TextIsEqual(money, "I have 50 dollars"), "String format failed!");
+
+    for (int i = 0; i < 50; i++) {
+        const char* money2 = FormatText("I have %d dollars", 50 + i);
+        char expected[100];
+        snprintf(expected, 100, "I have %d dollars", 50 + i);
+        CHECK(TextIsEqual(money2, expected), "Looping string format failed!");
+    }
+}
+END;
+
+TEST(ToUppercase)
+{
+    const char* text = "testTEXT";
+    const char* upper = ToUppercase(text);
+    CHECK(TextIsEqual(upper, "TESTTEXT"), "ToUppercase");
+}
+END;
+
+TEST(ToLowercase)
+{
+    const char* text = "testTEXT";
+    const char* lower = ToLowercase(text);
+    CHECK(TextIsEqual(lower, "testtext"), "ToLowercase");
 }
 END;
 
@@ -101,4 +134,7 @@ BASALT void UnitTest()
     TestStringPadding();
     TestMath();
     TestColors();
+    TestFormatText();
+    TestToLowercase();
+    TestToUppercase();
 }

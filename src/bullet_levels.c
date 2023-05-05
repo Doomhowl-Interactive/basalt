@@ -141,7 +141,7 @@ BACKGROUND void ScrollingPurpleNoise(Texture canvas, float delta)
 {
     // TODO: blend at runtime 0x4B486EFF, 0x07060FFF
     const float backgroundScrollSpeed = 100.f;
-    Texture noiseTexture = RequestTexture(SPR_BACKGROUND_NOISE_COL);
+    Texture noiseTexture = RequestTexture("SPR_BACKGROUND_NOISE_COL");
     int offsetY = (int)(GetTimeElapsed() * backgroundScrollSpeed) % HEIGHT;
     DrawTexture(canvas, noiseTexture, 0.f, -offsetY, WHITE);
     DrawTexture(canvas, noiseTexture, 0.f, -offsetY + HEIGHT, WHITE);

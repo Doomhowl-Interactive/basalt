@@ -236,16 +236,16 @@ const BulletPattern BulletPatterns[]
                     { 5 },
                 },
             },
-            SPR_BULLET_PLACEHOLDER,
+            "SPR_BULLET_PLACEHOLDER",
         },
         {
             "PlayerBullet2",
             { { MoveBulletOceanWave, EndBulletOOB, 0xAAAAFFFF, { 40, 40 } } },
-            SPR_BULLET_PLACEHOLDER,
+            "SPR_BULLET_PLACEHOLDER",
         },
-        { "PlayerBullet3", { { MoveBulletStaircase, EndBulletOOB, 0x0022DDFF, { 10, -1 } } }, SPR_BULLET_PLACEHOLDER },
-        { "PlayerBullet4", { { MoveBulletSnake, EndBulletOOB, 0x22FF22FF, { 10, -1 } } }, SPR_BULLET_PLACEHOLDER },
-        { "SnakeBulletsDownwards", { { MoveBulletSnake, EndBulletOOB, 0x22FF22FF, { 10, 1 } } }, SPR_BULLET_PLACEHOLDER },
+        { "PlayerBullet3", { { MoveBulletStaircase, EndBulletOOB, 0x0022DDFF, { 10, -1 } } }, "SPR_BULLET_PLACEHOLDER" },
+        { "PlayerBullet4", { { MoveBulletSnake, EndBulletOOB, 0x22FF22FF, { 10, -1 } } }, "SPR_BULLET_PLACEHOLDER" },
+        { "SnakeBulletsDownwards", { { MoveBulletSnake, EndBulletOOB, 0x22FF22FF, { 10, 1 } } }, "SPR_BULLET_PLACEHOLDER" },
         { NULL } };
 
 BULLET const BulletPattern* GetBulletPattern(usize index)
@@ -261,8 +261,9 @@ BULLET const BulletPattern* GetBulletPattern(usize index)
 BULLET const BulletPattern* GetBulletPatternByName(const char* name)
 {
     for (const BulletPattern* pat = BulletPatterns; pat->name != NULL; pat++) {
-        if (strcmp(pat->name, name) == 0)
+        if (TextIsEqual(pat->name, name)) {
             return pat;
+        }
     }
     WARN("Did not find bullet pattern with name %s", name);
     return GetBulletPattern(0);
