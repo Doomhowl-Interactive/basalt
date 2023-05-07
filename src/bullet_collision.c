@@ -1,24 +1,26 @@
 #include "basalt.h"
 #include "bullet_common.h"
 
-func void OnTouchedEntity(Entity* e, Entity* other)
+func void OnTouchedEntity(Entity* e, Entity* sender)
 {
-    INFO("%d touched %d", e->id, other->id);
+    if (EntityHasFlag(e, FLAG_PLAYER)) {
+        EntityDamage(e);
+    }
 }
 
-static Entity* entity;
-func void CheckCollision(Entity* it, int i)
+static Entity* sender;
+func void CheckCollision(Entity* listener, int i)
 {
-    if (entity->id == it->id) {
+    if (sender->id == listener->id) {
         return;
     }
 
-    if (EntityHasFlag(it, entity->ignoreFlags)) {
+    if (EntityHasFlag(listener, sender->ignoreFlags)) {
         return;
     }
 
-    if (RectFOverlaps(entity->bounds, it->bounds)) {
-        OnTouchedEntity(it, entity);
+    if (RectFOverlaps(sender->bounds, listener->bounds)) {
+        OnTouchedEntity(listener, sender);
     }
 }
 
@@ -28,6 +30,6 @@ BULLET void CheckCollisionOfEntity(Entity* e, Scene* scene)
         return;
     }
 
-    entity = e;
+    sender = e;
     ForeachSceneEntity(scene, CheckCollision);
 }

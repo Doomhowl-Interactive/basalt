@@ -138,6 +138,7 @@ BULLET void SetEntitySize(Entity* e, uint width, uint height);
 BULLET void ResetEntityVelocity(Entity* e);
 BULLET usize GetEntityCount();
 
+BULLET void EntityDamage(Entity* e);
 BULLET bool EntityHasFlag(Entity* e, EntityFlag flag);
 
 typedef void (*EntityCallback)(Entity* e, int i);

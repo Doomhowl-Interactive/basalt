@@ -205,6 +205,13 @@ BULLET usize GetEntityCount()
     return LastCount;
 }
 
+BULLET void EntityDamage(Entity* e)
+{
+    if (e->health > 0) {
+        e->health--;
+    }
+}
+
 BULLET bool EntityHasFlag(Entity* e, EntityFlag flag)
 {
     if (flag == 0) {
