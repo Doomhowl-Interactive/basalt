@@ -143,6 +143,7 @@ BASALT extern Point RectCenter(Rect rect);
 
 BASALT extern Rect RectFToRect(RectF rectf);
 BASALT extern RectF RectToRectF(Rect rect);
+BASALT extern bool RectFOverlaps(RectF first, RectF second);
 
 BASALT extern Point Vec2ToPoint(Vec2 v2);
 BASALT extern Vec2 PointToVec2(Point point);

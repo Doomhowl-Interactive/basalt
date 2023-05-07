@@ -1,4 +1,3 @@
-# Thanks to Job Vranish (https://spin.atomicobject.com/2016/08/26/makefile-c-projects/)
 LEVEL?=0
 TARGET_EXEC := basalt_linux.x11
 TARGET_LIB := bullet_game.so

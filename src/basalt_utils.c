@@ -123,6 +123,12 @@ BASALT inline RectF RectToRectF(Rect rect)
     return rectf;
 }
 
+BASALT inline bool RectFOverlaps(RectF first, RectF second)
+{
+    return !(first.x < second.x || first.y < second.y || first.x + first.width > second.x + second.width
+             || first.y + first.height > second.y + second.height);
+}
+
 BASALT inline Point Vec2ToPoint(Vec2 v2)
 {
     Point p = { (int)v2.x, (int)v2.y };

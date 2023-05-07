@@ -75,8 +75,24 @@ TEST(Transformations)
 }
 END;
 
+TEST(EntityFlags)
+{
+    Scene scene = {};
+
+    Entity* e = CreateEntity(&scene);
+    InitPlayer(e, (Vec2){ 10, 10 });
+
+    Entity* e2 = CreateEntity(&scene);
+    InitBullet(e2, GetBulletPattern(0), (Vec2){ 10, 10 }, (Vec2){ 0, 0 });
+
+    CHECK(EntityHasFlag(e, FLAG_PLAYER), "Player has entity flag");
+    CHECK(EntityHasFlag(e2, FLAG_BULLET), "Bullet has bullet flag");
+}
+END;
+
 BULLET void UnitTestBullet()
 {
     INFO("Doing unit tests of bulletgame");
     TestTransformations();
+    TestEntityFlags();
 }

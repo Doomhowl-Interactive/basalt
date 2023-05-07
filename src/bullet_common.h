@@ -13,6 +13,10 @@ extern usize GameDifficulty;
 #define WIDTH 800
 #define HEIGHT 600
 
+#define FLAG_PLAYER (1 << 0)
+#define FLAG_BULLET (2 << 0)
+
+typedef uint EntityFlag;
 typedef uint EntityID;
 
 typedef struct Entity Entity;
@@ -82,6 +86,7 @@ struct Entity {
     bool isActive;
     float timeAlive;
     EntityID id;
+    EntityFlag flags;
 
     // sprite
     RectF bounds;
@@ -102,6 +107,10 @@ struct Entity {
     // health
     uint maxHealth;
     uint health;
+
+    // collision
+    bool isToucher;
+    EntityFlag ignoreFlags;
 
     // bullet
     BulletPattern bulletPattern;
@@ -128,6 +137,11 @@ BULLET Vec2 GetEntityCenter(Entity* e);
 BULLET void SetEntitySize(Entity* e, uint width, uint height);
 BULLET void ResetEntityVelocity(Entity* e);
 BULLET usize GetEntityCount();
+
+BULLET bool EntityHasFlag(Entity* e, EntityFlag flag);
+
+typedef void (*EntityCallback)(Entity* e, int i);
+BULLET usize ForeachSceneEntity(Scene* scene, EntityCallback callback);
 
 BULLET void UpdateAndRenderEntity(Scene* scene, Texture canvas, Entity* e, float delta);
 BULLET usize UpdateAndRenderScene(Scene* scene, Texture canvas, float delta);
@@ -179,6 +193,9 @@ BULLET const BulletPattern* GetBulletPatternByName(const char* name);
 BULLET usize GetBulletPatternCount();
 BULLET void FillInActionData(ActionData* data, float delta);
 BULLET extern void ResetActionData(ActionData* data);
+
+// bullet_collision.c
+BULLET void CheckCollisionOfEntity(Entity* e, Scene* scene);
 
 // bullet_ai.c
 BULLET bool RunEntityAI(Entity* e, float delta);

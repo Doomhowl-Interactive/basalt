@@ -5,8 +5,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-// TODO: Deprecate tags
-
 BULLET void ClearEntities(Scene* scene)
 {
     assert(scene);
@@ -112,7 +110,30 @@ BULLET void ResetEntityVelocity(Entity* e)
     e->vel.y = 0;
 }
 
-void UpdateAndRenderEntity(Scene* scene, Texture canvas, Entity* e, float delta)
+BULLET usize ForeachSceneEntity(Scene* scene, EntityCallback callback)
+{
+    usize index = 0;
+    for (usize i = 0; i < MAX_ENTITY_PAGES; i++) {
+        if (scene->entities[i] != NULL) {
+            for (usize j = 0; j < ENTITIES_PER_PAGE; j++) {
+                assert(scene->entities[i]);
+                Entity* e = &scene->entities[i][j];
+                assert(e);
+                if (e->isActive) {
+                    (*callback)(e, index);
+                    index++;
+                }
+            }
+        } else {
+            break;
+        }
+    }
+
+    // return count
+    return index;
+}
+
+BULLET void UpdateAndRenderEntity(Scene* scene, Texture canvas, Entity* e, float delta)
 {
     e->timeAlive += delta;
 
@@ -161,6 +182,9 @@ void UpdateAndRenderEntity(Scene* scene, Texture canvas, Entity* e, float delta)
         DestroyEntity(e);
     }
 
+    // Check collision
+    CheckCollisionOfEntity(e, scene);
+
     // Ship ai behaviour
     RunEntityAI(e, delta);
 
@@ -176,12 +200,20 @@ void UpdateAndRenderEntity(Scene* scene, Texture canvas, Entity* e, float delta)
 }
 
 static usize LastCount = 0;
-usize GetEntityCount()
+BULLET usize GetEntityCount()
 {
     return LastCount;
 }
 
-usize UpdateAndRenderScene(Scene* scene, Texture canvas, float delta)
+BULLET bool EntityHasFlag(Entity* e, EntityFlag flag)
+{
+    if (flag == 0) {
+        return false;
+    }
+    return ((e->flags & flag) == flag);
+}
+
+BULLET usize UpdateAndRenderScene(Scene* scene, Texture canvas, float delta)
 {
     usize count = 0;
     for (usize i = 0; i < MAX_ENTITY_PAGES; i++) {

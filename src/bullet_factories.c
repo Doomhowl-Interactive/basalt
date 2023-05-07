@@ -45,6 +45,7 @@ void InitPlayerLevel4Weapon(Entity* e)
 BULLET void InitPlayer(Entity* e, Vec2 pos)
 {
     DEBUG("Spawned player at %f %f", pos.x, pos.y);
+    e->flags = FLAG_PLAYER;
     e->texture = RequestTexture("SPR_SHIP_PLAYER");
     SetEntityCenter(e, pos.x - 48.f / 2.f, pos.y);
     e->tint = WHITE;
@@ -96,8 +97,8 @@ BULLET void InitTestEnemy(Entity* e, Vec2 pos)
 BULLET void InitBullet(Entity* e, const BulletPattern* pattern, Vec2 pos, Vec2 normal)
 {
     assert(e);
-
-    // DEBUG("Spawned bullet at %f %f", pos.x, pos.y);
+    e->isToucher = true;
+    e->flags = FLAG_BULLET;
 
     // set sprite
     const char* texture = pattern->texture == NULL ? "SPR_BULLET_PLACEHOLDER" : pattern->texture;
