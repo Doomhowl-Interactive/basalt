@@ -18,9 +18,15 @@ func void UpdateAndRenderLives(Texture canvas, Entity* player, float delta)
         HEIGHT - size - border,
     };
 
+    Texture heartTexture = RequestTexture("spr_gui_heart");
+
     for (uint i = 0; i < player->maxHealth; i++) {
-        DrawRectangle(canvas, V2(pos), size, size, RED);
-        pos.x += size + spacing;
+        if (i <= player->health){
+            DrawTexture(canvas, heartTexture, V2(pos), WHITE);
+        }else{
+            DrawTexture(canvas, heartTexture, V2(pos), BLACK);
+        }
+        pos.x += heartTexture.width + spacing;
     }
 }
 
