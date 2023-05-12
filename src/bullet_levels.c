@@ -35,9 +35,9 @@ BULLET void SwitchLevel(const LevelInfo* level)
 BULLET void RunLevelEnterHook(LevelInitializerFunc initFunc)
 {
     // check if present
-    for (usize i = 0; i < Context.initializerCount; i++){
-        if (Context.initializers[i] == initFunc){
-            return; // already added
+    for (usize i = 0; i < Context.initializerCount; i++) {
+        if (Context.initializers[i] == initFunc) {
+            return;  // already added
         }
     }
 
@@ -107,19 +107,23 @@ func void RunScheduler(LevelSchedule* schedule, Scene* scene)
     }
 }
 
-func void ScheduleEntityEx(double delay, Vec2 position, EntityInitializerFunc initFunc, const char* desc)
+func void ScheduleEntityEx(double delay, float x, float y, EntityInitializerFunc initFunc, const char* desc)
 {
     LevelSchedule* schedule = &Context.schedule;
     LevelScheduleItem* item = &schedule->items[schedule->itemCount++];
     item->delayTime = delay;
     item->initFunc = initFunc;
-    item->position = position;
+    item->position = (Vec2){ x, y };
     item->description = desc;
 
     double totalDelay = TotalDelayUntilScheduledItem(schedule, item);
     DEBUG("Scheduled entity at %f seconds", totalDelay);
 }
-#define ScheduleEntity(X, Y, Z) ScheduleEntityEx(X, Y, Z, "Unnamed")
+
+func inline void ScheduleEntity(double delay, float x, float y, EntityInitializerFunc initFunc)
+{
+    ScheduleEntityEx(delay, x, y, initFunc, "Unnamed");
+}
 
 func void ScheduleEntityColumns(double delay, EntityInitializerFunc initFunc, uint count)
 {
@@ -127,12 +131,15 @@ func void ScheduleEntityColumns(double delay, EntityInitializerFunc initFunc, ui
     for (int i = 0; i < count; i++) {
         int x = i * segWidth;
         Vec2 spawnPos = { x, -100 };
-        ScheduleEntity(delay, spawnPos, initFunc);
+        ScheduleEntity(delay, V2(spawnPos), initFunc);
     }
 }
 
 SCHEDULE void TrainingLevelLayout(int difficulty)
 {
+    ScheduleEntity(0.0, WIDTH / 2, -100, InitTestEnemy);
+    ScheduleEntity(1.0, WIDTH / 4, -100, InitTestEnemy);
+    ScheduleEntity(0.0, WIDTH - WIDTH / 4, -100, InitTestEnemy);
     ScheduleEntityColumns(5, InitTestEnemy, 10);
 }
 

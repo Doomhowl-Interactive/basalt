@@ -69,12 +69,11 @@ BULLET void InitTestEnemy(Entity* e, Vec2 pos)
     e->texture = RequestTexture("SPR_SHIP_PLAYER");
     SetEntityCenter(e, pos.x - 48.f / 2.f, pos.y);
     e->tint = RED;
-    e->moveSpeed = 200;
     SetEntitySize(e, e->texture.width, e->texture.height);
     assert(e->bounds.width > 0 && e->bounds.height > 0);
 
     // Move downwards
-    e->vel.y = 200;
+    e->vel.y = 80;
 
     // Bullet spawners
     double outwardsAngleDeg = 40;
