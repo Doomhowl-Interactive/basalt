@@ -27,7 +27,7 @@ usize GameDifficulty = 2;
 DYNAMIC BASALT GameConfig ConfigureGame()
 {
     GameConfig config;
-    config.title = GetRealRandomNumber() % 1000 == 699 ? "Guardians Of Ur Mum" : "Guardians Of The Cursed Fire";
+    config.title = GetRealRandomNumber() % 1000 == 699 ? "Guardians Of Ur Mum" : "Guardians Of The Holy Fire";
     config.width = WIDTH;
     config.height = HEIGHT;
     config.language = 1;
@@ -81,6 +81,8 @@ DYNAMIC BASALT void UpdateAndRenderGame(Texture canvas, float delta)
     DrawText(canvas, infoText, 10, HEIGHT - 20, fps < 30 ? RED : GREEN);
 
     // draw the name of the pattern being shot
-    const char* name = Player->bulletSpawners[0].patternToSpawn->name;
-    DrawText(canvas, name, 250, HEIGHT - 60, 0xFF0000FF);
+    if (Player){
+        const char* name = Player->bulletSpawners[0].patternToSpawn->name;
+        DrawText(canvas, name, 250, HEIGHT - 60, 0xFF0000FF);
+    }
 }

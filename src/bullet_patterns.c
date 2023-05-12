@@ -126,11 +126,17 @@ BULLET bool RunBulletPattern(Entity* e, float delta)
     if (pattern->name == NULL)
         return false;
 
-    if (pattern->count == 0)
+    if (pattern->count == 0) {
         pattern->count = GetBulletPatternActionCount(pattern);
+        if (pattern->count == 0) {
+            pattern->name = NULL;
+            return false;
+        }
+    }
 
-    if (pattern->index >= pattern->count)
+    if (pattern->index >= pattern->count) {
         return true;
+    }
 
     BulletAction action = pattern->actions[pattern->index];
     assert(action.function);

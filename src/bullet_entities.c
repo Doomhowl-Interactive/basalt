@@ -138,7 +138,7 @@ BULLET void UpdateAndRenderEntity(Scene* scene, Texture canvas, Entity* e, float
     e->timeAlive += delta;
 
     // Shortcuts
-    Vec2* vel = &e->vel;
+    Vec2 const* vel = &e->vel;
 
     // Entity drawing
     if (e->timer > e->frameInterval) {
@@ -191,12 +191,6 @@ BULLET void UpdateAndRenderEntity(Scene* scene, Texture canvas, Entity* e, float
     // apply movement
     e->bounds.x += vel->x * delta;
     e->bounds.y += vel->y * delta;
-
-    // apply drag
-    // float offsetX = e->physics.drag * delta * SIGN(float, vel->x);
-    // vel->x -= MIN(offsetX, vel->x);
-    // float offsetY = e->physics.drag * delta * SIGN(float, vel->y);
-    // vel->y -= MIN(offsetY, vel->y);
 }
 
 static usize LastCount = 0;
