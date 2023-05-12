@@ -15,6 +15,7 @@ extern usize GameDifficulty;
 
 #define FLAG_PLAYER (1 << 0)
 #define FLAG_BULLET (2 << 0)
+#define FLAG_ENEMY  (3 << 0)
 
 typedef uint EntityFlag;
 typedef uint EntityID;

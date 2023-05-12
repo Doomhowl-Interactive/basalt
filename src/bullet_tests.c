@@ -87,6 +87,10 @@ TEST(EntityFlags)
 
     CHECK(EntityHasFlag(e, FLAG_PLAYER), "Player has entity flag");
     CHECK(EntityHasFlag(e2, FLAG_BULLET), "Bullet has bullet flag");
+
+    Entity* e3 = CreateEntity(&scene);
+    e3->flags = FLAG_BULLET | FLAG_ENEMY;
+    CHECK(EntityHasFlag(e3, FLAG_BULLET & FLAG_ENEMY), "Bullet has bullet flag");
 }
 END;
 
