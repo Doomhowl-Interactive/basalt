@@ -1,4 +1,11 @@
 {
 "makefile.compileCommandsPath": ".vscode/compile_commands.json",
-"sonarlint.pathToCompileCommands": "${workspaceFolder}/.vscode/compile_commands.json"
+"sonarlint.pathToCompileCommands": "${workspaceFolder}/.vscode/compile_commands.json",
+"makefile.launchConfigurations": [
+    {
+        "cwd": "/home/bram/dev/basalt/build",
+        "binaryPath": "/home/bram/dev/basalt/build/basalt_linux.x11",
+        "binaryArgs": []
+    }
+]
 }
