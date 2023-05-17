@@ -13,7 +13,6 @@
 static uint ActiveSceneID = 0;
 static Scene Scenes[SCENE_COUNT] = { 0 };
 
-static Entity* Player = NULL;
 static uint SelectedPattern = 1;
 
 #define TEST_ENEMY_COUNT 10
@@ -42,9 +41,9 @@ DYNAMIC BASALT void InitializeGame()
     BulletPlacholderTexture = RequestTexture("SPR_BULLET_PLACEHOLDER");
     PlayerTexture = RequestTexture("SPR_SHIP_PLAYER");
 
-    Player = CreateEntity(&Scenes[SCENE_GAME]);
+    Entity* player = CreateEntity(&Scenes[SCENE_GAME]);
     Vec2 spawnPos = { WIDTH / 2.0f, HEIGHT / 1.2f };
-    InitPlayer(Player, spawnPos);
+    InitPlayer(player, spawnPos);
 
     SwitchLevel(&Level1);
 }
@@ -73,7 +72,9 @@ DYNAMIC BASALT void UpdateAndRenderGame(Texture canvas, float delta)
 
     Scene* activeScene = &Scenes[ActiveSceneID];
     UpdateAndRenderLevel(canvas, activeScene, delta);
-    UpdateAndRenderGUI(canvas, Player, delta);
+
+    Entity* player = GetFirstEntityWithFlag(activeScene, FLAG_PLAYER);
+    UpdateAndRenderGUI(canvas, player, delta);
 
     // draw fps
     float fps = 1.f / delta;
@@ -81,8 +82,8 @@ DYNAMIC BASALT void UpdateAndRenderGame(Texture canvas, float delta)
     DrawText(canvas, infoText, 10, HEIGHT - 20, fps < 30 ? RED : GREEN);
 
     // draw the name of the pattern being shot
-    if (Player){
-        const char* name = Player->bulletSpawners[0].patternToSpawn->name;
+    if (player) {
+        const char* name = player->bulletSpawners[0].patternToSpawn->name;
         DrawText(canvas, name, 250, HEIGHT - 60, 0xFF0000FF);
     }
 }

@@ -19,6 +19,10 @@ LDFLAGS := -lX11 -lm -lXext
 build: $(BUILD_DIR)/$(TARGET_EXEC) 
 lib: $(BUILD_DIR)/$(TARGET_LIB)
 
+# quickstart
+run: $(BUILD_DIR)/$(TARGET_EXEC)
+	$(BUILD_DIR)/basalt_linux.x11
+
 # Linking step (standard)
 $(BUILD_DIR)/$(TARGET_EXEC): $(OBJS) $(OBJS_GAME)
 	$(CXX) $(OBJS) $(OBJS_GAME) -o $@ $(LDFLAGS)

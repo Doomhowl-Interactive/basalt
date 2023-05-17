@@ -60,8 +60,12 @@ BULLET bool UpdateAndRenderLevel(Texture canvas, Scene* scene, float delta)
     UpdateAndRenderBackground(canvas, delta);
     UpdateAndRenderScene(scene, canvas, delta);
     UpdateAndRenderEditor(scene, canvas, delta);
-    // HACK: Resolve player properly!
-    UpdateAndRenderGUI(canvas, scene->entities[0], delta);
+
+    Entity* player = GetFirstEntityWithFlag(scene, FLAG_PLAYER);
+    if (player != NULL){
+        UpdateAndRenderGUI(canvas, player, delta);
+    }
+
     return false;
 }
 

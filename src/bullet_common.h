@@ -141,6 +141,7 @@ BULLET usize GetEntityCount();
 
 BULLET void EntityDamage(Entity* e);
 BULLET bool EntityHasFlag(Entity* e, EntityFlag flag);
+BULLET Entity* GetFirstEntityWithFlag(Scene* scene, EntityFlag flag);
 
 typedef void (*EntityCallback)(Entity* e, int i);
 BULLET usize ForeachSceneEntity(Scene* scene, EntityCallback callback);

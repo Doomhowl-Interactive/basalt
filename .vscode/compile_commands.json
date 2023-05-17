@@ -90,6 +90,11 @@
         "file": "/home/bram/dev/basalt/src/bullet_patterns.c"
     },
     {
+        "command": "cc -I./src -ggdb -Wall -O0 -fPIC -c src/bullet_collision.c -o build/./src/bullet_collision.c.o",
+        "directory": "/home/bram/dev/basalt",
+        "file": "/home/bram/dev/basalt/src/bullet_collision.c"
+    },
+    {
         "command": "cc -I./src -ggdb -Wall -O0 -fPIC -c src/bullet_editor.c -o build/./src/bullet_editor.c.o",
         "directory": "/home/bram/dev/basalt",
         "file": "/home/bram/dev/basalt/src/bullet_editor.c"
@@ -98,10 +103,5 @@
         "command": "cc -I./src -ggdb -Wall -O0 -fPIC -c src/bullet_entities.c -o build/./src/bullet_entities.c.o",
         "directory": "/home/bram/dev/basalt",
         "file": "/home/bram/dev/basalt/src/bullet_entities.c"
-    },
-    {
-        "command": "cc -I./src -ggdb -Wall -O0 -fPIC -c src/bullet_collision.c -o build/./src/bullet_collision.c.o",
-        "directory": "/home/bram/dev/basalt",
-        "file": "/home/bram/dev/basalt/src/bullet_collision.c"
     }
 ]

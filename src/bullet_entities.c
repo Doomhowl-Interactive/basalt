@@ -203,6 +203,8 @@ BULLET void EntityDamage(Entity* e)
 {
     if (e->health > 0) {
         e->health--;
+    } else {
+        DestroyEntity(e);
     }
 }
 
@@ -212,6 +214,27 @@ BULLET bool EntityHasFlag(Entity* e, EntityFlag flag)
         return false;
     }
     return ((e->flags & flag) == flag);
+}
+
+// HACK: This is very slow
+static Entity* _GetFirstResultMatch = NULL;
+static EntityFlag _GetFirstEntityFlag = 0;
+func void _GetFirstEntityWithFlagCallback(Entity* e, int i)
+{
+    if (_GetFirstResultMatch != NULL) {
+        return;
+    }
+    if (EntityHasFlag(e, _GetFirstEntityFlag)) {
+        _GetFirstResultMatch = e;
+    }
+}
+
+BULLET Entity* GetFirstEntityWithFlag(Scene* scene, EntityFlag flag)
+{
+    _GetFirstResultMatch = NULL;
+    _GetFirstEntityFlag = flag;
+    ForeachSceneEntity(scene, _GetFirstEntityWithFlagCallback);
+    return _GetFirstResultMatch;
 }
 
 BULLET usize UpdateAndRenderScene(Scene* scene, Texture canvas, float delta)
