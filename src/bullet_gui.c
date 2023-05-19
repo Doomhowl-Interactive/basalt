@@ -18,7 +18,7 @@ func void UpdateAndRenderLives(Texture canvas, Entity* player, float delta)
         HEIGHT - size - border,
     };
 
-    if (player == NULL || !player->isActive) {
+    if (!EntityIsActive(player)) {
         return;
     }
 

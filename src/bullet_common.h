@@ -18,7 +18,7 @@ extern usize GameDifficulty;
 #define FLAG_ENEMY  (3 << 0)
 
 typedef uint EntityFlag;
-typedef uint EntityID;
+typedef size_t EntityID;
 
 typedef struct Entity Entity;
 typedef struct Scene Scene;
@@ -140,6 +140,7 @@ BULLET void ResetEntityVelocity(Entity* e);
 BULLET usize GetEntityCount();
 
 BULLET void EntityDamage(Entity* e);
+BULLET bool EntityIsActive(Entity* e);
 BULLET bool EntityHasFlag(Entity* e, EntityFlag flag);
 BULLET Entity* GetFirstEntityWithFlag(Scene* scene, EntityFlag flag);
 

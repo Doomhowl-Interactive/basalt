@@ -208,6 +208,11 @@ BULLET void EntityDamage(Entity* e)
     }
 }
 
+BULLET bool EntityIsActive(Entity* e)
+{
+    return e != NULL && e->isActive;
+}
+
 BULLET bool EntityHasFlag(Entity* e, EntityFlag flag)
 {
     if (flag == 0) {
@@ -216,43 +221,38 @@ BULLET bool EntityHasFlag(Entity* e, EntityFlag flag)
     return ((e->flags & flag) == flag);
 }
 
-// HACK: This is very slow
-static Entity* _GetFirstResultMatch = NULL;
-static EntityFlag _GetFirstEntityFlag = 0;
-func void _GetFirstEntityWithFlagCallback(Entity* e, int i)
-{
-    if (_GetFirstResultMatch != NULL) {
-        return;
-    }
-    if (EntityHasFlag(e, _GetFirstEntityFlag)) {
-        _GetFirstResultMatch = e;
-    }
-}
-
 BULLET Entity* GetFirstEntityWithFlag(Scene* scene, EntityFlag flag)
 {
-    _GetFirstResultMatch = NULL;
-    _GetFirstEntityFlag = flag;
-    ForeachSceneEntity(scene, _GetFirstEntityWithFlagCallback);
-    return _GetFirstResultMatch;
+    for (usize i = 0; i < MAX_ENTITY_PAGES; i++) {
+        if (scene->entities[i] == NULL) {
+            break;
+        }
+        for (usize j = 0; j < ENTITIES_PER_PAGE; j++) {
+            assert(scene->entities[i]);
+            Entity* e = &scene->entities[i][j];
+            if (EntityHasFlag(e, flag) && EntityIsActive(e)) {
+                return e;
+            }
+        }
+    }
+    return NULL;
 }
 
 BULLET usize UpdateAndRenderScene(Scene* scene, Texture canvas, float delta)
 {
     usize count = 0;
     for (usize i = 0; i < MAX_ENTITY_PAGES; i++) {
-        if (scene->entities[i] != NULL) {
-            for (usize j = 0; j < ENTITIES_PER_PAGE; j++) {
-                assert(scene->entities[i]);
-                Entity* e = &scene->entities[i][j];
-                assert(e);
-                if (e->isActive) {
-                    UpdateAndRenderEntity(scene, canvas, e, delta);
-                    count++;
-                }
-            }
-        } else {
+        if (scene->entities[i] == NULL) {
             break;
+        }
+        for (usize j = 0; j < ENTITIES_PER_PAGE; j++) {
+            assert(scene->entities[i]);
+            Entity* e = &scene->entities[i][j];
+            assert(e);
+            if (e->isActive) {
+                UpdateAndRenderEntity(scene, canvas, e, delta);
+                count++;
+            }
         }
     }
     LastCount = count;

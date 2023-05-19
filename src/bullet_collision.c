@@ -3,7 +3,7 @@
 
 func void OnTouchedEntity(Entity* e, Entity* sender)
 {
-    if (sender->flags & FLAG_BULLET) {
+    if (EntityHasFlag(sender, FLAG_BULLET)) {
         if (EntityHasFlag(e, FLAG_PLAYER)) {
             EntityDamage(e);
         }
