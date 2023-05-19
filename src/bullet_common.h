@@ -57,8 +57,8 @@ typedef struct EntityAI {
     const char* name;
     EntityAIAction actions[MAX_ACTIONS];
     ActionData data;
-    uint count;
-    uint index;
+    usize count;
+    usize index;
 } EntityAI;
 
 typedef struct BulletPattern {

@@ -46,7 +46,6 @@ AI bool FlyTowards(Entity* e, ActionData* data, const int* args)
 {
     const int BORDER_OFFSET = 150;
     const float DISTANCE_CHECK = 10.f;
-    const float EPSILON = 0.1f;
 
     bool* initialized = &data->bools[0];
     if (!(*initialized)) {
@@ -62,7 +61,7 @@ AI bool FlyTowards(Entity* e, ActionData* data, const int* args)
             flyInY = -BORDER_OFFSET;
         }
 
-        SetEntityCenter(e, flyInX, flyInY);
+        SetEntityCenter(e, (float)flyInX, (float)flyInY);
         *initialized = true;
     }
 
@@ -70,8 +69,8 @@ AI bool FlyTowards(Entity* e, ActionData* data, const int* args)
     float power = 100 * data->difficulty;
     Vec2 src = GetEntityCenter(e);
     Vec2 dest = {
-        args[0],
-        args[1],
+        (float)args[0],
+        (float)args[1],
     };
 
     float distanceLeft = Vec2DistanceSquared(src, dest);
@@ -90,7 +89,7 @@ AI bool FlyTowards(Entity* e, ActionData* data, const int* args)
     return false;
 }
 
-AI bool SidewaysEight(Entity* e, ActionData* data, const int* args)
+AI bool SidewaysEight(const Entity* e, const ActionData* data, const int* args)
 {
     // TODO:
     return false;
