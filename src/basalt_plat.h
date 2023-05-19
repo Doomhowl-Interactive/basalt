@@ -39,6 +39,7 @@ PLATFORM void DrawCallImpl(Texture canvas, const char* desc);
 // basalt_utils.c
 PLATFORM bool ParseLaunchArguments(int argc, char** argv);  // NOTE: Returns true if engine should continue running
 PLATFORM bool IsLittleEndian();
+PLATFORM const char* GetWorkingDirectory();
 
 // basalt_tests.c
 PLATFORM void UnitTest();

@@ -33,6 +33,16 @@ BASALT void SetWindowTitle(const char* title)
     }
 }
 
+#define MAX_WORKDIR_LEN 128
+BASALT const char* GetWorkingDirectory()
+{
+    static char workingDir[MAX_WORKDIR_LEN];
+    if (!GetCurrentDirectory(MAX_WORKDIR_LEN, workingDir)) {
+        ERR("Could not determine working directory %s", GetLastError());
+    }
+    return workingDir;
+}
+
 func void OpenSystemConsole();
 func void CloseSystemConsole();
 
@@ -158,9 +168,11 @@ LRESULT CALLBACK MainWindowCallback(HWND window, UINT message, WPARAM wParam, LP
 
 int CALLBACK WinMain(HINSTANCE instance, HINSTANCE prevInstance, LPSTR commandLine, int showCode)
 {
+    GameConfig config = ConfigureGame();
+
     WNDCLASS windowClass = { 0 };
 
-    ResizeDIBSection(&GlobalBackbuffer, WIDTH, HEIGHT);
+    ResizeDIBSection(&GlobalBackbuffer, config.width, config.height);
 
     windowClass.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
     windowClass.lpfnWndProc = MainWindowCallback;
@@ -174,8 +186,8 @@ int CALLBACK WinMain(HINSTANCE instance, HINSTANCE prevInstance, LPSTR commandLi
                                       WS_OVERLAPPEDWINDOW | WS_VISIBLE,
                                       CW_USEDEFAULT,
                                       CW_USEDEFAULT,
-                                      WIDTH,
-                                      HEIGHT,
+                                      config.width,
+                                      config.height,
                                       0,
                                       0,
                                       instance,
@@ -209,11 +221,11 @@ int CALLBACK WinMain(HINSTANCE instance, HINSTANCE prevInstance, LPSTR commandLi
                 GetCursorPos(&p);
                 ScreenToClient(window, &p);
 
-                float scaleX = size.width / (float)WIDTH;
-                float scaleY = size.height / (float)HEIGHT;
+                float scaleX = size.width / (float)config.width;
+                float scaleY = size.height / (float)config.height;
 
-                Input.mousePos.x = Clamp(p.x / scaleX, 0, WIDTH);
-                Input.mousePos.y = Clamp(p.y / scaleY, 0, HEIGHT);
+                Input.mousePos.x = Clamp(p.x / scaleX, 0, config.width);
+                Input.mousePos.y = Clamp(p.y / scaleY, 0, config.height);
 
                 while (PeekMessage(&message, 0, 0, 0, PM_REMOVE)) {
                     if (message.message == WM_QUIT)
@@ -252,7 +264,7 @@ int CALLBACK WinMain(HINSTANCE instance, HINSTANCE prevInstance, LPSTR commandLi
                 static double timer = 0.f;
                 if (timer > 0.2) {
                     // set window title to framerate
-                    const char* title = FormatText("%s - %d FPS - %f delta", GAME_TITLE, (int)fps, delta);
+                    const char* title = FormatText("%s - %d FPS - %f delta", config.title, (int)fps, delta);
                     SetWindowTitle(title);
                     timer = 0.0;
                 }

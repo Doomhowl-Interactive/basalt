@@ -387,9 +387,11 @@ BASALT const char* PadStringRight(const char* text, char symbol, usize length)
 
 BASALT const char* GetFirstExistingFolder(const char** folders)
 {
-    for (const char* folder = folders[0]; folder != NULL; folder++) {
-        if (folder != NULL && FolderExists(folder))
-            return folder;
+    while(*folders) {
+        if (FolderExists(*folders)){
+            return *folders;
+        }
+        folders++;
     }
     return NULL;
 }

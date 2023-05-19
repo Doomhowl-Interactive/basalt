@@ -26,7 +26,7 @@ static usize AssetEntryCount = 0;
 static AssetEntry* AssetEntries = NULL;
 
 static const char* AssetFolders[] = {
-    "assets", "../assets", "~/dev/basalt/assets", "C:\\dev\\basalt\\assets", NULL,
+    "assets", "../assets", "../../assets", "../../../assets", NULL, // omegalul
 };
 
 func bool GetAssetEntry(const char* name, AssetEntry** result)
@@ -43,10 +43,27 @@ func bool GetAssetEntry(const char* name, AssetEntry** result)
     return false;
 }
 
+func const char* GetFirstExistingAssetFolder(const char** folders)
+{
+    const char* workingDir = GetWorkingDirectory();
+    static char appendedFolder[256];
+
+    while(*folders)
+    {
+        sprintf(appendedFolder, "%s/%s", workingDir, *folders);
+        if (FolderExists(appendedFolder))
+        {
+            return appendedFolder;
+        }
+        folders++;
+    }
+    return NULL;
+}
+
 func void LoadTextureFromStbData(Texture texture, uchar* data, int channels)
 {
     assert(data);
-    assert(texture.width > 0 || texture.height > 0);
+    assert(texture.width > 0 && texture.height > 0);
 
     if (channels == 4 || channels == 3) {
         // HACK: Copy the texture into the correct color order
@@ -109,7 +126,7 @@ BASALT void InitHotReloading()
     if (!Config.hasHotloading)
         return;
 
-    const char* folder = GetFirstExistingFolder(AssetFolders);
+    const char* folder = GetFirstExistingAssetFolder(AssetFolders);
     INFO("Found asset folder at %s", folder);
     StringArray list = GetFolderFiles(folder, ".png");
     INFO("Found %lu textures to be hot-reloaded", list.count);
@@ -159,7 +176,7 @@ BASALT Texture RequestTexture(const char* name)
 
     static const char* assetFolder = NULL;
     if (assetFolder == NULL) {
-        assetFolder = GetFirstExistingFolder(AssetFolders);
+        assetFolder = GetFirstExistingAssetFolder(AssetFolders);
         INFO("Found asset folder at %s", assetFolder);
     }
 
@@ -167,7 +184,7 @@ BASALT Texture RequestTexture(const char* name)
     int channels = 0;
 
     const char* nameLower = ToLowercase(name);
-    const char* fullPath = FormatText("./%s/%s.png", assetFolder, nameLower);
+    const char* fullPath = FormatText("%s/%s.png", assetFolder, nameLower);
     uchar* data = (uchar*)stbi_load(fullPath, &width, &height, &channels, 4);
 
     DEBUG("Loaded texture %s of size %dx%d with %d channels", name, width, height, channels);

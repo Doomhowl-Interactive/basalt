@@ -102,7 +102,8 @@ typedef struct StringArray {
   printf("\n")
 # define ERR(...) \
   printf("ERROR: "__VA_ARGS__); \
-  printf("\n")
+  printf("\n"); \
+  exit(1)
 # define FATAL(...) \
   printf("FATAL: "__VA_ARGS__); \
   printf("\n"); \
@@ -157,7 +158,6 @@ BASALT extern float Vec2Magnitude(Vec2 v2);
 
 // NOTE: Get's normalized direction from src to dest
 BASALT extern Vec2 Vec2Towards(Vec2 src, Vec2 dest);
-
 BASALT extern float Vec2DistanceSquared(Vec2 first, Vec2 second);
 
 // WARN: Taking square roots is expensive! Use Vec2DistanceSquared instead!
@@ -194,8 +194,8 @@ BASALT const char* GetFileStem(const char* filePath);
 // NOTE: Returns NULL when none exist,
 // pass NULL ended array
 BASALT const char* GetFirstExistingFolder(const char** folders);
-
 BASALT StringArray GetFolderFiles(const char* folder, const char* ext);
+BASALT const char* GetWorkingDirectory();
 
 // Asset handling (basalt_assets.c)
 typedef struct Texture {
