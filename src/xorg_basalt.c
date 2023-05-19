@@ -46,6 +46,16 @@ BASALT void SetWindowTitle(const char* title)
     }
 }
 
+#define MAX_WORKDIR_LEN 128
+BASALT const char* GetWorkingDirectory()
+{
+    static char cwd[MAX_WORKDIR_LEN];
+    if (getcwd(cwd, sizeof(cwd)) == NULL) {
+        ERR("Could not determine working directory!");
+    }
+    return cwd;
+}
+
 func Size GetMonitorSize(Display* display)
 {
     int screen = DefaultScreen(display);
