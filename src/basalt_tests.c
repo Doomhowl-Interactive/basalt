@@ -151,6 +151,15 @@ TEST(ExtractDialogLines)
 }
 END;
 
+TEST(ExtractDialogKeywords)
+{
+    const char* line = "{teacher|excited}Greetings traveler, are you up for the challenge to reach the mountain top?";
+    StringArray keywords = ExtractDialogKeywords(line);
+    CHECK(keywords.count == 2, "There are two keywords");
+    CHECK(TextIsEqual(keywords.strings[0], "teacher"), "Check first keyword");
+    CHECK(TextIsEqual(keywords.strings[1], "excited"), "Check second keyword");
+} END;
+
 BASALT void UnitTest()
 {
     INFO("Doing unit tests");
@@ -163,4 +172,5 @@ BASALT void UnitTest()
     TestToUppercase();
     TestStripText();
     TestExtractDialogLines();
+    TestExtractDialogKeywords();
 }
