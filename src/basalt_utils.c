@@ -276,6 +276,28 @@ BASALT inline const char* AppendText(const char* src, const char* add)
     return FormatText("%s%s", src, add);
 }
 
+BASALT char* StripText(char* buffer)
+{
+    // Strip leading spaces
+    char* start = buffer;
+    while (isspace(*start)) {
+        ++start;
+    }
+
+    // Strip trailing spaces
+    char* end = buffer + strlen(buffer) - 1;
+    while (end > start && isspace(*end)) {
+        --end;
+    }
+
+    // Null-terminate the modified string
+    *(end + 1) = '\0';
+
+    // Shift the remaining characters to the beginning of the string
+    memmove(buffer, start, end - start + 2);
+    return buffer;
+}
+
 // from raylib
 BASALT int CopyText(char* dst, const char* src)
 {
@@ -293,6 +315,14 @@ BASALT int CopyText(char* dst, const char* src)
         *dst = '\0';
     }
     return bytes;
+}
+
+BASALT inline char* CloneText(const char* text)
+{
+    usize len = strlen(text);
+    char* buffer = malloc(len*sizeof(char));
+    strcpy(buffer, text);
+    return buffer;
 }
 
 BASALT inline usize TextLength(const char* text)

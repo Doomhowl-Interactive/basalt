@@ -1,4 +1,5 @@
 #include "basalt.h"
+#include "basalt_extra.h"
 #include "basalt_plat.h"
 
 // =====================================
@@ -127,6 +128,29 @@ TEST(ToLowercase)
 }
 END;
 
+TEST(StripText)
+{
+    const char* text = "             Hello, space cadet!       ";
+    char* buffer = CloneText(text);
+    StripText(buffer);
+    CHECK(TextIsEqual(buffer,"Hello, space cadet!"), "Strip text");
+    free(buffer);
+} END;
+
+TEST(ExtractDialogLines)
+{
+    // split line according to backslash
+    // strip all whitespace
+    const char* dialog = "Hello world!\\\
+                          How are you today?";
+
+    StringArray arr = ExtractDialogLines(dialog);
+    CHECK(arr.count == 2, "String array is 2");
+    CHECK(strcmp(arr.strings[0], "Hello world!") == 0,"Check first line");
+    CHECK(strcmp(arr.strings[1], "How are you today?") == 0,"Check second line");
+}
+END;
+
 BASALT void UnitTest()
 {
     INFO("Doing unit tests");
@@ -137,4 +161,6 @@ BASALT void UnitTest()
     TestFormatText();
     TestToLowercase();
     TestToUppercase();
+    TestStripText();
+    TestExtractDialogLines();
 }

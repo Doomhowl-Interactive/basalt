@@ -78,5 +78,8 @@ BASALT bool ParseLaunchArguments(int argc, char** argv)
         memset(&Config, 1, sizeof(EngineConfig));
     }
 
+    // TODO: debug purposes
+    Config.hasUnitTesting = true;
+
     return true;
 }

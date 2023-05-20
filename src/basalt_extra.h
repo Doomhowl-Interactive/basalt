@@ -48,7 +48,10 @@ typedef struct DialogSequence {
     DialogLine lines[];
 } DialogSequence;
 
-typedef bool (*DialogBoxDrawerFunc)(const char* dialog, uint speaker, float timeSince);
+BASALT StringArray ExtractDialogKeywords(const char* line);
+BASALT StringArray ExtractDialogLines(const char* lines);
+
+typedef bool (*DialogBoxDrawerFunc)(const char* dialog, StringArray keywords, Texture canvas, float timeSince);
 BASALT bool UpdateAndRenderDialogBoxes(Texture canvas, float delta); // returns true while speaking
 BASALT void RegisterDialogSequence(const char* name, const char* lines);
 BASALT void StartDialogSequence(const char* dialog);
