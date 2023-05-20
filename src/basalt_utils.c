@@ -320,7 +320,7 @@ BASALT int CopyText(char* dst, const char* src)
 BASALT inline char* CloneText(const char* text)
 {
     usize len = strlen(text);
-    char* buffer = malloc(len*sizeof(char));
+    char* buffer = malloc(len+1);
     strcpy(buffer, text);
     return buffer;
 }

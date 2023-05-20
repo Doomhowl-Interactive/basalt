@@ -17,4 +17,9 @@ set(SRC_ALL ${SRC_BASALT} ${SRC_BULLET} ${SRC_PLAT})
 
 add_compile_options(-ggdb -Wall)
 link_libraries(${LIBS})
-add_executable(${PROJECT_NAME} ${SRC_ALL})
+
+if (WIN32)
+    add_executable(${PROJECT_NAME} WIN32 ${SRC_ALL})
+else()
+    add_executable(${PROJECT_NAME} ${SRC_ALL})
+endif()
