@@ -46,6 +46,7 @@ DYNAMIC BASALT void InitializeGame()
     InitPlayer(player, spawnPos);
 
     SwitchLevel(&Level1);
+    ConstructDialogs();
 }
 
 DYNAMIC BASALT void DisposeGame()
@@ -75,7 +76,7 @@ DYNAMIC BASALT void UpdateAndRenderGame(Texture canvas, float delta)
 
     Entity* player = GetFirstEntityWithFlag(activeScene, FLAG_PLAYER);
     UpdateAndRenderGUI(canvas, player, delta);
-
+    UpdateAndRenderDialogBoxes(canvas, delta);
     // draw fps
     float fps = 1.f / delta;
     const char* infoText = FormatText("FPS %1.3f", fps);

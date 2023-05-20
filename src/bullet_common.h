@@ -215,6 +215,9 @@ BULLET void InitBullet(Entity* e, const BulletPattern* pattern, Vec2 pos, Vec2 n
 // bullet_gui.c
 BULLET void UpdateAndRenderGUI(Texture canvas, Entity* player, float delta);
 
+// bullet_dialog.c
+BULLET void ConstructDialogs();
+
 // bullet_editor.c
 BULLET bool IsEditorOpen();
 BULLET Rect GetEditorTabContentRegion();  // NOTE: Gets a Rectangle of the screen without the toolbar at the top
