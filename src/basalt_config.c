@@ -23,6 +23,7 @@ static Option Options[] = { { &Config.hasArchaeo, "-a", "--archaeo", "Enables to
                             { &Config.hasConsole, "-s", "--show", "Open console logs (Windows only)" },
                             { &Config.unlockedFramerate, "-u", "--unlock", "Unlocks the framerate (not recommended)" },
                             { &Config.isHeadless, "-H", "--headless", "Hot reloads game code from a dynamic library" },
+                            { &Config.lowQuality, "-l", "--low", "Decreases visual effects for higher performance." },
 
                             { &EnableAll, "-A", "--all", "Enables all of the above." },
                             { &NeedsHelp, "-?", "--help", "Shows this help screen" },
@@ -80,6 +81,7 @@ BASALT bool ParseLaunchArguments(int argc, char** argv)
 
     // TODO: debug purposes
     Config.hasUnitTesting = true;
+    Config.lowQuality = true;
 
     return true;
 }

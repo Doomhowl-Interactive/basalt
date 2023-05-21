@@ -241,6 +241,7 @@ typedef struct EngineConfig {
     bool hasConsole;
     bool isHeadless;
     bool unlockedFramerate;
+    bool lowQuality;
 } EngineConfig;
 extern EngineConfig Config;
 

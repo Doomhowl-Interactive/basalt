@@ -72,10 +72,19 @@ BULLET bool UpdateAndRenderLevel(Texture canvas, Scene* scene, float delta)
 // ==== API local functions ==== //
 func void UpdateAndRenderBackground(Texture canvas, float delta)
 {
-    assert(Context.currentLevel);
-    if (Context.currentLevel->backgroundFunc) {
-        Context.currentLevel->backgroundFunc(canvas, delta);
+    if (Config.lowQuality)
+    {
+        ClearTexture(canvas, 0x0);
     }
+    else
+    {
+        assert(Context.currentLevel);
+        if (Context.currentLevel->backgroundFunc)
+        {
+            Context.currentLevel->backgroundFunc(canvas, delta);
+        }
+    }
+
 }
 
 // ==== Level scheduling ==== //

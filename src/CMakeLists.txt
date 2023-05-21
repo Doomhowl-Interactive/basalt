@@ -1,8 +1,8 @@
 project(basalt)
 set(CMAKE_C_STANDARD 11)
 
-file(GLOB_RECURSE SRC_BASALT basalt_*.c *basalt_*.h)
-file(GLOB_RECURSE SRC_BULLET bullet_*.c *bullet_*.h)
+file(GLOB_RECURSE SRC_BASALT basalt*.c *basalt*.h)
+file(GLOB_RECURSE SRC_BULLET bullet*.c *bullet*.h)
 
 set (LIBS -lm)
 
