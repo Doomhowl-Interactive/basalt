@@ -269,6 +269,13 @@ BASALT inline bool TextIsEqual(const char* text1, const char* text2)
     return strcmp(text1, text2) == 0;
 }
 
+BASALT inline bool TextIsEqualNoCase(const char* text1, const char* text2)
+{
+    char cache[1024]; // HACK TODO: ToLowercase can only remember one string!
+    strcpy(cache, ToLowercase(text1));
+    return TextIsEqual(cache, ToLowercase(text2));
+}
+
 BASALT inline const char* AppendText(const char* src, const char* add)
 {
     assert(src);

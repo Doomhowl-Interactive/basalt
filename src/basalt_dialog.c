@@ -1,6 +1,13 @@
 #include "basalt_extra.h"
 #define DIALOG_SKIN
 
+typedef struct GameDialog {
+    DialogSequence* sequences;
+    usize count;
+    usize capacity;
+} GameDialog;
+static GameDialog Dialog;
+
 BASALT StringArray ExtractDialogKeywords(const char* line)
 {
     StringArray result = InitStringArray();
@@ -77,10 +84,58 @@ BASALT bool UpdateAndRenderDialogBoxes(Texture cancas, float delta)
 
 BASALT void StartDialogSequence(const char* dialog)
 {
+    if (Dialog.sequences)
+    {
+        for (usize i = 0; i < Dialog.count; i++)
+        {
+            if (TextIsEqualNoCase(Dialog.sequences[i].name, dialog))
+            {
 
+            }
+        }
+    }
+    else
+    {
+        ERR("No registered dialog sequences!");
+    }
 }
 
 BASALT void RegisterDialogSequence(const char* name, const char* lines)
 {
+    if (Dialog.sequences)
+    {
 
+    }
+}
+
+// ==== Disposing ===
+func void DisposeDialogLine(DialogLine line)
+{
+    if (line.text)
+    {
+        free(line.text);
+    }
+    DisposeStringArray(&line.keywords);
+}
+
+func void DisposeDialogSequence(DialogSequence sequence)
+{
+    for (usize i = 0; i < sequence.lineCount; i++)
+    {
+        DisposeDialogLine(sequence.lines[i]);
+    }
+}
+
+BASALT void ClearDialogSequences()
+{
+    if (Dialog.sequences)
+    {
+        for (usize i = 0; i < Dialog.count; i++)
+        {
+            DisposeDialogSequence(Dialog.sequences[i]);
+        }
+        free(Dialog.sequences);
+    }
+    memset(&Dialog, 0, sizeof(GameDialog));
+    INFO("Cleared dialog sequences!");
 }

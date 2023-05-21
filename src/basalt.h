@@ -170,6 +170,7 @@ BASALT void DisposeStringArray(StringArray* arr);
 // WARN: Cached memory, copy for long usage!
 BASALT const char* FormatText(const char* text, ...);
 BASALT extern bool TextIsEqual(const char* text1, const char* text2);
+BASALT extern bool TextIsEqualNoCase(const char* text1, const char* text2);
 BASALT extern const char* AppendText(const char* src, const char* add);
 BASALT extern char* CloneText(const char* text); // WARN: free after use
 BASALT extern usize TextLength(const char* text);

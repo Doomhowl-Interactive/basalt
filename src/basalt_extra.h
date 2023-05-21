@@ -37,15 +37,15 @@ BASALT void DrawTextureSheet(Texture canvas, TextureSheet sheet, int frame, Vec2
 
 // basalt_dialog.c
 typedef struct DialogLine {
-    const char* text;  // split multiple lines with backslashes!
-    uint speaker;
-    uint expression;   // default neutral 0
-    float customSpeed; // default speed 1.0
+    const char* text;
+    const StringArray keywords;
 } DialogLine;
 
+#define MAX_LINES_PER_SEQUENCE 128
 typedef struct DialogSequence {
     const char* name;
-    DialogLine lines[];
+    DialogLine lines[MAX_LINES_PER_SEQUENCE];
+    usize lineCount;
 } DialogSequence;
 
 BASALT StringArray ExtractDialogKeywords(const char* line);
@@ -55,3 +55,4 @@ typedef bool (*DialogBoxDrawerFunc)(const char* dialog, StringArray keywords, Te
 BASALT bool UpdateAndRenderDialogBoxes(Texture canvas, float delta); // returns true while speaking
 BASALT void RegisterDialogSequence(const char* name, const char* lines);
 BASALT void StartDialogSequence(const char* dialog);
+BASALT void ClearDialogSequences();
