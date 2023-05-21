@@ -156,103 +156,124 @@ BULLET bool RunBulletPattern(Entity* e, float delta)
 }
 
 const BulletPattern BulletPatterns[]
-    = { { "Stresstest",
-          {
-              {
-                  MoveBulletStraight,
-                  EndBulletTimer,
-                  0xFFAFFFFF,
-                  { 1 },
-              },
-              {
-                  SplitBulletCircle,
-                  EndBulletInstantly,
-                  0xFFAAAAFF,
-                  { 300 },
-              },
-              {
-                  MoveBulletStraight,
-                  EndBulletOOB,
-                  0xFFAFFFFF,
-                  { 10 },
-              },
-          } },
-
-        { "Firework",
-          {
-              {
-                  MoveBulletStraight,
-                  EndBulletTimer,
-                  0xFFAAAAFF,
-                  { 1 },
-              },
-              {
-                  SplitBulletCircle,
-                  EndBulletInstantly,
-                  0xFFAAAAFF,
-                  { 30 },
-              },
-              {
-                  MoveBulletStraight,
-                  EndBulletOOB,
-                  0xFF0000FF,
-                  { 10 },
-              },
-          } },
-        { "Firework-Double",
-          {
-              {
-                  MoveBulletStraight,
-                  EndBulletTimer,
-                  0xFFAAAAFF,
-                  { 1 },
-              },
-              {
-                  SplitBulletCircle,
-                  EndBulletInstantly,
-                  0xAAFFAAFF,
-                  { 3 },
-              },
-              {
-                  MoveBulletStraight,
-                  EndBulletTimer,
-                  0xFF0000FF,
-                  { 1 },
-              },
-              {
-                  SplitBulletCircle,
-                  EndBulletInstantly,
-                  0x00FFAAFF,
-                  { 2 },
-              },
-              {
-                  MoveBulletStraight,
-                  EndBulletOOB,
-                  0x0000FFFF,
-                  { 10 },
-              },
-          } },
+=
+{
+    {
+        "SimpleForwards",
         {
-            "PlayerBullet1",
             {
-                {
-                    MoveBulletStraight,
-                    EndBulletOOB,
-                    0xFFBB00FF,
-                    { 5 },
-                },
-            },
-            "SPR_BULLET_PLACEHOLDER",
-        },
+                MoveBulletStraight,
+                EndBulletOOB,
+                0xFF0000FF,
+                { 1 }
+            }
+        }
+
+    },
+    {
+        "Stresstest",
         {
-            "PlayerBullet2",
-            { { MoveBulletOceanWave, EndBulletOOB, 0xAAAAFFFF, { 40, 40 } } },
-            "SPR_BULLET_PLACEHOLDER",
+            {
+                MoveBulletStraight,
+                EndBulletTimer,
+                0xFFAFFFFF,
+                { 1 },
+            },
+            {
+                SplitBulletCircle,
+                EndBulletInstantly,
+                0xFFAAAAFF,
+                { 300 },
+            },
+            {
+                MoveBulletStraight,
+                EndBulletOOB,
+                0xFFAFFFFF,
+                { 10 },
+            },
+        }
+    },
+
+    {
+        "Firework",
+        {
+            {
+                MoveBulletStraight,
+                EndBulletTimer,
+                0xFFAAAAFF,
+                { 1 },
+            },
+            {
+                SplitBulletCircle,
+                EndBulletInstantly,
+                0xFFAAAAFF,
+                { 30 },
+            },
+            {
+                MoveBulletStraight,
+                EndBulletOOB,
+                0xFF0000FF,
+                { 10 },
+            },
+        }
+    },
+    {
+        "Firework-Double",
+        {
+            {
+                MoveBulletStraight,
+                EndBulletTimer,
+                0xFFAAAAFF,
+                { 1 },
+            },
+            {
+                SplitBulletCircle,
+                EndBulletInstantly,
+                0xAAFFAAFF,
+                { 3 },
+            },
+            {
+                MoveBulletStraight,
+                EndBulletTimer,
+                0xFF0000FF,
+                { 1 },
+            },
+            {
+                SplitBulletCircle,
+                EndBulletInstantly,
+                0x00FFAAFF,
+                { 2 },
+            },
+            {
+                MoveBulletStraight,
+                EndBulletOOB,
+                0x0000FFFF,
+                { 10 },
+            },
+        }
+    },
+    {
+        "PlayerBullet1",
+        {
+            {
+                MoveBulletStraight,
+                EndBulletOOB,
+                0xFFBB00FF,
+                { 5 },
+            },
         },
-        { "PlayerBullet3", { { MoveBulletStaircase, EndBulletOOB, 0x0022DDFF, { 10, -1 } } }, "SPR_BULLET_PLACEHOLDER" },
-        { "PlayerBullet4", { { MoveBulletSnake, EndBulletOOB, 0x22FF22FF, { 10, -1 } } }, "SPR_BULLET_PLACEHOLDER" },
-        { "SnakeBulletsDownwards", { { MoveBulletSnake, EndBulletOOB, 0x22FF22FF, { 10, 1 } } }, "SPR_BULLET_PLACEHOLDER" },
-        { NULL } };
+        "SPR_BULLET_PLACEHOLDER",
+    },
+    {
+        "PlayerBullet2",
+        { { MoveBulletOceanWave, EndBulletOOB, 0xAAAAFFFF, { 40, 40 } } },
+        "SPR_BULLET_PLACEHOLDER",
+    },
+    { "PlayerBullet3", { { MoveBulletStaircase, EndBulletOOB, 0x0022DDFF, { 10, -1 } } }, "SPR_BULLET_PLACEHOLDER" },
+    { "PlayerBullet4", { { MoveBulletSnake, EndBulletOOB, 0x22FF22FF, { 10, -1 } } }, "SPR_BULLET_PLACEHOLDER" },
+    { "SnakeBulletsDownwards", { { MoveBulletSnake, EndBulletOOB, 0x22FF22FF, { 10, 1 } } }, "SPR_BULLET_PLACEHOLDER" },
+    { NULL }
+};
 
 BULLET const BulletPattern* GetBulletPattern(usize index)
 {

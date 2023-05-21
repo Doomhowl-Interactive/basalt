@@ -80,22 +80,12 @@ BULLET void InitTestEnemy(Entity* e, Vec2 pos)
     // Move downwards
     e->vel.y = 80;
 
-    // Bullet spawners
-    double outwardsAngleDeg = 40;
-    double distanceFromPlayer = 45;
-    uint spawnerCount = 5;
-
-    double anglePerSpawner = outwardsAngleDeg / spawnerCount;
-    for (uint i = 0; i < spawnerCount; i++) {
-        double angle = 180 + -90 - outwardsAngleDeg * 0.5f + anglePerSpawner * i + anglePerSpawner * 0.5f;
-
-        BulletSpawner* spawner = &e->bulletSpawners[i];
-        spawner->interval = 0.1f;
-        spawner->normal.x = cos(DEG2RAD(angle));
-        spawner->normal.y = sin(DEG2RAD(angle));
-        spawner->offset = Vec2Scale(spawner->normal, distanceFromPlayer);
-        spawner->patternToSpawn = GetBulletPatternByName("SnakeBulletsDownwards");
-    }
+    // Bullet spawner
+    BulletSpawner* spawner = &e->bulletSpawners[0];
+    spawner->interval = 0.5f;
+    spawner->normal= Vec2Normalize(e->vel);
+    spawner->offset = Vec2Scale(spawner->normal, 50);
+    spawner->patternToSpawn = GetBulletPatternByName("SimpleForwards");
 }
 
 BULLET void InitBullet(Entity* e, const BulletPattern* pattern, Vec2 pos, Vec2 normal)
