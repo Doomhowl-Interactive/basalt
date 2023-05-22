@@ -1,7 +1,6 @@
 #include <string.h>
 
 #include "basalt.h"
-#include "basalt_plat.h"
 
 #define BLEND_VALUE 180
 

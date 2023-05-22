@@ -10,22 +10,22 @@ typedef struct PatternEditor {
     Scene scene;
     usize patternIndex;
 } PatternEditor;
-static PatternEditor Context = { 0 };
+static PatternEditor PATED = { 0 };
 
 void InitPatternEditor()
 {
     assert(GetBulletPatternCount() > 0);
 
     // Allocate new canvas
-    Context.buffer = InitTexture(WIDTH, HEIGHT);
+    PATED.buffer = InitTexture(WIDTH, HEIGHT);
 
     // Spawn bullet spawner in the center of the scene
-    Context.spawnerEntity = CreateEntity(&Context.scene);
-    SetEntityCenter(Context.spawnerEntity, WIDTH * 0.5f, HEIGHT * 0.5f);
-    Context.spawner = &Context.spawnerEntity->bulletSpawners[0];
-    Context.spawner->patternToSpawn = GetBulletPattern(0);
-    Context.spawner->interval = 2.f;
-    Context.spawner->normal = (Vec2){ 0, 0.5f };
+    PATED.spawnerEntity = CreateEntity(&PATED.scene);
+    SetEntityCenter(PATED.spawnerEntity, WIDTH * 0.5f, HEIGHT * 0.5f);
+    PATED.spawner = &PATED.spawnerEntity->bulletSpawners[0];
+    PATED.spawner->patternToSpawn = GetBulletPattern(0);
+    PATED.spawner->interval = 2.f;
+    PATED.spawner->normal = (Vec2){ 0, 0.5f };
 }
 
 func void DrawScreenGrid(Texture canvas, uint cellWidth, uint cellHeight, Color color)
@@ -46,50 +46,50 @@ BULLET void UpdateAndRenderPatternEditor(Texture canvas, float delta)
         PatternCount = GetBulletPatternCount();
     }
 
-    if (Context.spawner == NULL) {
+    if (PATED.spawner == NULL) {
         InitPatternEditor();
     }
 
-    ClearTexture(Context.buffer, 0x181818FF);
+    ClearTexture(PATED.buffer, 0x181818FF);
 
     // Aim bulletspawner at the cursor
     Point mouse = GetMousePosition();
-    Vec2 center = GetEntityCenter(Context.spawnerEntity);
+    Vec2 center = GetEntityCenter(PATED.spawnerEntity);
     Vec2 direction = { mouse.x - center.x, mouse.y - center.y };
     Vec2 norm = Vec2Normalize(direction);
-    Context.spawner->normal = norm;
+    PATED.spawner->normal = norm;
 
     // Draw grid
     const uint gridSize = 32;
-    DrawScreenGrid(Context.buffer, gridSize, gridSize, 0x999999FF);
+    DrawScreenGrid(PATED.buffer, gridSize, gridSize, 0x999999FF);
 
-    UpdateAndRenderScene(&Context.scene, Context.buffer, delta);
+    UpdateAndRenderScene(&PATED.scene, PATED.buffer, delta);
 
     // Draw info
     Rect contentRegion = GetEditorTabContentRegion();
 
-    const BulletPattern* curPattern = GetBulletPattern(Context.patternIndex);
+    const BulletPattern* curPattern = GetBulletPattern(PATED.patternIndex);
 
     char* infoText = (char*)FormatText("%ux%u\n%s\n\n", gridSize, gridSize, curPattern->name);
 
     // Draw list of bullet patterns
     for (usize i = 0; i < PatternCount; i++) {
         const BulletPattern* pattern = GetBulletPattern(i);
-        const char* add = FormatText("%s%s\n", (i == Context.patternIndex) ? "SELECTED " : "", pattern->name);
+        const char* add = FormatText("%s%s\n", (i == PATED.patternIndex) ? "SELECTED " : "", pattern->name);
         infoText = (char*)AppendText(infoText, add);
     }
 
     if (IsKeyPressed(KEY_J)) {
-        Context.patternIndex++;
+        PATED.patternIndex++;
     }
     if (IsKeyPressed(KEY_K)) {
-        Context.patternIndex--;
+        PATED.patternIndex--;
     }
-    Context.patternIndex %= PatternCount;
-    Context.spawner->patternToSpawn = curPattern;
+    PATED.patternIndex %= PatternCount;
+    PATED.spawner->patternToSpawn = curPattern;
 
-    DrawText(Context.buffer, infoText, 10, contentRegion.y + 10, PURPLE);
+    DrawText(PATED.buffer, infoText, 10, contentRegion.y + 10, PURPLE);
 
     // Draw result
-    DrawTextureEx(canvas, Context.buffer, contentRegion.x, contentRegion.y, R2(contentRegion), WHITE);
+    DrawTextureEx(canvas, PATED.buffer, contentRegion.x, contentRegion.y, R2(contentRegion), WHITE);
 }

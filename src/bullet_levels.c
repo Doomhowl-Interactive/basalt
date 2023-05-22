@@ -2,7 +2,7 @@
 #include "bullet_common.h"
 #define MAX_INITIALIZERS 64
 
-typedef struct LevelContext {
+typedef struct LevelLEVEL {
     double timePassed;
     LevelSchedule schedule;
 
@@ -10,22 +10,22 @@ typedef struct LevelContext {
 
     LevelInitializerFunc initializers[MAX_INITIALIZERS];
     usize initializerCount;
-} LevelContext;
+} LevelLEVEL;
 
-static LevelContext Context = { 0 };
+static LevelLEVEL LEVEL = { 0 };
 
 // ==== API functions ==== //
 BULLET void SwitchLevel(const LevelInfo* level)
 {
     // Run level scheduler
     level->schedulerFunc(GameDifficulty);
-    Context.currentLevel = level;
+    LEVEL.currentLevel = level;
 
     INFO("Switched to level %s", level->name);
 
     // Call subscribers
-    for (usize i = 0; i < Context.initializerCount; i++) {
-        LevelInitializerFunc initFunc = Context.initializers[i];
+    for (usize i = 0; i < LEVEL.initializerCount; i++) {
+        LevelInitializerFunc initFunc = LEVEL.initializers[i];
         if (initFunc) {
             (*initFunc)(level);
         }
@@ -35,28 +35,28 @@ BULLET void SwitchLevel(const LevelInfo* level)
 BULLET void RunLevelEnterHook(LevelInitializerFunc initFunc)
 {
     // check if present
-    for (usize i = 0; i < Context.initializerCount; i++) {
-        if (Context.initializers[i] == initFunc) {
+    for (usize i = 0; i < LEVEL.initializerCount; i++) {
+        if (LEVEL.initializers[i] == initFunc) {
             return;  // already added
         }
     }
 
     // make subscriber
-    if (Context.initializerCount < MAX_INITIALIZERS) {
-        Context.initializers[Context.initializerCount++] = initFunc;
+    if (LEVEL.initializerCount < MAX_INITIALIZERS) {
+        LEVEL.initializers[LEVEL.initializerCount++] = initFunc;
     } else {
         ERR("Too many level initializers defined!");
     }
 
     // send level immediately
-    (*initFunc)(Context.currentLevel);
+    (*initFunc)(LEVEL.currentLevel);
 }
 
 func void UpdateAndRenderBackground(Texture canvas, float delta);
 func void RunScheduler(LevelSchedule* schedule, Scene* scene);
 BULLET bool UpdateAndRenderLevel(Texture canvas, Scene* scene, float delta)
 {
-    RunScheduler(&Context.schedule, scene);
+    RunScheduler(&LEVEL.schedule, scene);
     UpdateAndRenderBackground(canvas, delta);
     UpdateAndRenderScene(scene, canvas, delta);
     UpdateAndRenderEditor(scene, canvas, delta);
@@ -78,10 +78,10 @@ func void UpdateAndRenderBackground(Texture canvas, float delta)
     }
     else
     {
-        assert(Context.currentLevel);
-        if (Context.currentLevel->backgroundFunc)
+        assert(LEVEL.currentLevel);
+        if (LEVEL.currentLevel->backgroundFunc)
         {
-            Context.currentLevel->backgroundFunc(canvas, delta);
+            LEVEL.currentLevel->backgroundFunc(canvas, delta);
         }
     }
 
@@ -122,7 +122,7 @@ func void RunScheduler(LevelSchedule* schedule, Scene* scene)
 
 func void ScheduleEntityEx(double delay, float x, float y, EntityInitializerFunc initFunc, const char* desc)
 {
-    LevelSchedule* schedule = &Context.schedule;
+    LevelSchedule* schedule = &LEVEL.schedule;
     LevelScheduleItem* item = &schedule->items[schedule->itemCount++];
     item->delayTime = delay;
     item->initFunc = initFunc;

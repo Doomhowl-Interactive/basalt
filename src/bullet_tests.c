@@ -1,5 +1,4 @@
 #include "basalt.h"
-#include "basalt_plat.h"
 #include "bullet_common.h"
 
 // TODO: DRY

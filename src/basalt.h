@@ -19,6 +19,12 @@ typedef size_t usize;
 typedef uint64_t ulong;
 #endif
 
+#if defined(_WIN32) || defined(WIN32)
+# define COLTEXT(C, T) T
+#else
+# define COLTEXT(C, T) "\e[1;" # C "m" T "\e[0m"
+#endif
+
 typedef uint32_t Color;
 typedef uchar Key;
 
@@ -40,6 +46,19 @@ typedef uchar Key;
 
 #define func static
 #define BASALT
+
+typedef enum ConsoleColor {
+    CBLACK,
+    CLGRAY,
+    CDGRAY,
+    CBLUE,
+    CGREEN,
+    CYAN,
+    CRED,
+    CPURPLE,
+    CYELLOW,
+    CWHITE
+} ConsoleColor;
 
 typedef struct Rect {
     int x;
@@ -88,31 +107,11 @@ typedef struct StringArray {
     usize capacity;
 } StringArray;
 
-#ifdef WASM
-# define INFO(...)
-# define WARN(...)
-# define ERR(...)
-# define FATAL(...)
-#else
-# define INFO(...) \
-  printf("INFO: "__VA_ARGS__); \
-  printf("\n")
-# define WARN(...) \
-  printf("WARN: "__VA_ARGS__); \
-  printf("\n")
-# define ERR(...) \
-  printf("ERROR: "__VA_ARGS__); \
-  printf("\n"); \
-  exit(1)
-# define FATAL(...) \
-  printf("FATAL: "__VA_ARGS__); \
-  printf("\n"); \
-  exit(1)
-#endif
-
-#define DEBUG(...) \
- printf("DEBUG: "__VA_ARGS__); \
- printf("\n")
+#define INFO(...)  BasaltPrintColored(CWHITE,  "INFO  : "__VA_ARGS__)
+#define WARN(...)  BasaltPrintColored(CYELLOW, "WARN  : "__VA_ARGS__)
+#define ERR(...)   BasaltPrintColored(CRED,    "ERROR : "__VA_ARGS__)
+#define FATAL(...) BasaltPrintColored(CPURPLE, "FATAL : "__VA_ARGS__)
+#define DEBUG(...) BasaltPrintColored(CLGRAY,  "DEBUG : "__VA_ARGS__)
 
 // Ergonomic macros
 #define V2(V) V.x, V.y
@@ -123,6 +122,19 @@ typedef struct StringArray {
 #define _R2(R) R.x, R.y, R.width, R.height
 
 // Utility functions (basalt_utils.c)
+
+// NOTE: Returns true if engine should continue runnings
+BASALT bool ParseLaunchArguments(int argc, char** argv);
+BASALT const char* GetWorkingDirectory();
+
+// Cross platform println function
+// All text passed to this function will by stored in a buffer, allowing the possibility to render
+// console output into your game or easily dump it to a file.
+#define BasaltPrint(...) BasaltPrintColored(WHITE, __VA_ARGS__)
+BASALT void BasaltPrintColored(ConsoleColor color, const char* format, ... );
+
+BASALT String GetBasaltLog();
+
 #define DEG2RAD(Y) ((Y)*PI / 180)
 #define RAD2DEG(X) ((X)*180.0 / PI)
 BASALT int Clamp(int value, int min, int max);
@@ -177,6 +189,7 @@ BASALT extern usize TextLength(const char* text);
 BASALT char* StripText(char* buffer); // strip happens in-place!
 BASALT int CopyText(char* dst, const char* src);
 
+// TODO FIX: Inconsistent naming with InitStringArray
 BASALT String MakeString();
 BASALT void DisposeString(String* str);
 BASALT String* AppendString(String* str, const char* add);
@@ -255,6 +268,23 @@ typedef struct GameConfig {
     uint language;
 } GameConfig;
 extern GameConfig Game;
+
+typedef struct GameContext {
+    bool shouldClose;
+    usize frameIndex;
+    double timeElapsed;
+
+    Texture canvas;
+} GameContext;
+extern GameContext Context;
+
+typedef struct GameInput {
+    bool pressedKeys[256];
+    bool pressedKeysOnce[256];
+    bool isMouseDown;
+    Point mousePos;
+} GameInput;
+extern GameInput Input;
 
 // Graphics drawing (basalt_graphics.c)
 #define WHITE 0xFFFFFFFF

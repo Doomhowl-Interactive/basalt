@@ -1,5 +1,4 @@
 #include "basalt.h"
-#include "basalt_plat.h"
 
 #include <windows.h>
 
@@ -19,6 +18,7 @@ GameInput Input = { 0 };
 
 static WindowContext Window = { 0 };
 static OffscreenBuffer GlobalBackbuffer = { 0 };
+static bool AllocatedConsole = false;
 
 #define MAX_TITLE_LEN 128
 BASALT void SetWindowTitle(const char* title)
@@ -42,6 +42,35 @@ BASALT const char* GetWorkingDirectory()
     }
     return workingDir;
 }
+
+static String ConsoleLog = {0};
+BASALT void BasaltPrintColored(ConsoleColor color, const char* format, ... )
+{
+    // allocate console string if not already
+    if (ConsoleLog.text == NULL)
+    {
+        String str = MakeString();
+        memcpy(&ConsoleLog, &str, sizeof(String));
+    }
+
+    static char line[1024];
+    va_list list;
+    va_start(list, format);
+    vsnprintf(line, 1024 - 1, format, list);
+    va_end(list);
+    strcat(line,"\n");
+
+    static const int colors[] = {0,7,8,9,10,11,12,13,14,15};
+    if (AllocatedConsole)
+    {
+        SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), colors[color]);
+    }
+    printf(line);
+
+    AppendString(&ConsoleLog, line);
+}
+
+BASALT String GetBasaltLog();
 
 func void OpenSystemConsole();
 func void CloseSystemConsole();
@@ -210,6 +239,8 @@ int CALLBACK WinMain(HINSTANCE instance, HINSTANCE prevInstance, LPSTR commandLi
             OpenSystemConsole();
         }
 
+        printf("color 4f");
+
         if (Window.window) {
             HDC deviceContext = GetDC(window);
 
@@ -294,7 +325,6 @@ int CALLBACK WinMain(HINSTANCE instance, HINSTANCE prevInstance, LPSTR commandLi
     return 0;
 }
 
-static bool AllocatedConsole = false;
 func void OpenSystemConsole()
 {
     if (!AllocatedConsole) {

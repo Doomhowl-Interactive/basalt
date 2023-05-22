@@ -1,4 +1,4 @@
-#include "basalt_plat.h"
+#include "basalt.h"
 
 BASALT bool IsMouseDown()
 {

@@ -1,11 +1,11 @@
 #include "basalt.h"
 #include "bullet_common.h"
 
-typedef struct GUIContext {
+typedef struct GUIGUI {
     const LevelInfo* info;
     float timePassed;
-} GUIContext;
-static GUIContext Context = { 0 };
+} GUIGUI;
+static GUIGUI GUI = { 0 };
 
 func void UpdateAndRenderLives(Texture canvas, Entity* player, float delta)
 {
@@ -32,19 +32,19 @@ func void UpdateAndRenderLives(Texture canvas, Entity* player, float delta)
 func void OnLevelEntered(const LevelInfo* info)
 {
     INFO("Entered level %s (hooked function)", info->name);
-    Context.info = info;
-    Context.timePassed = 0.0f;
+    GUI.info = info;
+    GUI.timePassed = 0.0f;
 }
 
 func void DrawLevelTitle(Texture canvas, float delta)
 {
-    const LevelInfo* level = Context.info;
+    const LevelInfo* level = GUI.info;
     if (!level) {
         return;
     }
 
-    if (Context.timePassed < 2.0f) {
-        DrawText(canvas, level->name, 150, 150 + Context.timePassed * 10.f, 0xFFFF00FF);
+    if (GUI.timePassed < 2.0f) {
+        DrawText(canvas, level->name, 150, 150 + GUI.timePassed * 10.f, 0xFFFF00FF);
     }
 }
 
@@ -56,5 +56,5 @@ BULLET void UpdateAndRenderGUI(Texture canvas, Entity* player, float delta)
     // hooks
     RunLevelEnterHook(OnLevelEntered);
 
-    Context.timePassed += delta;
+    GUI.timePassed += delta;
 }

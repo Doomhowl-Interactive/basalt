@@ -1,6 +1,5 @@
 #include "basalt.h"
 #include "basalt_extra.h"
-#include "basalt_plat.h"
 
 // =====================================
 // Small over-engineered test framework
