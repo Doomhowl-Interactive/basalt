@@ -125,8 +125,8 @@ typedef struct StringArray {
 // Utility functions (basalt_utils.c)
 #define DEG2RAD(Y) ((Y)*PI / 180)
 #define RAD2DEG(X) ((X)*180.0 / PI)
-
 BASALT int Clamp(int value, int min, int max);
+BASALT bool IsLittleEndian();
 
 // WARN: read implementation
 BASALT int GetRandomNumber();
@@ -210,6 +210,8 @@ typedef struct Texture {
 extern const uchar SPR_PIXELFONT[];
 
 BASALT Texture RequestTexture(const char* name);
+BASALT void InitHotReloading();
+BASALT void HotReloadTexture(Texture texture);
 
 // NOTE: Returns null ended array of loaded/cached textures
 BASALT Texture* GetLoadedTextures();
@@ -310,6 +312,11 @@ DYNAMIC BASALT GameConfig ConfigureGame();
 DYNAMIC BASALT void InitializeGame();
 DYNAMIC BASALT void DisposeGame();
 DYNAMIC BASALT void UpdateAndRenderGame(Texture canvas, float delta);
+
+// basalt_tooling.c
+BASALT bool UpdateAndRenderArchaeo(Texture canvas);
+#define DRAWCALL(X, Y) DrawCallImpl(X, #Y)
+BASALT void DrawCallImpl(Texture canvas, const char* desc);
 
 // Key definitions
 // TODO: Find a way to translate other keyboard layouts

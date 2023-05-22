@@ -3,7 +3,7 @@
 #define PLATFORM
 
 ////////
-// Methods that games shouldn't need, so engine only stuff.
+// Platform specific methods
 ////////
 
 #if defined(_WIN32) || defined(_WIN64)
@@ -31,11 +31,6 @@ typedef struct GameContext {
 extern GameInput Input;
 extern GameContext Context;
 
-// basalt_tooling.c
-PLATFORM bool UpdateAndRenderArchaeo(Texture canvas);
-#define DRAWCALL(X, Y) DrawCallImpl(X, #Y)
-PLATFORM void DrawCallImpl(Texture canvas, const char* desc);
-
 // basalt_utils.c
 PLATFORM bool ParseLaunchArguments(int argc, char** argv);  // NOTE: Returns true if engine should continue running
 PLATFORM bool IsLittleEndian();
@@ -43,7 +38,3 @@ PLATFORM const char* GetWorkingDirectory();
 
 // basalt_tests.c
 PLATFORM void UnitTest();
-
-// basalt_assets.c
-PLATFORM void InitHotReloading();
-PLATFORM void HotReloadTexture(Texture texture);
