@@ -196,13 +196,19 @@ int CALLBACK WinMain(HINSTANCE instance, HINSTANCE prevInstance, LPSTR commandLi
 
         // Check launch arguments first
         if (!ParseLaunchArguments(__argc, __argv))
+        {
             return EXIT_SUCCESS;
+        }
 
         if (Config.hasUnitTesting)
+        {
             UnitTest();
+        }
 
         if (Config.hasConsole)
+        {
             OpenSystemConsole();
+        }
 
         if (Window.window) {
             HDC deviceContext = GetDC(window);
@@ -291,7 +297,8 @@ int CALLBACK WinMain(HINSTANCE instance, HINSTANCE prevInstance, LPSTR commandLi
 static bool AllocatedConsole = false;
 func void OpenSystemConsole()
 {
-    if (!AllocatedConsole || AllocConsole()) {
+    if (!AllocatedConsole) {
+        AllocConsole();
         freopen("CONIN$", "r", stdin);
         freopen("CONOUT$", "w", stdout);
         freopen("CONOUT$", "w", stderr);
