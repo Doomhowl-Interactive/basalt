@@ -82,6 +82,7 @@ BASALT bool ParseLaunchArguments(int argc, char** argv)
     // TODO: debug purposes
     Config.hasUnitTesting = true;
     Config.lowQuality = true;
+    Config.unlockedFramerate = true;
 
     return true;
 }
