@@ -1,7 +1,7 @@
 ![basalt](misc/logo_small.png)
 
 # basalt
-game engine for C cavemen
+game engine for C cavemen, also working on a anthro Touhou clone
 
 **Work-in-progress:** Windows not really supported for the moment, use Linux.
 
