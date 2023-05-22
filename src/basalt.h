@@ -318,6 +318,9 @@ BASALT bool UpdateAndRenderArchaeo(Texture canvas);
 #define DRAWCALL(X, Y) DrawCallImpl(X, #Y)
 BASALT void DrawCallImpl(Texture canvas, const char* desc);
 
+// basalt_tests.c
+BASALT void UnitTest();
+
 // Key definitions
 // TODO: Find a way to translate other keyboard layouts
 #define KEY_A 'A'
