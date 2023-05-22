@@ -3,7 +3,7 @@
 # basalt
 game engine for C cavemen
 
-**Work-in-progress:** Windows not really support for the moment, use Linux.
+**Work-in-progress:** Windows not really supported for the moment, use Linux.
 
 Slowly solidifying [Magma Game Engine](https://github.com/bramtechs/RaylibMagmaEngine) and [dream-emu](https://github.com/bramtechs/dream-emu).
 
