@@ -57,7 +57,9 @@ typedef enum ConsoleColor {
     CRED,
     CPURPLE,
     CYELLOW,
-    CWHITE
+    CWHITE,
+    CORANGE,
+    CPINK,
 } ConsoleColor;
 
 typedef struct Rect {
@@ -111,7 +113,9 @@ typedef struct StringArray {
 #define WARN(...)  BasaltPrintColored(CYELLOW, "WARN  : "__VA_ARGS__)
 #define ERR(...)   BasaltPrintColored(CRED,    "ERROR : "__VA_ARGS__)
 #define FATAL(...) BasaltPrintColored(CPURPLE, "FATAL : "__VA_ARGS__)
-#define DEBUG(...) BasaltPrintColored(CLGRAY,  "DEBUG : "__VA_ARGS__)
+// #define DEBUG(...) BasaltPrintColored(CLGRAY,  "DEBUG : "__VA_ARGS__)
+
+#define DEBUG(...)
 
 // Ergonomic macros
 #define V2(V) V.x, V.y
@@ -307,6 +311,7 @@ typedef struct BitmapFont {
     const char* symbols;
 } BitmapFont;
 
+BASALT void PrintASCIILogo(const char* suffix);
 BASALT void DrawDot(Texture canvas, int posX, int posY, Color tint);
 BASALT void DrawLine(Texture canvas, int startX, int startY, int endX, int endY, Color tint);
 BASALT void DrawRectangle(Texture canvas, int posX, int posY, int width, int height, Color tint);

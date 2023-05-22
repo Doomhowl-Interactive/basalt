@@ -1,7 +1,7 @@
 ![basalt](misc/logo_small.png)
 
 # basalt
-game engine for C cavemen 
+game engine for C cavemen
 
 **Work-in-progress:** Windows not really support for the moment, use Linux.
 
@@ -10,5 +10,5 @@ Slowly solidifying [Magma Game Engine](https://github.com/bramtechs/RaylibMagmaE
 Inspired by [Handmade Hero](https://handmadehero.org/).
 
 ## Screenshots
+![Preview](screenshots/windows7_2.png)
 ![Preview](screenshots/windows7.png)
-SOVLFUL CODING ENVIRONMENT

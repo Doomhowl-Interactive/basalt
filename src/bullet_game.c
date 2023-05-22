@@ -26,7 +26,7 @@ usize GameDifficulty = 2;
 DYNAMIC BASALT GameConfig ConfigureGame()
 {
     GameConfig config;
-    config.title = GetRealRandomNumber() % 1000 == 699 ? "Guardians Of Ur Mum" : "Guardians Of The Holy Fire";
+    config.title = GetRealRandomNumber() % 1000 == 699 ? "Guardians Of Ur Mum" : "Guardians of the Holy Fire";
     config.width = WIDTH;
     config.height = HEIGHT;
     config.language = 1;

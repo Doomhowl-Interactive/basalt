@@ -4,6 +4,28 @@
 
 #define BLEND_VALUE 180
 
+BASALT void PrintASCIILogo(const char* suffix)
+{
+    static const char* logo[] =
+    {
+        " ________  ________  ________  ________  ___   __________    ",
+        " |\\   __  \\|\\   __  \\|\\   ____\\|\\   __  \\|\\  \\ |\\___   ___\\  ",
+        " \\ \\  \\|\\ /\\ \\  \\|\\  \\ \\  \\___|\\ \\  \\|\\  \\ \\  \\\\|___ \\  \\_|  ",
+        "  \\ \\   __  \\ \\   __  \\ \\_____  \\ \\   __  \\ \\  \\    \\ \\  \\   ",
+        "   \\ \\  \\|\\  \\ \\  \\ \\  \\|____|\\  \\ \\  \\ \\  \\ \\  \\____\\ \\  \\  ",
+        "    \\ \\_______\\ \\__\\ \\__\\____\\_\\  \\ \\__\\ \\__\\ \\_______\\ \\__\\ ",
+        "     \\|_______|\\|__|\\|__|\\_________\\|__|\\|__|\\|_______|\\|__| ",
+        "                         \\|_________|                        ",
+    };
+
+    const ConsoleColor rainbow[] = { CRED, CRED, CYELLOW, CGREEN, CBLUE, CPINK, CPINK, CPINK };
+    for (int i = 0; i < 8; i++)
+    {
+        BasaltPrintColored(rainbow[i], logo[i]);
+    }
+    BasaltPrintColored(CWHITE, "\n>> %s\n", suffix);
+}
+
 // NOTE: Taken from https://github.com/tsoding/olive.c/blob/master/olive.c
 typedef struct {
     // Safe ranges to iterate over.

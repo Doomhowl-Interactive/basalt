@@ -60,7 +60,7 @@ BASALT void BasaltPrintColored(ConsoleColor color, const char* format, ... )
     va_end(list);
     strcat(line,"\n");
 
-    static const int colors[] = {0,7,8,9,10,11,12,13,14,15};
+    static const int colors[] = {0,7,8,9,10,11,12,5,14,15,6,13};
     if (AllocatedConsole)
     {
         SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), colors[color]);
@@ -239,8 +239,6 @@ int CALLBACK WinMain(HINSTANCE instance, HINSTANCE prevInstance, LPSTR commandLi
             OpenSystemConsole();
         }
 
-        printf("color 4f");
-
         if (Window.window) {
             HDC deviceContext = GetDC(window);
 
@@ -336,7 +334,8 @@ func void OpenSystemConsole()
     } else {
         ERR("Failed to allocate console!");
     }
-    printf("Allocated Windows console");
+    DEBUG("Allocated Windows console");
+    PrintASCIILogo("Guardians of the Holy Fire");
 }
 
 func void CloseSystemConsole()
