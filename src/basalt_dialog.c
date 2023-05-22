@@ -89,9 +89,9 @@ func bool GetDialogSequenceByName(const char* name, DialogSequence* result)
         for (usize i = 0; i < Dialog.count; i++)
         {
             DialogSequence dialog = Dialog.sequences[i];
-            if (TextIsEqualNoCase(dialog.name, dialog))
+            if (TextIsEqualNoCase(dialog.name, name))
             {
-                *result = dialog;
+                memcpy(result, &dialog, sizeof(Dialog));
                 return true;
             }
         }
@@ -102,8 +102,8 @@ func bool GetDialogSequenceByName(const char* name, DialogSequence* result)
 BASALT void StartDialogSequence(const char* dialog)
 {
     DialogSequence sequence;
-    if (!GetDialogSequenceByName(dialog, sequence)){
-        WARN("No registered dialog sequences named %s !", name);
+    if (!GetDialogSequenceByName(dialog, &sequence)){
+        WARN("No registered dialog sequences named %s !", dialog);
     }
 
     // TODO
@@ -123,7 +123,7 @@ BASALT void RegisterDialogSequence(const char* name, const char* lines)
     }
 
     DialogSequence seq = { 0 };
-    seq.name = dialog;
+    seq.name = name;
 
     // extract lines from compact 'lines' parameter
     StringArray sa = ExtractDialogLines(lines);
@@ -133,15 +133,15 @@ BASALT void RegisterDialogSequence(const char* name, const char* lines)
             WARN("Too many lines for a single dialog sequence, increase the fixed array size!");
             break;
         }
-        DialogLine line;
-        line.text = strdup(sa.strings[i]);
-        line.keywords = ExtractDialogKeywords(line.text);
-        seq.lines[i] = line;
+        DialogLine* line = &seq.lines[i];
+        line->text = strdup(sa.strings[i]);
+        StringArray keywords = ExtractDialogKeywords(line->text);
+        memcpy(&line->keywords, &keywords, sizeof(StringArray));
     }
     seq.lineCount = sa.count;
-    DisposeStringArray(sa);
+    DisposeStringArray(&sa);
 
-    Dialog.sequences[Dialog.count++] = seq;
+    memcpy(&Dialog.sequences[Dialog.count++], &seq, sizeof(DialogSequence));
     DEBUG("Registered dialog line %s with %d lines.", name, seq.lineCount);
 }
 
