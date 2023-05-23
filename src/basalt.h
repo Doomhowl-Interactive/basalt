@@ -19,12 +19,6 @@ typedef size_t usize;
 typedef uint64_t ulong;
 #endif
 
-#if defined(_WIN32) || defined(WIN32)
-# define COLTEXT(C, T) T
-#else
-# define COLTEXT(C, T) "\e[1;" # C "m" T "\e[0m"
-#endif
-
 typedef uint32_t Color;
 typedef uchar Key;
 

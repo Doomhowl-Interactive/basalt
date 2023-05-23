@@ -16,8 +16,9 @@
 func void EndTest(const char* name, const char* description, bool succeeded)
 {
     const char* padding = PadStringRight(name, '.', 50);
-    const char* result = succeeded ? COLTEXT(32, "PASSED") : COLTEXT(31, "FAILED");
-    INFO("%s %s", padding, result);
+    const char* result = succeeded ? "PASSED" : "FAILED";
+    ConsoleColor color = succeeded ? CGREEN : CRED;
+    BasaltPrintColored(color, "TEST  : %s %s", padding, result);
 
     if (!succeeded) {
         ERR("Failed at --> %s", description);

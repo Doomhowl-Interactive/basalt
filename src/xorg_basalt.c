@@ -10,9 +10,9 @@
 #include <sys/time.h>
 #include <time.h>
 #include <unistd.h>
+#include <stdarg.h>
 
 #include "basalt.h"
-#include "basalt_plat.h"
 
 typedef struct OffscreenBuffer {
     Display* display;
@@ -54,6 +54,29 @@ BASALT const char* GetWorkingDirectory()
         ERR("Could not determine working directory!");
     }
     return cwd;
+}
+
+#define COLTEXT(C, T) "\e[1;" #C "m" T "\e[0m"
+static String ConsoleLog = { 0 };
+BASALT void BasaltPrintColored(ConsoleColor color, const char* format, ...)
+{
+    // allocate console string if not already
+    if (ConsoleLog.text == NULL) {
+        String str = MakeString();
+        memcpy(&ConsoleLog, &str, sizeof(String));
+    }
+
+    static char line[1024];
+    va_list list;
+    va_start(list, format);
+    vsnprintf(line, 1024 - 1, format, list);
+    va_end(list);
+    strcat(line, "\n");
+
+    static const int colors[] = { 30, 37, 90, 94, 92, 96, 91, 35, 33, 97, 93, 95 };
+    printf("\e[1;%dm%s\e[0m", colors[color], line);
+
+    AppendString(&ConsoleLog, line);
 }
 
 func Size GetMonitorSize(Display* display)
@@ -152,7 +175,10 @@ int main(int argc, char** argv)
         FATAL("Failed to open X display!");
     }
 
-    UnitTest();
+    PrintASCIILogo("Copyright Doomhowl Interactive (2023) - Guardians of the Holy Fire");
+    if (Config.hasUnitTesting) {
+        UnitTest();
+    }
 
     Size size = GetMonitorSize(display);
 

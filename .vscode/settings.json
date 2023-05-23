@@ -7,5 +7,9 @@
       "binaryPath": "/home/bram/dev/basalt/build/basalt_linux.x11",
       "binaryArgs": ["-A"]
     }
-  ]
+  ],
+  "files.associations": {
+    "*.embeddedhtml": "html",
+    "basalt.h": "c"
+  }
 }

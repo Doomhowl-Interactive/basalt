@@ -70,7 +70,10 @@ BASALT void BasaltPrintColored(ConsoleColor color, const char* format, ... )
     AppendString(&ConsoleLog, line);
 }
 
-BASALT String GetBasaltLog();
+BASALT String GetBasaltLog()
+{
+    return ConsoleLog;
+}
 
 func void OpenSystemConsole();
 func void CloseSystemConsole();
@@ -335,7 +338,7 @@ func void OpenSystemConsole()
         ERR("Failed to allocate console!");
     }
     DEBUG("Allocated Windows console");
-    PrintASCIILogo("Guardians of the Holy Fire");
+    PrintASCIILogo("Copyright Doomhowl Interactive (2023) - Guardians of the Holy Fire");
 }
 
 func void CloseSystemConsole()

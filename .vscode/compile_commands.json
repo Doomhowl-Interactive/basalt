@@ -25,6 +25,11 @@
         "file": "/home/bram/dev/basalt/src/basalt_graphics.c"
     },
     {
+        "command": "cc -I./src -ggdb -Wall -O0 -fPIC -c src/basalt_dialog.c -o build/./src/basalt_dialog.c.o",
+        "directory": "/home/bram/dev/basalt",
+        "file": "/home/bram/dev/basalt/src/basalt_dialog.c"
+    },
+    {
         "command": "cc -I./src -ggdb -Wall -O0 -fPIC -c src/basalt_extra_graphics.c -o build/./src/basalt_extra_graphics.c.o",
         "directory": "/home/bram/dev/basalt",
         "file": "/home/bram/dev/basalt/src/basalt_extra_graphics.c"
@@ -103,5 +108,10 @@
         "command": "cc -I./src -ggdb -Wall -O0 -fPIC -c src/bullet_entities.c -o build/./src/bullet_entities.c.o",
         "directory": "/home/bram/dev/basalt",
         "file": "/home/bram/dev/basalt/src/bullet_entities.c"
+    },
+    {
+        "command": "cc -I./src -ggdb -Wall -O0 -fPIC -c src/bullet_dialog.c -o build/./src/bullet_dialog.c.o",
+        "directory": "/home/bram/dev/basalt",
+        "file": "/home/bram/dev/basalt/src/bullet_dialog.c"
     }
 ]
