@@ -107,9 +107,7 @@ typedef struct StringArray {
 #define WARN(...)  BasaltPrintColored(CYELLOW, "WARN  : "__VA_ARGS__)
 #define ERR(...)   BasaltPrintColored(CRED,    "ERROR : "__VA_ARGS__)
 #define FATAL(...) BasaltPrintColored(CPURPLE, "FATAL : "__VA_ARGS__)
-// #define DEBUG(...) BasaltPrintColored(CLGRAY,  "DEBUG : "__VA_ARGS__)
-
-#define DEBUG(...)
+#define DEBUG(...) BasaltPrintColored(CLGRAY,  "DEBUG : "__VA_ARGS__)
 
 // Ergonomic macros
 #define V2(V) V.x, V.y

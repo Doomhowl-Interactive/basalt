@@ -18,6 +18,10 @@ static SDialogProgress DialogProgress = { 0 };
 
 DIALOG_SKIN bool DrawDefaultDialogBox(const char* dialog, StringArray keywords, Texture canvas, float timeSince)
 {
+    if (IsKeyPressed(KEY_X))
+    {
+        return true;
+    }
     return false;
 }
 
@@ -30,8 +34,8 @@ BASALT void StartDialogSequence(const char* dialog)
         return;
     }
 
-    assert(DialogProgress.sequence.name);
-    if (TextIsEqualNoCase(DialogProgress.sequence.name, dialog)) {
+    if (DialogProgress.sequence.name && TextIsEqualNoCase(DialogProgress.sequence.name, dialog))
+    {
         WARN("Already speaking, can't start dialog %s", dialog);
         return;
     }
@@ -41,30 +45,34 @@ BASALT void StartDialogSequence(const char* dialog)
     memcpy(&DialogProgress.sequence, &sequence, sizeof(DialogSequence));
     DialogProgress.isSpeaking = true;
     DialogProgress.startTime = GetTimeElapsed();
+    INFO("> Started dialog sequence %s", dialog);
 }
 
 BASALT inline bool UpdateAndRenderDialogBoxes(Texture canvas)
 {
-    return UpdateAndRenderCustomDialogBoxes(canvas, NULL);
+    return UpdateAndRenderCustomDialogBoxes(canvas, DrawDefaultDialogBox);
 }
 
 BASALT bool UpdateAndRenderCustomDialogBoxes(Texture canvas, DialogBoxDrawerFunc drawingFunc)
 {
-    if (DialogProgress.isSpeaking) {
+    if (DialogProgress.isSpeaking)
+    {
         DialogLine line = DialogProgress.sequence.lines[DialogProgress.lineIndex];
         float elapsed = (float)(GetTimeElapsed() - DialogProgress.startTime);
-        bool confirmed = false;
-        if (drawingFunc) {
-            confirmed = drawingFunc(line.text, line.keywords, canvas, elapsed);
-        } else {
-            confirmed = DrawDefaultDialogBox(line.text, line.keywords, canvas, elapsed);
-        }
 
         // advance to next line if confirmed
-        if (confirmed) {
+        bool confirmed = drawingFunc(line.text, line.keywords, canvas, elapsed);
+        if (confirmed)
+        {
             DialogProgress.lineIndex++;
-            if (DialogProgress.lineIndex >= DialogProgress.sequence.lineCount) {
+            if (DialogProgress.lineIndex >= DialogProgress.sequence.lineCount)
+            {
                 DialogProgress.isSpeaking = false;
+                INFO("< Ended dialog sequence %s", DialogProgress.sequence.name);
+            }
+            else
+            {
+                INFO(">>> %s", DialogProgress.sequence.lines[DialogProgress.lineIndex].text);
             }
         }
     }
@@ -130,7 +138,7 @@ func bool GetDialogSequenceByName(const char* name, DialogSequence* result)
         for (usize i = 0; i < Dialog.count; i++) {
             DialogSequence dialog = Dialog.sequences[i];
             if (TextIsEqualNoCase(dialog.name, name)) {
-                memcpy(result, &dialog, sizeof(Dialog));
+                memcpy(result, &dialog, sizeof(DialogSequence));
                 return true;
             }
         }
