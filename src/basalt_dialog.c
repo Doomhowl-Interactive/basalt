@@ -6,46 +6,101 @@ typedef struct GameDialog {
     usize count;
     usize capacity;
 } GameDialog;
-static GameDialog Dialog;
+static GameDialog Dialog = { 0 };
+
+typedef struct SDialogProgress {
+    DialogSequence sequence;
+    bool isSpeaking;
+    usize lineIndex;
+    double startTime;
+} SDialogProgress;
+static SDialogProgress DialogProgress = { 0 };
+
+DIALOG_SKIN bool DrawDefaultDialogBox(const char* dialog, StringArray keywords, Texture canvas, float timeSince)
+{
+    return false;
+}
+
+func bool GetDialogSequenceByName(const char* name, DialogSequence* result);
+BASALT void StartDialogSequence(const char* dialog)
+{
+    DialogSequence sequence;
+    if (!GetDialogSequenceByName(dialog, &sequence)) {
+        WARN("No registered dialog sequences named %s !", dialog);
+        return;
+    }
+
+    assert(DialogProgress.sequence.name);
+    if (TextIsEqualNoCase(DialogProgress.sequence.name, dialog)) {
+        WARN("Already speaking, can't start dialog %s", dialog);
+        return;
+    }
+
+    // start speaking
+    memset(&DialogProgress, 0, sizeof(DialogProgress));
+    memcpy(&DialogProgress.sequence, &sequence, sizeof(DialogSequence));
+    DialogProgress.isSpeaking = true;
+    DialogProgress.startTime = GetTimeElapsed();
+}
+
+BASALT inline bool UpdateAndRenderDialogBoxes(Texture canvas)
+{
+    return UpdateAndRenderCustomDialogBoxes(canvas, NULL);
+}
+
+BASALT bool UpdateAndRenderCustomDialogBoxes(Texture canvas, DialogBoxDrawerFunc drawingFunc)
+{
+    if (DialogProgress.isSpeaking) {
+        DialogLine line = DialogProgress.sequence.lines[DialogProgress.lineIndex];
+        float elapsed = (float)(GetTimeElapsed() - DialogProgress.startTime);
+        bool confirmed = false;
+        if (drawingFunc) {
+            confirmed = drawingFunc(line.text, line.keywords, canvas, elapsed);
+        } else {
+            confirmed = DrawDefaultDialogBox(line.text, line.keywords, canvas, elapsed);
+        }
+
+        // advance to next line if confirmed
+        if (confirmed) {
+            DialogProgress.lineIndex++;
+            if (DialogProgress.lineIndex >= DialogProgress.sequence.lineCount) {
+                DialogProgress.isSpeaking = false;
+            }
+        }
+    }
+    return DialogProgress.isSpeaking;
+}
 
 BASALT StringArray ExtractDialogKeywords(const char* line)
 {
     StringArray result = InitStringArray();
 
     usize keywordStart = 0;
-    for (usize i = 0; i < strlen(line); i++)
-    {
+    for (usize i = 0; i < strlen(line); i++) {
         char token = line[i];
-        if (token == '{')
-        {
-            if (keywordStart > 0)
-            {
+        if (token == '{') {
+            if (keywordStart > 0) {
                 ERR("Duplicate start brace for dialog line %s", line);
             }
-            keywordStart = i+1;
-        }
-        else if (token == '}' || token == '|')
-        {
-            if (keywordStart == 0)
-            {
+            keywordStart = i + 1;
+        } else if (token == '}' || token == '|') {
+            if (keywordStart == 0) {
                 ERR("No start brace found for dialog line %s", line);
             }
 
             // copy the keyword over and place it into the stringarray
-            usize len = i-keywordStart;
-            char* slice = malloc(len+1);
+            usize len = i - keywordStart;
+            char* slice = malloc(len + 1);
             memcpy(slice, &line[keywordStart], len);
             slice[len] = '\0';
             StoreString(&result, slice);
             free(slice);
 
-            if (token == '}') // reached the end
+            if (token == '}')  // reached the end
             {
                 break;
-            }
-            else
-            {
-                keywordStart = i+1;
+            } else {
+                keywordStart = i + 1;
             }
         }
     }
@@ -58,9 +113,8 @@ BASALT StringArray ExtractDialogLines(const char* lines)
 
     StringArray result = InitStringArray();
     const char* SEP = "\\";
-    char* line = strtok(buffer,SEP);
-    while (line != NULL)
-    {
+    char* line = strtok(buffer, SEP);
+    while (line != NULL) {
         StripText(line);
         StoreString(&result, line);
         line = strtok(NULL, SEP);
@@ -70,27 +124,12 @@ BASALT StringArray ExtractDialogLines(const char* lines)
     return result;
 }
 
-DIALOG_SKIN void DrawDefaultDialogBox(const char* dialog, StringArray keywords,
-                                      Texture canvas, float timeSince)
-{
-
-}
-
-BASALT bool UpdateAndRenderDialogBoxes(Texture cancas, float delta)
-{
-    // todo
-    return false;
-}
-
 func bool GetDialogSequenceByName(const char* name, DialogSequence* result)
 {
-    if (Dialog.sequences)
-    {
-        for (usize i = 0; i < Dialog.count; i++)
-        {
+    if (Dialog.sequences) {
+        for (usize i = 0; i < Dialog.count; i++) {
             DialogSequence dialog = Dialog.sequences[i];
-            if (TextIsEqualNoCase(dialog.name, name))
-            {
+            if (TextIsEqualNoCase(dialog.name, name)) {
                 memcpy(result, &dialog, sizeof(Dialog));
                 return true;
             }
@@ -99,25 +138,13 @@ func bool GetDialogSequenceByName(const char* name, DialogSequence* result)
     return false;
 }
 
-BASALT void StartDialogSequence(const char* dialog)
-{
-    DialogSequence sequence;
-    if (!GetDialogSequenceByName(dialog, &sequence)){
-        WARN("No registered dialog sequences named %s !", dialog);
-    }
-
-    // TODO
-}
-
 BASALT void RegisterDialogSequence(const char* name, const char* lines)
 {
-    if (!Dialog.sequences)
-    {
+    if (!Dialog.sequences) {
         Dialog.capacity = 20;
-        Dialog.sequences = malloc(Dialog.capacity*sizeof(DialogSequence));
+        Dialog.sequences = malloc(Dialog.capacity * sizeof(DialogSequence));
     }
-    if (Dialog.count == Dialog.capacity)
-    {
+    if (Dialog.count == Dialog.capacity) {
         Dialog.capacity *= 2;
         Dialog.sequences = realloc(Dialog.sequences, Dialog.capacity);
     }
@@ -127,9 +154,8 @@ BASALT void RegisterDialogSequence(const char* name, const char* lines)
 
     // extract lines from compact 'lines' parameter
     StringArray sa = ExtractDialogLines(lines);
-    for (usize i = 0; i < sa.count; i++)
-    {
-        if (i >= MAX_LINES_PER_SEQUENCE){
+    for (usize i = 0; i < sa.count; i++) {
+        if (i >= MAX_LINES_PER_SEQUENCE) {
             WARN("Too many lines for a single dialog sequence, increase the fixed array size!");
             break;
         }
@@ -148,8 +174,7 @@ BASALT void RegisterDialogSequence(const char* name, const char* lines)
 // ==== Disposing ===
 func void DisposeDialogLine(DialogLine line)
 {
-    if (line.text)
-    {
+    if (line.text) {
         free(line.text);
     }
     DisposeStringArray(&line.keywords);
@@ -157,18 +182,15 @@ func void DisposeDialogLine(DialogLine line)
 
 func void DisposeDialogSequence(DialogSequence sequence)
 {
-    for (usize i = 0; i < sequence.lineCount; i++)
-    {
+    for (usize i = 0; i < sequence.lineCount; i++) {
         DisposeDialogLine(sequence.lines[i]);
     }
 }
 
 BASALT void ClearDialogSequences()
 {
-    if (Dialog.sequences)
-    {
-        for (usize i = 0; i < Dialog.count; i++)
-        {
+    if (Dialog.sequences) {
+        for (usize i = 0; i < Dialog.count; i++) {
             DisposeDialogSequence(Dialog.sequences[i]);
         }
         free(Dialog.sequences);

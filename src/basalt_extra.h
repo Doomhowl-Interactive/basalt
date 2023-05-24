@@ -52,7 +52,9 @@ BASALT StringArray ExtractDialogKeywords(const char* line);
 BASALT StringArray ExtractDialogLines(const char* lines);
 
 typedef bool (*DialogBoxDrawerFunc)(const char* dialog, StringArray keywords, Texture canvas, float timeSince);
-BASALT bool UpdateAndRenderDialogBoxes(Texture canvas, float delta); // returns true while speaking
+BASALT extern bool UpdateAndRenderDialogBoxes(Texture canvas); // returns true while speaking
+BASALT bool UpdateAndRenderCustomDialogBoxes(Texture canvas, DialogBoxDrawerFunc drawingFunc); // returns true while speaking
+
 BASALT void RegisterDialogSequence(const char* name, const char* lines);
 BASALT void StartDialogSequence(const char* dialog);
 BASALT void ClearDialogSequences();
