@@ -2,7 +2,7 @@
 
 # basalt
 
-> NOTICE: Basalt will be ported to SDL2 in the future as I don't want to touch WinAPI or Xlib ever again.
+> NOTICE: Basalt will be ported to SDL2 and legacy SDL1.2 in the future as I don't want to touch WinAPI or Xlib ever again.
 
 game engine for C cavemen, also working on a anthro Touhou clone
 
