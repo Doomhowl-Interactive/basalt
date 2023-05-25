@@ -84,10 +84,4 @@ DYNAMIC BASALT void UpdateAndRenderGame(Texture canvas, float delta)
     float fps = 1.f / delta;
     const char* infoText = FormatText("FPS %1.3f", fps);
     DrawText(canvas, infoText, 10, HEIGHT - 20, fps < 30 ? RED : GREEN);
-
-    // draw the name of the pattern being shot
-    if (player) {
-        const char* name = player->bulletSpawners[0].patternToSpawn->name;
-        DrawText(canvas, name, 250, HEIGHT - 60, 0xFF0000FF);
-    }
 }

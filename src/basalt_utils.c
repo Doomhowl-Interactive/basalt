@@ -271,7 +271,7 @@ BASALT inline bool TextIsEqual(const char* text1, const char* text2)
 
 BASALT inline bool TextIsEqualNoCase(const char* text1, const char* text2)
 {
-    char cache[1024]; // HACK TODO: ToLowercase can only remember one string!
+    char cache[1024];  // HACK TODO: ToLowercase can only remember one string!
     strcpy(cache, ToLowercase(text1));
     return TextIsEqual(cache, ToLowercase(text2));
 }
@@ -326,10 +326,7 @@ BASALT int CopyText(char* dst, const char* src)
 
 BASALT inline char* CloneText(const char* text)
 {
-    usize len = strlen(text);
-    char* buffer = malloc(len+1);
-    strcpy(buffer, text);
-    return buffer;
+    return strdup(text);
 }
 
 BASALT inline usize TextLength(const char* text)
@@ -424,8 +421,8 @@ BASALT const char* PadStringRight(const char* text, char symbol, usize length)
 
 BASALT const char* GetFirstExistingFolder(const char** folders)
 {
-    while(*folders) {
-        if (FolderExists(*folders)){
+    while (*folders) {
+        if (FolderExists(*folders)) {
             return *folders;
         }
         folders++;

@@ -18,10 +18,22 @@ static SDialogProgress DialogProgress = { 0 };
 
 DIALOG_SKIN bool DrawDefaultDialogBox(const char* dialog, StringArray keywords, Texture canvas, float timeSince)
 {
-    if (IsKeyPressed(KEY_X))
-    {
+    if (IsKeyPressed(KEY_X)) {
         return true;
     }
+
+    const int margin = 10;
+    const int padding = 10;
+    const int height = 80;
+
+    const int topX = margin;
+    const int topY = Game.height - height - margin;
+
+    DrawRectangle(canvas, topX, topY, Game.width - 2 * margin, height, BLACK);
+    DrawText(canvas, dialog, topX + padding, topY + padding, WHITE);
+
+    DrawText(canvas, "this font looks ass for now also missing characters!", topX + padding + 250, topY + height - padding, YELLOW);
+
     return false;
 }
 
@@ -34,8 +46,7 @@ BASALT void StartDialogSequence(const char* dialog)
         return;
     }
 
-    if (DialogProgress.sequence.name && TextIsEqualNoCase(DialogProgress.sequence.name, dialog))
-    {
+    if (DialogProgress.sequence.name && TextIsEqualNoCase(DialogProgress.sequence.name, dialog)) {
         WARN("Already speaking, can't start dialog %s", dialog);
         return;
     }
@@ -55,81 +66,23 @@ BASALT inline bool UpdateAndRenderDialogBoxes(Texture canvas)
 
 BASALT bool UpdateAndRenderCustomDialogBoxes(Texture canvas, DialogBoxDrawerFunc drawingFunc)
 {
-    if (DialogProgress.isSpeaking)
-    {
+    if (DialogProgress.isSpeaking) {
         DialogLine line = DialogProgress.sequence.lines[DialogProgress.lineIndex];
         float elapsed = (float)(GetTimeElapsed() - DialogProgress.startTime);
 
         // advance to next line if confirmed
         bool confirmed = drawingFunc(line.text, line.keywords, canvas, elapsed);
-        if (confirmed)
-        {
+        if (confirmed) {
             DialogProgress.lineIndex++;
-            if (DialogProgress.lineIndex >= DialogProgress.sequence.lineCount)
-            {
+            if (DialogProgress.lineIndex >= DialogProgress.sequence.lineCount) {
                 DialogProgress.isSpeaking = false;
                 INFO("< Ended dialog sequence %s", DialogProgress.sequence.name);
-            }
-            else
-            {
+            } else {
                 INFO(">>> %s", DialogProgress.sequence.lines[DialogProgress.lineIndex].text);
             }
         }
     }
     return DialogProgress.isSpeaking;
-}
-
-BASALT StringArray ExtractDialogKeywords(const char* line)
-{
-    StringArray result = InitStringArray();
-
-    usize keywordStart = 0;
-    for (usize i = 0; i < strlen(line); i++) {
-        char token = line[i];
-        if (token == '{') {
-            if (keywordStart > 0) {
-                ERR("Duplicate start brace for dialog line %s", line);
-            }
-            keywordStart = i + 1;
-        } else if (token == '}' || token == '|') {
-            if (keywordStart == 0) {
-                ERR("No start brace found for dialog line %s", line);
-            }
-
-            // copy the keyword over and place it into the stringarray
-            usize len = i - keywordStart;
-            char* slice = malloc(len + 1);
-            memcpy(slice, &line[keywordStart], len);
-            slice[len] = '\0';
-            StoreString(&result, slice);
-            free(slice);
-
-            if (token == '}')  // reached the end
-            {
-                break;
-            } else {
-                keywordStart = i + 1;
-            }
-        }
-    }
-    return result;
-}
-
-BASALT StringArray ExtractDialogLines(const char* lines)
-{
-    char* buffer = CloneText(lines);
-
-    StringArray result = InitStringArray();
-    const char* SEP = "\\";
-    char* line = strtok(buffer, SEP);
-    while (line != NULL) {
-        StripText(line);
-        StoreString(&result, line);
-        line = strtok(NULL, SEP);
-    }
-
-    free(buffer);
-    return result;
 }
 
 func bool GetDialogSequenceByName(const char* name, DialogSequence* result)
@@ -168,7 +121,10 @@ BASALT void RegisterDialogSequence(const char* name, const char* lines)
             break;
         }
         DialogLine* line = &seq.lines[i];
+
+        FormatDialogLine(sa.strings[i]);
         line->text = strdup(sa.strings[i]);
+
         StringArray keywords = ExtractDialogKeywords(line->text);
         memcpy(&line->keywords, &keywords, sizeof(StringArray));
     }
