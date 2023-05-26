@@ -79,11 +79,5 @@ BASALT bool ParseLaunchArguments(int argc, char** argv)
         memset(&Config, 1, sizeof(EngineConfig));
     }
 
-    // TODO: debug purposes
-    Config.hasUnitTesting = true;
-    //Config.lowQuality = true;
-    Config.unlockedFramerate = true;
-    Config.hasConsole = true;
-
     return true;
 }

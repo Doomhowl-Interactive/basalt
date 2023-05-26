@@ -1,16 +1,27 @@
 #include <SDL2/SDL.h>
 #include <stdlib.h>
-#include <SDL2/SDL_surface.h>
 #include <SDL2/SDL_timer.h>
 #include <SDL2/SDL_video.h>
 #include "basalt.h"
-#include "basalt_plat.h"
 
 #define WIDTH 640
 #define HEIGHT 480
 
 GameInput Input = { 0 };
 GameContext Context = { 0 };
+SDL2Session SDL2 = { 0 };
+
+func SDL_Renderer* CreateRenderer(SDL_Window* window, bool software)
+{
+    SDL_Surface* surface = SDL_GetWindowSurface(window);
+    SDL_Renderer* renderer;
+    if (software) {
+        renderer = SDL_CreateSoftwareRenderer(surface);
+    } else {
+        renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+    }
+    return renderer;
+}
 
 int main(int argc, char** argv)
 {
@@ -20,8 +31,9 @@ int main(int argc, char** argv)
 
     SDL_Init(SDL_INIT_VIDEO);
     Uint32 flags = SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE;
-    SDL_Window* window
-        = SDL_CreateWindow("Basalt Engine", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WIDTH, HEIGHT, flags);
+    SDL_Window* window = SDL_CreateWindow("Basalt Engine", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WIDTH, HEIGHT, flags);
+
+    SDL_Renderer* renderer = CreateRenderer(window, Config.useSoftware);
 
     Texture canvas = InitTexture(WIDTH, HEIGHT);
 

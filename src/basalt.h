@@ -10,6 +10,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <SDL2/SDL_video.h>
 
 typedef unsigned int uint;
 typedef unsigned char uchar;
@@ -251,6 +252,7 @@ typedef struct EngineConfig {
     bool hasHotloading;
     bool hasUnitTesting;
     bool hasConsole;
+    bool useSoftware;
     bool isHeadless;
     bool unlockedFramerate;
     bool lowQuality;
@@ -281,6 +283,10 @@ typedef struct GameInput {
     Point mousePos;
 } GameInput;
 extern GameInput Input;
+
+typedef struct SDL2Session {
+    SDL_Window* window;
+} SDL2Session;
 
 // Graphics drawing (basalt_graphics.c)
 #define WHITE 0xFFFFFFFF
