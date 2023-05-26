@@ -1,5 +1,5 @@
 #include "basalt.h"
-#include "basalt_plat.h"
+#include "basalt_extra.h"
 
 // =====================================
 // Small over-engineered test framework
@@ -16,8 +16,9 @@
 func void EndTest(const char* name, const char* description, bool succeeded)
 {
     const char* padding = PadStringRight(name, '.', 50);
-    const char* result = succeeded ? COLTEXT(32, "PASSED") : COLTEXT(31, "FAILED");
-    INFO("%s %s", padding, result);
+    const char* result = succeeded ? "PASSED" : "FAILED";
+    ConsoleColor color = succeeded ? CGREEN : CRED;
+    BasaltPrintColored(color, "TEST  : %s %s", padding, result);
 
     if (!succeeded) {
         ERR("Failed at --> %s", description);
@@ -84,21 +85,92 @@ TEST(StringPadding)
     {
         const char* pad = PadStringRight("Hello world!", '.', 20);
         const char* expected = "Hello world!........";
-        CHECK(strcmp(pad, expected) == 0, "PadStringRight with dots");
+        CHECK(TextIsEqual(pad, expected), "PadStringRight with dots");
     }
     {
         const char* pad = PadStringRight("Hello world!", ' ', 20);
         const char* expected = "Hello world!        ";
-        CHECK(strcmp(pad, expected) == 0, "PadStringRight with spaces");
+        CHECK(TextIsEqual(pad, expected), "PadStringRight with spaces");
     }
 }
 END;
 
-platfunc void UnitTest()
+TEST(FormatText)
+{
+    const char* greeting = FormatText("%s %s", "Hello", "world!");
+    CHECK(TextIsEqual(greeting, "Hello world!"), "String format failed!");
+
+    const char* money = FormatText("I have %d dollars", 50);
+    CHECK(TextIsEqual(money, "I have 50 dollars"), "String format failed!");
+
+    for (int i = 0; i < 50; i++) {
+        const char* money2 = FormatText("I have %d dollars", 50 + i);
+        char expected[100];
+        snprintf(expected, 100, "I have %d dollars", 50 + i);
+        CHECK(TextIsEqual(money2, expected), "Looping string format failed!");
+    }
+}
+END;
+
+TEST(ToUppercase)
+{
+    const char* text = "testTEXT";
+    const char* upper = ToUppercase(text);
+    CHECK(TextIsEqual(upper, "TESTTEXT"), "ToUppercase");
+}
+END;
+
+TEST(ToLowercase)
+{
+    const char* text = "testTEXT";
+    const char* lower = ToLowercase(text);
+    CHECK(TextIsEqual(lower, "testtext"), "ToLowercase");
+}
+END;
+
+TEST(StripText)
+{
+    const char* text = "             Hello, space cadet!       ";
+    char* buffer = CloneText(text);
+    StripText(buffer);
+    CHECK(TextIsEqual(buffer,"Hello, space cadet!"), "Strip text");
+    free(buffer);
+} END;
+
+TEST(ExtractDialogLines)
+{
+    // split line according to backslash
+    // strip all whitespace
+    const char* dialog = "Hello world!\\\
+                          How are you today?";
+
+    StringArray arr = ExtractDialogLines(dialog);
+    CHECK(arr.count == 2, "String array is 2");
+    CHECK(strcmp(arr.strings[0], "Hello world!") == 0,"Check first line");
+    CHECK(strcmp(arr.strings[1], "How are you today?") == 0,"Check second line");
+}
+END;
+
+TEST(ExtractDialogKeywords)
+{
+    const char* line = "{teacher|excited}Greetings traveler, are you up for the challenge to reach the mountain top?";
+    StringArray keywords = ExtractDialogKeywords(line);
+    CHECK(keywords.count == 2, "There are two keywords");
+    CHECK(TextIsEqual(keywords.strings[0], "teacher"), "Check first keyword");
+    CHECK(TextIsEqual(keywords.strings[1], "excited"), "Check second keyword");
+} END;
+
+BASALT void UnitTest()
 {
     INFO("Doing unit tests");
     TestByteReading();
     TestStringPadding();
     TestMath();
     TestColors();
+    TestFormatText();
+    TestToLowercase();
+    TestToUppercase();
+    TestStripText();
+    TestExtractDialogLines();
+    TestExtractDialogKeywords();
 }

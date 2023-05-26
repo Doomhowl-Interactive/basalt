@@ -1,26 +1,24 @@
 #include "basalt.h"
-#include "basalt_plat.h"
 
 #include <windows.h>
 
-class(WindowContext)
-{
+typedef struct WindowContext {
     HWND window;
-};
+} WindowContext;
 
-class(OffscreenBuffer)
-{
+typedef struct OffscreenBuffer {
     // NOTE: pixels are 32-bits wide, AA RR GG BB
     BITMAPINFO info;
     Texture mappedCanvas;
     Texture mappedCanvas2;
-};
+} OffscreenBuffer;
 
 GameContext Context = { 0 };
 GameInput Input = { 0 };
 
 static WindowContext Window = { 0 };
 static OffscreenBuffer GlobalBackbuffer = { 0 };
+static bool AllocatedConsole = false;
 
 #define MAX_TITLE_LEN 128
 BASALT void SetWindowTitle(const char* title)
@@ -28,11 +26,53 @@ BASALT void SetWindowTitle(const char* title)
     // check if changed
     char curTitle[MAX_TITLE_LEN];
     if (GetWindowTextA(Window.window, curTitle, MAX_TITLE_LEN) != 0) {
-        if (strcmp(curTitle, title) != 0)
+        if (!TextIsEqual(curTitle, title))
             SetWindowTextA(Window.window, title);
     } else {
         ERR("Failed to set change window title!\n");
     }
+}
+
+#define MAX_WORKDIR_LEN 128
+BASALT const char* GetWorkingDirectory()
+{
+    static char workingDir[MAX_WORKDIR_LEN];
+    if (!GetCurrentDirectory(MAX_WORKDIR_LEN, workingDir)) {
+        ERR("Could not determine working directory %s", GetLastError());
+    }
+    return workingDir;
+}
+
+static String ConsoleLog = {0};
+BASALT void BasaltPrintColored(ConsoleColor color, const char* format, ... )
+{
+    // allocate console string if not already
+    if (ConsoleLog.text == NULL)
+    {
+        String str = MakeString();
+        memcpy(&ConsoleLog, &str, sizeof(String));
+    }
+
+    static char line[1024];
+    va_list list;
+    va_start(list, format);
+    vsnprintf(line, 1024 - 1, format, list);
+    va_end(list);
+    strcat(line,"\n");
+
+    static const int colors[] = {0,7,8,9,10,11,12,5,14,15,6,13};
+    if (AllocatedConsole)
+    {
+        SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), colors[color]);
+    }
+    printf(line);
+
+    AppendString(&ConsoleLog, line);
+}
+
+BASALT String GetBasaltLog()
+{
+    return ConsoleLog;
 }
 
 func void OpenSystemConsole();
@@ -160,9 +200,11 @@ LRESULT CALLBACK MainWindowCallback(HWND window, UINT message, WPARAM wParam, LP
 
 int CALLBACK WinMain(HINSTANCE instance, HINSTANCE prevInstance, LPSTR commandLine, int showCode)
 {
+    GameConfig config = ConfigureGame();
+
     WNDCLASS windowClass = { 0 };
 
-    ResizeDIBSection(&GlobalBackbuffer, WIDTH, HEIGHT);
+    ResizeDIBSection(&GlobalBackbuffer, config.width, config.height);
 
     windowClass.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
     windowClass.lpfnWndProc = MainWindowCallback;
@@ -176,8 +218,8 @@ int CALLBACK WinMain(HINSTANCE instance, HINSTANCE prevInstance, LPSTR commandLi
                                       WS_OVERLAPPEDWINDOW | WS_VISIBLE,
                                       CW_USEDEFAULT,
                                       CW_USEDEFAULT,
-                                      WIDTH,
-                                      HEIGHT,
+                                      config.width,
+                                      config.height,
                                       0,
                                       0,
                                       instance,
@@ -186,13 +228,19 @@ int CALLBACK WinMain(HINSTANCE instance, HINSTANCE prevInstance, LPSTR commandLi
 
         // Check launch arguments first
         if (!ParseLaunchArguments(__argc, __argv))
+        {
             return EXIT_SUCCESS;
+        }
 
         if (Config.hasUnitTesting)
+        {
             UnitTest();
+        }
 
         if (Config.hasConsole)
+        {
             OpenSystemConsole();
+        }
 
         if (Window.window) {
             HDC deviceContext = GetDC(window);
@@ -211,11 +259,11 @@ int CALLBACK WinMain(HINSTANCE instance, HINSTANCE prevInstance, LPSTR commandLi
                 GetCursorPos(&p);
                 ScreenToClient(window, &p);
 
-                float scaleX = size.width / (float)WIDTH;
-                float scaleY = size.height / (float)HEIGHT;
+                float scaleX = size.width / (float)config.width;
+                float scaleY = size.height / (float)config.height;
 
-                Input.mousePos.x = Clamp(p.x / scaleX, 0, WIDTH);
-                Input.mousePos.y = Clamp(p.y / scaleY, 0, HEIGHT);
+                Input.mousePos.x = Clamp(p.x / scaleX, 0, config.width);
+                Input.mousePos.y = Clamp(p.y / scaleY, 0, config.height);
 
                 while (PeekMessage(&message, 0, 0, 0, PM_REMOVE)) {
                     if (message.message == WM_QUIT)
@@ -254,8 +302,7 @@ int CALLBACK WinMain(HINSTANCE instance, HINSTANCE prevInstance, LPSTR commandLi
                 static double timer = 0.f;
                 if (timer > 0.2) {
                     // set window title to framerate
-                    char title[200] = { 0 };
-                    sprintf(title, "%s - %d FPS - %f delta", GAME_TITLE, (int)fps, delta);
+                    const char* title = FormatText("%s - %d FPS - %f delta", config.title, (int)fps, delta);
                     SetWindowTitle(title);
                     timer = 0.0;
                 }
@@ -279,10 +326,10 @@ int CALLBACK WinMain(HINSTANCE instance, HINSTANCE prevInstance, LPSTR commandLi
     return 0;
 }
 
-static bool AllocatedConsole = false;
 func void OpenSystemConsole()
 {
-    if (!AllocatedConsole || AllocConsole()) {
+    if (!AllocatedConsole) {
+        AllocConsole();
         freopen("CONIN$", "r", stdin);
         freopen("CONOUT$", "w", stdout);
         freopen("CONOUT$", "w", stderr);
@@ -290,7 +337,8 @@ func void OpenSystemConsole()
     } else {
         ERR("Failed to allocate console!");
     }
-    printf("Allocated Windows console");
+    DEBUG("Allocated Windows console");
+    PrintASCIILogo("Copyright Doomhowl Interactive (2023) - Guardians of the Holy Fire");
 }
 
 func void CloseSystemConsole()

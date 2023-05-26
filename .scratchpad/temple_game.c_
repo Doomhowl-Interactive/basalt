@@ -7,7 +7,7 @@ const uint HEIGHT = 480;
 const char* GAME_TITLE = "Basalt Engine";
 
 const uint TPS = 25;
-const uint MAX_ENTITIES = 256;
+const uint MAX_ENTITIES = 1024;
 
 static Texture colorSprite;
 static Texture foxSprite;
@@ -48,7 +48,7 @@ BASALT void UpdateAndRenderGame(Texture canvas, float delta)
         assert(sheet.texture);
 
         Vec2 pos = { offsetX, 10 };
-        DrawTextureSheet(canvas, sheet, indices[i], pos);
+        DrawTextureSheet(canvas, sheet, indices[i], pos, WHITE);
         offsetX += 50;
 
         timers[i] += delta;
@@ -70,9 +70,9 @@ BASALT void UpdateAndRenderGame(Texture canvas, float delta)
     DrawRectangle(canvas, 300 + 60, 250 + 60, 150, 150, 0x000000FF);
 
     // draw other sprites
-    DrawTexture(canvas, blockSprite, 150, 50);
-    DrawTexture(canvas, smallBlockSprite, 350, 50);
-    DrawTexture(canvas, colorSprite, 450, 50);
+    DrawTexture(canvas, blockSprite, 150, 50, WHITE);
+    DrawTexture(canvas, smallBlockSprite, 350, 50, WHITE);
+    DrawTexture(canvas, colorSprite, 450, 50, WHITE);
 
     // draw rectangle at cursor for testing
     Point mouse = GetMousePosition();

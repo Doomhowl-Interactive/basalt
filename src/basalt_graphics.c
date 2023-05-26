@@ -1,9 +1,30 @@
 #include <string.h>
 
 #include "basalt.h"
-#include "basalt_plat.h"
 
 #define BLEND_VALUE 180
+
+BASALT void PrintASCIILogo(const char* suffix)
+{
+    static const char* logo[] =
+    {
+        " ________  ________  ________  ________  ___   __________    ",
+        " |\\   __  \\|\\   __  \\|\\   ____\\|\\   __  \\|\\  \\ |\\___   ___\\  ",
+        " \\ \\  \\|\\ /\\ \\  \\|\\  \\ \\  \\___|\\ \\  \\|\\  \\ \\  \\\\|___ \\  \\_|  ",
+        "  \\ \\   __  \\ \\   __  \\ \\_____  \\ \\   __  \\ \\  \\    \\ \\  \\   ",
+        "   \\ \\  \\|\\  \\ \\  \\ \\  \\|____|\\  \\ \\  \\ \\  \\ \\  \\____\\ \\  \\  ",
+        "    \\ \\_______\\ \\__\\ \\__\\____\\_\\  \\ \\__\\ \\__\\ \\_______\\ \\__\\ ",
+        "     \\|_______|\\|__|\\|__|\\_________\\|__|\\|__|\\|_______|\\|__| ",
+        "                         \\|_________|                        ",
+    };
+
+    const ConsoleColor rainbow[] = { CRED, CRED, CYELLOW, CGREEN, CBLUE, CPINK, CPINK, CPINK };
+    for (int i = 0; i < 8; i++)
+    {
+        BasaltPrintColored(rainbow[i], logo[i]);
+    }
+    BasaltPrintColored(CWHITE, "\n>> %s\n", suffix);
+}
 
 // NOTE: Taken from https://github.com/tsoding/olive.c/blob/master/olive.c
 typedef struct {
@@ -23,72 +44,64 @@ BASALT void DrawDot(Texture canvas, int posX, int posY, Color color)
     canvas.pixels[i] = color;
 }
 
-// TODO: Clean up required
 // NOTE: Taken from https://github.com/tsoding/olive.c/blob/master/olive.c
 BASALT void DrawLine(Texture canvas, int startX, int startY, int endX, int endY, Color color)
 {
-    int x1 = startX;
-    int x2 = endX;
-    int y1 = startY;
-    int y2 = endY;
-
-    int dx = x2 - x1;
-    int dy = y2 - y1;
+    int dx = endX - startX;
+    int dy = endY - startY;
 
     // If both of the differences are 0 there will be a division by 0 below.
     if (dx == 0 && dy == 0) {
-        if (0 <= x1 && x1 < (int)canvas.width && 0 <= y1 && y1 < (int)canvas.height) {
-            DrawDot(canvas, x1, y1, color);
+        if (0 <= startX && startX < (int)canvas.width && 0 <= startY && startY < (int)canvas.height) {
+            DrawDot(canvas, startX, startY, color);
         }
         return;
     }
 
     if (ABS(int, dx) > ABS(int, dy)) {
-        if (x1 > x2) {
-            SWAP(int, x1, x2);
-            SWAP(int, y1, y2);
+        if (startX > endX) {
+            SWAP(int, startX, endX);
+            SWAP(int, startY, endY);
         }
 
         // Cull out invisible line
-        if (x1 > (int)canvas.width)
+        if (startX > (int)canvas.width)
             return;
-        if (x2 < 0)
+        if (endX < 0)
             return;
 
         // Clamp the line to the boundaries
-        if (x1 < 0)
-            x1 = 0;
-        if (x2 >= (int)canvas.width)
-            x2 = (int)canvas.width - 1;
+        if (startX < 0)
+            startX = 0;
+        if (endX >= (int)canvas.width)
+            endX = (int)canvas.width - 1;
 
-        for (int x = x1; x <= x2; ++x) {
-            int y = dy * (x - x1) / dx + y1;
-            // TODO: move boundary checks out side of the loops in olivec_draw_line
+        for (int x = startX; x <= endX; ++x) {
+            int y = dy * (x - startX) / dx + startY;
             if (0 <= y && y < (int)canvas.height) {
                 DrawDot(canvas, x, y, color);
             }
         }
     } else {
-        if (y1 > y2) {
-            SWAP(int, x1, x2);
-            SWAP(int, y1, y2);
+        if (startY > endY) {
+            SWAP(int, startX, endX);
+            SWAP(int, startY, endY);
         }
 
         // Cull out invisible line
-        if (y1 > (int)canvas.height)
+        if (startY > (int)canvas.height)
             return;
-        if (y2 < 0)
+        if (endY < 0)
             return;
 
         // Clamp the line to the boundaries
-        if (y1 < 0)
-            y1 = 0;
-        if (y2 >= (int)canvas.height)
-            y2 = (int)canvas.height - 1;
+        if (startY < 0)
+            startY = 0;
+        if (endY >= (int)canvas.height)
+            endY = (int)canvas.height - 1;
 
-        for (int y = y1; y <= y2; ++y) {
-            int x = dx * (y - y1) / dy + x1;
-            // TODO: move boundary checks out side of the loops in olivec_draw_line
+        for (int y = startY; y <= endY; ++y) {
+            int x = dx * (y - startY) / dy + startX;
             if (0 <= x && x < (int)canvas.width) {
                 DrawDot(canvas, x, y, color);
             }
@@ -103,13 +116,11 @@ BASALT void DrawRectangle(Texture canvas, int posX, int posY, int width, int hei
     // assume color is opaque
     color |= 0x000000FF;
 
-    int i = posY * canvas.width + posX;
     for (int y = MAX(0, posY); y < MIN(posY + height, canvas.height); y++) {
         for (int x = MAX(0, posX); x < MIN(posX + width, canvas.width); x++) {
-            canvas.pixels[i++] = color;
+            int j = y * canvas.width + x;
+            canvas.pixels[j] = color;
         }
-        i -= width;
-        i += canvas.width;
     }
     DRAWCALL(canvas, DrawRectangle);
 }
@@ -128,7 +139,7 @@ static BitmapFont PixelFont = { 0 };
 BASALT void DrawText(Texture canvas, const char* text, int posX, int posY, Color color)
 {
     if (PixelFont.texture.pixels == NULL) {
-        PixelFont.texture = RequestTexture(SPR_PIXELFONT);
+        PixelFont.texture = RequestTexture("SPR_PIXELFONT");
         PixelFont.cols = 8;
         PixelFont.rows = 8;
         PixelFont.cellWidth = 8;
@@ -145,7 +156,7 @@ BASALT void DrawBitmapText(BitmapFont font, Texture canvas, const char* text, in
 
     int x = posX;
     int y = posY;
-    for (uint i = 0; i < strlen(text); i++) {
+    for (uint i = 0; i < TextLength(text); i++) {
         char symbol = text[i];
         switch (symbol) {
             case '\n':  // multiline
@@ -259,30 +270,23 @@ BASALT void DrawTextureEx(Texture canvas,
     HotReloadTexture(texture);
 
     Color* pixels = (Color*)canvas.pixels;
-    int canvasSize = canvas.width * canvas.height;
-    int textureSize = texture.width * texture.height;
+    for (int destY = MAX(0, posY); destY < Clamp(posY + srcHeight, 0, canvas.height); destY++) {
+        for (int destX = MAX(0, posX); destX < Clamp(posX + srcWidth, 0, canvas.width); destX++) {
+            int sourceX = destX - posX + srcX;
+            int sourceY = destY - posY + srcY;
 
-    for (int y = 0; y < srcWidth; y++) {
-        for (int x = 0; x < srcWidth; x++) {
-            int xx = posX + x;
-            int yy = posY + y;
-
-            int destIndex = yy * canvas.width + xx;
-            if (destIndex < 0 || destIndex >= canvasSize)
-                continue;
-
-            int srcIndex = (srcY + y) * texture.width + (srcX + x);
-            if (srcIndex < 0 || srcIndex >= textureSize)
-                continue;
+            int srcIndex = sourceY * texture.width + sourceX;
+            int destIndex = destY * canvas.width + destX;
 
             Color srcColor = texture.pixels[srcIndex];
             uchar alpha = srcColor & 0x000000FF;
-            Color tintedColor = srcColor = BlendColors(srcColor, tint, BLEND_VALUE);
+            Color tintedColor = BlendColors(srcColor, tint, BLEND_VALUE);
             Color finalColor = BlendColors(pixels[destIndex], tintedColor, alpha);
 
             pixels[destIndex] = finalColor;
         }
     }
+
     DRAWCALL(canvas, DrawRectangle);
 }
 

@@ -4,34 +4,30 @@
 # define PI 3.14159265358979323846
 #endif
 
-#ifdef WASM
-# include "wasm_stdlib.h"
-#else
-
-# include <assert.h>
-# include <stdbool.h>
-# include <stdint.h>
-# include <stdio.h>
-# include <stdlib.h>
-# include <string.h>
+#include <assert.h>
+#include <stdbool.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 typedef unsigned int uint;
 typedef unsigned char uchar;
 typedef size_t usize;
 
-# ifdef _WIN32
+#ifdef _WIN32
 typedef uint64_t ulong;
-# endif
+#endif
 
 typedef uint32_t Color;
 typedef uchar Key;
 
-#endif
-
+#define MAX_ENTITIES 100000
 #define MAX_PATH_LENGTH 128
+#define DYNAMIC
 
-#define MAX(X, Y) (X > Y ? X : Y)
-#define MIN(X, Y) (X < Y ? X : Y)
+#define MAX(X, Y) ((X) > (Y) ? (X) : (Y))
+#define MIN(X, Y) ((X) < (Y) ? (X) : (Y))
 
 #define SWAP(T, a, b) \
  do { \
@@ -42,111 +38,76 @@ typedef uchar Key;
 #define SIGN(T, x) ((T)((x) > 0) - (T)((x) < 0))
 #define ABS(T, x) (SIGN(T, x) * (x))
 
-extern const uint WIDTH;
-extern const uint HEIGHT;
-extern const char* GAME_TITLE;
-
-extern const uint TPS;
-extern const uint MAX_ENTITIES;
-
-// NOTE: Blursed macros that will make people mad,
-// but it allows easy grepping/search
-#define class(X) \
- typedef struct X X; \
- struct X
-
-#define enumdef(X) \
- typedef enum X X; \
- enum X
-
-#define MAX(X, Y) (X > Y ? X : Y)
-#define MIN(X, Y) (X < Y ? X : Y)
-
 #define func static
 #define BASALT
-#define platfunc
-#define wasmfunc
 
-class(Rect)
-{
+typedef enum ConsoleColor {
+    CBLACK,
+    CLGRAY,
+    CDGRAY,
+    CBLUE,
+    CGREEN,
+    CYAN,
+    CRED,
+    CPURPLE,
+    CYELLOW,
+    CWHITE,
+    CORANGE,
+    CPINK,
+} ConsoleColor;
+
+typedef struct Rect {
     int x;
     int y;
     int width;
     int height;
-};
+} Rect;
 
-class(RectF)
-{
+typedef struct RectF {
     float x;
     float y;
     float width;
     float height;
-};
+} RectF;
 
-class(Point)
-{
+typedef struct Point {
     int x;
     int y;
-};
+} Point;
 
-class(Size)
-{
+typedef struct Size {
     int width;
     int height;
-};
+} Size;
 
-class(Vec2)
-{
+typedef struct Vec2 {
     float x;
     float y;
-};
+} Vec2;
 
-class(Vec3)
-{
+typedef struct Vec3 {
     float x;
     float y;
     float z;
-};
+} Vec3;
 
-class(String)
-{
+typedef struct String {
     size_t size;
     size_t capacity;
     char* text;
-};
+} String;
 
-class(StringArray)
-{
+typedef struct StringArray {
     char** strings;
     usize count;
     usize capacity;
-};
-typedef StringArray FilePathList;
+} StringArray;
 
-#ifdef WASM
-# define INFO(...)
-# define WARN(...)
-# define ERR(...)
-# define FATAL(...)
-#else
-# define INFO(...) \
-  printf("INFO: "__VA_ARGS__); \
-  printf("\n")
-# define WARN(...) \
-  printf("WARN: "__VA_ARGS__); \
-  printf("\n")
-# define ERR(...) \
-  printf("ERROR: "__VA_ARGS__); \
-  printf("\n")
-# define FATAL(...) \
-  printf("FATAL: "__VA_ARGS__); \
-  printf("\n"); \
-  exit(1)
-#endif
-
-#define DEBUG(...) \
- printf("DEBUG: "__VA_ARGS__); \
- printf("\n")
+#define INFO(...)  BasaltPrintColored(CWHITE,  "INFO  : "__VA_ARGS__)
+#define WARN(...)  BasaltPrintColored(CYELLOW, "WARN  : "__VA_ARGS__)
+#define ERR(...)   BasaltPrintColored(CRED,    "ERROR : "__VA_ARGS__)
+#define FATAL(...) BasaltPrintColored(CPURPLE, "FATAL : "__VA_ARGS__)
+#define DEBUG(...) BasaltPrintColored(CLGRAY,  "DEBUG : "__VA_ARGS__)
 
 // Ergonomic macros
 #define V2(V) V.x, V.y
@@ -157,11 +118,26 @@ typedef StringArray FilePathList;
 #define _R2(R) R.x, R.y, R.width, R.height
 
 // Utility functions (basalt_utils.c)
+
+// NOTE: Returns true if engine should continue runnings
+BASALT bool ParseLaunchArguments(int argc, char** argv);
+BASALT const char* GetWorkingDirectory();
+
+// Cross platform println function
+// All text passed to this function will by stored in a buffer, allowing the possibility to render
+// console output into your game or easily dump it to a file.
+#define BasaltPrint(...) BasaltPrintColored(WHITE, __VA_ARGS__)
+BASALT void BasaltPrintColored(ConsoleColor color, const char* format, ... );
+
+BASALT String GetBasaltLog();
+
 #define DEG2RAD(Y) ((Y)*PI / 180)
 #define RAD2DEG(X) ((X)*180.0 / PI)
-
 BASALT int Clamp(int value, int min, int max);
-BASALT int GetRandomNumber();  // WARN: read implementation
+BASALT bool IsLittleEndian();
+
+// WARN: read implementation
+BASALT int GetRandomNumber();
 BASALT int GetRealRandomNumber();
 
 BASALT extern Vec2 RectFOrigin(RectF rectf);
@@ -176,62 +152,89 @@ BASALT extern Point RectCenter(Rect rect);
 
 BASALT extern Rect RectFToRect(RectF rectf);
 BASALT extern RectF RectToRectF(Rect rect);
+BASALT extern bool RectFOverlaps(RectF first, RectF second);
 
 BASALT extern Point Vec2ToPoint(Vec2 v2);
 BASALT extern Vec2 PointToVec2(Point point);
 
-BASALT extern Vec2 Vec2Offset(Vec2 src, Vec2 offset);
+BASALT extern Vec2 Vec2Add(Vec2 src, Vec2 offset);
+BASALT extern Vec2 Vec2Subtract(Vec2 src, Vec2 offset);
 BASALT extern Vec2 Vec2Scale(Vec2 src, float scale);
-BASALT Vec2 Vec2Normalize(Vec2 v2);
-BASALT float Vec2Magnitude(Vec2 v2);
+BASALT extern Vec2 Vec2Normalize(Vec2 v2);
+BASALT extern Vec2 Vec2Negate(Vec2 v2);
+BASALT extern float Vec2Magnitude(Vec2 v2);
+
+// NOTE: Get's normalized direction from src to dest
+BASALT extern Vec2 Vec2Towards(Vec2 src, Vec2 dest);
+BASALT extern float Vec2DistanceSquared(Vec2 first, Vec2 second);
+
+// WARN: Taking square roots is expensive! Use Vec2DistanceSquared instead!
+BASALT extern float Vec2Distance(Vec2 first, Vec2 second);
 
 BASALT StringArray InitStringArray();
 BASALT void StoreString(StringArray* arr, char* text);
 BASALT void DisposeStringArray(StringArray* arr);
 
+// WARN: Cached memory, copy for long usage!
+BASALT const char* FormatText(const char* text, ...);
+BASALT extern bool TextIsEqual(const char* text1, const char* text2);
+BASALT extern bool TextIsEqualNoCase(const char* text1, const char* text2);
+BASALT extern const char* AppendText(const char* src, const char* add);
+BASALT extern char* CloneText(const char* text); // WARN: free after use
+BASALT extern usize TextLength(const char* text);
+BASALT char* StripText(char* buffer); // strip happens in-place!
+BASALT int CopyText(char* dst, const char* src);
+
+// TODO FIX: Inconsistent naming with InitStringArray
 BASALT String MakeString();
-BASALT void UnloadString(String* str);
+BASALT void DisposeString(String* str);
 BASALT String* AppendString(String* str, const char* add);
-BASALT void ToUppercase(char* str);
+BASALT const char* ToUppercase(const char* str);
+BASALT const char* ToLowercase(const char* str);
 BASALT const char* PadStringRight(const char* text, char symbol, usize length);
 
-BASALT bool FileHasExtension(const char* name, const char* ext);
+BASALT extern bool FileHasExtension(const char* name, const char* ext);
 BASALT bool FolderExists(const char* folder);
 
-// WARN: The following 2 functions use cached memory.
-// The result gets overwritten on future calls.
-BASALT long GetFileModifiedTime(const char* filePath);  // NOTE: Get seconds since epoch a file was last changed.
-                                                        // Returns 0 if file doesn't exists.
+// WARN: Uses cached memory, result gets overwritten on future calls.
+// NOTE: Get seconds since epoch a file was last changed.
+// Returns 0 if file doesn't exists.
+BASALT long GetFileModifiedTime(const char* filePath);
 BASALT const char* GetFileName(const char* filePath);
 BASALT const char* GetFileStem(const char* filePath);
-BASALT const char* GetFirstExistingFolder(const char** folders);  // NOTE: Returns NULL when none exist,
-                                                                  // pass NULL ended array
-BASALT FilePathList GetFolderFiles(const char* folder, const char* ext);
-BASALT void UnloadFilePathList(FilePathList list);
+
+// NOTE: Returns NULL when none exist,
+// pass NULL ended array
+BASALT const char* GetFirstExistingFolder(const char** folders);
+BASALT StringArray GetFolderFiles(const char* folder, const char* ext);
+BASALT const char* GetWorkingDirectory();
 
 // Asset handling (basalt_assets.c)
-class(Texture)
-{
+typedef struct Texture {
     const char* name;
     int width;
     int height;
     Color* pixels;
-};
+} Texture;
 extern const uchar SPR_PIXELFONT[];
 
-// TODO: Change to retreive texture, that uses cache system
-#define RequestTexture(X) RequestTextureEx(#X, X)
-BASALT Texture RequestTextureEx(const char* name, const uchar* pixels);
-BASALT Texture* GetLoadedTextures();  // NOTE: Returns null ended array of loaded/cached textures
+BASALT Texture RequestTexture(const char* name);
+BASALT void InitHotReloading();
+BASALT void HotReloadTexture(Texture texture);
+
+// NOTE: Returns null ended array of loaded/cached textures
+BASALT Texture* GetLoadedTextures();
 BASALT void TakeScreenshot(Texture canvas);
 
-BASALT void TakeScreenshot();
 // Platform dependent stuff
 BASALT Point GetMousePosition();
 BASALT void SetWindowTitle(const char* title);
 
-BASALT usize GetFrameIndex();    // NOTE: Get number of frames elapsed since the start of the simulation.
-BASALT double GetTimeElapsed();  // NOTE: Get time elapsed since the start of the simulation.
+// NOTE: Get number of frames elapsed since the start of the simulation.
+BASALT usize GetFrameIndex();
+
+// NOTE: Get time elapsed since the start of the simulation.
+BASALT double GetTimeElapsed();
 
 BASALT bool IsMouseDown();
 BASALT bool IsMouseUp();
@@ -243,16 +246,41 @@ BASALT bool IsKeyPressed(Key code);
 BASALT bool IsKeyReleased(Key code);
 
 // Engine configuration (basalt_config.c)
-class(EngineConfig)
-{
+typedef struct EngineConfig {
     bool hasArchaeo;
     bool hasHotloading;
     bool hasUnitTesting;
     bool hasConsole;
+    bool isHeadless;
     bool unlockedFramerate;
-};
-
+    bool lowQuality;
+} EngineConfig;
 extern EngineConfig Config;
+
+typedef struct GameConfig {
+    const char* title;
+    uint width;
+    uint height;
+    uint language;
+} GameConfig;
+extern GameConfig Game;
+
+typedef struct GameContext {
+    bool shouldClose;
+    usize frameIndex;
+    double timeElapsed;
+
+    Texture canvas;
+} GameContext;
+extern GameContext Context;
+
+typedef struct GameInput {
+    bool pressedKeys[256];
+    bool pressedKeysOnce[256];
+    bool isMouseDown;
+    Point mousePos;
+} GameInput;
+extern GameInput Input;
 
 // Graphics drawing (basalt_graphics.c)
 #define WHITE 0xFFFFFFFF
@@ -266,16 +294,16 @@ extern EngineConfig Config;
 #define YELLOW 0xFFFF00FF
 #define PURPLE 0x00FFFFFF
 
-class(BitmapFont)
-{
+typedef struct BitmapFont {
     Texture texture;
     uint cols;
     uint rows;
     uint cellWidth;
     uint cellHeight;
     const char* symbols;
-};
+} BitmapFont;
 
+BASALT void PrintASCIILogo(const char* suffix);
 BASALT void DrawDot(Texture canvas, int posX, int posY, Color tint);
 BASALT void DrawLine(Texture canvas, int startX, int startY, int endX, int endY, Color tint);
 BASALT void DrawRectangle(Texture canvas, int posX, int posY, int width, int height, Color tint);
@@ -297,30 +325,31 @@ BASALT extern void MapTextureToCorrectFormat(Texture dest, Texture src);
 BASALT void SwapTextureChannels(Texture dest, Texture src, uchar first, uchar second, uchar third, uchar fourth);
 
 BASALT void ClearTexture(Texture canvas, Color tint);
-BASALT void DrawTextureEx(Texture canvas,
-                          Texture texture,
-                          int posX,
-                          int posY,
-                          int srcX,
-                          int srcY,
-                          int srcWidth,
-                          int srcHeight,
-                          Color tint);
+BASALT void DrawTextureEx(Texture canvas, Texture texture, int posX, int posY, int srcX, int srcY, int srcWidth, int srcHeight, Color tint);
 
 BASALT extern void DrawTexture(Texture canvas, Texture texture, int posX, int posY, Color tint);
-BASALT void
-DrawTextureScaled(Texture canvas, Texture texture, int destX, int destY, int destWidth, int destHeight, Color tint);
+BASALT void DrawTextureScaled(Texture canvas, Texture texture, int destX, int destY, int destWidth, int destHeight, Color tint);
 
 BASALT extern Color RGB(uchar r, uchar g, uchar b);
-BASALT extern Color RGBA(uchar r, uchar g, uchar b, uchar a);  // NOTE: Format RR GG BB AA
+BASALT extern Color RGBA(uchar r, uchar g, uchar b, uchar a);
 BASALT extern Color BlendColors(Color src, Color dest, uchar t);
 
 // Main game methods (for example: temple_game.c)
-BASALT void InitializeGame();
-BASALT void DisposeGame();
-BASALT void UpdateAndRenderGame(Texture canvas, float delta);
+DYNAMIC BASALT GameConfig ConfigureGame();
+DYNAMIC BASALT void InitializeGame();
+DYNAMIC BASALT void DisposeGame();
+DYNAMIC BASALT void UpdateAndRenderGame(Texture canvas, float delta);
+
+// basalt_tooling.c
+BASALT bool UpdateAndRenderArchaeo(Texture canvas);
+#define DRAWCALL(X, Y) DrawCallImpl(X, #Y)
+BASALT void DrawCallImpl(Texture canvas, const char* desc);
+
+// basalt_tests.c
+BASALT void UnitTest();
 
 // Key definitions
+// TODO: Find a way to translate other keyboard layouts
 #define KEY_A 'A'
 #define KEY_B 'B'
 #define KEY_C 'C'

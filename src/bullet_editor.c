@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include "basalt.h"
 #include "basalt_extra.h"
 #include "bullet_common.h"
@@ -12,21 +13,20 @@ static uint SelectedTabIndex = 0;
 
 typedef void (*EditorTabFunc)(Scene* activeScene, Texture canvas, float delta);
 
-class(EditorTab)
-{
+typedef struct EditorTab {
     const char* name;
     EditorTabFunc function;
-};
+} EditorTab;
 
 func void DrawMainTab(Scene* activeScene, Texture canvas, float delta);
 func void DrawAssetTab(Scene* activeScene, Texture canvas, float delta);
 func void DrawPatternsTab(Scene* activeScene, Texture canvas, float delta);
-static const EditorTab EditorTabs[]
-    = { { "Main", DrawMainTab }, { "Assets", DrawAssetTab }, { "Patterns", DrawPatternsTab }, { NULL } };
+static const EditorTab EditorTabs[] = { { "Main", DrawMainTab }, { "Assets", DrawAssetTab }, { "Patterns", DrawPatternsTab }, { NULL } };
 
 func void DrawMainTab(Scene* activeScene, Texture canvas, float delta)
 {
-    DrawText(canvas, "Hello editor!", 50, 50, YELLOW);
+    const char* text = FormatText("Active entities %lu", GetEntityCount());
+    DrawText(canvas, text, 50, 50, YELLOW);
 }
 
 func void DrawAssetTab(Scene* activeScene, Texture canvas, float delta)
@@ -40,8 +40,7 @@ func void DrawAssetTab(Scene* activeScene, Texture canvas, float delta)
         y += 30;
         count++;
     }
-    static char countText[64];
-    sprintf(countText, "Texture count %u", count);
+    const char* countText = FormatText("Texture count %u", count);
     DrawText(canvas, countText, x, y, GRAY);
 }
 
@@ -55,8 +54,9 @@ func void DrawEditorTabs(Scene* activeScene, Texture canvas, float delta, const 
 {
     if (tabWidth == 0) {
         uint tabCount = 0;
-        for (const EditorTab* tab = tabs; tab->name != NULL; tab++)
+        for (const EditorTab* tab = tabs; tab->name != NULL; tab++) {
             tabCount++;
+        }
 
         assert(tabCount > 0);
         tabWidth = WIDTH / tabCount;
@@ -75,13 +75,15 @@ func void DrawEditorTabs(Scene* activeScene, Texture canvas, float delta, const 
         DrawText(canvas, tab->name, x + 5, 5, WHITE);
 
         // Draw tab content
-        if (isSelected && tab->function != NULL)
+        if (isSelected && tab->function != NULL) {
             (*tab->function)(activeScene, canvas, delta);
+        }
 
         // Change if hovered over
         Point mouse = GetMousePosition();
-        if (mouse.x >= x && mouse.y >= 0 && mouse.x <= x + tabWidth && mouse.y <= tabHeight)
+        if (mouse.x >= x && mouse.y >= 0 && mouse.x <= x + tabWidth && mouse.y <= tabHeight) {
             SelectedTabIndex = i;
+        }
 
         i++;
     }
@@ -94,8 +96,9 @@ BULLET void UpdateAndRenderEditor(Scene* activeScene, Texture canvas, float delt
         INFO("%s editor", IsOpened ? "Opened" : "Closed");
     }
 
-    if (!IsOpened)
+    if (!IsOpened) {
         return;
+    }
 
     DrawEditorTabs(activeScene, canvas, delta, EditorTabs);
 }

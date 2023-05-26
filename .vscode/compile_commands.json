@@ -1,0 +1,112 @@
+[
+    {
+        "command": "cc -I./src -ggdb -Wall -O0 -fPIC -c src/basalt_config.c -o build/./src/basalt_config.c.o",
+        "directory": "/home/bram/dev/basalt",
+        "file": "/home/bram/dev/basalt/src/basalt_config.c"
+    },
+    {
+        "command": "cc -I./src -ggdb -Wall -O0 -fPIC -c src/basalt_utils.c -o build/./src/basalt_utils.c.o",
+        "directory": "/home/bram/dev/basalt",
+        "file": "/home/bram/dev/basalt/src/basalt_utils.c"
+    },
+    {
+        "command": "cc -I./src -ggdb -Wall -O0 -fPIC -c src/basalt_archaeo.c -o build/./src/basalt_archaeo.c.o",
+        "directory": "/home/bram/dev/basalt",
+        "file": "/home/bram/dev/basalt/src/basalt_archaeo.c"
+    },
+    {
+        "command": "cc -I./src -ggdb -Wall -O0 -fPIC -c src/xorg_basalt.c -o build/./src/xorg_basalt.c.o",
+        "directory": "/home/bram/dev/basalt",
+        "file": "/home/bram/dev/basalt/src/xorg_basalt.c"
+    },
+    {
+        "command": "cc -I./src -ggdb -Wall -O0 -fPIC -c src/basalt_assets.c -o build/./src/basalt_assets.c.o",
+        "directory": "/home/bram/dev/basalt",
+        "file": "/home/bram/dev/basalt/src/basalt_assets.c"
+    },
+    {
+        "command": "cc -I./src -ggdb -Wall -O0 -fPIC -c src/basalt_tests.c -o build/./src/basalt_tests.c.o",
+        "directory": "/home/bram/dev/basalt",
+        "file": "/home/bram/dev/basalt/src/basalt_tests.c"
+    },
+    {
+        "command": "cc -I./src -ggdb -Wall -O0 -fPIC -c src/basalt_dialog.c -o build/./src/basalt_dialog.c.o",
+        "directory": "/home/bram/dev/basalt",
+        "file": "/home/bram/dev/basalt/src/basalt_dialog.c"
+    },
+    {
+        "command": "cc -I./src -ggdb -Wall -O0 -fPIC -c src/basalt_extra_graphics.c -o build/./src/basalt_extra_graphics.c.o",
+        "directory": "/home/bram/dev/basalt",
+        "file": "/home/bram/dev/basalt/src/basalt_extra_graphics.c"
+    },
+    {
+        "command": "cc -I./src -ggdb -Wall -O0 -fPIC -c src/basalt_plat.c -o build/./src/basalt_plat.c.o",
+        "directory": "/home/bram/dev/basalt",
+        "file": "/home/bram/dev/basalt/src/basalt_plat.c"
+    },
+    {
+        "command": "cc -I./src -ggdb -Wall -O0 -fPIC -c src/basalt_graphics.c -o build/./src/basalt_graphics.c.o",
+        "directory": "/home/bram/dev/basalt",
+        "file": "/home/bram/dev/basalt/src/basalt_graphics.c"
+    },
+    {
+        "command": "cc -I./src -ggdb -Wall -O0 -fPIC -c src/bullet_entities.c -o build/./src/bullet_entities.c.o",
+        "directory": "/home/bram/dev/basalt",
+        "file": "/home/bram/dev/basalt/src/bullet_entities.c"
+    },
+    {
+        "command": "cc -I./src -ggdb -Wall -O0 -fPIC -c src/bullet_dialog.c -o build/./src/bullet_dialog.c.o",
+        "directory": "/home/bram/dev/basalt",
+        "file": "/home/bram/dev/basalt/src/bullet_dialog.c"
+    },
+    {
+        "command": "cc -I./src -ggdb -Wall -O0 -fPIC -c src/bullet_tests.c -o build/./src/bullet_tests.c.o",
+        "directory": "/home/bram/dev/basalt",
+        "file": "/home/bram/dev/basalt/src/bullet_tests.c"
+    },
+    {
+        "command": "cc -I./src -ggdb -Wall -O0 -fPIC -c src/bullet_editor_patterns.c -o build/./src/bullet_editor_patterns.c.o",
+        "directory": "/home/bram/dev/basalt",
+        "file": "/home/bram/dev/basalt/src/bullet_editor_patterns.c"
+    },
+    {
+        "command": "cc -I./src -ggdb -Wall -O0 -fPIC -c src/bullet_ai.c -o build/./src/bullet_ai.c.o",
+        "directory": "/home/bram/dev/basalt",
+        "file": "/home/bram/dev/basalt/src/bullet_ai.c"
+    },
+    {
+        "command": "cc -I./src -ggdb -Wall -O0 -fPIC -c src/bullet_gui.c -o build/./src/bullet_gui.c.o",
+        "directory": "/home/bram/dev/basalt",
+        "file": "/home/bram/dev/basalt/src/bullet_gui.c"
+    },
+    {
+        "command": "cc -I./src -ggdb -Wall -O0 -fPIC -c src/bullet_levels.c -o build/./src/bullet_levels.c.o",
+        "directory": "/home/bram/dev/basalt",
+        "file": "/home/bram/dev/basalt/src/bullet_levels.c"
+    },
+    {
+        "command": "cc -I./src -ggdb -Wall -O0 -fPIC -c src/bullet_patterns.c -o build/./src/bullet_patterns.c.o",
+        "directory": "/home/bram/dev/basalt",
+        "file": "/home/bram/dev/basalt/src/bullet_patterns.c"
+    },
+    {
+        "command": "cc -I./src -ggdb -Wall -O0 -fPIC -c src/bullet_editor.c -o build/./src/bullet_editor.c.o",
+        "directory": "/home/bram/dev/basalt",
+        "file": "/home/bram/dev/basalt/src/bullet_editor.c"
+    },
+    {
+        "command": "cc -I./src -ggdb -Wall -O0 -fPIC -c src/bullet_game.c -o build/./src/bullet_game.c.o",
+        "directory": "/home/bram/dev/basalt",
+        "file": "/home/bram/dev/basalt/src/bullet_game.c"
+    },
+    {
+        "command": "cc -I./src -ggdb -Wall -O0 -fPIC -c src/bullet_factories.c -o build/./src/bullet_factories.c.o",
+        "directory": "/home/bram/dev/basalt",
+        "file": "/home/bram/dev/basalt/src/bullet_factories.c"
+    },
+    {
+        "command": "cc -I./src -ggdb -Wall -O0 -fPIC -c src/bullet_collision.c -o build/./src/bullet_collision.c.o",
+        "directory": "/home/bram/dev/basalt",
+        "file": "/home/bram/dev/basalt/src/bullet_collision.c"
+    }
+]

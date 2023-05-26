@@ -10,12 +10,11 @@
 #include <sys/time.h>
 #include <time.h>
 #include <unistd.h>
+#include <stdarg.h>
 
 #include "basalt.h"
-#include "basalt_plat.h"
 
-class(OffscreenBuffer)
-{
+typedef struct OffscreenBuffer {
     Display* display;
     Window window;
     Texture canvas;
@@ -26,10 +25,11 @@ class(OffscreenBuffer)
     uchar* pixels;
     XImage* image;
     char title[128];
-};
+} OffscreenBuffer;
 
 GameContext Context = { 0 };
 GameInput Input = { 0 };
+GameConfig Game = { 0 };
 
 static OffscreenBuffer ActiveBuffer = { 0 };
 
@@ -37,13 +37,46 @@ BASALT void SetWindowTitle(const char* title)
 {
     if (ActiveBuffer.display != NULL) {
         // check if changed
-        if (strcmp(ActiveBuffer.title, title) != 0) {
-            strcpy(ActiveBuffer.title, title);
+        if (!TextIsEqual(ActiveBuffer.title, title)) {
+            CopyText(ActiveBuffer.title, title);
             XStoreName(ActiveBuffer.display, ActiveBuffer.window, title);
         }
     } else {
         ERR("Failed to set change window title!\n");
     }
+}
+
+#define MAX_WORKDIR_LEN 128
+BASALT const char* GetWorkingDirectory()
+{
+    static char cwd[MAX_WORKDIR_LEN];
+    if (getcwd(cwd, sizeof(cwd)) == NULL) {
+        ERR("Could not determine working directory!");
+    }
+    return cwd;
+}
+
+#define COLTEXT(C, T) "\e[1;" #C "m" T "\e[0m"
+static String ConsoleLog = { 0 };
+BASALT void BasaltPrintColored(ConsoleColor color, const char* format, ...)
+{
+    // allocate console string if not already
+    if (ConsoleLog.text == NULL) {
+        String str = MakeString();
+        memcpy(&ConsoleLog, &str, sizeof(String));
+    }
+
+    static char line[1024];
+    va_list list;
+    va_start(list, format);
+    vsnprintf(line, 1024 - 1, format, list);
+    va_end(list);
+    strcat(line, "\n");
+
+    static const int colors[] = { 30, 37, 90, 94, 92, 96, 91, 35, 33, 97, 93, 95 };
+    printf("\e[1;%dm%s\e[0m", colors[color], line);
+
+    AppendString(&ConsoleLog, line);
 }
 
 func Size GetMonitorSize(Display* display)
@@ -110,13 +143,12 @@ func void HandleKeyEvent(XEvent event, bool pressed)
 
     // HACK: ignore special characters (for now)
     if (string[1] == '\0') {
-        uchar key = (uchar) string[0];
+        uchar key = (uchar)string[0];
         Input.pressedKeys[key] = pressed;
 
-        if (pressed)
+        if (pressed) {
             Input.pressedKeysOnce[key] = true;
-
-        // DEBUG("%s %c", pressed ? "Pressed":"Released", key);
+        }
     }
 }
 
@@ -135,13 +167,18 @@ int main(int argc, char** argv)
     if (!ParseLaunchArguments(argc, argv))
         return EXIT_SUCCESS;
 
+    Game = ConfigureGame();
+
     DEBUG("Opening Xorg display...");
     Display* display = XOpenDisplay(NULL);
     if (display == NULL) {
         FATAL("Failed to open X display!");
     }
 
-    UnitTest();
+    PrintASCIILogo("Copyright Doomhowl Interactive (2023) - Guardians of the Holy Fire");
+    if (Config.hasUnitTesting) {
+        UnitTest();
+    }
 
     Size size = GetMonitorSize(display);
 
@@ -156,26 +193,26 @@ int main(int argc, char** argv)
 
     XSelectInput(display, win, ExposureMask | KeyPressMask | KeyReleaseMask | ResizeRedirectMask);
 
-    Texture canvas = InitTexture(WIDTH, HEIGHT);
+    Texture canvas = InitTexture(Game.width, Game.height);
 
     ActiveBuffer = InitOffscreenBuffer(display, win, canvas);
 
     XMapWindow(display, win);
     XSync(display, false);
 
-    SetWindowTitle(GAME_TITLE);
+    SetWindowTitle(Game.title);
 
     // HACK: resize window to game size
-    int posX = size.width / 2 - WIDTH / 2;
-    int posY = size.height / 2 - HEIGHT / 2;
-    XMoveResizeWindow(display, win, posX, posY, WIDTH, HEIGHT);
+    int posX = size.width / 2 - Game.width / 2;
+    int posY = size.height / 2 - Game.height / 2;
+    XMoveResizeWindow(display, win, posX, posY, Game.width, Game.height);
 
-    srand(time(NULL));
+    srand((unsigned int)time(NULL));
     InitializeGame();
     InitHotReloading();
 
-    int width = WIDTH;
-    int height = HEIGHT;
+    int width = Game.width;
+    int height = Game.height;
 
     double maxFps = Config.unlockedFramerate ? 10000 : 60;
     double prevDelta = 0.f;
@@ -208,6 +245,8 @@ int main(int argc, char** argv)
                     width = event.xresizerequest.width;
                     height = event.xresizerequest.height;
                 } break;
+                default:
+                    break;
             }
 
             // poll the mouse
@@ -215,12 +254,13 @@ int main(int argc, char** argv)
             int rootMouseX, rootMouseY;
             int childMouseX, childMouseY;
             unsigned int maskResult = 0;
-            if (XQueryPointer(display, win, &rootWinResult, &childWinResult, &rootMouseX, &rootMouseY, &childMouseX, &childMouseY, &maskResult)) {
-                float scaleX = WIDTH / (float)width;
-                float scaleY = HEIGHT / (float)height;
+            if (XQueryPointer(
+                    display, win, &rootWinResult, &childWinResult, &rootMouseX, &rootMouseY, &childMouseX, &childMouseY, &maskResult)) {
+                float scaleX = (float)Game.width / (float)width;
+                float scaleY = (float)Game.height / (float)height;
 
-                Input.mousePos.x = childMouseX * scaleX;
-                Input.mousePos.y = childMouseY * scaleY;
+                Input.mousePos.x = (int)(childMouseX * scaleX);
+                Input.mousePos.y = (int)(childMouseY * scaleY);
 
                 // HACK: might not work while pressing multiple mouse buttons
                 Input.isMouseDown = maskResult == 272;
@@ -234,8 +274,7 @@ int main(int argc, char** argv)
         static double timer = 0.f;
         if (timer > 0.2) {
             // set window title to framerate
-            char title[200] = { 0 };
-            sprintf(title, "%s - %d FPS - %f delta", GAME_TITLE, (int)fps, delta);
+            const char* title = FormatText("%s - %d FPS - %f delta", Game.title, (int)fps, delta);
             SetWindowTitle(title);
             timer = 0.0;
         }
@@ -260,7 +299,7 @@ int main(int argc, char** argv)
         gettimeofday(&interTime, NULL);
 
         size_t interMicros = interTime.tv_usec - startTime.tv_usec;
-        size_t maxMicros = 1.0 / maxFps * 1000000;
+        size_t maxMicros = (size_t)(1.0 / maxFps * 1000000);
         long waitMicros = maxMicros - interMicros;
         if (waitMicros > 0 && interMicros < maxMicros)
             usleep(waitMicros);
@@ -270,7 +309,7 @@ int main(int argc, char** argv)
 
         size_t elapsedMicros = endTime.tv_usec - startTime.tv_usec;
         prevDelta = delta;
-        delta = elapsedMicros / 1000000.0;
+        delta = (double)elapsedMicros / 1000000.0;
         fps = 1.0 / delta;
 
         // clear keys

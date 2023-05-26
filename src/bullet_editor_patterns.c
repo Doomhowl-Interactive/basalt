@@ -3,28 +3,29 @@
 #include "basalt_extra.h"
 #include "bullet_common.h"
 
-class(PatternEditor)
-{
+typedef struct PatternEditor {
+    Entity* spawnerEntity;
     BulletSpawner* spawner;
     Texture buffer;
     Scene scene;
-};
-static PatternEditor Context = { 0 };
+    usize patternIndex;
+} PatternEditor;
+static PatternEditor PATED = { 0 };
 
 void InitPatternEditor()
 {
     assert(GetBulletPatternCount() > 0);
 
     // Allocate new canvas
-    Context.buffer = InitTexture(WIDTH, HEIGHT);
+    PATED.buffer = InitTexture(WIDTH, HEIGHT);
 
     // Spawn bullet spawner in the center of the scene
-    Entity* spawner = CreateEntity(&Context.scene);
-    SetEntityCenter(spawner, WIDTH * 0.5f, HEIGHT * 0.5f);
-    Context.spawner = &spawner->bulletSpawners[0];
-    Context.spawner->patternToSpawn = GetBulletPattern(0);
-    Context.spawner->interval = 0.2f;
-    Context.spawner->normal = (Vec2){ 0, 0.5f };
+    PATED.spawnerEntity = CreateEntity(&PATED.scene);
+    SetEntityCenter(PATED.spawnerEntity, WIDTH * 0.5f, HEIGHT * 0.5f);
+    PATED.spawner = &PATED.spawnerEntity->bulletSpawners[0];
+    PATED.spawner->patternToSpawn = GetBulletPattern(0);
+    PATED.spawner->interval = 2.f;
+    PATED.spawner->normal = (Vec2){ 0, 0.5f };
 }
 
 func void DrawScreenGrid(Texture canvas, uint cellWidth, uint cellHeight, Color color)
@@ -40,25 +41,55 @@ func void DrawScreenGrid(Texture canvas, uint cellWidth, uint cellHeight, Color 
 
 BULLET void UpdateAndRenderPatternEditor(Texture canvas, float delta)
 {
-    if (Context.spawner == NULL) {
+    static usize PatternCount = 0;
+    if (PatternCount == 0) {
+        PatternCount = GetBulletPatternCount();
+    }
+
+    if (PATED.spawner == NULL) {
         InitPatternEditor();
     }
 
-    ClearTexture(Context.buffer, 0x181818FF);
+    ClearTexture(PATED.buffer, 0x181818FF);
+
+    // Aim bulletspawner at the cursor
+    Point mouse = GetMousePosition();
+    Vec2 center = GetEntityCenter(PATED.spawnerEntity);
+    Vec2 direction = { mouse.x - center.x, mouse.y - center.y };
+    Vec2 norm = Vec2Normalize(direction);
+    PATED.spawner->normal = norm;
 
     // Draw grid
     const uint gridSize = 32;
-    DrawScreenGrid(Context.buffer, gridSize, gridSize, 0x999999FF);
+    DrawScreenGrid(PATED.buffer, gridSize, gridSize, 0x999999FF);
 
-    UpdateAndRenderScene(&Context.scene, Context.buffer, delta);
+    UpdateAndRenderScene(&PATED.scene, PATED.buffer, delta);
 
     // Draw info
     Rect contentRegion = GetEditorTabContentRegion();
 
-    char gridSizeText[16];
-    sprintf(gridSizeText, "%ux%u", gridSize, gridSize);
-    DrawText(Context.buffer, gridSizeText, 10, contentRegion.y + 10, PURPLE);
+    const BulletPattern* curPattern = GetBulletPattern(PATED.patternIndex);
+
+    char* infoText = (char*)FormatText("%ux%u\n%s\n\n", gridSize, gridSize, curPattern->name);
+
+    // Draw list of bullet patterns
+    for (usize i = 0; i < PatternCount; i++) {
+        const BulletPattern* pattern = GetBulletPattern(i);
+        const char* add = FormatText("%s%s\n", (i == PATED.patternIndex) ? "SELECTED " : "", pattern->name);
+        infoText = (char*)AppendText(infoText, add);
+    }
+
+    if (IsKeyPressed(KEY_J)) {
+        PATED.patternIndex++;
+    }
+    if (IsKeyPressed(KEY_K)) {
+        PATED.patternIndex--;
+    }
+    PATED.patternIndex %= PatternCount;
+    PATED.spawner->patternToSpawn = curPattern;
+
+    DrawText(PATED.buffer, infoText, 10, contentRegion.y + 10, PURPLE);
 
     // Draw result
-    DrawTextureEx(canvas, Context.buffer, contentRegion.x, contentRegion.y, R2(contentRegion), WHITE);
+    DrawTextureEx(canvas, PATED.buffer, contentRegion.x, contentRegion.y, R2(contentRegion), WHITE);
 }

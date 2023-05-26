@@ -1,5 +1,4 @@
 #include "basalt.h"
-#include "basalt_plat.h"
 #include "bullet_common.h"
 
 // TODO: DRY
@@ -18,8 +17,9 @@
 func void EndTest(const char* name, const char* description, bool succeeded)
 {
     const char* padding = PadStringRight(name, '.', 50);
-    const char* result = succeeded ? COLTEXT(32, "PASSED") : COLTEXT(31, "FAILED");
-    INFO("%s %s", padding, result);
+    const char* result = succeeded ? "PASSED" : "FAILED";
+    ConsoleColor color = succeeded ? CGREEN : CRED;
+    BasaltPrintColored(color, "TEST  : %s %s", padding, result);
 
     if (!succeeded) {
         ERR("Failed at --> %s", description);
@@ -75,8 +75,28 @@ TEST(Transformations)
 }
 END;
 
-platfunc void UnitTestBullet()
+TEST(EntityFlags)
+{
+    Scene scene = { 0 };
+
+    Entity* e = CreateEntity(&scene);
+    InitPlayer(e, (Vec2){ 10, 10 });
+
+    Entity* e2 = CreateEntity(&scene);
+    InitBullet(e2, GetBulletPattern(0), (Vec2){ 10, 10 }, (Vec2){ 0, 0 });
+
+    CHECK(EntityHasFlag(e, FLAG_PLAYER), "Player has entity flag");
+    CHECK(EntityHasFlag(e2, FLAG_BULLET), "Bullet has bullet flag");
+
+    Entity* e3 = CreateEntity(&scene);
+    e3->flags = FLAG_BULLET | FLAG_ENEMY;
+    CHECK(EntityHasFlag(e3, FLAG_BULLET & FLAG_ENEMY), "Bullet has bullet flag");
+}
+END;
+
+BULLET void UnitTestBullet()
 {
     INFO("Doing unit tests of bulletgame");
     TestTransformations();
+    TestEntityFlags();
 }

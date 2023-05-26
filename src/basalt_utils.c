@@ -1,5 +1,6 @@
 #include <ctype.h>
 #include <math.h>
+#include <stdarg.h>
 #include <stdio.h>
 #include <string.h>
 #include <sys/stat.h>
@@ -27,12 +28,11 @@ BASALT int GetRandomNumber()
     if (PrevRNGFrame == curFrame) {
         RNGOffset++;
     } else {
-        RNGOffset += 0;
+        RNGOffset = 0;
         PrevRNGFrame = curFrame;
     }
 
-    // TODO: This could be better
-    int rng = ((curFrame * 69696420) << 2) * (525 + RNGOffset);
+    int rng = ((curFrame + RNGOffset * 69696420) << 2);
     return rng;
 #else
     return GetRealRandomNumber();
@@ -123,6 +123,12 @@ BASALT inline RectF RectToRectF(Rect rect)
     return rectf;
 }
 
+BASALT inline bool RectFOverlaps(RectF first, RectF second)
+{
+    return !(first.x < second.x || first.y < second.y || first.x + first.width > second.x + second.width
+             || first.y + first.height > second.y + second.height);
+}
+
 BASALT inline Point Vec2ToPoint(Vec2 v2)
 {
     Point p = { (int)v2.x, (int)v2.y };
@@ -135,7 +141,7 @@ BASALT inline Vec2 PointToVec2(Point point)
     return v2;
 }
 
-BASALT extern Vec2 Vec2Offset(Vec2 src, Vec2 offset)
+BASALT inline Vec2 Vec2Add(Vec2 src, Vec2 offset)
 {
     Vec2 v2 = {
         src.x + offset.x,
@@ -144,7 +150,16 @@ BASALT extern Vec2 Vec2Offset(Vec2 src, Vec2 offset)
     return v2;
 }
 
-BASALT extern Vec2 Vec2Scale(Vec2 src, float scale)
+BASALT inline Vec2 Vec2Subtract(Vec2 src, Vec2 offset)
+{
+    Vec2 v2 = {
+        src.x - offset.x,
+        src.y - offset.y,
+    };
+    return v2;
+}
+
+BASALT inline Vec2 Vec2Scale(Vec2 src, float scale)
 {
     Vec2 v2 = {
         src.x * scale,
@@ -153,7 +168,7 @@ BASALT extern Vec2 Vec2Scale(Vec2 src, float scale)
     return v2;
 }
 
-BASALT Vec2 Vec2Normalize(Vec2 v2)
+BASALT inline Vec2 Vec2Normalize(Vec2 v2)
 {
     float mag = Vec2Magnitude(v2);
     Vec2 norm;
@@ -162,7 +177,7 @@ BASALT Vec2 Vec2Normalize(Vec2 v2)
     return norm;
 }
 
-BASALT float Vec2Magnitude(Vec2 v2)
+BASALT inline float Vec2Magnitude(Vec2 v2)
 {
     // Pythagorean theorem
 #ifdef BASALT_NO_ENGINE
@@ -170,6 +185,28 @@ BASALT float Vec2Magnitude(Vec2 v2)
     return 0.f;
 #else
     return sqrt(v2.x * v2.x + v2.y * v2.y);
+#endif
+}
+
+BASALT inline Vec2 Vec2Towards(Vec2 src, Vec2 dest)
+{
+    Vec2 diff = Vec2Subtract(dest, src);
+    return Vec2Normalize(diff);
+}
+
+BASALT inline float Vec2DistanceSquared(Vec2 first, Vec2 second)
+{
+    float dist = ((second.x - first.x) * (second.x - first.x)) + ((second.y - first.y) * (second.y - first.y));
+    return dist;
+}
+
+BASALT inline float Vec2Distance(Vec2 first, Vec2 second)
+{
+#ifdef BASALT_NO_ENGINE
+    return 0.f;
+#else
+    float distRoot = sqrtf(Vec2DistanceSquared(first, second));
+    return distRoot;
 #endif
 }
 
@@ -204,6 +241,99 @@ BASALT void DisposeStringArray(StringArray* arr)
     }
 }
 
+// adapted from Raylib
+// WARN: Cached memory, copy for long usage!
+BASALT const char* FormatText(const char* text, ...)
+{
+#define MAX_TEXT_LEN 1024
+#define TEXT_BUFFER_COUNT 16
+    assert(text);
+
+    static char buffers[TEXT_BUFFER_COUNT][MAX_TEXT_LEN];
+    static usize curBufferIndex = 0;
+
+    char* currentBuffer = buffers[curBufferIndex++];
+    curBufferIndex %= TEXT_BUFFER_COUNT;
+
+    va_list args;
+    va_start(args, text);
+    vsnprintf(currentBuffer, MAX_TEXT_LEN, text, args);
+
+    return currentBuffer;
+}
+
+BASALT inline bool TextIsEqual(const char* text1, const char* text2)
+{
+    assert(text1);
+    assert(text2);
+    return strcmp(text1, text2) == 0;
+}
+
+BASALT inline bool TextIsEqualNoCase(const char* text1, const char* text2)
+{
+    char cache[1024];  // HACK TODO: ToLowercase can only remember one string!
+    strcpy(cache, ToLowercase(text1));
+    return TextIsEqual(cache, ToLowercase(text2));
+}
+
+BASALT inline const char* AppendText(const char* src, const char* add)
+{
+    assert(src);
+    assert(add);
+    return FormatText("%s%s", src, add);
+}
+
+BASALT char* StripText(char* buffer)
+{
+    // Strip leading spaces
+    char* start = buffer;
+    while (isspace(*start)) {
+        ++start;
+    }
+
+    // Strip trailing spaces
+    char* end = buffer + strlen(buffer) - 1;
+    while (end > start && isspace(*end)) {
+        --end;
+    }
+
+    // Null-terminate the modified string
+    *(end + 1) = '\0';
+
+    // Shift the remaining characters to the beginning of the string
+    memmove(buffer, start, end - start + 2);
+    return buffer;
+}
+
+// from raylib
+BASALT int CopyText(char* dst, const char* src)
+{
+    int bytes = 0;
+
+    if ((src != NULL) && (dst != NULL)) {
+        while (*src != '\0') {
+            *dst = *src;
+            dst++;
+            src++;
+
+            bytes++;
+        }
+
+        *dst = '\0';
+    }
+    return bytes;
+}
+
+BASALT inline char* CloneText(const char* text)
+{
+    return strdup(text);
+}
+
+BASALT inline usize TextLength(const char* text)
+{
+    return strlen(text);
+}
+
 // string implementation
 BASALT String MakeString()
 {
@@ -214,7 +344,7 @@ BASALT String MakeString()
 
 BASALT String* AppendString(String* str, const char* add)
 {
-    size_t addLen = strlen(add);
+    size_t addLen = TextLength(add);
     str->size += addLen;
 
     // allocate string
@@ -230,12 +360,12 @@ BASALT String* AppendString(String* str, const char* add)
     }
 
     char* head = &str->text[str->size - addLen];  // calculate head position
-    strcpy(head, add);
+    CopyText(head, add);
 
     return str;
 }
 
-BASALT void UnloadString(String* str)
+BASALT void DisposeString(String* str)
 {
     str->size = 0;
     str->capacity = 100;
@@ -244,12 +374,35 @@ BASALT void UnloadString(String* str)
     }
 }
 
-BASALT void ToUppercase(char* str)
+#define MAX_CASE_LEN 1024
+static char CaseBuffer[MAX_CASE_LEN];
+BASALT const char* ToUppercase(const char* str)
 {
-    while (*str) {
-        *str = toupper(*str);
-        str++;
+    char* dst = CaseBuffer;
+    if ((str != NULL) && (dst != NULL)) {
+        while (*str != '\0') {
+            *dst = toupper(*str);
+            dst++;
+            str++;
+        }
+
+        *dst = '\0';
     }
+    return CaseBuffer;
+}
+
+BASALT const char* ToLowercase(const char* str)
+{
+    char* dst = CaseBuffer;
+    if ((str != NULL) && (dst != NULL)) {
+        while (*str != '\0') {
+            *dst = tolower(*str);
+            dst++;
+            str++;
+        }
+        *dst = '\0';
+    }
+    return CaseBuffer;
 }
 
 // FIXME: Untested
@@ -260,7 +413,7 @@ BASALT const char* PadStringRight(const char* text, char symbol, usize length)
     memset(PaddingCache, symbol, length);
     PaddingCache[length] = '\0';
 
-    int len = MIN(MAX_PADDING_LENGTH, MIN(strlen(text), length));
+    int len = MIN(MAX_PADDING_LENGTH, MIN(TextLength(text), length));
     memcpy(PaddingCache, text, len);
 
     return PaddingCache;
@@ -268,9 +421,11 @@ BASALT const char* PadStringRight(const char* text, char symbol, usize length)
 
 BASALT const char* GetFirstExistingFolder(const char** folders)
 {
-    for (const char* folder = folders[0]; folder != NULL; folder++) {
-        if (folder != NULL && FolderExists(folder))
-            return folder;
+    while (*folders) {
+        if (FolderExists(*folders)) {
+            return *folders;
+        }
+        folders++;
     }
     return NULL;
 }
@@ -304,11 +459,13 @@ BASALT long GetFileModifiedTime(const char* filePath)
 BASALT const char* GetFileName(const char* filePath)
 {
     const char* fileName = NULL;
-    if (filePath != NULL)
+    if (filePath != NULL) {
         fileName = strpbrk(filePath, "\\/");
+    }
 
-    if (!fileName)
+    if (!fileName) {
         return filePath;
+    }
 
     return fileName + 1;
 }
@@ -316,17 +473,17 @@ BASALT const char* GetFileName(const char* filePath)
 // raylib.h (rcore.c)
 BASALT const char* GetFileStem(const char* filePath)
 {
-#define MAX_FILENAMEWITHOUTEXT_LENGTH 256
+#define MAX_BUFFER_LEN 256
 
-    static char fileName[MAX_FILENAMEWITHOUTEXT_LENGTH] = { 0 };
-    memset(fileName, 0, MAX_FILENAMEWITHOUTEXT_LENGTH);
+    static char fileName[MAX_BUFFER_LEN];
 
-    if (filePath != NULL)
-        strcpy(fileName, GetFileName(filePath));  // Get filename with extension
+    if (filePath != NULL) {
+        CopyText(fileName, GetFileName(filePath));  // Get filename with extension
+    }
 
-    int size = (int)strlen(fileName);  // Get size in bytes
+    int size = (int)TextLength(fileName);  // Get size in bytes
 
-    for (int i = 0; (i < size) && (i < MAX_FILENAMEWITHOUTEXT_LENGTH); i++) {
+    for (int i = 0; (i < size) && (i < MAX_BUFFER_LEN); i++) {
         if (fileName[i] == '.') {
             // NOTE: We break on first '.' found
             fileName[i] = '\0';
@@ -337,15 +494,15 @@ BASALT const char* GetFileStem(const char* filePath)
     return fileName;
 }
 
-BASALT bool FileHasExtension(const char* name, const char* ext)
+BASALT inline bool FileHasExtension(const char* name, const char* ext)
 {
-    int cmp = strcmp(name + strlen(name) - strlen(ext), ext);
-    return cmp == 0;
+    const char* fileStem = GetFileStem(name);
+    return TextIsEqual(fileStem, ext);
 }
 
-BASALT FilePathList GetFolderFiles(const char* folder, const char* ext)
+BASALT StringArray GetFolderFiles(const char* folder, const char* ext)
 {
-    FilePathList list = { 0 };
+    StringArray list = { 0 };
     list.count = 0;
     list.capacity = 20;
 
@@ -355,7 +512,7 @@ BASALT FilePathList GetFolderFiles(const char* folder, const char* ext)
         list.strings = (char**)malloc(list.capacity * sizeof(char*));
         while ((ent = readdir(dir)) != NULL) {
             if (FileHasExtension(ent->d_name, ext)) {
-                // expand FilePathList if needed
+                // expand StringArray if needed
                 if (list.count == list.capacity) {
                     list.capacity *= 2;
                     list.strings = (char**)realloc(list.strings, list.capacity * sizeof(char*));
@@ -373,12 +530,4 @@ BASALT FilePathList GetFolderFiles(const char* folder, const char* ext)
     }
 
     return list;
-}
-
-BASALT void UnloadFilePathList(FilePathList list)
-{
-    for (size_t i = 0; i < list.count; i++) {
-        free(list.strings[i]);
-    }
-    free(list.strings);
 }
