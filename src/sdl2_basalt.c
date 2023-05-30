@@ -23,24 +23,23 @@ int main(int argc, char** argv)
     // initialize SDL
     SDL_Init(SDL_INIT_VIDEO);
 
-    // initialize the window
-    SDL_Renderer* renderer = NULL;
-    SDL_Window* window = NULL;
-    SDL_CreateWindowAndRenderer(Game.width,Game.height,SDL_WINDOW_ALWAYS_ON_TOP, &window,&renderer);
+    // initialize the window and renderer
+    SDL_Window* window
+        = SDL_CreateWindow(Game.title, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, Game.width, Game.height, SDL_WINDOW_ALWAYS_ON_TOP);
     SDL2.window = window;
     if (window == NULL) {
         ERR("Could not create window!");
         return EXIT_FAILURE;
     }
 
-    // initialize the renderer
-
-    SDL_Surface* surface = SDL_GetWindowSurface(window);
     Texture canvas = InitTexture(WIDTH, HEIGHT);
+    SDL_Surface* canvasSurface = SDL_CreateRGBSurfaceWithFormatFrom(canvas.pixels, WIDTH, HEIGHT, 32, WIDTH * 4, SDL_PIXELFORMAT_ABGR32);
 
-    PrintASCIILogo("Copyright Doomhowl Interactive (2023) - Guardians of the Holy Fire");
+    char text[1024];
+    sprintf(text, "Copyright Doomhowl Interactive (2023) - %s", Game.title);
+    PrintASCIILogo(text);
 
-    if (Config.hasUnitTesting){
+    if (Config.hasUnitTesting) {
         UnitTest();
     }
 
@@ -58,12 +57,12 @@ int main(int argc, char** argv)
 
         SDL_Event event;
         while (SDL_PollEvent(&event)) {
-            switch (event.type){
+            switch (event.type) {
                 case SDL_QUIT: {
                     Context.shouldClose = true;
                     break;
                 }
-                case SDL_KEYDOWN:{
+                case SDL_KEYDOWN: {
                     if (event.key.keysym.sym == SDLK_ESCAPE) {
                         Context.shouldClose = true;
                         break;
@@ -78,18 +77,17 @@ int main(int argc, char** argv)
         // poll the mouse
 
         // ==== update and render main game ====
-        SDL_SetRenderDrawColor(renderer, 150, 0, 150, 255);
-        SDL_RenderClear(renderer);
         if (UpdateAndRenderArchaeo(canvas)) {
-            UpdateAndRenderGame(canvas, (float)delta);
+            UpdateAndRenderGame(canvas, delta);
         }
-        SDL_RenderPresent(renderer);
+        SDL_BlitSurface(canvasSurface, NULL, SDL_GetWindowSurface(window), NULL);
+        SDL_UpdateWindowSurface(window);
         Context.frameIndex++;
         SDL_Delay(1000 / maxFps);
 
         Uint64 ticksPassed = SDL_GetTicks64() - startTicks;
         delta = (float)ticksPassed / 1000.0f;
-        Context.timeElapsed = SDL_GetTicks64() / 1000.0;
+        Context.timeElapsed = (double)SDL_GetTicks64() / 1000.0;
         Context.frameIndex++;
 
         // Set window title to fps and delta-time
@@ -107,8 +105,8 @@ int main(int argc, char** argv)
         memset(Input.pressedKeysOnce, 0, sizeof(Input.pressedKeysOnce));
     }
 
+    SDL_FreeSurface(canvasSurface);
     DisposeTexture(canvas);
-    SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     INFO("Closed SDL2 window");
 

@@ -10,5 +10,14 @@ Slowly solidifying [Magma Game Engine](https://github.com/bramtechs/RaylibMagmaE
 
 Inspired by [Handmade Hero](https://handmadehero.org/).
 
+## Dependencies
+
+Debian/Ubuntu
+
+```bash
+sudo apt install libsdl2*
+```
+
 ## Screenshots
+
 ![Preview](screenshots/windows7_2.PNG)
