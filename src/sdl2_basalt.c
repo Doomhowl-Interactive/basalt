@@ -5,9 +5,6 @@
 #include <time.h>
 #include "basalt.h"
 
-#define WIDTH 640
-#define HEIGHT 480
-
 GameConfig Game = { 0 };
 GameInput Input = { 0 };
 GameContext Context = { 0 };
@@ -32,8 +29,9 @@ int main(int argc, char** argv)
         return EXIT_FAILURE;
     }
 
-    Texture canvas = InitTexture(WIDTH, HEIGHT);
-    SDL_Surface* canvasSurface = SDL_CreateRGBSurfaceWithFormatFrom(canvas.pixels, WIDTH, HEIGHT, 32, WIDTH * 4, SDL_PIXELFORMAT_ABGR32);
+    Texture canvas = InitTexture(Game.width, Game.height);
+    SDL_Surface* canvasSurface
+        = SDL_CreateRGBSurfaceWithFormatFrom(canvas.pixels, Game.width, Game.height, 32, Game.width * 4, SDL_PIXELFORMAT_ABGR32);
 
     char text[1024];
     sprintf(text, "Copyright Doomhowl Interactive (2023) - %s", Game.title);
