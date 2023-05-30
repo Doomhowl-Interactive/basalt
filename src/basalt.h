@@ -284,10 +284,6 @@ typedef struct GameInput {
 } GameInput;
 extern GameInput Input;
 
-typedef struct SDL2Session {
-    SDL_Window* window;
-} SDL2Session;
-
 // Graphics drawing (basalt_graphics.c)
 #define WHITE 0xFFFFFFFF
 #define GRAY 0xAAAAAAAA
@@ -317,7 +313,10 @@ BASALT void DrawRectangleLines(Texture canvas, int posX, int posY, int width, in
 BASALT void DrawWeirdTestGradient(Texture canvas);
 
 BASALT void DrawBitmapFontSymbol(BitmapFont font, int posX, int posY, char symbol, Color color);
+
+#undef DrawText // *yells at Microsoft*
 BASALT void DrawText(Texture canvas, const char* text, int posX, int posY, Color color);
+
 BASALT void DrawBitmapText(BitmapFont font, Texture canvas, const char* text, int posX, int posY, Color color);
 
 BASALT Texture InitTexture(int width, int height);
@@ -336,6 +335,7 @@ BASALT void DrawTextureEx(Texture canvas, Texture texture, int posX, int posY, i
 BASALT extern void DrawTexture(Texture canvas, Texture texture, int posX, int posY, Color tint);
 BASALT void DrawTextureScaled(Texture canvas, Texture texture, int destX, int destY, int destWidth, int destHeight, Color tint);
 
+#undef RGB // *yells at Microsoft*
 BASALT extern Color RGB(uchar r, uchar g, uchar b);
 BASALT extern Color RGBA(uchar r, uchar g, uchar b, uchar a);
 BASALT extern Color BlendColors(Color src, Color dest, uchar t);
@@ -353,6 +353,10 @@ BASALT void DrawCallImpl(Texture canvas, const char* desc);
 
 // basalt_tests.c
 BASALT void UnitTest();
+
+// sdl2_basalt.h
+BASALT void OpenSystemConsole();
+BASALT void CloseSystemConsole();
 
 // Key definitions
 // TODO: Find a way to translate other keyboard layouts

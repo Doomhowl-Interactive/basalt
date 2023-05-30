@@ -1,12 +1,7 @@
 #include <unistd.h>
 #include "basalt.h"
 
-extern SDL2Session SDL2;
-
-BASALT void SetWindowTitle(const char* title)
-{
-    SDL_SetWindowTitle(SDL2.window, title);
-}
+static String ConsoleLog = { 0 };
 
 #define MAX_WORKDIR_LEN 128
 BASALT const char* GetWorkingDirectory()
@@ -18,7 +13,6 @@ BASALT const char* GetWorkingDirectory()
     return cwd;
 }
 
-static String ConsoleLog = { 0 };
 BASALT void BasaltPrintColored(ConsoleColor color, const char* format, ...)
 {
     // allocate console string if not already
@@ -38,4 +32,19 @@ BASALT void BasaltPrintColored(ConsoleColor color, const char* format, ...)
     printf("\e[1;%dm%s\e[0m", colors[color], line);
 
     AppendString(&ConsoleLog, line);
+}
+
+BASALT String GetBasaltLog()
+{
+    return ConsoleLog;
+}
+
+BASALT void OpenSystemConsole()
+{
+    //
+}
+
+BASALT void CloseSystemConsole()
+{
+    //
 }

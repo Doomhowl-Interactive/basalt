@@ -8,7 +8,20 @@
 GameConfig Game = { 0 };
 GameInput Input = { 0 };
 GameContext Context = { 0 };
-SDL2Session SDL2 = { 0 };
+
+SDL_Window *Window = NULL;
+
+BASALT void SetWindowTitle(const char* title)
+{
+    if (Window != NULL) {
+        // check if changed
+        if (!TextIsEqual(SDL_GetWindowTitle(Window), title)) {
+            SDL_SetWindowTitle(Window, title);
+        }
+    } else {
+        ERR("Failed to set change window title!\n");
+    }
+}
 
 int main(int argc, char** argv)
 {
@@ -17,15 +30,19 @@ int main(int argc, char** argv)
     }
     Game = ConfigureGame();
 
+    if (Config.hasConsole)
+    {
+        // open console (windows only)
+        OpenSystemConsole();
+    }
+
     // initialize SDL
     SDL_Init(SDL_INIT_VIDEO);
 
-    // initialize the window and renderer
-    SDL_Window* window
-        = SDL_CreateWindow(Game.title, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, Game.width, Game.height, SDL_WINDOW_ALWAYS_ON_TOP);
-    SDL2.window = window;
-    if (window == NULL) {
-        ERR("Could not create window!");
+    // initialize the Window and renderer
+    Window = SDL_CreateWindow(Game.title, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, Game.width, Game.height, SDL_WINDOW_ALWAYS_ON_TOP);
+    if (Window == NULL) {
+        ERR("Could not create Window!");
         return EXIT_FAILURE;
     }
 
@@ -78,8 +95,8 @@ int main(int argc, char** argv)
         if (UpdateAndRenderArchaeo(canvas)) {
             UpdateAndRenderGame(canvas, delta);
         }
-        SDL_BlitSurface(canvasSurface, NULL, SDL_GetWindowSurface(window), NULL);
-        SDL_UpdateWindowSurface(window);
+        SDL_BlitSurface(canvasSurface, NULL, SDL_GetWindowSurface(Window), NULL);
+        SDL_UpdateWindowSurface(Window);
         Context.frameIndex++;
         SDL_Delay(1000 / maxFps);
 
@@ -88,10 +105,10 @@ int main(int argc, char** argv)
         Context.timeElapsed = (double)SDL_GetTicks64() / 1000.0;
         Context.frameIndex++;
 
-        // Set window title to fps and delta-time
+        // Set Window title to fps and delta-time
         static double timer = 0.f;
         if (timer > 0.2) {
-            // set window title to framerate
+            // set Window title to framerate
             float fps = 1.0f / delta;
             const char* title = FormatText("%s - %d FPS - %f delta", Game.title, (int)fps, delta);
             SetWindowTitle(title);
@@ -105,8 +122,9 @@ int main(int argc, char** argv)
 
     SDL_FreeSurface(canvasSurface);
     DisposeTexture(canvas);
-    SDL_DestroyWindow(window);
-    INFO("Closed SDL2 window");
+    SDL_DestroyWindow(Window);
+    CloseSystemConsole();
+    INFO("Closed SDL2 Window");
 
     return EXIT_SUCCESS;
 }
