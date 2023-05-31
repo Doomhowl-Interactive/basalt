@@ -10,6 +10,11 @@
         "file": "/home/bram/dev/basalt/src/basalt_utils.c"
     },
     {
+        "command": "cc -I./src -ggdb -Wall -O0 -fPIC -c src/basalt_getters.c -o build/./src/basalt_getters.c.o",
+        "directory": "/home/bram/dev/basalt",
+        "file": "/home/bram/dev/basalt/src/basalt_getters.c"
+    },
+    {
         "command": "cc -I./src -ggdb -Wall -O0 -fPIC -c src/basalt_archaeo.c -o build/./src/basalt_archaeo.c.o",
         "directory": "/home/bram/dev/basalt",
         "file": "/home/bram/dev/basalt/src/basalt_archaeo.c"
@@ -38,11 +43,6 @@
         "command": "cc -I./src -ggdb -Wall -O0 -fPIC -c src/basalt_extra_graphics.c -o build/./src/basalt_extra_graphics.c.o",
         "directory": "/home/bram/dev/basalt",
         "file": "/home/bram/dev/basalt/src/basalt_extra_graphics.c"
-    },
-    {
-        "command": "cc -I./src -ggdb -Wall -O0 -fPIC -c src/basalt_plat.c -o build/./src/basalt_plat.c.o",
-        "directory": "/home/bram/dev/basalt",
-        "file": "/home/bram/dev/basalt/src/basalt_plat.c"
     },
     {
         "command": "cc -I./src -ggdb -Wall -O0 -fPIC -c src/basalt_graphics.c -o build/./src/basalt_graphics.c.o",
@@ -78,6 +78,11 @@
         "command": "cc -I./src -ggdb -Wall -O0 -fPIC -c src/bullet_gui.c -o build/./src/bullet_gui.c.o",
         "directory": "/home/bram/dev/basalt",
         "file": "/home/bram/dev/basalt/src/bullet_gui.c"
+    },
+    {
+        "command": "cc -I./src -ggdb -Wall -O0 -fPIC -c src/bullet_dialog_utils.c -o build/./src/bullet_dialog_utils.c.o",
+        "directory": "/home/bram/dev/basalt",
+        "file": "/home/bram/dev/basalt/src/bullet_dialog_utils.c"
     },
     {
         "command": "cc -I./src -ggdb -Wall -O0 -fPIC -c src/bullet_levels.c -o build/./src/bullet_levels.c.o",

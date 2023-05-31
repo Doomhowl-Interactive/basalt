@@ -1,5 +1,7 @@
 .vagrant
+.idea
 build
+buildrel
 build_xorg
 **/*.dat.c
 **/.vs

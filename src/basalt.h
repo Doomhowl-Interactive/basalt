@@ -11,6 +11,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <SDL2/SDL.h>
+
 typedef unsigned int uint;
 typedef unsigned char uchar;
 typedef size_t usize;
@@ -20,7 +22,6 @@ typedef uint64_t ulong;
 #endif
 
 typedef uint32_t Color;
-typedef uchar Key;
 
 #define MAX_ENTITIES 100000
 #define MAX_PATH_LENGTH 128
@@ -30,16 +31,20 @@ typedef uchar Key;
 #define MIN(X, Y) ((X) < (Y) ? (X) : (Y))
 
 #define SWAP(T, a, b) \
- do { \
-  T t = a; \
-  a = b; \
-  b = t; \
- } while (0)
+    do { \
+        T t = a; \
+        a = b; \
+        b = t; \
+    } while (0)
 #define SIGN(T, x) ((T)((x) > 0) - (T)((x) < 0))
 #define ABS(T, x) (SIGN(T, x) * (x))
 
 #define func static
 #define BASALT
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 typedef enum ConsoleColor {
     CBLACK,
@@ -70,20 +75,14 @@ typedef struct RectF {
     float height;
 } RectF;
 
-typedef struct Point {
-    int x;
-    int y;
-} Point;
+typedef SDL_Point Point;
 
 typedef struct Size {
     int width;
     int height;
 } Size;
 
-typedef struct Vec2 {
-    float x;
-    float y;
-} Vec2;
+typedef SDL_FPoint Vec2;
 
 typedef struct Vec3 {
     float x;
@@ -103,11 +102,11 @@ typedef struct StringArray {
     usize capacity;
 } StringArray;
 
-#define INFO(...)  BasaltPrintColored(CWHITE,  "INFO  : "__VA_ARGS__)
-#define WARN(...)  BasaltPrintColored(CYELLOW, "WARN  : "__VA_ARGS__)
-#define ERR(...)   BasaltPrintColored(CRED,    "ERROR : "__VA_ARGS__)
+#define INFO(...) BasaltPrintColored(CWHITE, "INFO  : "__VA_ARGS__)
+#define WARN(...) BasaltPrintColored(CYELLOW, "WARN  : "__VA_ARGS__)
+#define ERR(...) BasaltPrintColored(CRED, "ERROR : "__VA_ARGS__)
 #define FATAL(...) BasaltPrintColored(CPURPLE, "FATAL : "__VA_ARGS__)
-#define DEBUG(...) BasaltPrintColored(CLGRAY,  "DEBUG : "__VA_ARGS__)
+#define DEBUG(...) BasaltPrintColored(CLGRAY, "DEBUG : "__VA_ARGS__)
 
 // Ergonomic macros
 #define V2(V) V.x, V.y
@@ -127,7 +126,7 @@ BASALT const char* GetWorkingDirectory();
 // All text passed to this function will by stored in a buffer, allowing the possibility to render
 // console output into your game or easily dump it to a file.
 #define BasaltPrint(...) BasaltPrintColored(WHITE, __VA_ARGS__)
-BASALT void BasaltPrintColored(ConsoleColor color, const char* format, ... );
+BASALT void BasaltPrintColored(ConsoleColor color, const char* format, ...);
 
 BASALT String GetBasaltLog();
 
@@ -180,9 +179,9 @@ BASALT const char* FormatText(const char* text, ...);
 BASALT extern bool TextIsEqual(const char* text1, const char* text2);
 BASALT extern bool TextIsEqualNoCase(const char* text1, const char* text2);
 BASALT extern const char* AppendText(const char* src, const char* add);
-BASALT extern char* CloneText(const char* text); // WARN: free after use
+BASALT extern char* CloneText(const char* text);  // WARN: free after use
 BASALT extern usize TextLength(const char* text);
-BASALT char* StripText(char* buffer); // strip happens in-place!
+BASALT char* StripText(char* buffer);             // strip happens in-place!
 BASALT int CopyText(char* dst, const char* src);
 
 // TODO FIX: Inconsistent naming with InitStringArray
@@ -239,11 +238,11 @@ BASALT double GetTimeElapsed();
 BASALT bool IsMouseDown();
 BASALT bool IsMouseUp();
 
-BASALT bool IsKeyDown(Key code);
-BASALT bool IsKeyUp(Key code);
+BASALT bool IsKeyDown(SDL_Keycode code);
+BASALT bool IsKeyUp(SDL_Keycode code);
 
-BASALT bool IsKeyPressed(Key code);
-BASALT bool IsKeyReleased(Key code);
+BASALT bool IsKeyPressed(SDL_Keycode code);
+BASALT bool IsKeyReleased(SDL_Keycode code);
 
 // Engine configuration (basalt_config.c)
 typedef struct EngineConfig {
@@ -251,6 +250,7 @@ typedef struct EngineConfig {
     bool hasHotloading;
     bool hasUnitTesting;
     bool hasConsole;
+    bool useSoftware;
     bool isHeadless;
     bool unlockedFramerate;
     bool lowQuality;
@@ -264,23 +264,6 @@ typedef struct GameConfig {
     uint language;
 } GameConfig;
 extern GameConfig Game;
-
-typedef struct GameContext {
-    bool shouldClose;
-    usize frameIndex;
-    double timeElapsed;
-
-    Texture canvas;
-} GameContext;
-extern GameContext Context;
-
-typedef struct GameInput {
-    bool pressedKeys[256];
-    bool pressedKeysOnce[256];
-    bool isMouseDown;
-    Point mousePos;
-} GameInput;
-extern GameInput Input;
 
 // Graphics drawing (basalt_graphics.c)
 #define WHITE 0xFFFFFFFF
@@ -311,7 +294,10 @@ BASALT void DrawRectangleLines(Texture canvas, int posX, int posY, int width, in
 BASALT void DrawWeirdTestGradient(Texture canvas);
 
 BASALT void DrawBitmapFontSymbol(BitmapFont font, int posX, int posY, char symbol, Color color);
+
+#undef DrawText  // *yells at Microsoft*
 BASALT void DrawText(Texture canvas, const char* text, int posX, int posY, Color color);
+
 BASALT void DrawBitmapText(BitmapFont font, Texture canvas, const char* text, int posX, int posY, Color color);
 
 BASALT Texture InitTexture(int width, int height);
@@ -330,6 +316,7 @@ BASALT void DrawTextureEx(Texture canvas, Texture texture, int posX, int posY, i
 BASALT extern void DrawTexture(Texture canvas, Texture texture, int posX, int posY, Color tint);
 BASALT void DrawTextureScaled(Texture canvas, Texture texture, int destX, int destY, int destWidth, int destHeight, Color tint);
 
+#undef RGB  // *yells at Microsoft*
 BASALT extern Color RGB(uchar r, uchar g, uchar b);
 BASALT extern Color RGBA(uchar r, uchar g, uchar b, uchar a);
 BASALT extern Color BlendColors(Color src, Color dest, uchar t);
@@ -348,43 +335,10 @@ BASALT void DrawCallImpl(Texture canvas, const char* desc);
 // basalt_tests.c
 BASALT void UnitTest();
 
-// Key definitions
-// TODO: Find a way to translate other keyboard layouts
-#define KEY_A 'A'
-#define KEY_B 'B'
-#define KEY_C 'C'
-#define KEY_D 'D'
-#define KEY_E 'E'
-#define KEY_F 'F'
-#define KEY_G 'G'
-#define KEY_H 'H'
-#define KEY_I 'I'
-#define KEY_J 'J'
-#define KEY_K 'K'
-#define KEY_L 'L'
-#define KEY_M 'M'
-#define KEY_N 'N'
-#define KEY_O 'O'
-#define KEY_P 'P'
-#define KEY_Q 'Q'
-#define KEY_R 'R'
-#define KEY_S 'S'
-#define KEY_T 'T'
-#define KEY_U 'U'
-#define KEY_V 'V'
-#define KEY_W 'W'
-#define KEY_X 'X'
-#define KEY_Y 'Y'
-#define KEY_Z 'Z'
+// sdl2_basalt.h
+BASALT void OpenSystemConsole();
+BASALT void CloseSystemConsole();
 
-// FIXME: This won't work on AZERTY keyboards!
-#define KEY_0 '0'
-#define KEY_1 '1'
-#define KEY_2 '2'
-#define KEY_3 '3'
-#define KEY_4 '4'
-#define KEY_5 '5'
-#define KEY_6 '6'
-#define KEY_7 '7'
-#define KEY_8 '8'
-#define KEY_9 '9'
+#ifdef __cplusplus
+}
+#endif

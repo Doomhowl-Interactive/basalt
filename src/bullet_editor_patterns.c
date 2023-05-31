@@ -79,10 +79,10 @@ BULLET void UpdateAndRenderPatternEditor(Texture canvas, float delta)
         infoText = (char*)AppendText(infoText, add);
     }
 
-    if (IsKeyPressed(KEY_J)) {
+    if (IsKeyPressed(SDLK_j)) {
         PATED.patternIndex++;
     }
-    if (IsKeyPressed(KEY_K)) {
+    if (IsKeyPressed(SDLK_k)) {
         PATED.patternIndex--;
     }
     PATED.patternIndex %= PatternCount;

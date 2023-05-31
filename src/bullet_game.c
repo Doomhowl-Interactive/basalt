@@ -58,18 +58,18 @@ DYNAMIC BASALT void DisposeGame()
 
 DYNAMIC BASALT void UpdateAndRenderGame(Texture canvas, float delta)
 {
-    if (IsKeyPressed(KEY_I)) {
+    if (IsKeyPressed(SDLK_i)) {
         ActiveSceneID++;
         if (ActiveSceneID >= SCENE_COUNT)
             ActiveSceneID = 0;
     }
-    if (IsKeyPressed(KEY_U)) {
+    if (IsKeyPressed(SDLK_u)) {
         ActiveSceneID--;
         if (ActiveSceneID < 0)
             ActiveSceneID = SCENE_COUNT - 1;
     }
 
-    if (IsKeyPressed(KEY_M)) {
+    if (IsKeyPressed(SDLK_m)) {
         TakeScreenshot(canvas);
     }
 
