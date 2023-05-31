@@ -50,7 +50,7 @@ BASALT bool UpdateAndRenderArchaeo(Texture canvas)
 
     switch (Archaeo.state) {
         case ARCHAEO_IDLE: {
-            if (IsKeyPressed(KEY_P)) {
+            if (IsKeyPressed(SDLK_p)) {
                 Archaeo.drawCallCount = 0;
                 Archaeo.state = ARCHAEO_RECORDING;
 
@@ -68,12 +68,12 @@ BASALT bool UpdateAndRenderArchaeo(Texture canvas)
             const char* title = FormatText("ARCHAEO MODE - %d/%d", Archaeo.selectedIndex, Archaeo.drawCallCount - 1);
             SetWindowTitle(title);
 
-            if (IsKeyPressed(KEY_P))
+            if (IsKeyPressed(SDLK_p))
                 Archaeo.state = ARCHAEO_IDLE;
 
-            if (IsKeyPressed(KEY_K))
+            if (IsKeyPressed(SDLK_k))
                 Archaeo.selectedIndex++;
-            if (IsKeyPressed(KEY_J))
+            if (IsKeyPressed(SDLK_j))
                 Archaeo.selectedIndex--;
 
             assert(Archaeo.drawCallCount > 0);

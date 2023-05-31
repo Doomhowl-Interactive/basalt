@@ -18,7 +18,7 @@ static SDialogProgress DialogProgress = { 0 };
 
 DIALOG_SKIN bool DrawDefaultDialogBox(const char* dialog, StringArray keywords, Texture canvas, float timeSince)
 {
-    if (IsKeyPressed(KEY_X)) {
+    if (IsKeyPressed(SDLK_x) || IsKeyPressed(SDLK_SPACE) || IsKeyPressed(SDLK_RETURN)) {
         return true;
     }
 

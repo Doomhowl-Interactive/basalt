@@ -1,35 +1,33 @@
-#include <SDL2/SDL.h>
 #include <stdlib.h>
+#include <time.h>
 #include <SDL2/SDL_timer.h>
 #include <SDL2/SDL_video.h>
-#include <time.h>
-#include "basalt.h"
+#include "sdl2_plat.hpp"
+
+struct GameContext {
+    bool shouldClose;
+    usize frameIndex;
+    double timeElapsed;
+
+    Texture canvas;
+};
 
 GameConfig Game = { 0 };
-GameInput Input = { 0 };
 GameContext Context = { 0 };
 
-SDL_Window *Window = NULL;
+SDL_Window* Window = NULL;
 
 BASALT void SetWindowTitle(const char* title)
 {
     if (Window != NULL) {
         // check if changed
-        if (!TextIsEqual(SDL_GetWindowTitle(Window), title)) {
+        std::string oldTitle = SDL_GetWindowTitle(Window);
+        if (oldTitle != title) {
             SDL_SetWindowTitle(Window, title);
         }
     } else {
-        ERR("Failed to set change window title!\n");
+        SDL_LogError(0, "Failed to set change window title!");
     }
-}
-
-func void ProcessKeyboardInput(SDL_KeyboardEvent* e)
-{
-    // HACK TODO: Use SDLs keys across the entire source base,
-    // instead of this weird bridge
-    bool isDown = e->state == SDL_KEYDOWN;
-    SDL_KeyCode code = e->keysym.sym;
-    Input.pressedKeys[code] = isDown;
 }
 
 int main(int argc, char** argv)
@@ -39,8 +37,7 @@ int main(int argc, char** argv)
     }
     Game = ConfigureGame();
 
-    if (Config.hasConsole)
-    {
+    if (Config.hasConsole) {
         // open console (windows only)
         OpenSystemConsole();
     }
@@ -49,9 +46,10 @@ int main(int argc, char** argv)
     SDL_Init(SDL_INIT_VIDEO);
 
     // initialize the Window and renderer
-    Window = SDL_CreateWindow(Game.title, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, Game.width, Game.height, SDL_WINDOW_ALWAYS_ON_TOP);
+    Window
+        = SDL_CreateWindow(Game.title, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, Game.width, Game.height, SDL_WINDOW_ALWAYS_ON_TOP);
     if (Window == NULL) {
-        ERR("Could not create Window!");
+        SDL_LogError(0, "Could not create Window!");
         return EXIT_FAILURE;
     }
 
@@ -79,6 +77,7 @@ int main(int argc, char** argv)
     while (!Context.shouldClose) {
         Uint64 startTicks = SDL_GetTicks64();
 
+        // Process window and keyboard input
         SDL_Event event;
         while (SDL_PollEvent(&event)) {
             switch (event.type) {
@@ -86,26 +85,16 @@ int main(int argc, char** argv)
                     Context.shouldClose = true;
                     break;
                 }
-                case SDL_KEYDOWN: {
-                    if (event.key.keysym.sym == SDLK_ESCAPE) {
-                        Context.shouldClose = true;
-                        break;
-                    }
-                }
                 default: {
                     break;
                 }
             }
-            if (event.type == SDL_KEYDOWN || event.type == SDL_KEYUP)
-            {
-                SDL_KeyboardEvent keyE = event.key;
-                ProcessKeyboardInput(&keyE);
+            if (!ProcessKeyboardInput(event)) {
+                Context.shouldClose = true;
+                break;
             }
-
         }
-
-        // Process mouse input
-        SDL_GetMouseState(&Input.mousePos.x, &Input.mousePos.y);
+        ProcessMouseInput();
 
         // ==== update and render main game ====
         if (UpdateAndRenderArchaeo(canvas)) {
@@ -132,15 +121,24 @@ int main(int argc, char** argv)
         }
         timer += delta;
 
-        // clear keys
-        memset(Input.pressedKeysOnce, 0, sizeof(Input.pressedKeysOnce));
+        ClearKeyboardInput();
     }
 
     SDL_FreeSurface(canvasSurface);
     DisposeTexture(canvas);
     SDL_DestroyWindow(Window);
     CloseSystemConsole();
-    INFO("Closed SDL2 Window");
+    SDL_Log("Closed SDL2 Window");
 
     return EXIT_SUCCESS;
+}
+
+BASALT usize GetFrameIndex()
+{
+    return Context.frameIndex;
+}
+
+BASALT double GetTimeElapsed()
+{
+    return Context.timeElapsed;
 }

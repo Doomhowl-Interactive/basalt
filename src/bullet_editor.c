@@ -91,7 +91,7 @@ func void DrawEditorTabs(Scene* activeScene, Texture canvas, float delta, const 
 
 BULLET void UpdateAndRenderEditor(Scene* activeScene, Texture canvas, float delta)
 {
-    if (IsKeyPressed(KEY_Y)) {
+    if (IsKeyPressed(SDLK_y)) {
         IsOpened = !IsOpened;
         INFO("%s editor", IsOpened ? "Opened" : "Closed");
     }
