@@ -13,7 +13,7 @@ Inspired by [Handmade Hero](https://handmadehero.org/).
 Debian/Ubuntu
 
 ```bash
-sudo apt install libsdl2*
+sudo apt install libsdl2* build-essential cmake
 ```
 
 ## Screenshots
