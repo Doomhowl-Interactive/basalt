@@ -23,6 +23,15 @@ BASALT void SetWindowTitle(const char* title)
     }
 }
 
+func void ProcessKeyboardInput(SDL_KeyboardEvent* e)
+{
+    // HACK TODO: Use SDLs keys across the entire source base,
+    // instead of this weird bridge
+    bool isDown = e->state == SDL_KEYDOWN;
+    SDL_KeyCode code = e->keysym.sym;
+    Input.pressedKeys[code] = isDown;
+}
+
 int main(int argc, char** argv)
 {
     if (!ParseLaunchArguments(argc, argv)) {
@@ -87,9 +96,16 @@ int main(int argc, char** argv)
                     break;
                 }
             }
+            if (event.type == SDL_KEYDOWN || event.type == SDL_KEYUP)
+            {
+                SDL_KeyboardEvent keyE = event.key;
+                ProcessKeyboardInput(&keyE);
+            }
+
         }
 
-        // poll the mouse
+        // Process mouse input
+        SDL_GetMouseState(&Input.mousePos.x, &Input.mousePos.y);
 
         // ==== update and render main game ====
         if (UpdateAndRenderArchaeo(canvas)) {
