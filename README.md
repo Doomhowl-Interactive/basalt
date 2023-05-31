@@ -2,9 +2,7 @@
 
 # basalt
 
-> NOTICE: Basalt will be ported to SDL2 in the future as I don't want to touch WinAPI or Xlib ever again.
-
-game engine for C/C++ cavemen, also working on a anthro Touhou clone in this repo
+game engine based on SDL2 for C/C++ cavemen, also working on a anthro Touhou clone in this repo
 
 Slowly solidifying [Magma Game Engine](https://github.com/bramtechs/RaylibMagmaEngine) and [dream-emu](https://github.com/bramtechs/dream-emu).
 
