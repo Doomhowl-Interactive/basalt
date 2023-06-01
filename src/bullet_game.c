@@ -1,5 +1,6 @@
 #include "basalt.h"
 #include "basalt_extra.h"
+#include "basalt_extra.hpp"
 #include "bullet_common.h"
 
 #include <math.h>
