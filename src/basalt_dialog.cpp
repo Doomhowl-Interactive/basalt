@@ -87,6 +87,9 @@ DIALOG_SKIN bool DrawDefaultDialogBox(const char* dialog, std::vector<std::strin
 
         DrawRectangle(canvas, margin + height + padding, topY, Game.width - 2 * margin * 2 - height, height, BLACK);
         DrawText(canvas, dialog, margin + height + padding * 2, topY + padding, WHITE);
+
+        std::string info = emotion + "\n" + avatarPath;
+        DrawText(canvas, info.c_str(), 150, 300, GREEN);
     }
     else
     {
