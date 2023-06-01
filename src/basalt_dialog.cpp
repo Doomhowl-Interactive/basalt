@@ -86,7 +86,7 @@ DIALOG_SKIN bool DrawDefaultDialogBox(const char* dialog, std::vector<std::strin
         DrawTextureScaled(canvas, avatarTexture, margin, topY, size, size, WHITE);
 
         DrawRectangle(canvas, margin + height + padding, topY, Game.width - 2 * margin * 2 - height, height, BLACK);
-        DrawText(canvas, dialog, margin + padding, topY + padding, WHITE);
+        DrawText(canvas, dialog, margin + height + padding * 2, topY + padding, WHITE);
     }
     else
     {
