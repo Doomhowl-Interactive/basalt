@@ -259,6 +259,7 @@ extern EngineConfig Config;
 
 typedef struct GameConfig {
     const char* title;
+    const char* company;
     uint width;
     uint height;
     uint language;

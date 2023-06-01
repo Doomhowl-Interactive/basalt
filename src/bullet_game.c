@@ -27,6 +27,7 @@ DYNAMIC BASALT GameConfig ConfigureGame()
 {
     GameConfig config;
     config.title = GetRealRandomNumber() % 1000 == 699 ? "Guardians Of Ur Mum" : "Guardians of the Holy Fire";
+    config.company = "Doomhowl Interactive";
     config.width = WIDTH;
     config.height = HEIGHT;
     config.language = 1;

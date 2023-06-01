@@ -57,9 +57,8 @@ int main(int argc, char** argv)
     SDL_Surface* canvasSurface
         = SDL_CreateRGBSurfaceWithFormatFrom(canvas.pixels, Game.width, Game.height, 32, Game.width * 4, SDL_PIXELFORMAT_ABGR32);
 
-    char text[1024];
-    sprintf(text, "Copyright Doomhowl Interactive (2023) - %s", Game.title);
-    PrintASCIILogo(text);
+    const char* copyright = FormatText("Copyright %s (2023) - %s", Game.company,Game.title);
+    PrintASCIILogo(copyright);
 
     if (Config.hasUnitTesting) {
         UnitTest();
