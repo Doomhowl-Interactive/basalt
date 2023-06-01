@@ -34,12 +34,12 @@ struct GameDialog {
     double startTime;
     size_t lineIndex;
 
-    inline DialogSequence getCurrentSequence()
+    const DialogSequence& getCurrentSequence() const
     {
         return getSequence(curSequence);
     }
 
-    DialogSequence getSequence(std::string& name) const
+    const DialogSequence& getSequence(const std::string& name) const
     {
         return sequences.at(name);
     }
@@ -69,14 +69,30 @@ DIALOG_SKIN bool DrawDefaultDialogBox(const char* dialog, std::vector<std::strin
     const int padding = 10;
     const int height = 80;
 
-    const int topX = margin;
     const int topY = Game.height - height - margin;
 
-    DrawRectangle(canvas, topX, topY, Game.width - 2 * margin, height, BLACK);
-    DrawText(canvas, dialog, topX + padding, topY + padding, WHITE);
+    // first keyword is the avatar collection name
+    // second keyword is the emotion used
+    // render avatar texture
+    if (keywords.size() > 0)
+    {
+        std::string avatar = keywords[0];
+        std::string emotion = keywords.size() > 1 ? keywords[1]:"neutral";
 
-    DrawText(canvas, "this font looks ass for now also missing characters!", topX + padding + 250, topY + height - padding, YELLOW);
+        const int size = height;
+        const char* avatarPath = FormatText("spr_dialog_%s_%s", avatar.c_str(), emotion.c_str());
 
+        Texture avatarTexture = RequestTexture(avatarPath); // TODO: Add placeholder texture
+        DrawTextureScaled(canvas, avatarTexture, margin, topY, size, size, WHITE);
+
+        DrawRectangle(canvas, margin + height + padding, topY, Game.width - 2 * margin * 2 - height, height, BLACK);
+        DrawText(canvas, dialog, margin + padding, topY + padding, WHITE);
+    }
+    else
+    {
+        DrawRectangle(canvas, margin, topY, Game.width - 2 * margin, height, BLACK);
+        DrawText(canvas, dialog, margin + padding, topY + padding, WHITE);
+    }
     return false;
 }
 
