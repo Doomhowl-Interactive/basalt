@@ -2,9 +2,9 @@
 
 # basalt
 
-game engine based on SDL2 for C/C++ cavemen, also working on a anthro Touhou clone in this repo
+Software rendered game engine based on SDL2 for C and C++ cavemen
 
-Slowly solidifying [Magma Game Engine](https://github.com/bramtechs/RaylibMagmaEngine) and [dream-emu](https://github.com/bramtechs/dream-emu).
+Solidified version of [Magma Game Engine](https://github.com/bramtechs/RaylibMagmaEngine) and [dream-emu](https://github.com/bramtechs/dream-emu).
 
 Inspired by [Handmade Hero](https://handmadehero.org/).
 
