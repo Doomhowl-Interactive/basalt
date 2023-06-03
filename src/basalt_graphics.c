@@ -38,7 +38,7 @@ typedef struct {
     int oy1, oy2;
 } Olivec_Normalized_Rect;
 
-BASALT void DrawDot(Texture canvas, int posX, int posY, Color color)
+BASALT inline void DrawDot(Texture canvas, int posX, int posY, Color color)
 {
     int i = posY * canvas.width + posX;
     canvas.pixels[i] = color;

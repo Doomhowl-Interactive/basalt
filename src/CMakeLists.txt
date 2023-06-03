@@ -8,7 +8,7 @@ if (WIN32)
 endif ()
 
 file(GLOB_RECURSE SRC_BASALT basalt*.c basalt*.cpp *basalt*.h*)
-file(GLOB_RECURSE SRC_BULLET bullet*.c bullet*.cpp *bullet*.h*)
+file(GLOB_RECURSE SRC_EXAMPLE example*.c example*.cpp example*.h)
 
 find_package(SDL2 REQUIRED)
 
@@ -21,7 +21,7 @@ endif ()
 # Compile cross-platform SDL2
 file(GLOB_RECURSE SRC_SDL2 sdl2_*.c sdl2_*.cpp sdl2_*.h*)
 
-set(SRC_ALL ${SRC_BASALT} ${SRC_PLAT} ${SRC_SDL2} ${SRC_BULLET})
+set(SRC_ALL ${SRC_BASALT} ${SRC_PLAT} ${SRC_SDL2} ${SRC_EXAMPLE})
 
 add_compile_options(-ggdb -Wall)
 link_libraries(-lm ${SDL2_LIBRARIES})

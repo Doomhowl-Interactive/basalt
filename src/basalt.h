@@ -288,7 +288,7 @@ typedef struct BitmapFont {
 } BitmapFont;
 
 BASALT void PrintASCIILogo(const char* suffix);
-BASALT void DrawDot(Texture canvas, int posX, int posY, Color tint);
+BASALT extern void DrawDot(Texture canvas, int posX, int posY, Color tint);
 BASALT void DrawLine(Texture canvas, int startX, int startY, int endX, int endY, Color tint);
 BASALT void DrawRectangle(Texture canvas, int posX, int posY, int width, int height, Color tint);
 BASALT void DrawRectangleLines(Texture canvas, int posX, int posY, int width, int height, int border, Color tint);
