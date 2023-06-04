@@ -35,7 +35,16 @@ int main(int argc, char** argv)
     if (!ParseLaunchArguments(argc, argv)) {
         return EXIT_SUCCESS;
     }
+
     Game = ConfigureGame();
+
+    const char* copyright = FormatText("Copyright %s (2023) - %s", Game.company,Game.title);
+    PrintASCIILogo(copyright);
+
+    if (Config.hasUnitTesting) {
+        UnitTest();
+        exit(EXIT_SUCCESS);
+    }
 
     if (Config.hasConsole) {
         // open console (windows only)
@@ -56,13 +65,6 @@ int main(int argc, char** argv)
     Texture canvas = InitTexture(Game.width, Game.height);
     SDL_Surface* canvasSurface
         = SDL_CreateRGBSurfaceWithFormatFrom(canvas.pixels, Game.width, Game.height, 32, Game.width * 4, SDL_PIXELFORMAT_ABGR32);
-
-    const char* copyright = FormatText("Copyright %s (2023) - %s", Game.company,Game.title);
-    PrintASCIILogo(copyright);
-
-    if (Config.hasUnitTesting) {
-        UnitTest();
-    }
 
     SetWindowTitle(Game.title);
 

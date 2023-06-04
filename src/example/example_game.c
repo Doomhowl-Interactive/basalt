@@ -7,7 +7,7 @@ BASALT GameConfig ConfigureGame()
 {
     GameConfig config = { 0 };
     config.title = "Basalt Test Game";
-    config.company = "Your company";
+    config.company = "Doomhowl Interactive";
     config.width = 640;
     config.height = 480;
     return config;
