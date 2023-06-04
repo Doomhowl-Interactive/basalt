@@ -1,7 +1,15 @@
+#include <string>
 #include <stdlib.h>
 #include <time.h>
+
+#ifdef _WIN32
+#include <SDL_timer.h>
+#include <SDL_video.h>
+#else
 #include <SDL2/SDL_timer.h>
 #include <SDL2/SDL_video.h>
+#endif
+
 #include "sdl2_plat.hpp"
 
 struct GameContext {

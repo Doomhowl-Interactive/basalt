@@ -1,6 +1,3 @@
-#include <string>
-#include <SDL2/SDL.h>
-
 #include "basalt.h"
 
 #define PLAT_SDL2
