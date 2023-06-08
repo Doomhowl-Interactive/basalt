@@ -5,6 +5,11 @@ set(CMAKE_CXX_STANDARD 17)
 if (WIN32)
     set(SDL2_DIR ${CMAKE_SOURCE_DIR}/vendor/SDL2-2.26.5/cmake)
     set(SDL2_DIR_ARCH ${CMAKE_SOURCE_DIR}/vendor/SDL2-2.26.5/x86_64-w64-mingw32)
+	# Hack for basalt being used as a sub-project
+	if (NOT EXISTS ${SDL2_DIR_ARCH})
+		set(SDL2_DIR_ARCH ${CMAKE_SOURCE_DIR}/vendor/basalt/vendor/SDL2-2.26.5/x86_64-w64-mingw32)
+	endif()
+	set(SDL2_DIR ${SDL2_DIR_ARCH}/../cmake)
     message(STATUS "Using SDL2 library at: ${SDL2_DIR_ARCH}")
 endif ()
 
