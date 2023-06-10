@@ -135,54 +135,6 @@ BASALT void DrawRectangleLines(Texture canvas, int posX, int posY, int width, in
     DrawRectangle(canvas, posX, posY, border, height, color);  // left
 }
 
-static BitmapFont PixelFont = { 0 };
-BASALT void DrawText(Texture canvas, const char* text, int posX, int posY, Color color)
-{
-    if (PixelFont.texture.pixels == NULL) {
-        PixelFont.texture = RequestTexture("SPR_PIXELFONT");
-        PixelFont.cols = 8;
-        PixelFont.rows = 8;
-        PixelFont.cellWidth = 8;
-        PixelFont.cellHeight = 8;
-        PixelFont.symbols = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789.!";
-    }
-    DrawBitmapText(PixelFont, canvas, text, posX, posY, color);
-}
-
-BASALT void DrawBitmapText(BitmapFont font, Texture canvas, const char* text, int posX, int posY, Color tint)
-{
-    if (text == NULL)
-        text = (const char*)"NULL";
-
-    int x = posX;
-    int y = posY;
-    for (uint i = 0; i < TextLength(text); i++) {
-        char symbol = text[i];
-        switch (symbol) {
-            case '\n':  // multiline
-                y += font.cellHeight;
-                x = posX;
-                break;
-            case '_':
-            case '-':
-            case ' ':
-                x += font.cellWidth;
-                break;
-            default: {
-                char* found = strchr(font.symbols, symbol);
-                if (found == NULL)
-                    found = (char*)font.symbols;
-                uint symbolIndex = (uint)(found - font.symbols);
-                uint cellX = symbolIndex % font.cols;
-                uint cellY = symbolIndex / font.rows;
-                Rect src = { cellX * font.cellWidth, cellY * font.cellHeight, font.cellWidth, font.cellHeight };
-                DrawTextureEx(canvas, font.texture, x, y, R2(src), tint);
-                x += font.cellWidth;
-            } break;
-        }
-    }
-}
-
 BASALT Texture InitTexture(int width, int height)
 {
     Texture tex;

@@ -13,8 +13,10 @@
 
 #ifdef _WIN32
 #include <SDL.h>
+#include <SDL_ttf.h>
 #else
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_ttf.h>
 #endif
 
 typedef unsigned int uint;
@@ -282,15 +284,6 @@ extern GameConfig Game;
 #define YELLOW 0xFFFF00FF
 #define PURPLE 0x00FFFFFF
 
-typedef struct BitmapFont {
-    Texture texture;
-    uint cols;
-    uint rows;
-    uint cellWidth;
-    uint cellHeight;
-    const char* symbols;
-} BitmapFont;
-
 BASALT void PrintASCIILogo(const char* suffix);
 BASALT extern void DrawDot(Texture canvas, int posX, int posY, Color tint);
 BASALT void DrawLine(Texture canvas, int startX, int startY, int endX, int endY, Color tint);
@@ -298,12 +291,13 @@ BASALT void DrawRectangle(Texture canvas, int posX, int posY, int width, int hei
 BASALT void DrawRectangleLines(Texture canvas, int posX, int posY, int width, int height, int border, Color tint);
 BASALT void DrawWeirdTestGradient(Texture canvas);
 
-BASALT void DrawBitmapFontSymbol(BitmapFont font, int posX, int posY, char symbol, Color color);
-
+BASALT void LoadFont(const char* name, int size);
 #undef DrawText  // *yells at Microsoft*
 BASALT void DrawText(Texture canvas, const char* text, int posX, int posY, Color color);
+BASALT void DrawTextWithFont(const char* fontName, Texture canvas, const char* text, int posX, int posY, Color color);
 
-BASALT void DrawBitmapText(BitmapFont font, Texture canvas, const char* text, int posX, int posY, Color color);
+// TODO: Put in private header
+BASALT void DisposeFonts();
 
 BASALT Texture InitTexture(int width, int height);
 BASALT Texture CopyTexture(Texture source);
