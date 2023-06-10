@@ -16,6 +16,7 @@ endif ()
 file(GLOB_RECURSE SRC_BASALT basalt*.c basalt*.cpp *basalt*.h*)
 
 find_package(SDL2 REQUIRED)
+find_package(SDL2_ttf REQUIRED)
 
 if (UNIX OR LINUX)
     file(GLOB_RECURSE SRC_PLAT unix_*.c unix_*.cpp)
@@ -29,6 +30,6 @@ file(GLOB_RECURSE SRC_SDL2 sdl2_*.c sdl2_*.cpp sdl2_*.h*)
 set(SRC_ALL ${SRC_BASALT} ${SRC_PLAT} ${SRC_SDL2})
 
 add_compile_options(-ggdb -Wall)
-link_libraries(-lm ${SDL2_LIBRARIES})
+link_libraries(-lm ${SDL2_LIBRARIES} ${SDL2TTF_LIBRARIES})
 
 add_library(${PROJECT_NAME} STATIC ${SRC_ALL})

@@ -2,6 +2,7 @@
 #include <string>
 #include <SDL_log.h>
 #include <filesystem>
+#include <SDL_ttf.h>
 #include <unordered_map>
 #include <vector>
 
@@ -12,7 +13,7 @@ static std::vector<std::string> AssetFolders = {
     ".", "assets", "../assets", "../../assets", "../../../assets",
 };
 
-std::unordered_map<std::string, TTF_Font*> fonts;
+static std::unordered_map<std::string, TTF_Font*> LoadedFonts;
 
 // TODO: Put in basalt_internal.hpp
 func std::string SearchAsset(std::string assetName)
@@ -36,52 +37,42 @@ func void InitFonts()
     LoadFont("font_fff_forward.ttf", 16);
 }
 
-func void DisposeFonts()
-{
-    TTF_Quit();
-    SDL_LogDebug(0, "Disposed fonts context");
-}
-
 BASALT void LoadFont(const char* fontName, uint size = 16)
 {
     auto assetPath = SearchAsset(fontName);
     auto font = TTF_OpenFont(assetPath.c_str(), 16);
     if (font == nullptr) {
         // fallback to another font
-        if (fonts.empty()) {
+        if (LoadedFonts.empty()) {
             throw new std::runtime_error("Could not load font!");
         }
 
-        fonts.insert({ fontName, fonts.at("default") });
+        LoadedFonts.insert({ fontName, LoadedFonts.at("default") });
         SDL_LogWarn(0, "Failed to load font, using default: %s\n", TTF_GetError());
     }
 }
 
 BASALT void DrawText(Texture canvas, const char* text, int posX, int posY, Color color)
 {
-    if (Fonts == nullptr) {
-        Fonts = new FontsContext();
-    }
     DrawTextWithFont("default", canvas, text, posX, posY, color);
 }
 
 BASALT void DrawTextWithFont(TTF_Font* font, Texture canvas, const char* text, int posX, int posY, Color color)
 {
-    if (Fonts == nullptr) {
-        Fonts = new FontsContext();
-    }
-    SDL_Surface* surface = TTF_RenderText_Blended(font, text, color);
-    SDL_Texture* texture = SDL_CreateTextureFromSurface(canvas->renderer, surface);
-    SDL_Rect rect = { posX, posY, surface->w, surface->h };
-    SDL_RenderCopy(canvas->renderer, texture, NULL, &rect);
-    SDL_FreeSurface(surface);
-    SDL_DestroyTexture(texture);
+    //SDL_Surface* surface = TTF_RenderText_Blended(font, text, color);
+    //SDL_Texture* texture = SDL_CreateTextureFromSurface(canvas->renderer, surface);
+    //SDL_Rect rect = { posX, posY, surface->w, surface->h };
+    //SDL_RenderCopy(canvas->renderer, texture, NULL, &rect);
+    //SDL_FreeSurface(surface);
+    //SDL_DestroyTexture(texture);
 }
 
 BASALT void DisposeFonts()
 {
-    if (Fonts != nullptr) {
-        delete Fonts;
-        Fonts = nullptr;
+    for (auto& font : LoadedFonts) {
+        TTF_CloseFont(font.second);
     }
+    LoadedFonts.clear();
+    TTF_Quit();
+    SDL_LogDebug(0, "Disposed fonts context");
 }
