@@ -1,13 +1,14 @@
 #include <string>
 #include <stdlib.h>
 #include <time.h>
+#include <SDL2/SDL_log.h>
 
 #ifdef _WIN32
-#include <SDL_timer.h>
-#include <SDL_video.h>
+# include <SDL_timer.h>
+# include <SDL_video.h>
 #else
-#include <SDL2/SDL_timer.h>
-#include <SDL2/SDL_video.h>
+# include <SDL2/SDL_timer.h>
+# include <SDL2/SDL_video.h>
 #endif
 
 #include "sdl2_plat.hpp"
@@ -47,7 +48,7 @@ int main(int argc, char** argv)
 
     Game = ConfigureGame();
 
-    const char* copyright = FormatText("Copyright %s (2023) - %s", Game.company,Game.title);
+    const char* copyright = FormatText("Copyright %s (2023) - %s", Game.company, Game.title);
     PrintASCIILogo(copyright);
 
     if (Config.hasUnitTesting) {
@@ -62,6 +63,7 @@ int main(int argc, char** argv)
 
     // initialize SDL
     SDL_Init(SDL_INIT_VIDEO);
+    SDL_LogSetAllPriority(SDL_LOG_PRIORITY_VERBOSE);
 
     // initialize the Window and renderer
     Window

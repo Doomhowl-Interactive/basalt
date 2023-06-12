@@ -1,5 +1,6 @@
+#include <stdexcept>
 #include <string>
-#include <SDL_log.h>
+#include <SDL2/SDL_ttf.h>
 #include <filesystem>
 #include <SDL_ttf.h>
 #include <unordered_map>
@@ -29,17 +30,24 @@ BASALT void LoadFontEx(const char* fontName, uint size)
     std::string assetPath = "";
     if (SearchAsset(fontName, &assetPath)) {
         auto font = TTF_OpenFont(assetPath.c_str(), size);
-        if (font == nullptr) {
-            // fallback to another font
-            if (LoadedFonts.empty()) {
-                SDL_LogError(0, "Failed to load font %s\n", TTF_GetError());
-                return;
-            }
+        if (font != nullptr) {
+            // store loaded font
+            LoadedFonts.insert({ fontName, font });
+            SDL_LogDebug(0, "Loaded font %s", fontName);
+            return;
         }
     }
 
-    LoadedFonts.insert({ fontName, LoadedFonts.at("default") });
-    SDL_LogWarn(0, "Failed to load font, using default: %s\n", TTF_GetError());
+    TTF_Font* defaultFont;
+    try {
+        defaultFont = LoadedFonts.at("default");
+    } catch (std::out_of_range& e) {
+        SDL_LogError(0, "Failed to load font %s", TTF_GetError());
+        return;
+    }
+
+    LoadedFonts.insert({ fontName, defaultFont });
+    SDL_LogWarn(0, "Failed to load font, using default: %s", TTF_GetError());
 }
 
 BASALT void DrawText(Texture canvas, const char* text, int posX, int posY, Color color)
