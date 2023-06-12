@@ -291,7 +291,8 @@ BASALT void DrawRectangle(Texture canvas, int posX, int posY, int width, int hei
 BASALT void DrawRectangleLines(Texture canvas, int posX, int posY, int width, int height, int border, Color tint);
 BASALT void DrawWeirdTestGradient(Texture canvas);
 
-BASALT void LoadFont(const char* name, int size);
+BASALT extern void LoadFont(const char* name);
+BASALT void LoadFontEx(const char* name, uint size);
 #undef DrawText  // *yells at Microsoft*
 BASALT void DrawText(Texture canvas, const char* text, int posX, int posY, Color color);
 BASALT void DrawTextWithFont(const char* fontName, Texture canvas, const char* text, int posX, int posY, Color color);

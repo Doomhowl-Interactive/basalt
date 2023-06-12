@@ -1,4 +1,3 @@
-#include "basalt.h"
 #include <string>
 #include <SDL_log.h>
 #include <filesystem>
@@ -6,41 +5,28 @@
 #include <unordered_map>
 #include <vector>
 
-namespace fs = std::filesystem;
-
-// TODO: DRY
-static std::vector<std::string> AssetFolders = {
-    ".", "assets", "../assets", "../../assets", "../../../assets",
-};
+#include "basalt.h"
+#include "basalt_internal.hpp"
 
 static std::unordered_map<std::string, TTF_Font*> LoadedFonts;
 
-// TODO: Put in basalt_internal.hpp
-func std::string SearchAsset(std::string assetName)
-{
-    fs::path assetFileName = fs::path(assetName).replace_filename(".ttf");
-    for (auto& folder : AssetFolders) {
-        auto combined = fs::path(folder) / assetFileName;
-        if (fs::exists(combined)) {
-            return combined;
-        }
-    }
-    throw new std::runtime_error("Asset not found: " + assetName);
-}
-
-func void InitFonts()
+INTERNAL void InitEngineFonts()
 {
     if (TTF_Init() < -1) {
         SDL_LogError(0, "Failed to init TTF font rendering!: %s\n", TTF_GetError());
         exit(2);
     }
-    LoadFont("font_fff_forward.ttf", 16);
+    LoadFontEx("font_fff_forward.ttf", 16);
 }
 
-BASALT void LoadFont(const char* fontName, uint size = 16)
+BASALT inline void LoadFont(const char* fontName){
+    LoadFontEx(fontName, 16);
+}
+
+BASALT void LoadFontEx(const char* fontName, uint size)
 {
     auto assetPath = SearchAsset(fontName);
-    auto font = TTF_OpenFont(assetPath.c_str(), 16);
+    auto font = TTF_OpenFont(assetPath.c_str(), size);
     if (font == nullptr) {
         // fallback to another font
         if (LoadedFonts.empty()) {
@@ -57,7 +43,7 @@ BASALT void DrawText(Texture canvas, const char* text, int posX, int posY, Color
     DrawTextWithFont("default", canvas, text, posX, posY, color);
 }
 
-BASALT void DrawTextWithFont(TTF_Font* font, Texture canvas, const char* text, int posX, int posY, Color color)
+BASALT void DrawTextWithFont(const char* fontName, Texture canvas, const char* text, int posX, int posY, Color color)
 {
     //SDL_Surface* surface = TTF_RenderText_Blended(font, text, color);
     //SDL_Texture* texture = SDL_CreateTextureFromSurface(canvas->renderer, surface);

@@ -11,6 +11,7 @@
 #endif
 
 #include "sdl2_plat.hpp"
+#include "basalt_internal.hpp"
 
 struct GameContext {
     bool shouldClose;
@@ -75,6 +76,7 @@ int main(int argc, char** argv)
         = SDL_CreateRGBSurfaceWithFormatFrom(canvas.pixels, Game.width, Game.height, 32, Game.width * 4, SDL_PIXELFORMAT_ABGR32);
 
     SetWindowTitle(Game.title);
+    InitEngineFonts();
 
     srand((unsigned int)time(NULL));
     InitializeGame();

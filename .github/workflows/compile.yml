@@ -21,7 +21,7 @@ jobs:
           cmake-version: "3.16.x"
       - name: Install dependencies
         run: |
-          sudo apt update
+          sudo apt update -y
           sudo apt install libsdl2* -y
       - name: Configure and build
         run: |
