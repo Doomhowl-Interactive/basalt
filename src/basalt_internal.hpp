@@ -3,4 +3,4 @@
 #define INTERNAL
 
 INTERNAL void InitEngineFonts();
-INTERNAL std::string SearchAsset(std::string assetName);
+INTERNAL bool SearchAsset(std::string assetName, std::string* outPath);
