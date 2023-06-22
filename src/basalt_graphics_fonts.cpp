@@ -21,6 +21,7 @@ INTERNAL void InitEngineFonts()
     if (TTF_Init() < -1) {
         SDL_LogError(0, "Failed to init TTF font rendering!: %s\n", TTF_GetError());
         exit(2);
+        return;
     }
     LoadFontEx("font_fff_forward", 16);
 }
@@ -38,8 +39,6 @@ func string LoadedFontsToString()
 {
     std::string text = "Available fonts are: ";
     if (LoadedFonts.size() == 0) {
-        text += "none";
-    } else {
         bool first = true;
         for (const auto& entry : LoadedFonts) {
             if (!first) {
@@ -48,8 +47,9 @@ func string LoadedFontsToString()
             text += entry.first;
             first = false;
         }
+        return text;
     }
-    return text;
+    return text + "none";
 }
 
 BASALT inline void LoadFont(const char* fontName)
@@ -62,25 +62,29 @@ BASALT void LoadFontEx(const char* fontName, uint size)
     string assetPath = "";
     if (SearchAsset(fontName, &assetPath)) {
         auto font = TTF_OpenFont(assetPath.c_str(), size);
-        if (font != nullptr) {
-            // store loaded font
-            LoadedFonts.insert({ fontName, font });
-            SDL_LogDebug(0, "Loaded font %s(.ttf)", fontName);
-
-            // if this is the first font loaded, also set it as the default font
-            if (LoadedFonts.size() == 1) {
-                LoadedFonts.insert({ "default", font });
-            }
-
-            return;
+        if (font == nullptr) {
+            SDL_LogError(0, "Failed to load font %s: %s", fontName, TTF_GetError());
+            goto DEFAULT;
         }
+
+        // store loaded font
+        LoadedFonts.insert({ fontName, font });
+        SDL_LogDebug(0, "Loaded font %s(.ttf)", fontName);
+
+        // if this is the first font loaded, also set it as the default font
+        if (LoadedFonts.size() == 1) {
+            LoadedFonts.insert({ "default", font });
+        }
+
+        return;
     }
 
+DEFAULT:
     TTF_Font* defaultFont;
     try {
         defaultFont = LoadedFonts.at("default");
     } catch (out_of_range& e) {
-        SDL_LogError(0, "Failed to load font because: %s", TTF_GetError());
+        SDL_LogError(0, "There is no default font: (%s)", TTF_GetError());
         return;
     }
 

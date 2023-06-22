@@ -37,8 +37,8 @@ BASALT void UpdateAndRenderGame(Texture canvas, float delta)
         }
     }
 
-    DrawText(canvas, "Hello Basalt!", 10, 10, RED);
-    DrawText(canvas, "Press SPACE to change direction", 10, 30, RED);
+    DrawText(canvas, "Hello Basalt!", 10, 10, WHITE);
+    DrawText(canvas, "Press SPACE to change direction", 10, 50, YELLOW);
 
     if (IsKeyPressed(SDLK_SPACE)) {
         Horizontal = !Horizontal;
