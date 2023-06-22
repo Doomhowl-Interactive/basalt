@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <SDL2/SDL_log.h>
+#include <SDL2/SDL_surface.h>
 
 #ifdef _WIN32
 # include <SDL_timer.h>
@@ -26,6 +27,8 @@ GameConfig Game = { 0 };
 GameContext Context = { 0 };
 
 SDL_Window* Window = NULL;
+SDL_Surface* ScreenSurface = NULL;
+SDL_Surface* OverlaySurface = NULL;
 
 BASALT void SetWindowTitle(const char* title)
 {
@@ -65,17 +68,23 @@ int main(int argc, char** argv)
     SDL_Init(SDL_INIT_VIDEO);
     SDL_LogSetAllPriority(SDL_LOG_PRIORITY_VERBOSE);
 
-    // initialize the Window and renderer
-    Window
-        = SDL_CreateWindow(Game.title, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, Game.width, Game.height, SDL_WINDOW_ALWAYS_ON_TOP);
+    // initialize the Window
+    Window = SDL_CreateWindow(Game.title,
+                              SDL_WINDOWPOS_UNDEFINED,
+                              SDL_WINDOWPOS_UNDEFINED,
+                              Game.width,
+                              Game.height,
+                              SDL_WINDOW_ALWAYS_ON_TOP);
     if (Window == NULL) {
         SDL_LogError(0, "Could not create Window!");
         return EXIT_FAILURE;
     }
 
     Texture canvas = InitTexture(Game.width, Game.height);
-    SDL_Surface* canvasSurface
-        = SDL_CreateRGBSurfaceWithFormatFrom(canvas.pixels, Game.width, Game.height, 32, Game.width * 4, SDL_PIXELFORMAT_ABGR32);
+    ScreenSurface = SDL_CreateRGBSurfaceWithFormatFrom(
+        canvas.pixels, Game.width, Game.height, 32, Game.width * 4, SDL_PIXELFORMAT_ABGR32);
+    OverlaySurface = SDL_CreateRGBSurface(
+        0, Game.width, Game.height, 32, 0xFF000000, 0x00FF0000, 0x0000FF00, 0x000000FF);
 
     SetWindowTitle(Game.title);
     InitEngineFonts();
@@ -113,8 +122,14 @@ int main(int argc, char** argv)
         if (UpdateAndRenderArchaeo(canvas)) {
             UpdateAndRenderGame(canvas, delta);
         }
-        SDL_BlitSurface(canvasSurface, NULL, SDL_GetWindowSurface(Window), NULL);
+
+        // === Render to the screen (software rendering)
+        SDL_Surface* windowSurface = SDL_GetWindowSurface(Window);
+        SDL_BlitSurface(ScreenSurface, NULL, windowSurface, NULL);
+        SDL_BlitSurface(OverlaySurface, NULL, windowSurface, NULL);
         SDL_UpdateWindowSurface(Window);
+        // =============================================
+
         Context.frameIndex++;
         SDL_Delay(1000 / maxFps);
 
@@ -137,7 +152,7 @@ int main(int argc, char** argv)
         ClearKeyboardInput();
     }
 
-    SDL_FreeSurface(canvasSurface);
+    SDL_FreeSurface(ScreenSurface);
     DisposeTexture(canvas);
     SDL_DestroyWindow(Window);
     CloseSystemConsole();
@@ -154,4 +169,21 @@ BASALT usize GetFrameIndex()
 BASALT double GetTimeElapsed()
 {
     return Context.timeElapsed;
+}
+
+PLAT_SDL2 SDL_Surface* GetScreenOverlaySurface()
+{
+    return OverlaySurface;
+}
+
+PLAT_SDL2 SDL_Color ConvertColor(Color color)
+{
+    // convert uint32 color to SDL_Color
+    SDL_Color conv = {
+        (Uint8)(color >> 24),
+        (Uint8)(color >> 16),
+        (Uint8)(color >> 8),
+        (Uint8)(color >> 0),
+    };
+    return conv;
 }

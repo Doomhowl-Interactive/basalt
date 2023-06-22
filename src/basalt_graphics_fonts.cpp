@@ -1,15 +1,20 @@
 #include <stdexcept>
 #include <string>
-#include <SDL2/SDL_ttf.h>
-#include <filesystem>
-#include <SDL_ttf.h>
 #include <unordered_map>
 #include <vector>
 
+#include <SDL2/SDL_surface.h>
+#include <SDL2/SDL_ttf.h>
+#include <SDL_ttf.h>
+
 #include "basalt.h"
 #include "basalt_internal.hpp"
+#include "sdl2_plat.hpp"
 
-static std::unordered_map<std::string, TTF_Font*> LoadedFonts;
+using namespace std;
+
+static unordered_map<string, TTF_Font*> LoadedFonts;
+static double LastYellTime = 0.0f;
 
 INTERNAL void InitEngineFonts()
 {
@@ -17,7 +22,34 @@ INTERNAL void InitEngineFonts()
         SDL_LogError(0, "Failed to init TTF font rendering!: %s\n", TTF_GetError());
         exit(2);
     }
-    LoadFontEx("font_fff_forward.ttf", 16);
+    LoadFontEx("font_fff_forward", 16);
+}
+
+func void LogFontError(string text)
+{
+    // Avoid spamming the log
+    if (LastYellTime + 2.0 < GetTimeElapsed()) {
+        SDL_LogError(0, "%s", text.c_str());
+        LastYellTime = GetTimeElapsed();
+    }
+}
+
+func string LoadedFontsToString()
+{
+    std::string text = "Available fonts are: ";
+    if (LoadedFonts.size() == 0) {
+        text += "none";
+    } else {
+        bool first = true;
+        for (const auto& entry : LoadedFonts) {
+            if (!first) {
+                text += ", ";
+            }
+            text += entry.first;
+            first = false;
+        }
+    }
+    return text;
 }
 
 BASALT inline void LoadFont(const char* fontName)
@@ -27,13 +59,19 @@ BASALT inline void LoadFont(const char* fontName)
 
 BASALT void LoadFontEx(const char* fontName, uint size)
 {
-    std::string assetPath = "";
+    string assetPath = "";
     if (SearchAsset(fontName, &assetPath)) {
         auto font = TTF_OpenFont(assetPath.c_str(), size);
         if (font != nullptr) {
             // store loaded font
             LoadedFonts.insert({ fontName, font });
-            SDL_LogDebug(0, "Loaded font %s", fontName);
+            SDL_LogDebug(0, "Loaded font %s(.ttf)", fontName);
+
+            // if this is the first font loaded, also set it as the default font
+            if (LoadedFonts.size() == 1) {
+                LoadedFonts.insert({ "default", font });
+            }
+
             return;
         }
     }
@@ -41,8 +79,8 @@ BASALT void LoadFontEx(const char* fontName, uint size)
     TTF_Font* defaultFont;
     try {
         defaultFont = LoadedFonts.at("default");
-    } catch (std::out_of_range& e) {
-        SDL_LogError(0, "Failed to load font %s", TTF_GetError());
+    } catch (out_of_range& e) {
+        SDL_LogError(0, "Failed to load font because: %s", TTF_GetError());
         return;
     }
 
@@ -55,14 +93,28 @@ BASALT void DrawText(Texture canvas, const char* text, int posX, int posY, Color
     DrawTextWithFont("default", canvas, text, posX, posY, color);
 }
 
-BASALT void DrawTextWithFont(const char* fontName, Texture canvas, const char* text, int posX, int posY, Color color)
+BASALT void DrawTextWithFont(const char* fontName,
+                             Texture canvas,
+                             const char* text,
+                             int posX,
+                             int posY,
+                             Color color)
 {
-    // SDL_Surface* surface = TTF_RenderText_Blended(font, text, color);
-    // SDL_Texture* texture = SDL_CreateTextureFromSurface(canvas->renderer, surface);
-    // SDL_Rect rect = { posX, posY, surface->w, surface->h };
-    // SDL_RenderCopy(canvas->renderer, texture, NULL, &rect);
-    // SDL_FreeSurface(surface);
-    // SDL_DestroyTexture(texture);
+    TTF_Font* font;
+    try {
+        font = LoadedFonts.at(fontName);
+    } catch (out_of_range& e) {
+        LogFontError("Failed to draw text, font not found: " + string(fontName));
+        LogFontError(LoadedFontsToString());
+        return;
+    }
+
+    SDL_Color sdlColor = ConvertColor(color);
+    SDL_Surface* surface = TTF_RenderText_Blended(font, text, sdlColor);
+    SDL_Rect destRect = { posX, posY, surface->w, surface->h };
+    // TODO: Implement GPU: SDL_RenderCopy(canvas->renderer, texture, NULL, &rect);
+    SDL_UpperBlit(surface, NULL, GetScreenOverlaySurface(), &destRect);
+    SDL_FreeSurface(surface);
 }
 
 BASALT void DisposeFonts()

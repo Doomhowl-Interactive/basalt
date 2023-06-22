@@ -26,7 +26,7 @@ struct DialogSequence {
     }
 };
 
-struct GameDialog {
+struct Dialog {
     std::unordered_map<std::string, DialogSequence> sequences;
 
     std::string curSequence;
@@ -45,7 +45,7 @@ struct GameDialog {
     }
 };
 
-static GameDialog Dialog = {};
+static Dialog Dialog = {};
 
 // HACK: bridge, Destroy the StringArray and return it as std::vector
 std::vector<std::string> StringArrayToVector(StringArray& arr)
