@@ -130,6 +130,9 @@ int main(int argc, char** argv)
         SDL_UpdateWindowSurface(Window);
         // =============================================
 
+        // Clear the overlay surface
+        SDL_FillRect(OverlaySurface, NULL, 0x00000000);
+
         Context.frameIndex++;
         SDL_Delay(1000 / maxFps);
 
