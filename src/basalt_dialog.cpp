@@ -8,17 +8,18 @@
 #include <optional>
 
 #define DIALOG_SKIN
+using namespace std;
 
-typedef bool (*DialogBoxDrawerFunc)(const char* dialog, std::vector<std::string> keywords, Texture canvas, float timeSince);
+typedef bool (*DialogBoxDrawerFunc)(const char* dialog, vector<string> keywords, Texture canvas, float timeSince);
 
 struct DialogLine {
-    std::string text;
-    std::vector<std::string> keywords;
+    string text;
+    vector<string> keywords;
 };
 
 struct DialogSequence {
-    std::string name;
-    std::vector<DialogLine> lines;
+    string name;
+    vector<DialogLine> lines;
 
     DialogLine getDialogLine(size_t index) const
     {
@@ -27,9 +28,9 @@ struct DialogSequence {
 };
 
 struct Dialog {
-    std::unordered_map<std::string, DialogSequence> sequences;
+    unordered_map<string, DialogSequence> sequences;
 
-    std::string curSequence;
+    string curSequence;
     bool isSpeaking;
     double startTime;
     size_t lineIndex;
@@ -39,7 +40,7 @@ struct Dialog {
         return getSequence(curSequence);
     }
 
-    const DialogSequence& getSequence(const std::string& name) const
+    const DialogSequence& getSequence(const string& name) const
     {
         return sequences.at(name);
     }
@@ -47,19 +48,19 @@ struct Dialog {
 
 static Dialog Dialog = {};
 
-// HACK: bridge, Destroy the StringArray and return it as std::vector
-std::vector<std::string> StringArrayToVector(StringArray& arr)
+// HACK: bridge, Destroy the StringArray and return it as vector
+vector<string> StringArrayToVector(StringArray& arr)
 {
-    std::vector<std::string> lines;
+    vector<string> lines;
     for (size_t i = 0; i < arr.count; i++) {
-        std::string line = std::string(arr.strings[i]);
+        string line = string(arr.strings[i]);
         lines.push_back(line);
     }
     DisposeStringArray(&arr);
     return lines;
 }
 
-DIALOG_SKIN bool DrawDefaultDialogBox(const char* dialog, std::vector<std::string> keywords, Texture canvas, float timeSince)
+DIALOG_SKIN bool DrawDefaultDialogBox(const char* dialog, vector<string> keywords, Texture canvas, float timeSince)
 {
     if (IsKeyPressed(SDLK_x) || IsKeyPressed(SDLK_SPACE) || IsKeyPressed(SDLK_RETURN)) {
         return true;
@@ -76,8 +77,8 @@ DIALOG_SKIN bool DrawDefaultDialogBox(const char* dialog, std::vector<std::strin
     // render avatar texture
     if (keywords.size() > 0)
     {
-        std::string avatar = keywords[0];
-        std::string emotion = keywords.size() > 1 ? keywords[1]:"neutral";
+        string avatar = keywords[0];
+        string emotion = keywords.size() > 1 ? keywords[1]:"neutral";
 
         const int size = height;
         const char* avatarPath = FormatText("spr_dialog_%s_%s", avatar.c_str(), emotion.c_str());
@@ -88,7 +89,7 @@ DIALOG_SKIN bool DrawDefaultDialogBox(const char* dialog, std::vector<std::strin
         DrawRectangle(canvas, margin + height + padding, topY, Game.width - 2 * margin * 2 - height, height, BLACK);
         DrawText(canvas, dialog, margin + height + padding * 2, topY + padding, WHITE);
 
-        std::string info = emotion + "\n" + avatarPath;
+        string info = emotion + "\n" + avatarPath;
         DrawText(canvas, info.c_str(), 150, 300, GREEN);
     }
     else
@@ -103,8 +104,8 @@ BASALT void StartDialogSequence(const char* dialog)
 {
     DialogSequence sequence;
     try {
-        sequence = Dialog.getSequence(std::string(dialog));
-    } catch (std::out_of_range e) {
+        sequence = Dialog.getSequence(string(dialog));
+    } catch (out_of_range e) {
         SDL_LogWarn(0, "No registered dialog sequences named %s !", dialog);
         return;
     }
@@ -130,7 +131,7 @@ func bool UpdateAndRenderCustomDialogBoxes(Texture canvas, DialogBoxDrawerFunc d
     DialogSequence curSequence;
     try {
         curSequence = Dialog.getCurrentSequence();
-    } catch (std::out_of_range e) {
+    } catch (out_of_range e) {
         SDL_LogWarn(0, "Invalid dialog state, reverting...");
         Dialog.isSpeaking = false;
         return false;
@@ -139,7 +140,7 @@ func bool UpdateAndRenderCustomDialogBoxes(Texture canvas, DialogBoxDrawerFunc d
     DialogLine line;
     try {
         line = curSequence.getDialogLine(Dialog.lineIndex);
-    } catch (std::out_of_range e) {
+    } catch (out_of_range e) {
         SDL_LogWarn(0, "No dialog line with index %zu", Dialog.lineIndex);
         return false;
     }
@@ -189,3 +190,4 @@ BASALT void RegisterDialogSequence(const char* name, const char* lines)
 
     SDL_LogDebug(0, "Registered dialog sequence %s with %zu lines.", name, seq.lines.size());
 }
+
