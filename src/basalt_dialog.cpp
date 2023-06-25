@@ -10,7 +10,10 @@
 #define DIALOG_SKIN
 using namespace std;
 
-typedef bool (*DialogBoxDrawerFunc)(const char* dialog, vector<string> keywords, Texture canvas, float timeSince);
+typedef bool (*DialogBoxDrawerFunc)(const char* dialog,
+                                    vector<string> keywords,
+                                    Texture canvas,
+                                    float timeSince);
 
 struct DialogLine {
     string text;
@@ -60,7 +63,10 @@ vector<string> StringArrayToVector(StringArray& arr)
     return lines;
 }
 
-DIALOG_SKIN bool DrawDefaultDialogBox(const char* dialog, vector<string> keywords, Texture canvas, float timeSince)
+DIALOG_SKIN bool DrawDefaultDialogBox(const char* dialog,
+                                      vector<string> keywords,
+                                      Texture canvas,
+                                      float timeSince)
 {
     if (IsKeyPressed(SDLK_x) || IsKeyPressed(SDLK_SPACE) || IsKeyPressed(SDLK_RETURN)) {
         return true;
@@ -75,25 +81,27 @@ DIALOG_SKIN bool DrawDefaultDialogBox(const char* dialog, vector<string> keyword
     // first keyword is the avatar collection name
     // second keyword is the emotion used
     // render avatar texture
-    if (keywords.size() > 0)
-    {
+    if (keywords.size() > 0) {
         string avatar = keywords[0];
-        string emotion = keywords.size() > 1 ? keywords[1]:"neutral";
+        string emotion = keywords.size() > 1 ? keywords[1] : "neutral";
 
         const int size = height;
         const char* avatarPath = FormatText("spr_dialog_%s_%s", avatar.c_str(), emotion.c_str());
 
-        Texture avatarTexture = RequestTexture(avatarPath); // TODO: Add placeholder texture
+        Texture avatarTexture = RequestTexture(avatarPath);  // TODO: Add placeholder texture
         DrawTextureScaled(canvas, avatarTexture, margin, topY, size, size, WHITE);
 
-        DrawRectangle(canvas, margin + height + padding, topY, Game.width - 2 * margin * 2 - height, height, BLACK);
+        DrawRectangle(canvas,
+                      margin + height + padding,
+                      topY,
+                      Game.width - 2 * margin * 2 - height,
+                      height,
+                      BLACK);
         DrawText(canvas, dialog, margin + height + padding * 2, topY + padding, WHITE);
 
         string info = emotion + "\n" + avatarPath;
         DrawText(canvas, info.c_str(), 150, 300, GREEN);
-    }
-    else
-    {
+    } else {
         DrawRectangle(canvas, margin, topY, Game.width - 2 * margin, height, BLACK);
         DrawText(canvas, dialog, margin + padding, topY + padding, WHITE);
     }
@@ -191,3 +199,7 @@ BASALT void RegisterDialogSequence(const char* name, const char* lines)
     SDL_LogDebug(0, "Registered dialog sequence %s with %zu lines.", name, seq.lines.size());
 }
 
+BASALT bool DialogIsSpeaking()
+{
+    return Dialog.isSpeaking;
+}

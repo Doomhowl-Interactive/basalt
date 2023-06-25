@@ -24,6 +24,8 @@ BASALT bool UpdateAndRenderDialogBoxes(Texture canvas);
 BASALT void RegisterDialogSequence(const char* name, const char* lines);
 BASALT void StartDialogSequence(const char* dialog);
 
+BASALT bool DialogIsSpeaking();
+
 #ifdef __cplusplus
 }
 #endif

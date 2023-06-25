@@ -169,6 +169,7 @@ BASALT usize GetFrameIndex()
     return Context.frameIndex;
 }
 
+// TODO: Implement SetTimeScale and make sure GetTimeElapsed  updates accordingly.
 BASALT double GetTimeElapsed()
 {
     return Context.timeElapsed;
