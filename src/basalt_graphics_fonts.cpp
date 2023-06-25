@@ -26,7 +26,7 @@ INTERNAL void InitEngineFonts()
     LoadFontEx("font_fff_forward", 16);
 }
 
-func void LogFontError(string text)
+static void LogFontError(string text)
 {
     // Avoid spamming the log
     if (LastYellTime + 2.0 < GetTimeElapsed()) {
@@ -35,7 +35,7 @@ func void LogFontError(string text)
     }
 }
 
-func string LoadedFontsToString()
+static string LoadedFontsToString()
 {
     std::string text = "Available fonts are: ";
     if (LoadedFonts.size() == 0) {

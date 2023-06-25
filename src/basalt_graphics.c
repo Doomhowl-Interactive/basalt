@@ -6,8 +6,7 @@
 
 BASALT void PrintASCIILogo(const char* suffix)
 {
-    static const char* logo[] =
-    {
+    static const char* logo[] = {
         " ________  ________  ________  ________  ___   __________    ",
         " |\\   __  \\|\\   __  \\|\\   ____\\|\\   __  \\|\\  \\ |\\___   ___\\  ",
         " \\ \\  \\|\\ /\\ \\  \\|\\  \\ \\  \\___|\\ \\  \\|\\  \\ \\  \\\\|___ \\  \\_|  ",
@@ -19,8 +18,7 @@ BASALT void PrintASCIILogo(const char* suffix)
     };
 
     const ConsoleColor rainbow[] = { CRED, CRED, CYELLOW, CGREEN, CBLUE, CPINK, CPINK, CPINK };
-    for (int i = 0; i < 8; i++)
-    {
+    for (int i = 0; i < 8; i++) {
         BasaltPrintColored(rainbow[i], logo[i]);
     }
     BasaltPrintColored(CWHITE, "\n>> %s\n", suffix);
@@ -52,7 +50,8 @@ BASALT void DrawLine(Texture canvas, int startX, int startY, int endX, int endY,
 
     // If both of the differences are 0 there will be a division by 0 below.
     if (dx == 0 && dy == 0) {
-        if (0 <= startX && startX < (int)canvas.width && 0 <= startY && startY < (int)canvas.height) {
+        if (0 <= startX && startX < (int)canvas.width && 0 <= startY
+            && startY < (int)canvas.height) {
             DrawDot(canvas, startX, startY, color);
         }
         return;
@@ -125,7 +124,13 @@ BASALT void DrawRectangle(Texture canvas, int posX, int posY, int width, int hei
     DRAWCALL(canvas, DrawRectangle);
 }
 
-BASALT void DrawRectangleLines(Texture canvas, int posX, int posY, int width, int height, int border, Color color)
+BASALT void DrawRectangleLines(Texture canvas,
+                               int posX,
+                               int posY,
+                               int width,
+                               int height,
+                               int border,
+                               Color color)
 {
     DrawRectangle(canvas, posX, posY, width, border, color);  // top
     DrawRectangle(canvas, posX + width - border, posY, border, height,
@@ -167,7 +172,12 @@ BASALT void DisposeTexture(Texture texture)
     }
 }
 
-BASALT void SwapTextureChannels(Texture dest, Texture src, uchar first, uchar second, uchar third, uchar fourth)
+BASALT void SwapTextureChannels(Texture dest,
+                                Texture src,
+                                uchar first,
+                                uchar second,
+                                uchar third,
+                                uchar fourth)
 {
     assert(dest.width == src.width && dest.height == src.height);
     assert(dest.pixels);
@@ -242,23 +252,29 @@ BASALT void DrawTextureEx(Texture canvas,
     DRAWCALL(canvas, DrawRectangle);
 }
 
-func bool olivec_normalize_rect(int x,
-                                int y,
-                                int w,
-                                int h,
-                                size_t canvas_width,
-                                size_t canvas_height,
-                                Olivec_Normalized_Rect* nr);
+static bool olivec_normalize_rect(int x,
+                                  int y,
+                                  int w,
+                                  int h,
+                                  size_t canvas_width,
+                                  size_t canvas_height,
+                                  Olivec_Normalized_Rect* nr);
 
 // NOTE: Taken from https://github.com/tsoding/olive.c/blob/master/olive.c
-BASALT void
-DrawTextureScaled(Texture canvas, Texture texture, int destX, int destY, int destWidth, int destHeight, Color tint)
+BASALT void DrawTextureScaled(Texture canvas,
+                              Texture texture,
+                              int destX,
+                              int destY,
+                              int destWidth,
+                              int destHeight,
+                              Color tint)
 {
     assert(texture.pixels);
     assert(canvas.pixels);
 
     Olivec_Normalized_Rect nr = { 0 };
-    if (!olivec_normalize_rect(destX, destY, destWidth, destHeight, canvas.width, canvas.height, &nr))
+    if (!olivec_normalize_rect(
+            destX, destY, destWidth, destHeight, canvas.width, canvas.height, &nr))
         return;
 
     int xa = nr.ox1;
@@ -331,8 +347,13 @@ BASALT inline Color BlendColors(Color src, Color dst, uchar t)
 }
 
 // NOTE: Taken from https://github.com/tsoding/olive.c/blob/master/olive.c
-func bool
-olivec_normalize_rect(int x, int y, int w, int h, size_t canvas_width, size_t canvas_height, Olivec_Normalized_Rect* nr)
+static bool olivec_normalize_rect(int x,
+                                  int y,
+                                  int w,
+                                  int h,
+                                  size_t canvas_width,
+                                  size_t canvas_height,
+                                  Olivec_Normalized_Rect* nr)
 {
     // No need to render empty rectangle
     if (w == 0)

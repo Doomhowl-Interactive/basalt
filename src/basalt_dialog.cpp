@@ -130,7 +130,7 @@ BASALT void StartDialogSequence(const char* dialog)
     SDL_Log("> Started dialog sequence %s", dialog);
 }
 
-func bool UpdateAndRenderCustomDialogBoxes(Texture canvas, DialogBoxDrawerFunc drawingFunc)
+static bool UpdateAndRenderCustomDialogBoxes(Texture canvas, DialogBoxDrawerFunc drawingFunc)
 {
     if (!Dialog.isSpeaking) {
         return false;

@@ -45,12 +45,11 @@ typedef uint32_t Color;
 #define SIGN(T, x) ((T)((x) > 0) - (T)((x) < 0))
 #define ABS(T, x) (SIGN(T, x) * (x))
 
-#define func static
-#define BASALT
-
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+#define BASALT
 
 typedef enum ConsoleColor {
     CBLACK,

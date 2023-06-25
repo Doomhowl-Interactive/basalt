@@ -14,7 +14,7 @@
  EndTest(NAME, "", true); \
  }  // succeeds
 
-func void EndTest(const char* name, const char* description, bool succeeded)
+static void EndTest(const char* name, const char* description, bool succeeded)
 {
     const char* padding = PadStringRight(name, '.', 50);
     const char* result = succeeded ? "PASSED" : "FAILED";
@@ -134,9 +134,10 @@ TEST(StripText)
     const char* text = "             Hello, space cadet!       ";
     char* buffer = CloneText(text);
     StripText(buffer);
-    CHECK(TextIsEqual(buffer,"Hello, space cadet!"), "Strip text");
+    CHECK(TextIsEqual(buffer, "Hello, space cadet!"), "Strip text");
     free(buffer);
-} END;
+}
+END;
 
 TEST(ExtractDialogLines)
 {
@@ -147,19 +148,21 @@ TEST(ExtractDialogLines)
 
     StringArray arr = ExtractDialogLines(dialog);
     CHECK(arr.count == 2, "String array is 2");
-    CHECK(strcmp(arr.strings[0], "Hello world!") == 0,"Check first line");
-    CHECK(strcmp(arr.strings[1], "How are you today?") == 0,"Check second line");
+    CHECK(strcmp(arr.strings[0], "Hello world!") == 0, "Check first line");
+    CHECK(strcmp(arr.strings[1], "How are you today?") == 0, "Check second line");
 }
 END;
 
 TEST(ExtractDialogKeywords)
 {
-    const char* line = "{teacher|excited}Greetings traveler, are you up for the challenge to reach the mountain top?";
+    const char* line = "{teacher|excited}Greetings traveler, are you up for the challenge to reach "
+                       "the mountain top?";
     StringArray keywords = ExtractDialogKeywords(line);
     CHECK(keywords.count == 2, "There are two keywords");
     CHECK(TextIsEqual(keywords.strings[0], "teacher"), "Check first keyword");
     CHECK(TextIsEqual(keywords.strings[1], "excited"), "Check second keyword");
-} END;
+}
+END;
 
 BASALT void UnitTest()
 {

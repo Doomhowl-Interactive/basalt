@@ -17,20 +17,25 @@ typedef struct Option {
 static bool NeedsHelp = false;
 static bool EnableAll = false;
 
-static Option Options[] = { { &Config.hasArchaeo, "-a", "--archaeo", "Enables tooling to inspect draw calls. (EXPENSIVE)" },
-                            { &Config.hasHotloading, "-h", "--hotloading", "Enables hot-reloading if original asset folder is found." },
-                            { &Config.hasUnitTesting, "-t", "--test", "Does unit testing before launch" },
-                            { &Config.hasConsole, "-s", "--show", "Open console logs (Windows only)" },
-                            { &Config.unlockedFramerate, "-u", "--unlock", "Unlocks the framerate (not recommended)" },
-                            { &Config.isHeadless, "-H", "--headless", "Hot reloads game code from a dynamic library" },
-                            { &Config.lowQuality, "-l", "--low", "Decreases visual effects for higher performance." },
+static Option Options[] = {
+    { &Config.hasArchaeo, "-a", "--archaeo", "Enables tooling to inspect draw calls. (EXPENSIVE)" },
+    { &Config.hasHotloading,
+      "-h",
+      "--hotloading",
+      "Enables hot-reloading if original asset folder is found." },
+    { &Config.hasUnitTesting, "-t", "--test", "Does unit testing before launch" },
+    { &Config.hasConsole, "-s", "--show", "Open console logs (Windows only)" },
+    { &Config.unlockedFramerate, "-u", "--unlock", "Unlocks the framerate (not recommended)" },
+    { &Config.isHeadless, "-H", "--headless", "Hot reloads game code from a dynamic library" },
+    { &Config.lowQuality, "-l", "--low", "Decreases visual effects for higher performance." },
 
-                            { &EnableAll, "-A", "--all", "Enables all of the above." },
-                            { &NeedsHelp, "-?", "--help", "Shows this help screen" },
+    { &EnableAll, "-A", "--all", "Enables all of the above." },
+    { &NeedsHelp, "-?", "--help", "Shows this help screen" },
 
-                            { NULL, NULL } };
+    { NULL, NULL }
+};
 
-func usize GetOptionCount()
+static usize GetOptionCount()
 {
     usize count = 0;
     for (Option* opt = Options; opt->shortArg != NULL; opt++)
@@ -39,7 +44,7 @@ func usize GetOptionCount()
     return count;
 }
 
-func void PrintHelpInfo()
+static void PrintHelpInfo()
 {
     for (Option* o = Options; o->shortArg != NULL; o++) {
         const char* padding = PadStringRight(o->longArg, ' ', 30);
@@ -47,7 +52,7 @@ func void PrintHelpInfo()
     }
 }
 
-func bool HasArgument(int argc, char** argv, Option o)
+static bool HasArgument(int argc, char** argv, Option o)
 {
     for (int i = 0; i < argc; i++) {
         if (o.shortArg != NULL && TextIsEqual(argv[i], o.shortArg)) {

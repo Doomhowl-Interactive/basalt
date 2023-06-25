@@ -6,7 +6,7 @@ static std::unordered_map<SDL_Keycode, bool> pressedKeysFrame;
 
 static Point mousePos;
 
-func void PrintKeys()
+static void PrintKeys()
 {
     for (auto& key : pressedKeys) {
         SDL_Log("Key %s is %s", SDL_GetKeyName(key.first), key.second ? "down" : "up");
@@ -30,7 +30,8 @@ PLAT_SDL2 bool ProcessKeyboardInput(SDL_Event& e)
         pressedKeys[key] = isDown;
         pressedKeysFrame[key] = isDown;
 
-        // SDL_Log("Key %s was %s", SDL_GetKeyName(key), keyevent.state == SDL_KEYDOWN ? "pressed" : "released");
+        // SDL_Log("Key %s was %s", SDL_GetKeyName(key), keyevent.state == SDL_KEYDOWN ? "pressed" :
+        // "released");
     }
     return true;
 }
