@@ -5,7 +5,6 @@
 #include "basalt_extra.h"
 #include "basalt_extra.hpp"
 #include <stdexcept>
-#include <optional>
 
 #define DIALOG_SKIN
 using namespace std;

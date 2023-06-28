@@ -12,11 +12,11 @@
 #include <string.h>
 
 #ifdef _WIN32
-#include <SDL.h>
-#include <SDL_ttf.h>
+# include <SDL.h>
+# include <SDL_ttf.h>
 #else
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_ttf.h>
+# include <SDL2/SDL.h>
+# include <SDL2/SDL_ttf.h>
 #endif
 
 typedef unsigned int uint;
@@ -37,11 +37,11 @@ typedef uint32_t Color;
 #define MIN(X, Y) ((X) < (Y) ? (X) : (Y))
 
 #define SWAP(T, a, b) \
-    do { \
-        T t = a; \
-        a = b; \
-        b = t; \
-    } while (0)
+ do { \
+  T t = a; \
+  a = b; \
+  b = t; \
+ } while (0)
 #define SIGN(T, x) ((T)((x) > 0) - (T)((x) < 0))
 #define ABS(T, x) (SIGN(T, x) * (x))
 
@@ -107,11 +107,13 @@ typedef struct StringArray {
     usize capacity;
 } StringArray;
 
-#define INFO(...) BasaltPrintColored(CWHITE, "INFO  : "__VA_ARGS__)
-#define WARN(...) BasaltPrintColored(CYELLOW, "WARN  : "__VA_ARGS__)
-#define ERR(...) BasaltPrintColored(CRED, "ERROR : "__VA_ARGS__)
-#define FATAL(...) BasaltPrintColored(CPURPLE, "FATAL : "__VA_ARGS__)
-#define DEBUG(...) BasaltPrintColored(CLGRAY, "DEBUG : "__VA_ARGS__)
+#ifndef __cplusplus
+# define INFO(...) BasaltPrintColored(CWHITE, "INFO  : "__VA_ARGS__)
+# define WARN(...) BasaltPrintColored(CYELLOW, "WARN  : "__VA_ARGS__)
+# define ERR(...) BasaltPrintColored(CRED, "ERROR : "__VA_ARGS__)
+# define FATAL(...) BasaltPrintColored(CPURPLE, "FATAL : "__VA_ARGS__)
+# define DEBUG(...) BasaltPrintColored(CLGRAY, "DEBUG : "__VA_ARGS__)
+#endif
 
 // Ergonomic macros
 #define V2(V) V.x, V.y
@@ -186,7 +188,7 @@ BASALT extern bool TextIsEqualNoCase(const char* text1, const char* text2);
 BASALT extern const char* AppendText(const char* src, const char* add);
 BASALT extern char* CloneText(const char* text);  // WARN: free after use
 BASALT extern usize TextLength(const char* text);
-BASALT char* StripText(char* buffer);             // strip happens in-place!
+BASALT char* StripText(char* buffer);  // strip happens in-place!
 BASALT int CopyText(char* dst, const char* src);
 
 // TODO FIX: Inconsistent naming with InitStringArray
@@ -287,14 +289,25 @@ BASALT void PrintASCIILogo(const char* suffix);
 BASALT extern void DrawDot(Texture canvas, int posX, int posY, Color tint);
 BASALT void DrawLine(Texture canvas, int startX, int startY, int endX, int endY, Color tint);
 BASALT void DrawRectangle(Texture canvas, int posX, int posY, int width, int height, Color tint);
-BASALT void DrawRectangleLines(Texture canvas, int posX, int posY, int width, int height, int border, Color tint);
+BASALT void DrawRectangleLines(Texture canvas,
+                               int posX,
+                               int posY,
+                               int width,
+                               int height,
+                               int border,
+                               Color tint);
 BASALT void DrawWeirdTestGradient(Texture canvas);
 
 BASALT extern void LoadFont(const char* name);
 BASALT void LoadFontEx(const char* name, uint size);
 #undef DrawText  // *yells at Microsoft*
 BASALT void DrawText(Texture canvas, const char* text, int posX, int posY, Color color);
-BASALT void DrawTextWithFont(const char* fontName, Texture canvas, const char* text, int posX, int posY, Color color);
+BASALT void DrawTextWithFont(const char* fontName,
+                             Texture canvas,
+                             const char* text,
+                             int posX,
+                             int posY,
+                             Color color);
 
 // TODO: Put in private header
 BASALT void DisposeFonts();
@@ -307,13 +320,32 @@ BASALT void DisposeTexture(Texture texture);
 // Texture pixels are in ABGR (big endian), use this to convert to correct colors for XImage
 // NOTE: What is the correct format you might ask? I have no idea, found out after trial-and-error.
 BASALT extern void MapTextureToCorrectFormat(Texture dest, Texture src);
-BASALT void SwapTextureChannels(Texture dest, Texture src, uchar first, uchar second, uchar third, uchar fourth);
+BASALT void SwapTextureChannels(Texture dest,
+                                Texture src,
+                                uchar first,
+                                uchar second,
+                                uchar third,
+                                uchar fourth);
 
 BASALT void ClearTexture(Texture canvas, Color tint);
-BASALT void DrawTextureEx(Texture canvas, Texture texture, int posX, int posY, int srcX, int srcY, int srcWidth, int srcHeight, Color tint);
+BASALT void DrawTextureEx(Texture canvas,
+                          Texture texture,
+                          int posX,
+                          int posY,
+                          int srcX,
+                          int srcY,
+                          int srcWidth,
+                          int srcHeight,
+                          Color tint);
 
 BASALT extern void DrawTexture(Texture canvas, Texture texture, int posX, int posY, Color tint);
-BASALT void DrawTextureScaled(Texture canvas, Texture texture, int destX, int destY, int destWidth, int destHeight, Color tint);
+BASALT void DrawTextureScaled(Texture canvas,
+                              Texture texture,
+                              int destX,
+                              int destY,
+                              int destWidth,
+                              int destHeight,
+                              Color tint);
 
 #undef RGB  // *yells at Microsoft*
 BASALT extern Color RGB(uchar r, uchar g, uchar b);
