@@ -113,6 +113,23 @@ BASALT void DrawTextWithFont(const char* fontName,
         return;
     }
 
+    // Split up function if text contains lines
+    if (strchr(text, '\n') != nullptr) {
+        vector<string> lines;
+        char* line = strtok((char*)text, "\n");
+        while (line != nullptr) {
+            lines.push_back(line);
+            line = strtok(nullptr, "\n");
+        }
+
+        int y = posY;
+        for (const auto& line : lines) {
+            DrawTextWithFont(fontName, canvas, line.c_str(), posX, y, color);
+            y += TTF_FontHeight(font); // TODO: font size
+        }
+        return;
+    }
+
     SDL_Color sdlColor = ConvertColor(color);
     SDL_Surface* surface = TTF_RenderText_Blended(font, text, sdlColor);
     SDL_Rect destRect = { posX, posY, surface->w, surface->h };
