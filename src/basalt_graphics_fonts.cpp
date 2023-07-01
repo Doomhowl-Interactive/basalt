@@ -1,5 +1,6 @@
 #include <stdexcept>
 #include <string>
+#include <sstream>
 #include <unordered_map>
 #include <vector>
 
@@ -97,6 +98,25 @@ BASALT void DrawText(Texture canvas, const char* text, int posX, int posY, Color
     DrawTextWithFont("default", canvas, text, posX, posY, color);
 }
 
+static void DrawTextLineWithFont(TTF_Font* font,
+                                 Texture canvas,
+                                 string& line,
+                                 int posX,
+                                 int posY,
+                                 Color color)
+{
+    if (line.empty()) {
+        return;
+    }
+
+    SDL_Color sdlColor = ConvertColor(color);
+    SDL_Surface* surface = TTF_RenderText_Blended(font, line.c_str(), sdlColor);
+    SDL_Rect destRect = { posX, posY, surface->w, surface->h };
+    // TODO: Implement GPU: SDL_RenderCopy(canvas->renderer, texture, NULL, &rect);
+    SDL_UpperBlit(surface, NULL, GetScreenOverlaySurface(), &destRect);
+    SDL_FreeSurface(surface);
+}
+
 BASALT void DrawTextWithFont(const char* fontName,
                              Texture canvas,
                              const char* text,
@@ -113,29 +133,15 @@ BASALT void DrawTextWithFont(const char* fontName,
         return;
     }
 
-    // Split up function if text contains lines
-    if (strchr(text, '\n') != nullptr) {
-        vector<string> lines;
-        char* line = strtok((char*)text, "\n");
-        while (line != nullptr) {
-            lines.push_back(line);
-            line = strtok(nullptr, "\n");
-        }
-
-        int y = posY;
-        for (const auto& line : lines) {
-            DrawTextWithFont(fontName, canvas, line.c_str(), posX, y, color);
-            y += TTF_FontHeight(font); // TODO: font size
-        }
-        return;
+    // Split up function if text contains multiple lines
+    stringstream stream(text);
+    string line;
+    int y = posY;
+    int height = TTF_FontHeight(font);
+    while (getline(stream, line)) {
+        DrawTextLineWithFont(font, canvas, line, posX, y, color);
+        y += height;
     }
-
-    SDL_Color sdlColor = ConvertColor(color);
-    SDL_Surface* surface = TTF_RenderText_Blended(font, text, sdlColor);
-    SDL_Rect destRect = { posX, posY, surface->w, surface->h };
-    // TODO: Implement GPU: SDL_RenderCopy(canvas->renderer, texture, NULL, &rect);
-    SDL_UpperBlit(surface, NULL, GetScreenOverlaySurface(), &destRect);
-    SDL_FreeSurface(surface);
 }
 
 BASALT void DisposeFonts()
