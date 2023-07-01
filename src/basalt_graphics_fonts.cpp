@@ -136,11 +136,10 @@ BASALT void DrawTextWithFont(const char* fontName,
     // Split up function if text contains multiple lines
     stringstream stream(text);
     string line;
-    int y = posY;
     int height = TTF_FontHeight(font);
     while (getline(stream, line)) {
-        DrawTextLineWithFont(font, canvas, line, posX, y, color);
-        y += height;
+        DrawTextLineWithFont(font, canvas, line, posX, posY, color);
+        posY += height;
     }
 }
 
