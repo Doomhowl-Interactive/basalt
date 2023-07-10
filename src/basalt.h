@@ -11,6 +11,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+// TODO: Don't put SDL_ttf.h and SDL2.h in the basalt header
+// because games will complain about not having these!
 #ifdef _WIN32
 # include <SDL.h>
 # include <SDL_ttf.h>
