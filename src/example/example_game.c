@@ -1,4 +1,5 @@
 #include "basalt.h"
+
 #include "example_game.h"
 
 static bool Horizontal = false;
@@ -40,7 +41,7 @@ BASALT void UpdateAndRenderGame(Texture canvas, float delta)
     DrawText(canvas, "Hello Basalt!", 10, 10, WHITE);
     DrawText(canvas, "Press SPACE to change direction", 10, 50, YELLOW);
 
-    if (IsKeyPressed(SDLK_SPACE)) {
+    if (IsKeyPressed(KEY_SPACE)) {
         Horizontal = !Horizontal;
     }
 }

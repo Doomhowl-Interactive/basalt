@@ -1,4 +1,5 @@
 #include <string.h>
+#include <SDL.h>
 
 #include "basalt.h"
 

@@ -2,6 +2,14 @@ project(basalt)
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_CXX_STANDARD 17)
 
+# I hate cmake with a passion
+set(SDL2_PATH $ENV{SDL2_PATH})
+set(SDL2_INCLUDE_DIR $ENV{SDL2_INCLUDE_DIR})
+set(SDL2_LIBRARY $ENV{SDL2_LIBRARY})
+
+set(SDL2_TTF_LIBRARY $ENV{SDL2_TTF_LIBRARY})
+set(SDL2_TTF_INCLUDE_DIR $ENV{SDL2_TTF_INCLUDE_DIR})
+
 # Find source files
 file(GLOB_RECURSE SRC_BASALT basalt_*.c basalt_*.cpp basalt_*.h basalt_*.hpp)
 if (UNIX OR LINUX)
@@ -22,7 +30,11 @@ add_library(${PROJECT_NAME} STATIC ${SRC_ALL})
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
 # Import packages
-target_link_libraries(${PROJECT_NAME} m)
+if (WIN32)
+    target_link_libraries(${PROJECT_NAME})
+else ()
+    target_link_libraries(${PROJECT_NAME} m)
+endif()
 
 find_package(SDL2 REQUIRED)
 target_link_libraries(${PROJECT_NAME} SDL2::Main)

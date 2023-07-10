@@ -49,12 +49,12 @@ PLAT_SDL2 void ClearKeyboardInput()
 
 extern "C" {
 
-BASALT bool IsKeyDown(SDL_Keycode code)
+BASALT bool IsKeyDown(KeyCode code)
 {
     return pressedKeys[code];
 }
 
-BASALT bool IsKeyUp(SDL_Keycode code)
+BASALT bool IsKeyUp(KeyCode code)
 {
     return !pressedKeys[code];
 }
@@ -74,12 +74,12 @@ BASALT bool IsMouseUp()
     return !IsMouseDown();
 }
 
-BASALT bool IsKeyPressed(SDL_Keycode code)
+BASALT bool IsKeyPressed(KeyCode code)
 {
     return pressedKeysFrame[code];
 }
 
-BASALT bool IsKeyReleased(SDL_Keycode code)
+BASALT bool IsKeyReleased(KeyCode code)
 {
     return !pressedKeysFrame[code];
 }

@@ -32,7 +32,7 @@ INTERNAL bool SearchAsset(string assetName, string* outPath)
     for (auto& trav : traversedPaths) {
         msg += trav.string() + "\n";
     }
-    SDL_LogError(0, "%s\n", msg.c_str());
+    ERR(msg.c_str());
 
     return false;
 }

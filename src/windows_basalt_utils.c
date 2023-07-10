@@ -1,4 +1,6 @@
 #include <windows.h>
+#include <stdio.h>
+
 #include "basalt.h"
 
 static String ConsoleLog = {0};

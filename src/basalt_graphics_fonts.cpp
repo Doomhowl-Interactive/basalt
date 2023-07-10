@@ -4,9 +4,14 @@
 #include <unordered_map>
 #include <vector>
 
+#ifdef WIN32
+#include <SDL_ttf.h>
+#include <SDL_surface.h>
+#else
 #include <SDL2/SDL_surface.h>
 #include <SDL2/SDL_ttf.h>
-#include <SDL_ttf.h>
+#endif
+
 
 #include "basalt.h"
 #include "basalt_internal.hpp"

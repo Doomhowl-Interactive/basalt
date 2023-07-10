@@ -1,5 +1,11 @@
 #include "basalt.h"
 
+#ifdef WIN32
+    #include <SDL.h>
+#else
+    #include <SDL2/SDL.h>
+#endif
+
 #define PLAT_SDL2
 
 // HACK: We should probably pass some kind of RenderContext (a union maybe) 

@@ -4,22 +4,12 @@
 # define PI 3.14159265358979323846
 #endif
 
+#include <stdio.h>
 #include <assert.h>
 #include <stdbool.h>
 #include <stdint.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 
-// TODO: Don't put SDL_ttf.h and SDL2.h in the basalt header
-// because games will complain about not having these!
-#ifdef _WIN32
-# include <SDL.h>
-# include <SDL_ttf.h>
-#else
-# include <SDL2/SDL.h>
-# include <SDL2/SDL_ttf.h>
-#endif
+#include "basalt_keys.h"
 
 typedef unsigned int uint;
 typedef unsigned char uchar;
@@ -82,14 +72,20 @@ typedef struct RectF {
     float height;
 } RectF;
 
-typedef SDL_Point Point;
+typedef struct Point {
+    int x;
+    int y;
+} Point;
 
 typedef struct Size {
     int width;
     int height;
 } Size;
 
-typedef SDL_FPoint Vec2;
+typedef struct Vec2 {
+    float x;
+    float y;
+} Vec2;
 
 typedef struct Vec3 {
     float x;
@@ -97,19 +93,27 @@ typedef struct Vec3 {
     float z;
 } Vec3;
 
+// TODO: If I switch to C++, I can finally ditch this.
 typedef struct String {
     size_t size;
     size_t capacity;
     char* text;
 } String;
 
+// TODO: If I switch to C++, I can finally ditch this.
 typedef struct StringArray {
     char** strings;
     usize count;
     usize capacity;
 } StringArray;
 
-#ifndef __cplusplus
+#ifdef __cplusplus
+# define INFO printf
+# define WARN printf
+# define ERR printf
+# define FATAL printf
+# define DEBUG printf
+#else
 # define INFO(...) BasaltPrintColored(CWHITE, "INFO  : "__VA_ARGS__)
 # define WARN(...) BasaltPrintColored(CYELLOW, "WARN  : "__VA_ARGS__)
 # define ERR(...) BasaltPrintColored(CRED, "ERROR : "__VA_ARGS__)
@@ -247,11 +251,11 @@ BASALT double GetTimeElapsed();
 BASALT bool IsMouseDown();
 BASALT bool IsMouseUp();
 
-BASALT bool IsKeyDown(SDL_Keycode code);
-BASALT bool IsKeyUp(SDL_Keycode code);
+BASALT bool IsKeyDown(KeyCode code);
+BASALT bool IsKeyUp(KeyCode code);
 
-BASALT bool IsKeyPressed(SDL_Keycode code);
-BASALT bool IsKeyReleased(SDL_Keycode code);
+BASALT bool IsKeyPressed(KeyCode code);
+BASALT bool IsKeyReleased(KeyCode code);
 
 // Engine configuration (basalt_config.c)
 typedef struct EngineConfig {

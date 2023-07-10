@@ -67,7 +67,7 @@ DIALOG_SKIN bool DrawDefaultDialogBox(const char* dialog,
                                       Texture canvas,
                                       float timeSince)
 {
-    if (IsKeyPressed(SDLK_x) || IsKeyPressed(SDLK_SPACE) || IsKeyPressed(SDLK_RETURN)) {
+    if (IsKeyPressed(KEY_x) || IsKeyPressed(KEY_SPACE) || IsKeyPressed(KEY_RETURN)) {
         return true;
     }
 
@@ -113,12 +113,12 @@ BASALT void StartDialogSequence(const char* dialog)
     try {
         sequence = Dialog.getSequence(string(dialog));
     } catch (out_of_range e) {
-        SDL_LogWarn(0, "No registered dialog sequences named %s !", dialog);
+        WARN("No registered dialog sequences named %s !", dialog);
         return;
     }
 
     if (!Dialog.curSequence.empty() && TextIsEqualNoCase(Dialog.curSequence.c_str(), dialog)) {
-        SDL_LogWarn(0, "Already speaking, can't start dialog %s", dialog);
+        WARN("Already speaking, can't start dialog %s", dialog);
         return;
     }
 
@@ -126,7 +126,7 @@ BASALT void StartDialogSequence(const char* dialog)
     Dialog.curSequence = dialog;
     Dialog.isSpeaking = true;
     Dialog.startTime = GetTimeElapsed();
-    SDL_Log("> Started dialog sequence %s", dialog);
+    INFO("> Started dialog sequence %s", dialog);
 }
 
 static bool UpdateAndRenderCustomDialogBoxes(Texture canvas, DialogBoxDrawerFunc drawingFunc)
@@ -139,7 +139,7 @@ static bool UpdateAndRenderCustomDialogBoxes(Texture canvas, DialogBoxDrawerFunc
     try {
         curSequence = Dialog.getCurrentSequence();
     } catch (out_of_range e) {
-        SDL_LogWarn(0, "Invalid dialog state, reverting...");
+        WARN("Invalid dialog state, reverting...");
         Dialog.isSpeaking = false;
         return false;
     }
@@ -148,7 +148,7 @@ static bool UpdateAndRenderCustomDialogBoxes(Texture canvas, DialogBoxDrawerFunc
     try {
         line = curSequence.getDialogLine(Dialog.lineIndex);
     } catch (out_of_range e) {
-        SDL_LogWarn(0, "No dialog line with index %zu", Dialog.lineIndex);
+        WARN(0, "No dialog line with index %zu", Dialog.lineIndex);
         return false;
     }
 
@@ -158,9 +158,9 @@ static bool UpdateAndRenderCustomDialogBoxes(Texture canvas, DialogBoxDrawerFunc
         Dialog.lineIndex++;
         if (Dialog.lineIndex >= curSequence.lines.size()) {
             Dialog.isSpeaking = false;
-            SDL_Log("< Ended dialog sequence %s", Dialog.curSequence.c_str());
+            DEBUG("< Ended dialog sequence %s", Dialog.curSequence.c_str());
         } else {
-            SDL_Log(">>> %s", Dialog.curSequence.c_str());
+            DEBUG(">>> %s", Dialog.curSequence.c_str());
         }
     }
     return true;
@@ -195,7 +195,7 @@ BASALT void RegisterDialogSequence(const char* name, const char* lines)
 
     Dialog.sequences.insert({ name, seq });
 
-    SDL_LogDebug(0, "Registered dialog sequence %s with %zu lines.", name, seq.lines.size());
+    DEBUG("Registered dialog sequence %s with %zu lines.", name, seq.lines.size());
 }
 
 BASALT bool DialogIsSpeaking()
