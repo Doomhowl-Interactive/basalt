@@ -15,6 +15,8 @@ Windows 8/10/11
 
 Open with Visual Studio or compile via MSBuild.
 
+Don't forget to place the correct .dlls from ```vendor/SDL2``` and ```vendor/SDL2_ttf``` in the folder of the built executable.
+
 ## Screenshots
 
 ![Preview](screenshots/windows7_2.PNG)
