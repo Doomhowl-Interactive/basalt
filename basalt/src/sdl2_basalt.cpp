@@ -76,7 +76,7 @@ int main(int argc, char** argv)
                               SDL_WINDOWPOS_UNDEFINED,
                               Game.width,
                               Game.height,
-                              SDL_WINDOW_ALWAYS_ON_TOP);
+                              NULL);
     if (Window == NULL) {
         SDL_LogError(0, "Could not create Window!");
         return EXIT_FAILURE;

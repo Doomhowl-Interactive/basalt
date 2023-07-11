@@ -22,7 +22,6 @@ typedef uint64_t ulong;
 typedef uint32_t Color;
 
 #define MAX_ENTITIES 100000
-#define MAX_PATH_LENGTH 128
 #define DYNAMIC
 
 #define MAX(X, Y) ((X) > (Y) ? (X) : (Y))
@@ -107,19 +106,11 @@ typedef struct StringArray {
     usize capacity;
 } StringArray;
 
-#ifdef __cplusplus
-# define INFO printf
-# define WARN printf
-# define ERR printf
-# define FATAL printf
-# define DEBUG printf
-#else
-# define INFO(...) BasaltPrintColored(CWHITE, "INFO  : "__VA_ARGS__)
-# define WARN(...) BasaltPrintColored(CYELLOW, "WARN  : "__VA_ARGS__)
-# define ERR(...) BasaltPrintColored(CRED, "ERROR : "__VA_ARGS__)
-# define FATAL(...) BasaltPrintColored(CPURPLE, "FATAL : "__VA_ARGS__)
-# define DEBUG(...) BasaltPrintColored(CLGRAY, "DEBUG : "__VA_ARGS__)
-#endif
+#define INFO(...) BasaltPrintColored(CWHITE, "INFO  : " __VA_ARGS__)
+#define WARN(...) BasaltPrintColored(CYELLOW, "WARN  : " __VA_ARGS__)
+#define ERR(...) BasaltPrintColored(CRED, "ERROR : " __VA_ARGS__)
+#define FATAL(...) BasaltPrintColored(CPURPLE, "FATAL : " __VA_ARGS__)
+#define DEBUG(...) BasaltPrintColored(CLGRAY, "DEBUG : " __VA_ARGS__)
 
 // Ergonomic macros
 #define V2(V) V.x, V.y

@@ -516,8 +516,8 @@ BASALT StringArray GetFolderFiles(const char* folder, const char* ext)
                     list.strings = (char**)realloc(list.strings, list.capacity * sizeof(char*));
                 }
 
-                char fullName[MAX_PATH_LENGTH + 300];
-                snprintf(fullName, MAX_PATH_LENGTH + 300, "%s/%s", folder, ent->d_name);
+                char fullName[MAX_PATH + 300];
+                snprintf(fullName, MAX_PATH + 300, "%s/%s", folder, ent->d_name);
                 list.strings[list.count++] = _strdup(fullName);
             }
         }

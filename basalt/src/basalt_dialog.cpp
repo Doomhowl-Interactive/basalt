@@ -148,7 +148,7 @@ static bool UpdateAndRenderCustomDialogBoxes(Texture canvas, DialogBoxDrawerFunc
     try {
         line = curSequence.getDialogLine(Dialog.lineIndex);
     } catch (out_of_range e) {
-        WARN(0, "No dialog line with index %zu", Dialog.lineIndex);
+        WARN("No dialog line with index %zu", Dialog.lineIndex);
         return false;
     }
 

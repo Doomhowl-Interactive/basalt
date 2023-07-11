@@ -3,25 +3,31 @@
 
 #include "basalt.h"
 
-static String ConsoleLog = {0};
+static String ConsoleLog = { 0 };
 static bool AllocatedConsole = false;
 
-#define MAX_WORKDIR_LEN 128
-#define MAX_WORKDIR_LEN 128
+// TODO HACK: Use C++ 17 filesystem
 BASALT const char* GetWorkingDirectory()
 {
-    static char workingDir[MAX_WORKDIR_LEN];
-    if (!GetCurrentDirectory(MAX_WORKDIR_LEN, workingDir)) {
+    static char workingDir[MAX_PATH];
+    DWORD workingDirU[MAX_PATH];
+    int len = GetModuleFileName(NULL, workingDirU, MAX_PATH);
+    if (len == 0) {
         ERR("Could not determine working directory %s", GetLastError());
+    }
+    sprintf(workingDir, "%ws", workingDirU);
+    // cut off the executable name
+    char* lastSlash = strrchr(workingDir, '\\');
+    if (lastSlash != NULL) {
+        *lastSlash = '\0';
     }
     return workingDir;
 }
 
-BASALT void BasaltPrintColored(ConsoleColor color, const char* format, ... )
+BASALT void BasaltPrintColored(ConsoleColor color, const char* format, ...)
 {
     // allocate console string if not already
-    if (ConsoleLog.text == NULL)
-    {
+    if (ConsoleLog.text == NULL) {
         String str = MakeString();
         memcpy(&ConsoleLog, &str, sizeof(String));
     }
@@ -31,11 +37,10 @@ BASALT void BasaltPrintColored(ConsoleColor color, const char* format, ... )
     va_start(list, format);
     vsnprintf(line, 1024 - 1, format, list);
     va_end(list);
-    strcat(line,"\n");
+    strcat(line, "\n");
 
-    static const int colors[] = {0,7,8,9,10,11,12,5,14,15,6,13};
-    if (AllocatedConsole)
-    {
+    static const int colors[] = { 0, 7, 8, 9, 10, 11, 12, 5, 14, 15, 6, 13 };
+    if (AllocatedConsole) {
         SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), colors[color]);
     }
     printf(line);
@@ -64,8 +69,7 @@ BASALT void OpenSystemConsole()
 
 BASALT void CloseSystemConsole()
 {
-    if (AllocatedConsole)
-    {
+    if (AllocatedConsole) {
         FreeConsole();
     }
 }

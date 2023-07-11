@@ -4,6 +4,7 @@
 #include <filesystem>
 #include <cassert>
 #include <malloc.h>
+#include <windows.h>
 
 #include "basalt.h"
 #include "basalt_internal.hpp"
@@ -22,8 +23,8 @@ using namespace std;
 namespace fs = std::filesystem;
 
 struct AssetEntry {
-    char filePath[MAX_PATH_LENGTH];
-    char assetName[MAX_PATH_LENGTH];
+    char filePath[MAX_PATH];
+    char assetName[MAX_PATH];
     double lastPollTime;
     long lastEditTime;
 };
@@ -34,7 +35,10 @@ static usize AssetEntryCount = 0;
 static AssetEntry* AssetEntries = NULL;
 
 static vector<string> AssetFolders = {
-    ".", "assets", "../assets", "../../assets", "../../../assets",
+    "assets",
+    "../assets",
+    "../../assets",
+    "../../../assets",
 };
 
 INTERNAL bool SearchAsset(string assetName, string* outPath)
@@ -56,7 +60,7 @@ INTERNAL bool SearchAsset(string assetName, string* outPath)
     for (auto& trav : traversedPaths) {
         msg += trav.string() + "\n";
     }
-    ERR(msg.c_str());
+    ERR("%s", msg.c_str());
 
     return false;
 }
