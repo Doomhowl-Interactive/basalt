@@ -19,5 +19,7 @@ jobs:
         uses: microsoft/setup-msbuild@v1.1
       - name: Checkout
         uses: actions/checkout@v3
+      - name: Build app for debug
+        run: msbuild -t:rebuild -property:Configuration=Debug
       - name: Build app for release
-        run: msbuild -t:rebuild -verbosity:diag -property:Configuration=Release
+        run: msbuild -t:rebuild -property:Configuration=Release
