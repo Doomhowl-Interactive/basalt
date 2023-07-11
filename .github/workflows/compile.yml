@@ -17,5 +17,7 @@ jobs:
     steps:
       - name: Add msbuild to PATH
         uses: microsoft/setup-msbuild@v1.1
+      - name: Checkout
+        uses: actions/checkout@v3
       - name: Build app for release
         run: msbuild basalt.sln -t:rebuild -verbosity:diag -property:Configuration=Release
