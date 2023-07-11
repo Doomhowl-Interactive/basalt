@@ -2,7 +2,7 @@
 
 # basalt
 
-Software rendered game engine based on SDL2 for C and C++ cavemen
+Software rendered game engine based on SDL2 for C++ cavemen
 
 Solidified version of [Magma Game Engine](https://github.com/bramtechs/RaylibMagmaEngine) and [dream-emu](https://github.com/bramtechs/dream-emu).
 
@@ -10,11 +10,10 @@ Inspired by [Handmade Hero](https://handmadehero.org/).
 
 ## Dependencies
 
-Debian/Ubuntu
+Windows 8/10/11
+- Visual Studio 22 or latest VS Build Tools
 
-```bash
-sudo apt install libsdl2* build-essential cmake
-```
+Open with Visual Studio or compile via MSBuild.
 
 ## Screenshots
 
