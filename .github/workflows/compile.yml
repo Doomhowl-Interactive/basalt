@@ -4,9 +4,11 @@ on:
   push:
     branches:
       - main
+      - windows
   pull_request:
     branches:
       - main
+      - windows
 
 jobs:
   build:
