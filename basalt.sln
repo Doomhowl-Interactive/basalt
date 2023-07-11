@@ -5,6 +5,8 @@ VisualStudioVersion = 17.6.33815.320
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "basalt", "basalt\basalt.vcxproj", "{6288B11B-1139-4011-A837-E744298736DE}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "example_game", "example_game\example_game.vcxproj", "{AF30E470-5C01-45D1-90B6-4A6088FD04B8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -21,6 +23,14 @@ Global
 		{6288B11B-1139-4011-A837-E744298736DE}.Release|x64.Build.0 = Release|x64
 		{6288B11B-1139-4011-A837-E744298736DE}.Release|x86.ActiveCfg = Release|Win32
 		{6288B11B-1139-4011-A837-E744298736DE}.Release|x86.Build.0 = Release|Win32
+		{AF30E470-5C01-45D1-90B6-4A6088FD04B8}.Debug|x64.ActiveCfg = Debug|x64
+		{AF30E470-5C01-45D1-90B6-4A6088FD04B8}.Debug|x64.Build.0 = Debug|x64
+		{AF30E470-5C01-45D1-90B6-4A6088FD04B8}.Debug|x86.ActiveCfg = Debug|Win32
+		{AF30E470-5C01-45D1-90B6-4A6088FD04B8}.Debug|x86.Build.0 = Debug|Win32
+		{AF30E470-5C01-45D1-90B6-4A6088FD04B8}.Release|x64.ActiveCfg = Release|x64
+		{AF30E470-5C01-45D1-90B6-4A6088FD04B8}.Release|x64.Build.0 = Release|x64
+		{AF30E470-5C01-45D1-90B6-4A6088FD04B8}.Release|x86.ActiveCfg = Release|Win32
+		{AF30E470-5C01-45D1-90B6-4A6088FD04B8}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

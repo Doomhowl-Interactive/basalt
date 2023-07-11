@@ -1,4 +1,5 @@
 #include <string.h>
+#include <malloc.h>
 
 #include "basalt.h"
 
@@ -229,7 +230,7 @@ BASALT void DrawTextureEx(Texture canvas,
     assert(canvas.pixels);
 
     // Switch out the texture if hotreloading is on
-    HotReloadTexture(texture);
+    // HotReloadTexture(texture);
 
     Color* pixels = (Color*)canvas.pixels;
     for (int destY = MAX(0, posY); destY < Clamp(posY + srcHeight, 0, canvas.height); destY++) {

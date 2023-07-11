@@ -93,7 +93,7 @@ int main(int argc, char** argv)
 
     srand((unsigned int)time(NULL));
     InitializeGame();
-    InitHotReloading();
+    // InitHotReloading();
 
     Uint32 maxFps = Config.unlockedFramerate ? 10000 : 60;
 
