@@ -10,23 +10,10 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-      - name: Setup cmake
-        uses: jwlawson/actions-setup-cmake@v1.13
-        with:
-          cmake-version: "3.16.x"
-      - name: Install dependencies
-        run: |
-          sudo apt update -y
-          sudo apt install libsdl2* -y
-      - name: Configure and build
-        run: |
-          cmake -S . -B build
-          cmake --build build
-      - name: Test
-        run: |
-          ./build/src/example/example_game -t
+      - name: Add msbuild to PATH
+        uses: microsoft/setup-msbuild@v1.1
+      - name: Build app for release
+        run: msbuild basalt.sln -t:rebuild -verbosity:diag -property:Configuration=Release
