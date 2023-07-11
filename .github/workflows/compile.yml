@@ -20,4 +20,4 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Build app for release
-        run: msbuild basalt.sln -t:rebuild -verbosity:diag -property:Configuration=Release
+        run: msbuild -t:rebuild -verbosity:diag -property:Configuration=Release
