@@ -332,7 +332,7 @@ BASALT inline Color RGB(uchar r, uchar g, uchar b)
     return RGBA(r, g, b, 255);
 }
 
-BASALT inline Color BlendColors(Color src, Color dst, uchar t)
+BASALT Color BlendColors(Color src, Color dst, uchar t)
 {
     assert(t <= 255);
     if (t == 255)
@@ -345,6 +345,11 @@ BASALT inline Color BlendColors(Color src, Color dst, uchar t)
             | (((((src >> 8) & 0xff) * s + ((dst >> 8) & 0xff) * t)) & ~0xff)
             | (((((src >> 16) & 0xff) * s + ((dst >> 16) & 0xff) * t) << 8) & ~0xffff)
             | (((((src >> 24) & 0xff) * s + ((dst >> 24) & 0xff) * t) << 16) & ~0xffffff));
+}
+
+BASALT inline Color ColorAlpha(Color col, float a)
+{
+    return (col & 0x00FFFFFF) | ((uchar)(a * 255) << 24);
 }
 
 // NOTE: Taken from https://github.com/tsoding/olive.c/blob/master/olive.c

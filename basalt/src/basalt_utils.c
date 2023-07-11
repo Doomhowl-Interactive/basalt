@@ -15,34 +15,19 @@
 # include <dirent.h>
 #endif
 
-static usize PrevRNGFrame = 0;
-static usize RNGOffset = 0;
-
-// NOTE: Random numbers aren't actually random, they're based on frame index
-// in order to make reproducable tests
-// If you want "real" random numbers, use GetRealRandomNumber()
-BASALT int GetRandomNumber()
+BASALT void SetRandomSeed(usize seed)
 {
-#ifndef BASALT_NO_ENGINE
-    usize curFrame = GetFrameIndex();
-    if (PrevRNGFrame == curFrame) {
-        RNGOffset++;
-    } else {
-        RNGOffset = 0;
-        PrevRNGFrame = curFrame;
-    }
-
-    int rng = ((curFrame + RNGOffset * 69696420) << 2);
-    return rng;
-#else
-    return GetRealRandomNumber();
-#endif
+    srand(seed);
 }
 
-BASALT int GetRealRandomNumber()
+BASALT int GetRandomRange(int min, int max)
 {
-    int rng = rand();
-    return rng;
+    return rand() % (max - min + 1) + min;
+}
+
+BASALT int GetRandomNumber()
+{
+    return rand();
 }
 
 BASALT bool IsLittleEndian()
@@ -125,8 +110,21 @@ BASALT inline RectF RectToRectF(Rect rect)
 
 BASALT inline bool RectFOverlaps(RectF first, RectF second)
 {
-    return !(first.x < second.x || first.y < second.y || first.x + first.width > second.x + second.width
+    return !(first.x < second.x || first.y < second.y
+             || first.x + first.width > second.x + second.width
              || first.y + first.height > second.y + second.height);
+}
+
+BASALT inline bool PointInRectF(Point point, RectF rectf)
+{
+    return point.x >= rectf.x && point.x <= rectf.x + rectf.width && point.y >= rectf.y
+           && point.y <= rectf.y + rectf.height;
+}
+
+BASALT inline bool PointInRect(Point point, Rect rect)
+{
+    return point.x >= rect.x && point.x <= rect.x + rect.width && point.y >= rect.y
+           && point.y <= rect.y + rect.height;
 }
 
 BASALT inline Point Vec2ToPoint(Vec2 v2)
@@ -196,7 +194,8 @@ BASALT inline Vec2 Vec2Towards(Vec2 src, Vec2 dest)
 
 BASALT inline float Vec2DistanceSquared(Vec2 first, Vec2 second)
 {
-    float dist = ((second.x - first.x) * (second.x - first.x)) + ((second.y - first.y) * (second.y - first.y));
+    float dist = ((second.x - first.x) * (second.x - first.x))
+                 + ((second.y - first.y) * (second.y - first.y));
     return dist;
 }
 
@@ -474,7 +473,6 @@ BASALT const char* GetFileName(const char* filePath)
 BASALT const char* GetFileStem(const char* filePath)
 {
 #define MAX_BUFFER_LEN 256
-
     static char fileName[MAX_BUFFER_LEN];
 
     if (filePath != NULL) {

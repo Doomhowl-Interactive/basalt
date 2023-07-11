@@ -49,6 +49,7 @@ static string LoadedFontsToString()
     return text + "none";
 }
 
+// TODO: This is absolutely terribe, just return a Font struct what was I thinking??
 BASALT inline void LoadFont(const char* fontName)
 {
     LoadFontEx(fontName, 16);

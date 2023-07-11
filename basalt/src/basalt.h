@@ -148,9 +148,9 @@ BASALT String GetBasaltLog();
 BASALT int Clamp(int value, int min, int max);
 BASALT bool IsLittleEndian();
 
-// WARN: read implementation
+BASALT void SetRandomSeed(uint seed);
+BASALT int GetRandomRange(int min, int max);
 BASALT int GetRandomNumber();
-BASALT int GetRealRandomNumber();
 
 BASALT extern Vec2 RectFOrigin(RectF rectf);
 #define RectFOriginPoint(F) Vec2ToPoint(RectFOrigin(F))
@@ -165,6 +165,8 @@ BASALT extern Point RectCenter(Rect rect);
 BASALT extern Rect RectFToRect(RectF rectf);
 BASALT extern RectF RectToRectF(Rect rect);
 BASALT extern bool RectFOverlaps(RectF first, RectF second);
+BASALT extern bool PointInRectF(Point point, RectF rectf);
+BASALT extern bool PointInRect(Point point, Rect rect);
 
 BASALT extern Point Vec2ToPoint(Vec2 v2);
 BASALT extern Vec2 PointToVec2(Point point);
@@ -249,6 +251,7 @@ BASALT usize GetFrameIndex();
 BASALT double GetTimeElapsed();
 
 BASALT bool IsMouseDown();
+BASALT bool IsMousePressed();
 BASALT bool IsMouseUp();
 
 BASALT bool IsKeyDown(KeyCode code);
@@ -281,15 +284,22 @@ extern GameConfig Game;
 
 // Graphics drawing (basalt_graphics.c)
 #define WHITE 0xFFFFFFFF
-#define GRAY 0xAAAAAAAA
+#define GRAY 0xAAAAAAFF
+#define LIGHTGRAY 0xC8C8C8FF
+#define DARKGRAY 0x505050FF
 #define BLACK 0x000000FF
 #define BLANK 0xFFFFFF00
 
 #define RED 0xFF0000FF
 #define GREEN 0x00FF00FF
+#define DARKGREEN 0x00752CFF
 #define BLUE 0x0000FFFF
+#define DARKBLUE 0x00527FFF
 #define YELLOW 0xFFFF00FF
 #define PURPLE 0x00FFFFFF
+#define BROWN 0x7F3F00FF
+#define DARKBROWN 0x5A2E00FF
+#define DARKRED 0x7F0000FF
 
 BASALT void PrintASCIILogo(const char* suffix);
 BASALT extern void DrawDot(Texture canvas, int posX, int posY, Color tint);
@@ -356,7 +366,8 @@ BASALT void DrawTextureScaled(Texture canvas,
 #undef RGB  // *yells at Microsoft*
 BASALT extern Color RGB(uchar r, uchar g, uchar b);
 BASALT extern Color RGBA(uchar r, uchar g, uchar b, uchar a);
-BASALT extern Color BlendColors(Color src, Color dest, uchar t);
+BASALT Color BlendColors(Color src, Color dest, uchar t);
+BASALT extern Color ColorAlpha(Color col, float a);
 
 // Main game methods (for example: temple_game.c)
 DYNAMIC BASALT GameConfig ConfigureGame();

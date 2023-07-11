@@ -5,13 +5,13 @@
 #ifdef _WIN32
 # include <SDL_timer.h>
 # include <SDL_video.h>
-#include <SDL_log.h>
-#include <SDL_surface.h>
+# include <SDL_log.h>
+# include <SDL_surface.h>
 #else
 # include <SDL2/SDL_timer.h>
 # include <SDL2/SDL_video.h>
-#include <SDL2/SDL_log.h>
-#include <SDL2/SDL_surface.h>
+# include <SDL2/SDL_log.h>
+# include <SDL2/SDL_surface.h>
 #endif
 
 #include "sdl2_plat.hpp"

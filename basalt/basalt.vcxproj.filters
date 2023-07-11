@@ -21,9 +21,6 @@
     <ClCompile Include="src\basalt_archaeo.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\basalt_assets.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\basalt_assets.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

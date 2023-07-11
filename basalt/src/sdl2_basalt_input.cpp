@@ -69,6 +69,11 @@ BASALT bool IsMouseDown()
     return SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_LEFT);
 }
 
+BASALT bool IsMousePressed()
+{
+    return IsMouseDown() && !pressedKeysFrame[SDL_BUTTON_LEFT];
+}
+
 BASALT bool IsMouseUp()
 {
     return !IsMouseDown();

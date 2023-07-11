@@ -4,7 +4,8 @@
 #define OPEN_SIMPLEX_NOISE_IMPLEMENTATION
 #include "external/open-simplex-noise.h"
 
-BASALT Texture GenerateNoiseTextureEx(int width, int height, Color bg, Color fg, double scale, int seed)
+BASALT Texture
+GenerateNoiseTextureEx(int width, int height, Color bg, Color fg, double scale, int seed)
 {
     Texture texture = InitTexture(width, height);
 

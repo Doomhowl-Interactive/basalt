@@ -150,7 +150,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\basalt_archaeo.c" />
-    <ClCompile Include="src\basalt_assets.c" />
     <ClCompile Include="src\basalt_assets.cpp" />
     <ClCompile Include="src\basalt_config.c" />
     <ClCompile Include="src\basalt_dialog.cpp" />
