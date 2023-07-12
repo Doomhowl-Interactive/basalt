@@ -15,29 +15,29 @@
 # include <dirent.h>
 #endif
 
-BASALT void SetRandomSeed(usize seed)
+inline void SetRandomSeed(unsigned int seed)
 {
     srand(seed);
 }
 
-BASALT int GetRandomRange(int min, int max)
+inline int GetRandomRange(int min, int max)
 {
     return rand() % (max - min + 1) + min;
 }
 
-BASALT int GetRandomNumber()
+inline int GetRandomNumber()
 {
     return rand();
 }
 
-BASALT bool IsLittleEndian()
+bool IsLittleEndian()
 {
     volatile uint i = 0x01234567;
     bool littleEndian = *((uchar*)(&i)) == 0x67;
     return littleEndian;
 }
 
-BASALT int Clamp(int value, int min, int max)
+template <typename T> T Clamp(T value, T min, T max)
 {
     if (value < min) {
         return min;
@@ -50,7 +50,7 @@ BASALT int Clamp(int value, int min, int max)
     return value;
 }
 
-BASALT inline Vec2 RectFOrigin(RectF rectf)
+inline Vec2 RectFOrigin(RectF rectf)
 {
     Vec2 origin = {
         rectf.x,
@@ -59,7 +59,7 @@ BASALT inline Vec2 RectFOrigin(RectF rectf)
     return origin;
 }
 
-BASALT inline Vec2 RectFCenter(RectF rectf)
+inline Vec2 RectFCenter(RectF rectf)
 {
     Vec2 res = {
         rectf.x + rectf.width * 0.5f,
@@ -68,7 +68,7 @@ BASALT inline Vec2 RectFCenter(RectF rectf)
     return res;
 }
 
-BASALT inline Point RectOrigin(Rect rect)
+inline Point RectOrigin(Rect rect)
 {
     Point origin = {
         rect.x,
@@ -77,7 +77,7 @@ BASALT inline Point RectOrigin(Rect rect)
     return origin;
 }
 
-BASALT inline Point RectCenter(Rect rect)
+inline Point RectCenter(Rect rect)
 {
     Point res = {
         rect.x + rect.width / 2,
@@ -86,7 +86,7 @@ BASALT inline Point RectCenter(Rect rect)
     return res;
 }
 
-BASALT inline Rect RectFToRect(RectF rectf)
+inline Rect RectFToRect(RectF rectf)
 {
     Rect rect = {
         (int)rectf.x,
@@ -97,7 +97,7 @@ BASALT inline Rect RectFToRect(RectF rectf)
     return rect;
 }
 
-BASALT inline RectF RectToRectF(Rect rect)
+inline RectF RectToRectF(Rect rect)
 {
     RectF rectf = {
         (float)rect.x,
@@ -108,38 +108,38 @@ BASALT inline RectF RectToRectF(Rect rect)
     return rectf;
 }
 
-BASALT inline bool RectFOverlaps(RectF first, RectF second)
+inline bool RectFOverlaps(RectF first, RectF second)
 {
     return !(first.x < second.x || first.y < second.y
              || first.x + first.width > second.x + second.width
              || first.y + first.height > second.y + second.height);
 }
 
-BASALT inline bool PointInRectF(Point point, RectF rectf)
+inline bool PointInRectF(Point point, RectF rectf)
 {
     return point.x >= rectf.x && point.x <= rectf.x + rectf.width && point.y >= rectf.y
            && point.y <= rectf.y + rectf.height;
 }
 
-BASALT inline bool PointInRect(Point point, Rect rect)
+inline bool PointInRect(Point point, Rect rect)
 {
     return point.x >= rect.x && point.x <= rect.x + rect.width && point.y >= rect.y
            && point.y <= rect.y + rect.height;
 }
 
-BASALT inline Point Vec2ToPoint(Vec2 v2)
+inline Point Vec2ToPoint(Vec2 v2)
 {
     Point p = { (int)v2.x, (int)v2.y };
     return p;
 }
 
-BASALT inline Vec2 PointToVec2(Point point)
+inline Vec2 PointToVec2(Point point)
 {
     Vec2 v2 = { (float)point.x, (float)point.y };
     return v2;
 }
 
-BASALT inline Vec2 Vec2Add(Vec2 src, Vec2 offset)
+inline Vec2 Vec2Add(Vec2 src, Vec2 offset)
 {
     Vec2 v2 = {
         src.x + offset.x,
@@ -148,7 +148,7 @@ BASALT inline Vec2 Vec2Add(Vec2 src, Vec2 offset)
     return v2;
 }
 
-BASALT inline Vec2 Vec2Subtract(Vec2 src, Vec2 offset)
+inline Vec2 Vec2Subtract(Vec2 src, Vec2 offset)
 {
     Vec2 v2 = {
         src.x - offset.x,
@@ -157,7 +157,7 @@ BASALT inline Vec2 Vec2Subtract(Vec2 src, Vec2 offset)
     return v2;
 }
 
-BASALT inline Vec2 Vec2Scale(Vec2 src, float scale)
+inline Vec2 Vec2Scale(Vec2 src, float scale)
 {
     Vec2 v2 = {
         src.x * scale,
@@ -166,7 +166,7 @@ BASALT inline Vec2 Vec2Scale(Vec2 src, float scale)
     return v2;
 }
 
-BASALT inline Vec2 Vec2Normalize(Vec2 v2)
+inline Vec2 Vec2Normalize(Vec2 v2)
 {
     float mag = Vec2Magnitude(v2);
     Vec2 norm;
@@ -175,7 +175,7 @@ BASALT inline Vec2 Vec2Normalize(Vec2 v2)
     return norm;
 }
 
-BASALT inline float Vec2Magnitude(Vec2 v2)
+inline float Vec2Magnitude(Vec2 v2)
 {
     // Pythagorean theorem
 #ifdef BASALT_NO_ENGINE
@@ -186,20 +186,20 @@ BASALT inline float Vec2Magnitude(Vec2 v2)
 #endif
 }
 
-BASALT inline Vec2 Vec2Towards(Vec2 src, Vec2 dest)
+inline Vec2 Vec2Towards(Vec2 src, Vec2 dest)
 {
     Vec2 diff = Vec2Subtract(dest, src);
     return Vec2Normalize(diff);
 }
 
-BASALT inline float Vec2DistanceSquared(Vec2 first, Vec2 second)
+inline float Vec2DistanceSquared(Vec2 first, Vec2 second)
 {
     float dist = ((second.x - first.x) * (second.x - first.x))
                  + ((second.y - first.y) * (second.y - first.y));
     return dist;
 }
 
-BASALT inline float Vec2Distance(Vec2 first, Vec2 second)
+inline float Vec2Distance(Vec2 first, Vec2 second)
 {
 #ifdef BASALT_NO_ENGINE
     return 0.f;
@@ -209,7 +209,7 @@ BASALT inline float Vec2Distance(Vec2 first, Vec2 second)
 #endif
 }
 
-BASALT StringArray InitStringArray()
+StringArray InitStringArray()
 {
     StringArray s;
     s.strings = NULL;
@@ -218,7 +218,7 @@ BASALT StringArray InitStringArray()
     return s;
 }
 
-BASALT void StoreString(StringArray* arr, char* text)
+void StoreString(StringArray* arr, char* text)
 {
     if (arr->strings == NULL)
         arr->strings = (char**)calloc(sizeof(char*), arr->capacity);
@@ -230,7 +230,7 @@ BASALT void StoreString(StringArray* arr, char* text)
     arr->strings[arr->count++] = _strdup(text);
 }
 
-BASALT void DisposeStringArray(StringArray* arr)
+void DisposeStringArray(StringArray* arr)
 {
     if (arr->strings != NULL) {
         for (usize i = 0; i < arr->count; i++)
@@ -242,7 +242,7 @@ BASALT void DisposeStringArray(StringArray* arr)
 
 // adapted from Raylib
 // WARN: Cached memory, copy for long usage!
-BASALT const char* FormatText(const char* text, ...)
+const char* FormatText(const char* text, ...)
 {
 #define MAX_TEXT_LEN 1024
 #define TEXT_BUFFER_COUNT 16
@@ -261,28 +261,28 @@ BASALT const char* FormatText(const char* text, ...)
     return currentBuffer;
 }
 
-BASALT inline bool TextIsEqual(const char* text1, const char* text2)
+inline bool TextIsEqual(const char* text1, const char* text2)
 {
     assert(text1);
     assert(text2);
     return strcmp(text1, text2) == 0;
 }
 
-BASALT inline bool TextIsEqualNoCase(const char* text1, const char* text2)
+inline bool TextIsEqualNoCase(const char* text1, const char* text2)
 {
     char cache[1024];  // HACK TODO: ToLowercase can only remember one string!
     strcpy(cache, ToLowercase(text1));
     return TextIsEqual(cache, ToLowercase(text2));
 }
 
-BASALT inline const char* AppendText(const char* src, const char* add)
+inline const char* AppendText(const char* src, const char* add)
 {
     assert(src);
     assert(add);
     return FormatText("%s%s", src, add);
 }
 
-BASALT char* StripText(char* buffer)
+char* StripText(char* buffer)
 {
     // Strip leading spaces
     char* start = buffer;
@@ -305,7 +305,7 @@ BASALT char* StripText(char* buffer)
 }
 
 // from raylib
-BASALT int CopyText(char* dst, const char* src)
+int CopyText(char* dst, const char* src)
 {
     int bytes = 0;
 
@@ -323,25 +323,25 @@ BASALT int CopyText(char* dst, const char* src)
     return bytes;
 }
 
-BASALT inline char* CloneText(const char* text)
+inline char* CloneText(const char* text)
 {
     return _strdup(text);
 }
 
-BASALT inline usize TextLength(const char* text)
+inline usize TextLength(const char* text)
 {
     return strlen(text);
 }
 
 // string implementation
-BASALT String MakeString()
+String MakeString()
 {
     String str = { 0 };
     str.capacity = 128;
     return str;
 }
 
-BASALT String* AppendString(String* str, const char* add)
+String* AppendString(String* str, const char* add)
 {
     size_t addLen = TextLength(add);
     str->size += addLen;
@@ -364,7 +364,7 @@ BASALT String* AppendString(String* str, const char* add)
     return str;
 }
 
-BASALT void DisposeString(String* str)
+void DisposeString(String* str)
 {
     str->size = 0;
     str->capacity = 100;
@@ -375,7 +375,7 @@ BASALT void DisposeString(String* str)
 
 #define MAX_CASE_LEN 1024
 static char CaseBuffer[MAX_CASE_LEN];
-BASALT const char* ToUppercase(const char* str)
+const char* ToUppercase(const char* str)
 {
     char* dst = CaseBuffer;
     if ((str != NULL) && (dst != NULL)) {
@@ -390,7 +390,7 @@ BASALT const char* ToUppercase(const char* str)
     return CaseBuffer;
 }
 
-BASALT const char* ToLowercase(const char* str)
+const char* ToLowercase(const char* str)
 {
     char* dst = CaseBuffer;
     if ((str != NULL) && (dst != NULL)) {
@@ -407,7 +407,7 @@ BASALT const char* ToLowercase(const char* str)
 // FIXME: Untested
 #define MAX_PADDING_LENGTH 256
 static char PaddingCache[MAX_PADDING_LENGTH];
-BASALT const char* PadStringRight(const char* text, char symbol, usize length)
+const char* PadStringRight(const char* text, char symbol, usize length)
 {
     memset(PaddingCache, symbol, length);
     PaddingCache[length] = '\0';
@@ -418,7 +418,7 @@ BASALT const char* PadStringRight(const char* text, char symbol, usize length)
     return PaddingCache;
 }
 
-BASALT const char* GetFirstExistingFolder(const char** folders)
+const char* GetFirstExistingFolder(const char** folders)
 {
     while (*folders) {
         if (FolderExists(*folders)) {
@@ -429,7 +429,7 @@ BASALT const char* GetFirstExistingFolder(const char** folders)
     return NULL;
 }
 
-BASALT bool FolderExists(const char* folder)
+bool FolderExists(const char* folder)
 {
     DIR* dir = opendir(folder);
     if (dir != NULL) {
@@ -439,7 +439,7 @@ BASALT bool FolderExists(const char* folder)
     return false;
 }
 
-BASALT long GetFileModifiedTime(const char* filePath)
+long GetFileModifiedTime(const char* filePath)
 {
 #ifndef BASALT_NO_ENGINE
     struct stat attr;
@@ -455,7 +455,7 @@ BASALT long GetFileModifiedTime(const char* filePath)
 }
 
 // raylib.h (rcore.c)
-BASALT const char* GetFileName(const char* filePath)
+const char* GetFileName(const char* filePath)
 {
     const char* fileName = NULL;
     if (filePath != NULL) {
@@ -470,7 +470,7 @@ BASALT const char* GetFileName(const char* filePath)
 }
 
 // raylib.h (rcore.c)
-BASALT const char* GetFileStem(const char* filePath)
+const char* GetFileStem(const char* filePath)
 {
 #define MAX_BUFFER_LEN 256
     static char fileName[MAX_BUFFER_LEN];
@@ -492,13 +492,13 @@ BASALT const char* GetFileStem(const char* filePath)
     return fileName;
 }
 
-BASALT inline bool FileHasExtension(const char* name, const char* ext)
+inline bool FileHasExtension(const char* name, const char* ext)
 {
     const char* fileStem = GetFileStem(name);
     return TextIsEqual(fileStem, ext);
 }
 
-BASALT StringArray GetFolderFiles(const char* folder, const char* ext)
+StringArray GetFolderFiles(const char* folder, const char* ext)
 {
     StringArray list = { 0 };
     list.count = 0;

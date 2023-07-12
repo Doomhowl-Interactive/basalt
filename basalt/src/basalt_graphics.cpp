@@ -2,31 +2,20 @@
 #include <malloc.h>
 
 #include "basalt.h"
+#include "basalt_graphics.hpp"
+#include "basalt_archaeo.hpp"
 
-#define BLEND_VALUE 180
+using namespace std;
 
-BASALT void PrintASCIILogo(const char* suffix)
+constexpr int BLEND_VALUE = 180;
+
+inline void DRAWCALL(Texture c, const string name)
 {
-    static const char* logo[] = {
-        " ________  ________  ________  ________  ___   __________    ",
-        " |\\   __  \\|\\   __  \\|\\   ____\\|\\   __  \\|\\  \\ |\\___   ___\\  ",
-        " \\ \\  \\|\\ /\\ \\  \\|\\  \\ \\  \\___|\\ \\  \\|\\  \\ \\  \\\\|___ \\  \\_|  ",
-        "  \\ \\   __  \\ \\   __  \\ \\_____  \\ \\   __  \\ \\  \\    \\ \\  \\   ",
-        "   \\ \\  \\|\\  \\ \\  \\ \\  \\|____|\\  \\ \\  \\ \\  \\ \\  \\____\\ \\  \\  ",
-        "    \\ \\_______\\ \\__\\ \\__\\____\\_\\  \\ \\__\\ \\__\\ \\_______\\ \\__\\ ",
-        "     \\|_______|\\|__|\\|__|\\_________\\|__|\\|__|\\|_______|\\|__| ",
-        "                         \\|_________|                        ",
-    };
-
-    const ConsoleColor rainbow[] = { CRED, CRED, CYELLOW, CGREEN, CBLUE, CPINK, CPINK, CPINK };
-    for (int i = 0; i < 8; i++) {
-        BasaltPrintColored(rainbow[i], logo[i]);
-    }
-    BasaltPrintColored(CWHITE, "\n>> %s\n", suffix);
+    Archaeo::RegisterDrawCall(c, name);
 }
 
 // NOTE: Taken from https://github.com/tsoding/olive.c/blob/master/olive.c
-typedef struct {
+struct Olivec_Normalized_Rect {
     // Safe ranges to iterate over.
     int x1, x2;
     int y1, y2;
@@ -35,16 +24,16 @@ typedef struct {
     // boundaries.
     int ox1, ox2;
     int oy1, oy2;
-} Olivec_Normalized_Rect;
+};
 
-BASALT inline void DrawDot(Texture canvas, int posX, int posY, Color color)
+inline void DrawDot(Texture canvas, int posX, int posY, Color color)
 {
     int i = posY * canvas.width + posX;
     canvas.pixels[i] = color;
 }
 
 // NOTE: Taken from https://github.com/tsoding/olive.c/blob/master/olive.c
-BASALT void DrawLine(Texture canvas, int startX, int startY, int endX, int endY, Color color)
+void DrawLine(Texture canvas, int startX, int startY, int endX, int endY, Color color)
 {
     int dx = endX - startX;
     int dy = endY - startY;
@@ -109,7 +98,7 @@ BASALT void DrawLine(Texture canvas, int startX, int startY, int endX, int endY,
     }
 }
 
-BASALT void DrawRectangle(Texture canvas, int posX, int posY, int width, int height, Color color)
+void DrawRectangle(Texture canvas, int posX, int posY, int width, int height, Color color)
 {
     assert(canvas.pixels);
 
@@ -122,10 +111,10 @@ BASALT void DrawRectangle(Texture canvas, int posX, int posY, int width, int hei
             canvas.pixels[j] = color;
         }
     }
-    DRAWCALL(canvas, DrawRectangle);
+    DRAWCALL(canvas, "DrawRectangle");
 }
 
-BASALT void DrawRectangleLines(Texture canvas,
+void DrawRectangleLines(Texture canvas,
                                int posX,
                                int posY,
                                int width,
@@ -141,7 +130,7 @@ BASALT void DrawRectangleLines(Texture canvas,
     DrawRectangle(canvas, posX, posY, border, height, color);  // left
 }
 
-BASALT Texture InitTexture(int width, int height)
+Texture InitTexture(int width, int height)
 {
     Texture tex;
     tex.width = width;
@@ -150,14 +139,14 @@ BASALT Texture InitTexture(int width, int height)
     return tex;
 }
 
-BASALT Texture CopyTexture(Texture source)
+Texture CopyTexture(Texture source)
 {
-    Texture new = InitTexture(source.width, source.height);
-    CopyTextureInto(new, source);
-    return new;
+    Texture copy = InitTexture(source.width, source.height);
+    CopyTextureInto(copy, source);
+    return copy;
 }
 
-BASALT void CopyTextureInto(Texture dest, Texture source)
+void CopyTextureInto(Texture dest, Texture source)
 {
     assert(dest.width == source.width && dest.height == source.height);
     assert(dest.pixels);
@@ -166,14 +155,14 @@ BASALT void CopyTextureInto(Texture dest, Texture source)
     memcpy(dest.pixels, source.pixels, source.width * source.height * sizeof(Color));
 }
 
-BASALT void DisposeTexture(Texture texture)
+void DisposeTexture(Texture texture)
 {
     if (texture.pixels) {
         free(texture.pixels);
     }
 }
 
-BASALT void SwapTextureChannels(Texture dest,
+void SwapTextureChannels(Texture dest,
                                 Texture src,
                                 uchar first,
                                 uchar second,
@@ -199,12 +188,12 @@ BASALT void SwapTextureChannels(Texture dest,
     }
 }
 
-BASALT inline void MapTextureToCorrectFormat(Texture dest, Texture src)
+inline void MapTextureToCorrectFormat(Texture dest, Texture src)
 {
     SwapTextureChannels(dest, src, 1, 2, 3, 0);
 }
 
-BASALT void ClearTexture(Texture canvas, Color color)
+void ClearTexture(Texture canvas, Color color)
 {
     assert(canvas.pixels);
     for (int i = 0; i < canvas.width * canvas.height; i++) {
@@ -212,12 +201,12 @@ BASALT void ClearTexture(Texture canvas, Color color)
     }
 }
 
-BASALT inline void DrawTexture(Texture canvas, Texture texture, int posX, int posY, Color tint)
+inline void DrawTexture(Texture canvas, Texture texture, int posX, int posY, Color tint)
 {
     DrawTextureEx(canvas, texture, posX, posY, 0, 0, texture.width, texture.height, tint);
 }
 
-BASALT void DrawTextureEx(Texture canvas,
+void DrawTextureEx(Texture canvas,
                           Texture texture,
                           int posX,
                           int posY,
@@ -250,7 +239,7 @@ BASALT void DrawTextureEx(Texture canvas,
         }
     }
 
-    DRAWCALL(canvas, DrawRectangle);
+    DRAWCALL(canvas, "DrawTextureEx");
 }
 
 static bool olivec_normalize_rect(int x,
@@ -262,7 +251,7 @@ static bool olivec_normalize_rect(int x,
                                   Olivec_Normalized_Rect* nr);
 
 // NOTE: Taken from https://github.com/tsoding/olive.c/blob/master/olive.c
-BASALT void DrawTextureScaled(Texture canvas,
+void DrawTextureScaled(Texture canvas,
                               Texture texture,
                               int destX,
                               int destY,
@@ -296,10 +285,11 @@ BASALT void DrawTextureScaled(Texture canvas,
             canvas.pixels[destIndex] = color;
         }
     }
-    DRAWCALL(canvas, DrawRectangle);
+    DRAWCALL(canvas, "DrawTextureScaled!");
 }
 
-BASALT void DrawWeirdTestGradient(Texture canvas)
+
+void DrawWeirdTestGradient(Texture canvas)
 {
     assert(canvas.pixels);
 
@@ -311,7 +301,7 @@ BASALT void DrawWeirdTestGradient(Texture canvas)
         for (int x = 0; x < canvas.width; x++) {
             uchar red = x + xOffset;
             uchar green = y + xOffset;
-            canvas.pixels[i] = RGB(red, green, 0);
+            canvas.pixels[i] = MakeRGB(red, green, 0);
             i++;
         }
     }
@@ -319,20 +309,42 @@ BASALT void DrawWeirdTestGradient(Texture canvas)
     xOffset++;
     yOffset++;
 
-    DRAWCALL(canvas, DrawRectangle);
+    DRAWCALL(canvas, "DrawWeirdTestGradient");
 }
 
-BASALT inline Color RGBA(uchar r, uchar g, uchar b, uchar a)
+void PrintASCIILogo(string suffix)
+{
+    static const char* logo[] = {
+        " ________  ________  ________  ________  ___   __________    ",
+        " |\\   __  \\|\\   __  \\|\\   ____\\|\\   __  \\|\\  \\ |\\___   ___\\  ",
+        " \\ \\  \\|\\ /\\ \\  \\|\\  \\ \\  \\___|\\ \\  \\|\\  \\ \\  \\\\|___ \\  \\_|  ",
+        "  \\ \\   __  \\ \\   __  \\ \\_____  \\ \\   __  \\ \\  \\    \\ \\  \\   ",
+        "   \\ \\  \\|\\  \\ \\  \\ \\  \\|____|\\  \\ \\  \\ \\  \\ \\  \\____\\ \\  \\  ",
+        "    \\ \\_______\\ \\__\\ \\__\\____\\_\\  \\ \\__\\ \\__\\ \\_______\\ \\__\\ ",
+        "     \\|_______|\\|__|\\|__|\\_________\\|__|\\|__|\\|_______|\\|__| ",
+        "                         \\|_________|                        ",
+    };
+
+    const ConsoleColor rainbow[] = { CRED, CRED, CYELLOW, CGREEN, CBLUE, CPINK, CPINK, CPINK };
+    for (int i = 0; i < 8; i++) {
+        BasaltPrintColored(rainbow[i], logo[i]);
+    }
+    BasaltPrintColored(CWHITE, "\n>> %s\n", suffix);
+}
+
+// ==== COLOR UTILTIES ====
+inline Color MakeRGB(uchar r, uchar g, uchar b, uchar a)
 {
     return (r << 24) | (g << 16) | (b << 8) | a;
 }
 
-BASALT inline Color RGB(uchar r, uchar g, uchar b)
+Color MakeRGB(float r, float g, float b, float a = 1.f)
 {
-    return RGBA(r, g, b, 255);
+    uchar rc = Clamp(r, 0.f, 1.f);
 }
 
-BASALT Color BlendColors(Color src, Color dst, uchar t)
+
+Color BlendColors(Color src, Color dst, uchar t)
 {
     assert(t <= 255);
     if (t == 255)
@@ -347,7 +359,7 @@ BASALT Color BlendColors(Color src, Color dst, uchar t)
             | (((((src >> 24) & 0xff) * s + ((dst >> 24) & 0xff) * t) << 16) & ~0xffffff));
 }
 
-BASALT inline Color ColorAlpha(Color col, float a)
+inline Color ColorAlpha(Color col, float a)
 {
     return (col & 0x00FFFFFF) | ((uchar)(a * 255) << 24);
 }

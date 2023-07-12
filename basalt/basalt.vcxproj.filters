@@ -18,7 +18,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\basalt_archaeo.c">
+    <ClCompile Include="src\basalt_archaeo.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\basalt_assets.cpp">
@@ -86,9 +86,8 @@
     <ClInclude Include="src\basalt_extra.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\vendor\SDL2\lib\x64\SDL2.dll" />
-    <None Include="..\vendor\SDL2_ttf\lib\x64\SDL2_ttf.dll" />
+    <ClInclude Include="src\basalt_archaeo.hpp">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

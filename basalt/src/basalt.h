@@ -368,7 +368,7 @@ DYNAMIC BASALT void UpdateAndRenderGame(Texture canvas, float delta);
 
 // basalt_tooling.c
 BASALT bool UpdateAndRenderArchaeo(Texture canvas);
-#define DRAWCALL(X, Y) DrawCallImpl(X, #Y)
+#define DRAWCALL(X, Y) Archaeo::DrawCallImpl(X, #Y)
 BASALT void DrawCallImpl(Texture canvas, const char* desc);
 
 // basalt_tests.c

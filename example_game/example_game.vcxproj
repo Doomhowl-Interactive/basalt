@@ -150,6 +150,14 @@
       <Project>{6288b11b-1139-4011-a837-e744298736de}</Project>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\vendor\SDL2\lib\x64\SDL2.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\vendor\SDL2_ttf\lib\x64\SDL2_ttf.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
