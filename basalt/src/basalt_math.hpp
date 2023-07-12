@@ -1,5 +1,9 @@
 #pragma once
 
+#ifndef PI
+# define PI 3.14159265358979323846
+#endif
+
 // TODO: Add equality operators
 // TODO: Add negation operator
 
@@ -96,7 +100,7 @@ struct Vec2 {
     bool inside(Rect other);
 
     Vec2 normalize();
-    float magnitude(); // pythagorem theorem
+    float magnitude();  // pythagorem theorem
 
     Vec2 directionTowards(Vec2 dest);
 
@@ -113,3 +117,6 @@ bool IsLittleEndian();
 
 // Math
 template <typename T> T Clamp(T value, T min, T max);
+
+template <typename T> extern T Deg2Rad(T val);
+template <typename T> extern T Rad2Deg(T val);

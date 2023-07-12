@@ -13,9 +13,6 @@ void BasaltPrintColored(ConsoleColor color, const char* format, ...);
 
 String GetBasaltLog();
 
-#define DEG2RAD(Y) ((Y)*PI / 180)
-#define RAD2DEG(X) ((X)*180.0 / PI)
-
 extern Vec2 RectFOrigin(RectF rectf);
 #define RectFOriginPoint(F) Vec2ToPoint(RectFOrigin(F))
 extern Vec2 RectFCenter(RectF rectf);

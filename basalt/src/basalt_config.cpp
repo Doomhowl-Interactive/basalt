@@ -1,5 +1,7 @@
-#include "basalt.h"
 #include <string.h>
+
+#include "basalt.h"
+#include "basalt_console.hpp"
 
 //////
 // Over-engineered launch system
@@ -7,12 +9,12 @@
 
 EngineConfig Config = { 0 };
 
-typedef struct Option {
+struct Option {
     bool* toggle;
     const char* shortArg;
     const char* longArg;
     const char* desc;
-} Option;
+};
 
 static bool NeedsHelp = false;
 static bool EnableAll = false;
@@ -66,7 +68,7 @@ static bool HasArgument(int argc, char** argv, Option o)
     return false;
 }
 
-BASALT bool ParseLaunchArguments(int argc, char** argv)
+bool ParseLaunchArguments(int argc, char** argv)
 {
     for (Option* o = Options; o->shortArg != NULL; o++) {
         if (HasArgument(argc, argv, *o)) {

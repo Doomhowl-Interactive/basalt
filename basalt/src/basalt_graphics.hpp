@@ -2,7 +2,8 @@
 #include <string>
 #include "basalt.h"
 
-// Graphics drawing (basalt_graphics.c)
+typedef uint32_t Color;
+
 constexpr Color WHITE = 0xFFFFFFFF;
 constexpr Color GRAY = 0xAAAAAAFF;
 constexpr Color LIGHTGRAY = 0xC8C8C8FF;
@@ -37,11 +38,11 @@ void LoadFontEx(const char* name, uint size);
 
 void DrawBasaltText(Texture canvas, const char* text, int posX, int posY, Color color);
 void DrawBasaltTextEx(const char* fontName,
-                             Texture canvas,
-                             const char* text,
-                             int posX,
-                             int posY,
-                             Color color);
+                      Texture canvas,
+                      const char* text,
+                      int posX,
+                      int posY,
+                      Color color);
 
 // TODO: Put in private header
 void DisposeFonts();
@@ -55,31 +56,31 @@ void DisposeTexture(Texture texture);
 // NOTE: What is the correct format you might ask? I have no idea, found out after trial-and-error.
 extern void MapTextureToCorrectFormat(Texture dest, Texture src);
 void SwapTextureChannels(Texture dest,
-                                Texture src,
-                                uchar first,
-                                uchar second,
-                                uchar third,
-                                uchar fourth);
+                         Texture src,
+                         uchar first,
+                         uchar second,
+                         uchar third,
+                         uchar fourth);
 
 void ClearTexture(Texture canvas, Color tint);
 void DrawTextureEx(Texture canvas,
-                          Texture texture,
-                          int posX,
-                          int posY,
-                          int srcX,
-                          int srcY,
-                          int srcWidth,
-                          int srcHeight,
-                          Color tint);
+                   Texture texture,
+                   int posX,
+                   int posY,
+                   int srcX,
+                   int srcY,
+                   int srcWidth,
+                   int srcHeight,
+                   Color tint);
 
 extern void DrawTexture(Texture canvas, Texture texture, int posX, int posY, Color tint);
 void DrawTextureScaled(Texture canvas,
-                              Texture texture,
-                              int destX,
-                              int destY,
-                              int destWidth,
-                              int destHeight,
-                              Color tint);
+                       Texture texture,
+                       int destX,
+                       int destY,
+                       int destWidth,
+                       int destHeight,
+                       Color tint);
 
 void PrintASCIILogo(std::string suffix);
 

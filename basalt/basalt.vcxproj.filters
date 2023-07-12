@@ -24,13 +24,13 @@
     <ClCompile Include="src\basalt_assets.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\basalt_config.c">
+    <ClCompile Include="src\basalt_config.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\basalt_dialog.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\basalt_dialog_utils.c">
+    <ClCompile Include="src\basalt_dialog_utils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\basalt_extra_graphics.c">
@@ -45,9 +45,6 @@
     <ClCompile Include="src\basalt_tests.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\basalt_utils.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\sdl2_basalt.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -55,6 +52,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\windows_basalt_utils.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\basalt_math.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\basalt_utils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -83,11 +86,23 @@
     <ClInclude Include="src\basalt_internal.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\basalt_extra.hpp">
+    <ClInclude Include="src\basalt_dialog.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\basalt_archaeo.hpp">
       <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\basalt_math.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\basalt_graphics.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\basalt_console.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\basalt_utils.hpp">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -1,13 +1,17 @@
 #include <windows.h>
 #include <stdio.h>
+#include <string>
 
 #include "basalt.h"
+#include "basalt_console.hpp"
 
-static String ConsoleLog = { 0 };
+using namespace std;
+
+static std::string ConsoleLog;
 static bool AllocatedConsole = false;
 
 // TODO HACK: Use C++ 17 filesystem
-BASALT const char* GetWorkingDirectory()
+const char* GetWorkingDirectory()
 {
     static char workingDir[MAX_PATH];
     DWORD workingDirU[MAX_PATH];
@@ -24,7 +28,7 @@ BASALT const char* GetWorkingDirectory()
     return workingDir;
 }
 
-BASALT void BasaltPrintColored(ConsoleColor color, const char* format, ...)
+void BasaltPrintColored(ConsoleColor color, const char* format, ...)
 {
     // allocate console string if not already
     if (ConsoleLog.text == NULL) {
@@ -48,12 +52,12 @@ BASALT void BasaltPrintColored(ConsoleColor color, const char* format, ...)
     AppendString(&ConsoleLog, line);
 }
 
-BASALT String GetBasaltLog()
+String GetBasaltLog()
 {
     return ConsoleLog;
 }
 
-BASALT void OpenSystemConsole()
+void OpenSystemConsole()
 {
     if (!AllocatedConsole) {
         AllocConsole();
@@ -67,7 +71,7 @@ BASALT void OpenSystemConsole()
     DEBUG("Allocated Windows console");
 }
 
-BASALT void CloseSystemConsole()
+void CloseSystemConsole()
 {
     if (AllocatedConsole) {
         FreeConsole();

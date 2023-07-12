@@ -1,71 +1,72 @@
 #include <string>
 #include <vector>
 #include <unordered_map>
+#include <stdexcept>
+#include <functional>
 
 #include "basalt_extra.h"
 #include "basalt_extra.hpp"
-#include <stdexcept>
 
-#define DIALOG_SKIN
 using namespace std;
 
-typedef bool (*DialogBoxDrawerFunc)(const char* dialog,
-                                    vector<string> keywords,
-                                    Texture canvas,
-                                    float timeSince);
+typedef function<bool(Texture, DialogSequence, vector<string>, float)> DialogBoxDrawerFunc;
 
-struct DialogLine {
-    string text;
-    vector<string> keywords;
-};
-
-struct DialogSequence {
-    string name;
-    vector<DialogLine> lines;
-
-    DialogLine getDialogLine(size_t index) const
-    {
-        return lines.at(index);
-    }
-};
-
-struct Dialog {
-    unordered_map<string, DialogSequence> sequences;
-
-    string curSequence;
-    bool isSpeaking;
-    double startTime;
-    size_t lineIndex;
-
-    const DialogSequence& getCurrentSequence() const
-    {
-        return getSequence(curSequence);
-    }
-
-    const DialogSequence& getSequence(const string& name) const
-    {
-        return sequences.at(name);
-    }
-};
-
-static Dialog Dialog = {};
-
-// HACK: bridge, Destroy the StringArray and return it as vector
-vector<string> StringArrayToVector(StringArray& arr)
+DialogLine::DialogLine(string text)
 {
-    vector<string> lines;
-    for (size_t i = 0; i < arr.count; i++) {
-        string line = string(arr.strings[i]);
-        lines.push_back(line);
-    }
-    DisposeStringArray(&arr);
-    return lines;
+    this->text = text;
+    this->keywords =
 }
 
-DIALOG_SKIN bool DrawDefaultDialogBox(const char* dialog,
-                                      vector<string> keywords,
-                                      Texture canvas,
-                                      float timeSince)
+bool Dialog::UpdateAndRender(Texture canvas)
+{
+    return false;
+}
+
+DialogSequence Dialog::RegisterSequence(std::vector<std::string> lines)
+{
+    DialogSequence seq = DialogSequence();
+    seq.name = name;
+
+    // extract lines from compact 'lines' parameter
+    StringArray sa = ExtractDialogLines(lines);
+    for (size_t i = 0; i < sa.count; i++) {
+        const char* text = sa.strings[i];
+        StringArray keywordsC = ExtractDialogKeywords(text);
+
+        FormatDialogLine(text);
+
+        DialogLine line;
+        line.text = text;
+
+        // HACK: bridge
+        line.keywords = StringArrayToVector(keywordsC);
+        seq.lines.push_back(line);
+    }
+    DisposeStringArray(&sa);
+
+    Dialog.sequences.insert({ name, seq });
+
+    DEBUG("Registered dialog sequence %s with %zu lines.", name, seq.lines.size());
+}
+
+void Dialog::StartSequence(DialogSequence dialog)
+{
+}
+
+bool Dialog::IsSpeaking()
+{
+    return false;
+}
+
+const DialogSequence& Dialog::GetCurrentSequence() const
+{
+    return curSequence;
+}
+
+bool DrawDefaultDialogBox(Texture canvas,
+                          const char* dialog,
+                          vector<string> keywords,
+                          float timeSince)
 {
     if (IsKeyPressed(KEY_x) || IsKeyPressed(KEY_SPACE) || IsKeyPressed(KEY_RETURN)) {
         return true;
@@ -173,29 +174,6 @@ BASALT bool UpdateAndRenderDialogBoxes(Texture canvas)
 
 BASALT void RegisterDialogSequence(const char* name, const char* lines)
 {
-    DialogSequence seq = DialogSequence();
-    seq.name = name;
-
-    // extract lines from compact 'lines' parameter
-    StringArray sa = ExtractDialogLines(lines);
-    for (size_t i = 0; i < sa.count; i++) {
-        const char* text = sa.strings[i];
-        StringArray keywordsC = ExtractDialogKeywords(text);
-
-        FormatDialogLine(text);
-
-        DialogLine line;
-        line.text = text;
-
-        // HACK: bridge
-        line.keywords = StringArrayToVector(keywordsC);
-        seq.lines.push_back(line);
-    }
-    DisposeStringArray(&sa);
-
-    Dialog.sequences.insert({ name, seq });
-
-    DEBUG("Registered dialog sequence %s with %zu lines.", name, seq.lines.size());
 }
 
 BASALT bool DialogIsSpeaking()

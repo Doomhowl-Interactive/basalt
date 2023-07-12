@@ -3,41 +3,6 @@
 
 #include "basalt_math.hpp"
 
-inline void SetRandomSeed(unsigned int seed)
-{
-    srand(seed);
-}
-
-inline int GetRandomRange(int min, int max)
-{
-    return rand() % (max - min + 1) + min;
-}
-
-inline int GetRandomNumber()
-{
-    return rand();
-}
-
-bool IsLittleEndian()
-{
-    volatile unsigned int i = 0x01234567;
-    bool littleEndian = *((unsigned char*)(&i)) == 0x67;
-    return littleEndian;
-}
-
-template <typename T> T Clamp(T value, T min, T max)
-{
-    if (value < min) {
-        return min;
-    }
-
-    if (value > max) {
-        return max;
-    }
-
-    return value;
-}
-
 inline Vec2 RectFOrigin(RectF rectf)
 {
     Vec2 origin = {
@@ -85,22 +50,64 @@ inline Rect RectFToRect(RectF rectf)
     return rect;
 }
 
-inline RectF RectToRectF(Rect rect)
+Rect::operator RectF() const
 {
-    RectF rectf = {
-        (float)rect.x,
-        (float)rect.y,
-        (float)rect.width,
-        (float)rect.height,
+    Rect rect = {
+        (int)x,
+        (int)y,
+        (int)width,
+        (int)height,
     };
-    return rectf;
+    return rect;
+}
+
+Point Rect::origin()
+{
+    Point p2 = {
+        x,
+        y,
+    };
+    return p2;
+}
+
+Point Rect::center()
+{
+    Point p2 = {
+        x + width / 2,
+        y + height / 2,
+    };
+    return p2;
+}
+
+bool Rect::overlaps(RectF with)
+{
+    return !(x < with.x || y < with.y || x + width > with.x + with.width
+             || y + height > with.y + with.height);
+}
+
+bool Rect::overlaps(Rect with)
+{
+    return !(x < with.x || y < with.y || x + width > with.x + with.width
+             || y + height > with.y + with.height);
+}
+
+bool Rect::inside(RectF other)
+{
+    return x > other.x && y > other.y && x + width < other.x + other.width
+           && y + height < other.y + other.height;
+}
+
+bool Rect::inside(Rect other)
+{
+    return x > other.x && y > other.y && x + width < other.x + other.width
+           && y + height < other.y + other.height;
 }
 
 RectF::operator Rect() const
 {
     RectF r2 = {
-        (float) x,
-        (float) y,
+        (float)x,
+        (float)y,
     };
     return r2;
 }
@@ -228,19 +235,13 @@ Point Point::operator/(const Point& other)
 
 Point Point::operator*(int scalar)
 {
-    Point p2 = {
-        x * scalar,
-        y * scalar
-    };
+    Point p2 = { x * scalar, y * scalar };
     return p2;
 }
 
 Point Point::operator/(int scalar)
 {
-    Point p2 = {
-        x / scalar,
-        y / scalar
-    };
+    Point p2 = { x / scalar, y / scalar };
     return p2;
 }
 
@@ -401,4 +402,49 @@ float Vec2::distance(Vec2 dest)
     float distSquared = distanceSquared(dest);
     float distRoot = sqrtf(distSquared);
     return distRoot;
+}
+
+inline void SetRandomSeed(unsigned int seed)
+{
+    srand(seed);
+}
+
+inline int GetRandomRange(int min, int max)
+{
+    return rand() % (max - min + 1) + min;
+}
+
+inline int GetRandomNumber()
+{
+    return rand();
+}
+
+bool IsLittleEndian()
+{
+    volatile unsigned int i = 0x01234567;
+    bool littleEndian = *((unsigned char*)(&i)) == 0x67;
+    return littleEndian;
+}
+
+template <typename T> T Clamp(T value, T min, T max)
+{
+    if (value < min) {
+        return min;
+    }
+
+    if (value > max) {
+        return max;
+    }
+
+    return value;
+}
+
+template <typename T> inline T Deg2Rad(T val)
+{
+    return val * PI / 180;
+}
+
+template <typename T> inline T Rad2Deg(T val)
+{
+    return val * 180.0 / PI;
 }

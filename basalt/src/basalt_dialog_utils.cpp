@@ -1,36 +1,30 @@
-#include "basalt_extra.h"
+#include <string>
+#include <malloc.h>
 
-BASALT void FormatDialogLine(const char* line)
+#include "basalt_dialog.hpp"
+#include "basalt_utils.hpp"
+#include "basalt_console.hpp"
+
+using namespace std;
+
+string& DialogLine::formatLine(string& line)
 {
-    char* clone = (char*)CloneText(line);  // TODO: lazy
-
-    usize j = 0;
-    bool penDown = true;
-    for (usize i = 0; i < strlen(clone); i++) {
-        char token = clone[i];
-        if (token == '{') {
-            penDown = false;
-        } else if (token == '}') {
-            penDown = true;
-            continue;
-        }
-        if (penDown) {
-            ((char*)line)[j++] = token;
-        }
+    // remove everything between braces including the braces
+    size_t start = line.find('{');
+    size_t end = line.find('}');
+    while (start != string::npos && end != string::npos) {
+        line.erase(start, end - start + 1);
+        start = line.find('{');
+        end = line.find('}');
     }
-
-    // null terminate so we don't have any garbage
-    ((char*)line)[j] = '\0';
-
-    free(clone);
+    return line;
 }
 
-BASALT StringArray ExtractDialogKeywords(const char* line)
+std::vector<std::string>& DialogLine::extractKeywords(string& line)
 {
-    StringArray result = InitStringArray();
-
-    usize keywordStart = 0;
-    for (usize i = 0; i < strlen(line); i++) {
+    std::vector<std::string> keywords;
+    size_t keywordStart = 0;
+    for (size_t i = 0; i < line.size(); i++) {
         char token = line[i];
         if (token == '{') {
             if (keywordStart > 0) {
@@ -42,12 +36,13 @@ BASALT StringArray ExtractDialogKeywords(const char* line)
                 ERR("No start brace found for dialog line %s", line);
             }
 
+            // TODO: rewrite
             // copy the keyword over and place it into the stringarray
-            usize len = i - keywordStart;
-            char* slice = malloc(len + 1);
+            size_t len = i - keywordStart;
+            char* slice = new char[len + 1];
             memcpy(slice, &line[keywordStart], len);
             slice[len] = '\0';
-            StoreString(&result, slice);
+            keywords.push_back(slice);
             free(slice);
 
             if (token == '}')  // reached the end
@@ -56,12 +51,14 @@ BASALT StringArray ExtractDialogKeywords(const char* line)
             } else {
                 keywordStart = i + 1;
             }
+
+            delete[] slice;
         }
     }
-    return result;
+    return keywords;
 }
 
-BASALT StringArray ExtractDialogLines(const char* lines)
+StringArray ExtractDialogLines(const char* lines)
 {
     char* buffer = CloneText(lines);
 
