@@ -117,6 +117,8 @@ bool IsLittleEndian();
 
 // Math
 template <typename T> T Clamp(T value, T min, T max);
+template <typename T> T Lerp(T start, T end, float t);
+template <typename T> T Sign(T a);
 
 template <typename T> extern T Deg2Rad(T val);
 template <typename T> extern T Rad2Deg(T val);

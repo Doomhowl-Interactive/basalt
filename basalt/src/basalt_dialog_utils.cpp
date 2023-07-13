@@ -66,7 +66,7 @@ StringArray ExtractDialogLines(const char* lines)
     const char* SEP = "\\";
     char* line = strtok(buffer, SEP);
     while (line != NULL) {
-        StripText(line);
+        TrimText(line);
         StoreString(&result, line);
         line = strtok(NULL, SEP);
     }

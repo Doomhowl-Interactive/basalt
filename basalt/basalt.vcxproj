@@ -149,28 +149,27 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\basalt_archaeo.cpp" />
     <ClCompile Include="src\basalt_assets.cpp" />
     <ClCompile Include="src\basalt_config.cpp" />
+    <ClCompile Include="src\basalt_console.cpp" />
     <ClCompile Include="src\basalt_dialog.cpp" />
     <ClCompile Include="src\basalt_dialog_utils.cpp" />
-    <ClCompile Include="src\basalt_extra_graphics.c" />
-    <ClCompile Include="src\basalt_graphics.c" />
+    <ClCompile Include="src\basalt_extra_graphics.cpp" />
+    <ClCompile Include="src\basalt_graphics.cpp" />
     <ClCompile Include="src\basalt_graphics_fonts.cpp" />
     <ClCompile Include="src\basalt_math.cpp" />
     <ClCompile Include="src\basalt_tests.c" />
     <ClCompile Include="src\basalt_utils.cpp" />
     <ClCompile Include="src\sdl2_basalt.cpp" />
     <ClCompile Include="src\sdl2_basalt_input.cpp" />
-    <ClCompile Include="src\windows_basalt_utils.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\basalt.h" />
-    <ClInclude Include="src\basalt_archaeo.hpp" />
     <ClInclude Include="src\basalt_console.hpp" />
     <ClInclude Include="src\basalt_extra.h" />
     <ClInclude Include="src\basalt_dialog.hpp" />
     <ClInclude Include="src\basalt_graphics.hpp" />
+    <ClInclude Include="src\basalt_graphics_fonts.hpp" />
     <ClInclude Include="src\basalt_internal.hpp" />
     <ClInclude Include="src\basalt_math.hpp" />
     <ClInclude Include="src\basalt_utils.hpp" />

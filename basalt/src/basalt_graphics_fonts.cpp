@@ -1,65 +1,34 @@
-#include <stdexcept>
+#include <vector>
 #include <string>
 #include <sstream>
-#include <unordered_map>
-#include <vector>
+#include <map>
 
 #include "basalt.h"
 #include "basalt_internal.hpp"
 #include "sdl2_plat.hpp"
+#include "basalt_console.hpp"
+
+namespace basalt {
 
 using namespace std;
 
-static unordered_map<string, TTF_Font*> LoadedFonts;
-static double LastYellTime = 0.0f;
+static std::map<string, TTF_Font*> LoadedFonts;
 
-INTERNAL void InitEngineFonts()
+Font Font::Default()
 {
-    if (TTF_Init() < -1) {
-        SDL_LogError(0, "Failed to init TTF font rendering!: %s\n", TTF_GetError());
-        exit(2);
-        return;
+    auto it = LoadedFonts.begin();
+    if (it == LoadedFonts.end()) {
+        ERR("There are no fonts loaded");
     }
-    LoadFontEx("font_fff_forward", 16);
+
+    return { it->first };
 }
 
-static void LogFontError(string text)
-{
-    // Avoid spamming the log
-    if (LastYellTime + 2.0 < GetTimeElapsed()) {
-        SDL_LogError(0, "%s", text.c_str());
-        LastYellTime = GetTimeElapsed();
-    }
-}
-
-static string LoadedFontsToString()
-{
-    std::string text = "Available fonts are: ";
-    if (LoadedFonts.size() == 0) {
-        bool first = true;
-        for (const auto& entry : LoadedFonts) {
-            if (!first) {
-                text += ", ";
-            }
-            text += entry.first;
-            first = false;
-        }
-        return text;
-    }
-    return text + "none";
-}
-
-// TODO: This is absolutely terribe, just return a Font struct what was I thinking??
-BASALT inline void LoadFont(const char* fontName)
-{
-    LoadFontEx(fontName, 16);
-}
-
-BASALT void LoadFontEx(const char* fontName, uint size)
+Font LoadFont(string fontName, unsigned int baseSize)
 {
     string assetPath = "";
     if (SearchAsset(fontName, &assetPath)) {
-        auto font = TTF_OpenFont(assetPath.c_str(), size);
+        auto font = TTF_OpenFont(assetPath.c_str(), baseSize);
         if (font == nullptr) {
             SDL_LogError(0, "Failed to load font %s: %s", fontName, TTF_GetError());
             goto DEFAULT;
@@ -90,57 +59,28 @@ DEFAULT:
     SDL_LogWarn(0, "Failed to load font, using default: %s", TTF_GetError());
 }
 
-BASALT void DrawText(Texture canvas, const char* text, int posX, int posY, Color color)
+void Texture::DrawText(string text, int posX, int posY, Color color, Font font)
 {
-    DrawTextWithFont("default", canvas, text, posX, posY, color);
-}
-
-static void DrawTextLineWithFont(TTF_Font* font,
-                                 Texture canvas,
-                                 string& line,
-                                 int posX,
-                                 int posY,
-                                 Color color)
-{
-    if (line.empty()) {
-        return;
-    }
-
-    SDL_Color sdlColor = ConvertColor(color);
-    SDL_Surface* surface = TTF_RenderText_Blended(font, line.c_str(), sdlColor);
-    SDL_Rect destRect = { posX, posY, surface->w, surface->h };
-    // TODO: Implement GPU: SDL_RenderCopy(canvas->renderer, texture, NULL, &rect);
-    SDL_UpperBlit(surface, NULL, GetScreenOverlaySurface(), &destRect);
-    SDL_FreeSurface(surface);
-}
-
-BASALT void DrawTextWithFont(const char* fontName,
-                             Texture canvas,
-                             const char* text,
-                             int posX,
-                             int posY,
-                             Color color)
-{
-    TTF_Font* font;
-    try {
-        font = LoadedFonts.at(fontName);
-    } catch (out_of_range& e) {
-        LogFontError("Failed to draw text, font not found: " + string(fontName));
-        LogFontError(LoadedFontsToString());
-        return;
-    }
-
-    // Split up function if text contains multiple lines
-    stringstream stream(text);
     string line;
-    int height = TTF_FontHeight(font);
+    auto stream = stringstream(text);
     while (getline(stream, line)) {
-        DrawTextLineWithFont(font, canvas, line, posX, posY, color);
-        posY += height;
+        if (line.empty()) {
+            return;
+        }
+
+        auto theFont = LoadedFonts.at(font.name);
+
+        SDL_Color sdlColor = ConvertColor(color);
+        SDL_Surface* surface = TTF_RenderText_Blended(theFont, line.c_str(), sdlColor);
+        SDL_Rect destRect = { posX, posY, surface->w, surface->h };
+        // TODO: Implement GPU: SDL_RenderCopy(canvas->renderer, texture, NULL, &rect);
+        SDL_UpperBlit(surface, NULL, GetScreenOverlaySurface(), &destRect);
+        SDL_FreeSurface(surface);
+        posY += TTF_FontHeight(theFont);
     }
 }
 
-BASALT void DisposeFonts()
+void DisposeFonts()
 {
     for (auto& font : LoadedFonts) {
         TTF_CloseFont(font.second);
@@ -149,3 +89,5 @@ BASALT void DisposeFonts()
     TTF_Quit();
     SDL_LogDebug(0, "Disposed fonts context");
 }
+
+}  // namespace basalt

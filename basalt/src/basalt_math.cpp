@@ -439,6 +439,22 @@ template <typename T> T Clamp(T value, T min, T max)
     return value;
 }
 
+template <typename T> T Lerp(T start, T end, float percent)
+{
+    return (start + percent * (end - start));
+}
+
+template <typename T> T Sign(T a)
+{
+    if (a > 0) {
+        return 1;
+    } else if (a < 0) {
+        return -1;
+    } else {
+        return 0;
+    }
+}
+
 template <typename T> inline T Deg2Rad(T val)
 {
     return val * PI / 180;
