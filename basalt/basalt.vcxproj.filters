@@ -13,89 +13,71 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Header Files\external">
-      <UniqueIdentifier>{39ec2cbf-22a3-49c2-97e6-b89a74e5f92d}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\basalt_assets.cpp">
+    <ClCompile Include="basalt_config.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\basalt_config.cpp">
+    <ClCompile Include="basalt_console.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\basalt_dialog.cpp">
+    <ClCompile Include="basalt_graphics.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\basalt_dialog_utils.cpp">
+    <ClCompile Include="basalt_graphics_fonts.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\basalt_graphics_fonts.cpp">
+    <ClCompile Include="basalt_math.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\basalt_tests.c">
+    <ClCompile Include="basalt_testing.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\sdl2_basalt.cpp">
+    <ClCompile Include="basalt_utils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\sdl2_basalt_input.cpp">
+    <ClCompile Include="sdl2_basalt.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\basalt_math.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\basalt_utils.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\basalt_graphics.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\basalt_console.cpp">
+    <ClCompile Include="sdl2_basalt_input.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\external\open-simplex-noise.h">
-      <Filter>Header Files\external</Filter>
-    </ClInclude>
-    <ClInclude Include="src\external\stb_image.h">
-      <Filter>Header Files\external</Filter>
-    </ClInclude>
-    <ClInclude Include="src\external\stb_image_write.h">
-      <Filter>Header Files\external</Filter>
-    </ClInclude>
-    <ClInclude Include="src\external\dirent.h">
-      <Filter>Header Files\external</Filter>
-    </ClInclude>
-    <ClInclude Include="src\basalt_extra.h">
+    <ClInclude Include="basalt_config.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\basalt.h">
+    <ClInclude Include="basalt_console.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\sdl2_plat.hpp">
+    <ClInclude Include="basalt_graphics.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\basalt_internal.hpp">
+    <ClInclude Include="basalt_graphics_fonts.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\basalt_dialog.hpp">
+    <ClInclude Include="basalt_input.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\basalt_math.hpp">
+    <ClInclude Include="basalt_macros.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\basalt_graphics.hpp">
+    <ClInclude Include="basalt_math.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\basalt_console.hpp">
+    <ClInclude Include="basalt_testing.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\basalt_utils.hpp">
+    <ClInclude Include="basalt_utils.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\basalt_graphics_fonts.hpp">
+    <ClInclude Include="basalt_window.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="sdl2_plat.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="basalt.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
