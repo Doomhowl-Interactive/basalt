@@ -154,7 +154,6 @@
     <ClCompile Include="src\basalt_console.cpp" />
     <ClCompile Include="src\basalt_dialog.cpp" />
     <ClCompile Include="src\basalt_dialog_utils.cpp" />
-    <ClCompile Include="src\basalt_extra_graphics.cpp" />
     <ClCompile Include="src\basalt_graphics.cpp" />
     <ClCompile Include="src\basalt_graphics_fonts.cpp" />
     <ClCompile Include="src\basalt_math.cpp" />

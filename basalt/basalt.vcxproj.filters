@@ -30,9 +30,6 @@
     <ClCompile Include="src\basalt_dialog_utils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\basalt_extra_graphics.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\basalt_graphics_fonts.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
