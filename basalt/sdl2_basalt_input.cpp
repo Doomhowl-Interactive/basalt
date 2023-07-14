@@ -2,7 +2,7 @@
 #include <spdlog/spdlog.h>
 #include "sdl2_plat.hpp"
 
-namespace basalt {
+
 
 using namespace std;
 
@@ -91,4 +91,3 @@ bool IsKeyReleased(KeyCode code)
 {
     return !pressedKeysFrame[code];
 }
-}  // namespace basalt

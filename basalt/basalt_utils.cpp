@@ -10,7 +10,7 @@
 #include "basalt_utils.hpp"
 #include "basalt_console.hpp"
 
-namespace basalt {
+
 
 using namespace std;
 
@@ -65,8 +65,13 @@ string& TrimText(string buffer)
 
 string& StripText(string buffer)
 {
-    buffer.erase(remove_if(buffer.begin(), buffer.end(), isspace), buffer.end());
-    return buffer;
+    string result = "";
+    for (char c : buffer) {
+        if (c != ' ' && c != '\n' && c != '\r' && c != '\t') {
+            result += c;
+        }
+    }
+    return result;
 }
 
 string& PadStringRight(string text, char symbol, size_t length)
@@ -117,9 +122,9 @@ string GetFileStem(const string filePath)
     return fs::path(filePath).stem().string();
 }
 
-optional<const string&> GetFirstExistingFolder(const vector<string> folders)
+optional<string> GetFirstExistingFolder(const vector<string> folders)
 {
-    for (auto& folder : folders) {
+    for (const auto& folder : folders) {
         if (FolderExists(folder)) {
             return folder;
         }
@@ -143,4 +148,3 @@ vector<string> GetFolderFiles(const string folder, const string ext)
     return files;
 }
 
-}  // namespace basalt

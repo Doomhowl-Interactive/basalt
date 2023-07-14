@@ -116,9 +116,42 @@ extern int GetRandomNumber();
 bool IsLittleEndian();
 
 // Math
-template <typename T> T Clamp(T value, T min, T max);
-template <typename T> T Lerp(T start, T end, float t);
-template <typename T> T Sign(T a);
 
-template <typename T> extern T Deg2Rad(T val);
-template <typename T> extern T Rad2Deg(T val);
+template <typename T> T Clamp(T value, T min, T max)
+{
+    if (value < min) {
+        return min;
+    }
+
+    if (value > max) {
+        return max;
+    }
+
+    return value;
+}
+
+template <typename T> T Lerp(T start, T end, float percent)
+{
+    return (start + percent * (end - start));
+}
+
+template <typename T> T Sign(T a)
+{
+    if (a > 0) {
+        return 1;
+    } else if (a < 0) {
+        return -1;
+    } else {
+        return 0;
+    }
+}
+
+template <typename T> inline T Deg2Rad(T val)
+{
+    return val * PI / 180;
+}
+
+template <typename T> inline T Rad2Deg(T val)
+{
+    return val * 180.0 / PI;
+}

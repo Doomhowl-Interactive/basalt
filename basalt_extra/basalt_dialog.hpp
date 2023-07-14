@@ -7,7 +7,7 @@
 
 #include "basalt_graphics.hpp"
 
-namespace basalt {
+
 using namespace std;
 class DialogLine {
    public:

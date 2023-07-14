@@ -4,13 +4,8 @@
 #include <stdexcept>
 #include <functional>
 
-#include "basalt_graphics.hpp"
+#include "basalt.h"
 #include "basalt_dialog.hpp"
-#include "basalt_input.hpp"
-#include "basalt_config.hpp"
-#include "basalt_utils.hpp"
-
-namespace basalt {
 
 using namespace std;
 

@@ -12,7 +12,7 @@
 #define OPEN_SIMPLEX_NOISE_IMPLEMENTATION
 #include "external/open-simplex-noise.h"
 
-namespace basalt {
+
 
 using namespace std;
 
@@ -22,7 +22,7 @@ Texture::Texture(unsigned int width, unsigned int height)
 {
     this->width = width;
     this->height = height;
-    this->pixels = make_shared<vector<Color>>(new vector<Color>(width * height));
+    this->pixels = make_shared<vector<Color>>(vector<Color>(width * height));
 }
 
 Texture Texture::Copy()
@@ -57,8 +57,8 @@ Texture Texture::GenerateNoise(unsigned int width,
 
     // Determine ranges
     int i = 0;
-    for (int y = 0; y < texture.height; y++) {
-        for (int x = 0; x < texture.width; x++) {
+    for (int y = 0; y < (int)texture.height; y++) {
+        for (int x = 0; x < (int)texture.width; x++) {
             double val = open_simplex_noise2(context, x / scale, y / scale);
             if (lowest > val)
                 lowest = val;
@@ -70,8 +70,8 @@ Texture Texture::GenerateNoise(unsigned int width,
 
     // Calculate colors
     i = 0;
-    for (int y = 0; y < texture.height; y++) {
-        for (int x = 0; x < texture.width; x++) {
+    for (int y = 0; y < (int)texture.height; y++) {
+        for (int x = 0; x < (int)texture.width; x++) {
             float percentage = (float)((values[i] - lowest) / (highest - lowest));
             pix[i++] = BlendColors(bg, fg, percentage);
         }
@@ -345,7 +345,7 @@ inline Color MakeRGB(unsigned char r, unsigned char g, unsigned char b, unsigned
     return (r << 24) | (g << 16) | (b << 8) | a;
 }
 
-inline Color MakeRGBf(float r, float g, float b, float a = 1.f)
+inline Color MakeRGBf(float r, float g, float b, float a)
 {
     return MakeRGB((unsigned char)(r * 255.f),
                    (unsigned char)(g * 255.f),
@@ -427,4 +427,3 @@ static bool olivec_normalize_rect(int x,
     return true;
 }
 
-}  // namespace basalt

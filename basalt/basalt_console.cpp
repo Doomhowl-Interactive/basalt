@@ -4,8 +4,6 @@
 #include "spdlog/spdlog.h"
 #include "basalt_console.hpp"
 
-namespace basalt {
-
 using namespace std;
 
 static string ConsoleLog;
@@ -39,9 +37,9 @@ void OpenSystemConsole()
         freopen("CONOUT$", "w", stderr);
         AllocatedConsole = true;
     } else {
-        ERR("Failed to allocate console!");
+        spdlog::error("Failed to allocate console!");
     }
-    DEBUG("Allocated Windows console");
+    spdlog::debug("Allocated Windows console");
 }
 
 void CloseSystemConsole()
@@ -55,5 +53,3 @@ string GetBasaltLog()
 {
     return ConsoleLog;
 }
-
-}  // namespace basalt

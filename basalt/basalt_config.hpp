@@ -1,5 +1,6 @@
 #pragma once
 
+// TODO: Turn into a single struct
 struct EngineConfig {
     bool hasArchaeo;
     bool hasHotloading;
@@ -10,7 +11,6 @@ struct EngineConfig {
     bool unlockedFramerate;
     bool lowQuality;
 };
-extern EngineConfig Config;
 
 struct GameConfig {
     const char* title;

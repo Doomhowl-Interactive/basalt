@@ -7,7 +7,7 @@
 
 using namespace std;
 
-namespace basalt {
+
 
 string& DialogLine::formatLine(string& line)
 {

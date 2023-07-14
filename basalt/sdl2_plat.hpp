@@ -6,17 +6,13 @@
 #include "basalt.h"
 #include "basalt_graphics.hpp"
 
-namespace basalt {
-
 // HACK: We should probably pass some kind of RenderContext (a union maybe)
 // to each drawing function instead of using an overlaying surface!
-::SDL_Surface* GetScreenOverlaySurface();
+SDL_Surface* GetScreenOverlaySurface();
 SDL_Color ConvertColor(Color color);
 
 bool ProcessKeyboardInput(SDL_Event* e);
 void ProcessMouseInput();
 void ClearKeyboardInput();
 
-bool ParseLaunchArguments(int argc, char** argv);
-
-}  // namespace basalt
+bool ParseLaunchArguments(EngineConfig* config, int argc, char** argv);

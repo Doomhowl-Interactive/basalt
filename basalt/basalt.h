@@ -8,8 +8,7 @@
 #include "basalt_input.hpp"
 #include "basalt_math.hpp"
 #include "basalt_utils.hpp"
-
-namespace basalt {
+#include "basalt_window.hpp"
 
 struct Basalt {
     int exitCode;
@@ -24,5 +23,3 @@ struct Basalt {
     void BeginFrame();
     void EndFrame();
 };
-
-}  // namespace basalt

@@ -2,8 +2,9 @@
 
 #include "example_game.h"
 
-EXAMPLE Color InterpolateHue(float t) {
-    float hue = fmodf(t, 1.0f); // Wrap the interpolation parameter if it goes beyond 1
+Color InterpolateHue(float t)
+{
+    float hue = fmodf(t, 1.0f);  // Wrap the interpolation parameter if it goes beyond 1
 
     // Map the hue to the range of rainbow colors (0-360 degrees)
     float hue_degrees = hue * 360.0f;
@@ -36,10 +37,5 @@ EXAMPLE Color InterpolateHue(float t) {
         green = 0.0f;
         blue = (360.0f - hue_degrees) / 60.0f;
     }
-
-    // Return the color
-    uchar redU = (uchar)(red * 255.0f);
-    uchar greenU = (uchar)(green * 255.0f);
-    uchar blueU = (uchar)(blue * 255.0f);
-    return RGBA(redU, greenU, blueU, 255);
+    return MakeRGBf(red, green, blue, 1.f);
 }

@@ -3,14 +3,11 @@
 
 #include "basalt_utils.hpp"
 
-namespace basalt {
-using namespace std;
-
 // =====================================
 // Small over-engineered test framework
 // =====================================
 
-void EndTest(string name, string description, bool succeeded);
+void EndTest(std::string name, std::string description, bool succeeded);
 
 #define TEST(N) \
  void Test##N() \
@@ -29,5 +26,3 @@ void EndTest(string name, string description, bool succeeded);
 // =====================================
 
 void RunUnitTests();
-
-}  // namespace basalt

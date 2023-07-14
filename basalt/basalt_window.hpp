@@ -3,16 +3,13 @@
 
 #include "basalt_macros.hpp"
 
-namespace basalt {
+void SetWindowTitle(std::string title);
 
-using namespace std;
-
-void SetWindowTitle(string title);
-
-// NOTE: Get number of frames elapsed since the start of the simulation.
+/// Get number of frames elapsed since the start of the simulation.
 ulong GetFrameIndex();
 
-// NOTE: Get time elapsed since the start of the simulation.
+/// Get time elapsed since the start of the simulation.
 double GetTimeElapsed();
 
-}  // namespace basalt
+/// Get deltaTime
+double GetDeltaTime();

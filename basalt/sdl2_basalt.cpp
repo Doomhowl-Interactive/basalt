@@ -4,20 +4,22 @@
 #include <spdlog/spdlog.h>
 #include <memory.h>
 
-#include "basalt.h"
-#include "sdl2_plat.hpp"
+#include "basalt_config.hpp"
 #include "basalt_testing.hpp"
+#include "sdl2_plat.hpp"
 
-namespace basalt {
 using namespace std;
 
 static Basalt* Context;
 
 GameConfig Game = { 0 };
+EngineConfig Config = { 0 };
 
 SDL_Window* Window = NULL;
 SDL_Surface* ScreenSurface = NULL;
 SDL_Surface* OverlaySurface = NULL;
+
+static float delta;
 
 void SetWindowTitle(string title)
 {
@@ -37,9 +39,14 @@ static void Close(Basalt& b, int code)
     b.exitCode = code;
 }
 
-Basalt::Basalt(GameConfig config, int argc, char** argv)
+Basalt::Basalt(GameConfig config, int argc, char** argv) : canvas(Game.width, Game.height)
 {
-    if (!ParseLaunchArguments(argc, argv)) {
+    this->exitCode = EXIT_SUCCESS;
+    this->frameIndex = 0;
+    this->timeElapsed = 0.0;
+
+    EngineConfig Config = { 0 };
+    if (!ParseLaunchArguments(&Config, argc, argv)) {
         Close(*this, EXIT_SUCCESS);
         return;
     }
@@ -78,7 +85,6 @@ Basalt::Basalt(GameConfig config, int argc, char** argv)
     }
 
     // NOTE: If this breaks go back to using raw pointers instead of vector
-    Texture canvas(Game.width, Game.height);
     const auto& canvasPixels = *canvas.pixels.get();
     ScreenSurface = SDL_CreateRGBSurfaceWithFormatFrom((void*)canvasPixels.data(),
                                                        Game.width,
@@ -101,6 +107,10 @@ bool Basalt::ShouldClose()
 
     static Uint64 startTicks = SDL_GetTicks64();
 
+    if (exitCode == EXIT_FAILURE) {
+        return true;
+    }
+
     // Process window and keyboard input
     static SDL_Event event;
     while (SDL_PollEvent(&event)) {
@@ -119,7 +129,7 @@ bool Basalt::ShouldClose()
     return false;
 }
 
-bool Basalt::BeginFrame()
+void Basalt::BeginFrame()
 {
     ProcessMouseInput();
 }
@@ -144,7 +154,7 @@ void Basalt::EndFrame()
 
     static Uint64 startTicks = SDL_GetTicks64();
     Uint64 ticksPassed = SDL_GetTicks64() - startTicks;
-    float delta = (float)ticksPassed / 1000.0f;
+    delta = (float)ticksPassed / 1000.0f;
     Context->timeElapsed = (double)SDL_GetTicks64() / 1000.0;
     Context->frameIndex++;
 
@@ -181,6 +191,11 @@ double GetTimeElapsed()
     return Context ? Context->frameIndex : 0.0;
 }
 
+double GetDeltaTime()
+{
+    return delta;
+}
+
 SDL_Surface* GetScreenOverlaySurface()
 {
     return OverlaySurface;
@@ -197,5 +212,3 @@ SDL_Color ConvertColor(Color color)
     };
     return conv;
 }
-
-}  // namespace basalt

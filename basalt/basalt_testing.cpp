@@ -1,11 +1,12 @@
 #include <stdlib.h>
 #include <string>
+#include <spdlog/spdlog.h>
 
 #include "basalt_testing.hpp"
 #include "basalt_console.hpp"
 #include "basalt_graphics.hpp"
 
-namespace basalt {
+
 
 using namespace std;
 
@@ -13,12 +14,11 @@ void EndTest(string name, string description, bool succeeded)
 {
     string padding = PadStringRight(name, '.', 50);
     string result = succeeded ? "PASSED" : "FAILED";
-    ConsoleColor color = succeeded ? CGREEN : CRED;
-    BasaltPrintColored(color, "TEST  : %s %s", padding, result);
+    spdlog::info("TEST  : {} {}", padding, result);
 
     if (!succeeded) {
-        ERR("Failed at --> %s", description);
-        ERR("Cannot proceed as unit tests failed!");
+        spdlog::error("Failed at --> %s", description);
+        spdlog::error("Cannot proceed as unit tests failed!");
         exit(EXIT_FAILURE);
     }
 }
@@ -136,7 +136,7 @@ END;
 
 void RunUnitTests()
 {
-    INFO("Doing unit tests");
+    spdlog::info("Doing unit tests");
     TestByteReading();
     TestStringPadding();
     TestMath();
@@ -145,4 +145,3 @@ void RunUnitTests()
     TestStripText();
 }
 
-}  // namespace basalt

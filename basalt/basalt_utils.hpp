@@ -1,36 +1,31 @@
 #pragma once
 
+#include <string>
 #include <vector>
 #include <cstdarg>
 #include <optional>
 
-namespace basalt {
-
-using namespace std;
-
-string& GetWorkingDirectory();
-string& GetExecutableDirectory();
+std::string& GetWorkingDirectory();
+std::string& GetExecutableDirectory();
 
 // WARN: Cached memory, copy for long usage!
-string FormatText(const char* text, ...);
-string& TrimText(string buffer);
-string& StripText(string buffer);
-string& PadStringRight(string text, char symbol, size_t length);
-string& PadStringLeft(string text, char symbol, size_t length);
+std::string FormatText(const char* text, ...);
+std::string& TrimText(std::string buffer);
+std::string& StripText(std::string buffer);
+std::string& PadStringRight(std::string text, char symbol, size_t length);
+std::string& PadStringLeft(std::string text, char symbol, size_t length);
 
-bool FileHasExtension(const string folder, const string ext);
-bool FolderExists(const string folder);
+bool FileHasExtension(const std::string folder, const std::string ext);
+bool FolderExists(const std::string folder);
 
 // WARN: Uses cached memory, result gets overwritten on future calls.
 // NOTE: Get seconds since epoch a file was last changed.
 // Returns 0 if file doesn't exists.
-long GetFileModifiedTime(const string filePath);
-string GetFileName(const string filePath);
-string GetFileStem(const string filePath);
+long GetFileModifiedTime(const std::string filePath);
+std::string GetFileName(const std::string filePath);
+std::string GetFileStem(const std::string filePath);
 
 // NOTE: Returns NULL when none exist,
 // pass NULL ended array
-optional<const string&> GetFirstExistingFolder(const vector<string> folders);
-vector<string> GetFolderFiles(const string folder, const string ext);
-
-};  // namespace basalt
+std::optional<std::string> GetFirstExistingFolder(const std::vector<std::string> folders);
+std::vector<std::string> GetFolderFiles(const std::string folder, const std::string ext);

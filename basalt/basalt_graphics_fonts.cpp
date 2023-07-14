@@ -2,23 +2,22 @@
 #include <string>
 #include <sstream>
 #include <map>
+#include <spdlog/spdlog.h>
 
 #include "basalt.h"
-#include "basalt_internal.hpp"
-#include "sdl2_plat.hpp"
 #include "basalt_console.hpp"
-
-namespace basalt {
+#include "basalt_assets.hpp"
+#include "sdl2_plat.hpp"
 
 using namespace std;
 
-static std::map<string, TTF_Font*> LoadedFonts;
+static map<string, TTF_Font*> LoadedFonts;
 
 Font Font::Default()
 {
     auto it = LoadedFonts.begin();
     if (it == LoadedFonts.end()) {
-        ERR("There are no fonts loaded");
+        spdlog::error("There are no fonts loaded");
     }
 
     return { it->first };
@@ -26,9 +25,9 @@ Font Font::Default()
 
 Font LoadFont(string fontName, unsigned int baseSize)
 {
-    string assetPath = "";
-    if (SearchAsset(fontName, &assetPath)) {
-        auto font = TTF_OpenFont(assetPath.c_str(), baseSize);
+    auto assetPath = SearchAsset(fontName);
+    if (assetPath) {
+        auto font = TTF_OpenFont(assetPath.value().c_str(), baseSize);
         if (font == nullptr) {
             SDL_LogError(0, "Failed to load font %s: %s", fontName, TTF_GetError());
             goto DEFAULT;
@@ -43,7 +42,7 @@ Font LoadFont(string fontName, unsigned int baseSize)
             LoadedFonts.insert({ "default", font });
         }
 
-        return;
+        return { fontName };
     }
 
 DEFAULT:
@@ -51,14 +50,16 @@ DEFAULT:
     try {
         defaultFont = LoadedFonts.at("default");
     } catch (out_of_range& e) {
-        SDL_LogError(0, "There is no default font: (%s)", TTF_GetError());
-        return;
+        spdlog::error("There is no default font: ({})", TTF_GetError());
     }
 
     LoadedFonts.insert({ fontName, defaultFont });
-    SDL_LogWarn(0, "Failed to load font, using default: %s", TTF_GetError());
+    spdlog::warn("Failed to load font, using default: {}", TTF_GetError());
+
+    return Font::Default();
 }
 
+#undef DrawText  // thank you Microsoft, very cool
 void Texture::DrawText(string text, int posX, int posY, Color color, Font font)
 {
     string line;
@@ -89,5 +90,3 @@ void DisposeFonts()
     TTF_Quit();
     SDL_LogDebug(0, "Disposed fonts context");
 }
-
-}  // namespace basalt
