@@ -19,7 +19,11 @@ SDL_Window* Window = NULL;
 SDL_Surface* ScreenSurface = NULL;
 SDL_Surface* OverlaySurface = NULL;
 
-static float delta;
+static double timeElapsed = 0;
+static double delta = 0;
+static Uint64 startTicks = 0;
+static ulong frameIndex = 0;
+static Texture* canvas;
 
 void SetWindowTitle(string title)
 {
@@ -40,18 +44,10 @@ static void Close(Basalt& b, int code)
 }
 
 // TODO: use a pointer so it doesn't need be initialized like this
-Basalt::Basalt(GameConfig config, int argc, char** argv) : canvas(config.width, config.height)
+Basalt::Basalt(GameConfig config, int argc, char** argv)
 {
     Instance = this;
     this->exitCode = EXIT_SUCCESS;
-    this->frameIndex = 0;
-    this->timeElapsed = 0.0;
-
-    if (canvas.width == 0 || canvas.height == 0) {
-        spdlog::critical("Canvas width and height must be greater than 0!");
-        Close(*this, EXIT_FAILURE);
-        return;
-    }
 
     EngineConfig Config = { 0 };
     if (!ParseLaunchArguments(&Config, argc, argv)) {
@@ -92,8 +88,11 @@ Basalt::Basalt(GameConfig config, int argc, char** argv) : canvas(config.width, 
         return;
     }
 
+    // initialize the main texture
+    canvas = new Texture(Game.width, Game.height);
+
     // NOTE: If this breaks go back to using raw pointers instead of vector
-    const auto& canvasPixels = *canvas.pixels.get();
+    const auto& canvasPixels = *canvas->pixels.get();
     ScreenSurface = SDL_CreateRGBSurfaceWithFormatFrom((void*)canvasPixels.data(),
                                                        Game.width,
                                                        Game.height,
@@ -137,9 +136,15 @@ bool Basalt::ShouldClose()
     return false;
 }
 
-void Basalt::BeginFrame()
+Texture Basalt::BeginFrame()
 {
+    if (!canvas) {
+        spdlog::critical("No basalt canvas!");
+    }
+
+    startTicks = SDL_GetTicks64();
     ProcessMouseInput();
+    return *canvas;
 }
 
 void Basalt::EndFrame()
@@ -153,15 +158,16 @@ void Basalt::EndFrame()
     SDL_UpdateWindowSurface(Window);
     // =============================================
 
-    // Clear the overlay surface
+    // Clear the overlay gui surface, (it needs to be transparent!)
     SDL_FillRect(OverlaySurface, NULL, 0x00000000);
 
     frameIndex++;
-    SDL_Delay(1000 / maxFps);
 
-    static Uint64 startTicks = SDL_GetTicks64();
+    double timeToWait = 1000 / maxFps;
+    SDL_Delay(timeToWait);
+
     Uint64 ticksPassed = SDL_GetTicks64() - startTicks;
-    delta = (float)ticksPassed / 1000.0f;
+    delta = ticksPassed / 1000.0;
     timeElapsed = (double)SDL_GetTicks64() / 1000.0;
     frameIndex++;
 
@@ -181,6 +187,7 @@ void Basalt::EndFrame()
 
 Basalt::~Basalt()
 {
+    delete canvas;
     SDL_FreeSurface(ScreenSurface);
     SDL_DestroyWindow(Window);
     CloseSystemConsole();
@@ -189,13 +196,13 @@ Basalt::~Basalt()
 
 ulong GetFrameIndex()
 {
-    return Instance ? Instance->frameIndex : 0;
+    return frameIndex;
 }
 
 // TODO: Implement SetTimeScale and make sure GetTimeElapsed  updates accordingly.
 double GetTimeElapsed()
 {
-    return Instance ? Instance->frameIndex : 0.0;
+    return timeElapsed;
 }
 
 double GetDeltaTime()

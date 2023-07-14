@@ -14,14 +14,11 @@
 
 struct Basalt {
     int exitCode;
-    ulong frameIndex;
-    double timeElapsed;
-    Texture canvas;
 
     Basalt(GameConfig config, int argc, char** argv);
     ~Basalt();
 
     bool ShouldClose();
-    void BeginFrame();
+    Texture BeginFrame();
     void EndFrame();
 };

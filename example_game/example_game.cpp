@@ -18,8 +18,8 @@ int main(int argc, char** argv)
     font = LoadFont("font_sf_cartoonist_hand.ttf", 32);
 
     while (!engine.ShouldClose()) {
-        engine.BeginFrame();
-        UpdateAndRenderGame(engine.canvas, GetDeltaTime());
+        Texture canvas = engine.BeginFrame();
+        UpdateAndRenderGame(canvas, GetDeltaTime());
         engine.EndFrame();
     }
 
@@ -43,7 +43,7 @@ void UpdateAndRenderGame(Texture canvas, float delta)
     }
 
     canvas.DrawText("Hello Basalt!", 10, 10, WHITE, font);
-    canvas.DrawText("Press SPACE to change direction", 10, 50, YELLOW, font);
+    canvas.DrawText("Press SPACE to change rainbow direction", 10, 50, GREEN, font);
 
     if (IsKeyPressed(KEY_SPACE)) {
         Horizontal = !Horizontal;

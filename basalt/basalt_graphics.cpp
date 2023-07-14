@@ -11,8 +11,7 @@
 
 #define OPEN_SIMPLEX_NOISE_IMPLEMENTATION
 #include "external/open-simplex-noise.h"
-
-
+#include <spdlog/spdlog.h>
 
 using namespace std;
 
@@ -20,6 +19,11 @@ constexpr int BLEND_VALUE = 180;
 
 Texture::Texture(unsigned int width, unsigned int height)
 {
+    if (width == 0 || height == 0) {
+        spdlog::critical("Canvas width and height must be greater than 0!");
+        return;
+    }
+
     this->width = width;
     this->height = height;
     this->pixels = make_shared<vector<Color>>(vector<Color>(width * height));
@@ -426,4 +430,3 @@ static bool olivec_normalize_rect(int x,
 
     return true;
 }
-
