@@ -10,6 +10,8 @@
 #include "basalt_utils.hpp"
 #include "basalt_window.hpp"
 
+// TODO: Replace old logging with spdlog
+
 struct Basalt {
     int exitCode;
     ulong frameIndex;

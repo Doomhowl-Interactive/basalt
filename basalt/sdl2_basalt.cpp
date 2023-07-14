@@ -10,7 +10,7 @@
 
 using namespace std;
 
-static Basalt* Context;
+static Basalt* Instance = nullptr;
 
 GameConfig Game = { 0 };
 EngineConfig Config = { 0 };
@@ -39,11 +39,19 @@ static void Close(Basalt& b, int code)
     b.exitCode = code;
 }
 
-Basalt::Basalt(GameConfig config, int argc, char** argv) : canvas(Game.width, Game.height)
+// TODO: use a pointer so it doesn't need be initialized like this
+Basalt::Basalt(GameConfig config, int argc, char** argv) : canvas(config.width, config.height)
 {
+    Instance = this;
     this->exitCode = EXIT_SUCCESS;
     this->frameIndex = 0;
     this->timeElapsed = 0.0;
+
+    if (canvas.width == 0 || canvas.height == 0) {
+        spdlog::critical("Canvas width and height must be greater than 0!");
+        Close(*this, EXIT_FAILURE);
+        return;
+    }
 
     EngineConfig Config = { 0 };
     if (!ParseLaunchArguments(&Config, argc, argv)) {
@@ -148,15 +156,14 @@ void Basalt::EndFrame()
     // Clear the overlay surface
     SDL_FillRect(OverlaySurface, NULL, 0x00000000);
 
-    assert(Context);
-    Context->frameIndex++;
+    frameIndex++;
     SDL_Delay(1000 / maxFps);
 
     static Uint64 startTicks = SDL_GetTicks64();
     Uint64 ticksPassed = SDL_GetTicks64() - startTicks;
     delta = (float)ticksPassed / 1000.0f;
-    Context->timeElapsed = (double)SDL_GetTicks64() / 1000.0;
-    Context->frameIndex++;
+    timeElapsed = (double)SDL_GetTicks64() / 1000.0;
+    frameIndex++;
 
     // Set Window title to fps and delta-time
     static double timer = 0.f;
@@ -182,13 +189,13 @@ Basalt::~Basalt()
 
 ulong GetFrameIndex()
 {
-    return Context ? Context->frameIndex : 0;
+    return Instance ? Instance->frameIndex : 0;
 }
 
 // TODO: Implement SetTimeScale and make sure GetTimeElapsed  updates accordingly.
 double GetTimeElapsed()
 {
-    return Context ? Context->frameIndex : 0.0;
+    return Instance ? Instance->frameIndex : 0.0;
 }
 
 double GetDeltaTime()

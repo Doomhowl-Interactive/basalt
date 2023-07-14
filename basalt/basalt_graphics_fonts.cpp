@@ -25,17 +25,21 @@ Font Font::Default()
 
 Font LoadFont(string fontName, unsigned int baseSize)
 {
+    if (TTF_WasInit() == 0) {
+        TTF_Init();
+    }
+
     auto assetPath = SearchAsset(fontName);
     if (assetPath) {
         auto font = TTF_OpenFont(assetPath.value().c_str(), baseSize);
         if (font == nullptr) {
-            SDL_LogError(0, "Failed to load font %s: %s", fontName, TTF_GetError());
+            spdlog::error("Failed to load font {}: {}", fontName, TTF_GetError());
             goto DEFAULT;
         }
 
         // store loaded font
         LoadedFonts.insert({ fontName, font });
-        SDL_LogDebug(0, "Loaded font %s(.ttf)", fontName);
+        spdlog::debug("Loaded font {}(.ttf)", fontName);
 
         // if this is the first font loaded, also set it as the default font
         if (LoadedFonts.size() == 1) {
@@ -87,6 +91,10 @@ void DisposeFonts()
         TTF_CloseFont(font.second);
     }
     LoadedFonts.clear();
-    TTF_Quit();
-    SDL_LogDebug(0, "Disposed fonts context");
+
+    if (TTF_WasInit() > 0) {
+        TTF_Quit();
+    }
+
+    spdlog::info("Disposed fonts context");
 }
