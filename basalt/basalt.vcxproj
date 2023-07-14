@@ -18,6 +18,35 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="basalt_assets.cpp" />
+    <ClCompile Include="basalt_config.cpp" />
+    <ClCompile Include="basalt_console.cpp" />
+    <ClCompile Include="basalt_graphics.cpp" />
+    <ClCompile Include="basalt_graphics_fonts.cpp" />
+    <ClCompile Include="basalt_math.cpp" />
+    <ClCompile Include="basalt_testing.cpp" />
+    <ClCompile Include="basalt_utils.cpp" />
+    <ClCompile Include="pch.cpp" />
+    <ClCompile Include="sdl2_basalt.cpp" />
+    <ClCompile Include="sdl2_basalt_input.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="basalt.h" />
+    <ClInclude Include="basalt_config.hpp" />
+    <ClInclude Include="basalt_console.hpp" />
+    <ClInclude Include="basalt_graphics.hpp" />
+    <ClInclude Include="basalt_graphics_fonts.hpp" />
+    <ClInclude Include="basalt_input.hpp" />
+    <ClInclude Include="basalt_macros.hpp" />
+    <ClInclude Include="basalt_math.hpp" />
+    <ClInclude Include="basalt_testing.hpp" />
+    <ClInclude Include="basalt_utils.hpp" />
+    <ClInclude Include="basalt_window.hpp" />
+    <ClInclude Include="basalt_assets.hpp" />
+    <ClInclude Include="pch.h" />
+    <ClInclude Include="sdl2_plat.hpp" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
@@ -76,15 +105,15 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>..\vendor\SDL2_ttf\include;..\vendor\SDL2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\vendor;..\vendor\SDL2_ttf\include;..\vendor\SDL2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <LanguageStandard_C>stdc11</LanguageStandard_C>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\dev\basalt\vendor\SDL2_ttf\lib\x86;C:\dev\basalt\vendor\SDL2\lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>SDL2.lib; SDL2main.lib;</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\vendor\spdlog;C:\dev\basalt\vendor\SDL2_ttf\lib\x86;C:\dev\basalt\vendor\SDL2\lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;spdlog.lib;</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -95,7 +124,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>..\vendor\SDL2_ttf\include;..\vendor\SDL2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\vendor;..\vendor\SDL2_ttf\include;..\vendor\SDL2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <LanguageStandard_C>stdc11</LanguageStandard_C>
     </ClCompile>
@@ -104,8 +133,8 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\dev\basalt\vendor\SDL2_ttf\lib\x86;C:\dev\basalt\vendor\SDL2\lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>SDL2.lib; SDL2main.lib;</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\vendor\spdlog;C:\dev\basalt\vendor\SDL2_ttf\lib\x86;C:\dev\basalt\vendor\SDL2\lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;spdlog.lib;</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -116,14 +145,14 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <LanguageStandard_C>stdc11</LanguageStandard_C>
-      <AdditionalIncludeDirectories>..\vendor\SDL2_ttf\include;..\vendor\SDL2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\vendor;..\vendor\SDL2_ttf\include;..\vendor\SDL2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\dev\basalt\vendor\SDL2_ttf\lib\x64;C:\dev\basalt\vendor\SDL2\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>SDL2.lib; SDL2main.lib; SDL2_ttf.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\vendor\spdlog;C:\dev\basalt\vendor\SDL2_ttf\lib\x64;C:\dev\basalt\vendor\SDL2\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;spdlog.lib; SDL2_ttf.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -134,7 +163,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>..\vendor\SDL2_ttf\include;..\vendor\SDL2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\vendor;..\vendor\SDL2_ttf\include;..\vendor\SDL2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <LanguageStandard_C>stdc11</LanguageStandard_C>
@@ -144,44 +173,10 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\dev\basalt\vendor\SDL2_ttf\lib\x64;C:\dev\basalt\vendor\SDL2\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>SDL2.lib; SDL2main.lib; SDL2_ttf.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\vendor\spdlog;C:\dev\basalt\vendor\SDL2_ttf\lib\x64;C:\dev\basalt\vendor\SDL2\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;spdlog.lib; SDL2_ttf.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="src\basalt_archaeo.c" />
-    <ClCompile Include="src\basalt_assets.cpp" />
-    <ClCompile Include="src\basalt_config.c" />
-    <ClCompile Include="src\basalt_dialog.cpp" />
-    <ClCompile Include="src\basalt_dialog_utils.c" />
-    <ClCompile Include="src\basalt_extra_graphics.c" />
-    <ClCompile Include="src\basalt_graphics.c" />
-    <ClCompile Include="src\basalt_graphics_fonts.cpp" />
-    <ClCompile Include="src\basalt_tests.c" />
-    <ClCompile Include="src\basalt_utils.c" />
-    <ClCompile Include="src\sdl2_basalt.cpp" />
-    <ClCompile Include="src\sdl2_basalt_input.cpp" />
-    <ClCompile Include="src\windows_basalt_utils.c" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="src\basalt.h" />
-    <ClInclude Include="src\basalt_extra.h" />
-    <ClInclude Include="src\basalt_extra.hpp" />
-    <ClInclude Include="src\basalt_internal.hpp" />
-    <ClInclude Include="src\external\dirent.h" />
-    <ClInclude Include="src\external\open-simplex-noise.h" />
-    <ClInclude Include="src\external\stb_image.h" />
-    <ClInclude Include="src\external\stb_image_write.h" />
-    <ClInclude Include="src\sdl2_plat.hpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\vendor\SDL2\lib\x64\SDL2.dll">
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</DeploymentContent>
-    </None>
-    <None Include="..\vendor\SDL2_ttf\lib\x64\SDL2_ttf.dll">
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</DeploymentContent>
-    </None>
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
