@@ -175,9 +175,9 @@ void Texture::DrawRectangle(int posX, int posY, int width, int height, Color col
     // assume color is opaque
     color |= 0x000000FF;
 
-    for (int y = max(0, posY); y < min(posY + height, (int)height); y++) {
-        for (int x = max(0, posX); x < min(posX + width, (int)width); x++) {
-            int j = y * width + x;
+    for (int y = max(0, posY); y < min(posY + height, (int)this->height); y++) {
+        for (int x = max(0, posX); x < min(posX + width, (int)this->width); x++) {
+            int j = y * this->width + x;
             pix[j] = color;
         }
     }
