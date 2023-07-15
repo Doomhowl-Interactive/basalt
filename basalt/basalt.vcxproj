@@ -44,6 +44,10 @@
     <ClInclude Include="basalt_utils.hpp" />
     <ClInclude Include="basalt_window.hpp" />
     <ClInclude Include="basalt_assets.hpp" />
+    <ClInclude Include="external\dirent.h" />
+    <ClInclude Include="external\open-simplex-noise.h" />
+    <ClInclude Include="external\stb_image.h" />
+    <ClInclude Include="external\stb_image_write.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="sdl2_plat.hpp" />
   </ItemGroup>

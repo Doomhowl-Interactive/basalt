@@ -52,13 +52,13 @@ inline Rect RectFToRect(RectF rectf)
 
 Rect::operator RectF() const
 {
-    Rect rect = {
-        (int)x,
-        (int)y,
-        (int)width,
-        (int)height,
+    return {
+        (float)x,
+        (float)y,
+        (float)width,
+        (float)height,
     };
-    return rect;
+    ;
 }
 
 Point Rect::origin()
@@ -105,11 +105,7 @@ bool Rect::inside(Rect other)
 
 RectF::operator Rect() const
 {
-    RectF r2 = {
-        (float)x,
-        (float)y,
-    };
-    return r2;
+    return { (int)x, (int)y, (int)width, (int)height };
 }
 
 Vec2 RectF::origin()
@@ -165,8 +161,12 @@ bool RectF::contains(Vec2 other)
 
 Point::operator Vec2() const
 {
-    Point p = { (int)x, (int)y };
-    return p;
+    return { (float)x, (float)y };
+}
+
+bool Point::operator==(const Point& other)
+{
+    return x == other.x && y == other.y;
 }
 
 Point& Point::operator+=(const Point& other)
@@ -261,8 +261,7 @@ bool Point::inside(Rect other)
 
 Vec2::operator Point() const
 {
-    Vec2 v2 = { (float)x, (float)y };
-    return v2;
+    return { (int)x, (int)y };
 }
 
 Vec2& Vec2::operator+=(const Vec2& other)

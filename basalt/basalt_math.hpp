@@ -55,6 +55,7 @@ struct Point {
     int y;
 
     operator Vec2() const;
+    bool operator==(const Point& other);
     Point& operator+=(const Point& other);
     Point& operator-=(const Point& other);
     Point& operator*=(const Point& other);

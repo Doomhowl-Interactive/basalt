@@ -3,6 +3,7 @@
 #include <iostream>
 #include <vector>
 #include <cassert>
+#include <spdlog/spdlog.h>
 
 #include "basalt_macros.hpp"
 #include "basalt_graphics.hpp"
@@ -11,7 +12,6 @@
 
 #define OPEN_SIMPLEX_NOISE_IMPLEMENTATION
 #include "external/open-simplex-noise.h"
-#include <spdlog/spdlog.h>
 
 using namespace std;
 
@@ -233,7 +233,7 @@ void Texture::Blit(Texture texture,
                    int srcWidth,
                    int srcHeight)
 {
-    const auto& oPix = *texture.pixels.get();
+    const auto& srcPix = *texture.pixels.get();
     auto& pix = *pixels.get();
 
     if (srcWidth < 0)
@@ -252,10 +252,10 @@ void Texture::Blit(Texture texture,
             int srcIndex = sourceY * texture.width + sourceX;
             int destIndex = destY * width + destX;
 
-            Color srcColor = oPix[srcIndex];
+            Color srcColor = srcPix[srcIndex];
             unsigned char alpha = srcColor & 0x000000FF;
             Color tintedColor = BlendColors(srcColor, tint, BLEND_VALUE);
-            Color finalColor = BlendColors(oPix[destIndex], tintedColor, alpha);
+            Color finalColor = BlendColors(pix[destIndex], tintedColor, alpha);
 
             pix[destIndex] = finalColor;
         }

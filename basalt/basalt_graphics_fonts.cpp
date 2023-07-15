@@ -29,7 +29,7 @@ Font LoadFont(string fontName, unsigned int baseSize)
         TTF_Init();
     }
 
-    auto assetPath = SearchAsset(fontName);
+    auto assetPath = SearchAsset(fontName, "ttf");
     if (assetPath) {
         auto font = TTF_OpenFont(assetPath.value().c_str(), baseSize);
         if (font == nullptr) {
