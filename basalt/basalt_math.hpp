@@ -60,6 +60,8 @@ struct Point {
     Point& operator-=(const Point& other);
     Point& operator*=(const Point& other);
     Point& operator/=(const Point& other);
+    Point& operator*=(int scalar);
+    Point& operator/=(int scalar);
 
     Point operator+(const Point& other);
     Point operator-(const Point& other);

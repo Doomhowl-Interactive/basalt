@@ -197,6 +197,20 @@ Point& Point::operator/=(const Point& other)
     return *this;
 }
 
+Point& Point::operator*=(int scalar)
+{
+    x *= scalar;
+    y *= scalar;
+    return *this;
+}
+
+Point& Point::operator/=(int scalar)
+{
+    x /= scalar;
+    y /= scalar;
+    return *this;
+}
+
 Point Point::operator+(const Point& other)
 {
     Point p2 = {
