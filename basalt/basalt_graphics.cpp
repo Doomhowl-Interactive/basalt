@@ -100,7 +100,9 @@ struct Olivec_Normalized_Rect {
 void Texture::DrawDot(int posX, int posY, Color color)
 {
     auto& pix = *pixels.get();
-    pix[posY * width + posX] = color;
+    unsigned char alpha = color & 0x000000FF;
+    int i = posY * width + posX;
+    pix[i] = BlendColors(pix[i], color, alpha);
 }
 
 // NOTE: Taken from https://github.com/tsoding/olive.c/blob/master/olive.c
@@ -172,13 +174,11 @@ void Texture::DrawRectangle(int posX, int posY, int width, int height, Color col
 {
     auto& pix = *pixels.get();
 
-    // assume color is opaque
-    color |= 0x000000FF;
-
+    unsigned char alpha = color & 0x000000FF;
     for (int y = max(0, posY); y < min(posY + height, (int)this->height); y++) {
         for (int x = max(0, posX); x < min(posX + width, (int)this->width); x++) {
             int j = y * this->width + x;
-            pix[j] = color;
+            pix[j] = BlendColors(pix[j], color, alpha);
         }
     }
 }
@@ -218,10 +218,7 @@ void Texture::SwapChannels(unsigned char first,
 
 void Texture::Clear(Color color)
 {
-    auto& p = *pixels.get();
-    for (int i = 0; i < width * height; i++) {
-        p[i] = color;
-    }
+    DrawRectangle(0, 0, width, height, color);
 }
 
 void Texture::Blit(Texture texture,
@@ -357,19 +354,35 @@ inline Color MakeRGBf(float r, float g, float b, float a)
                    (unsigned char)(a * 255.f));
 }
 
-Color BlendColors(Color src, Color dst, unsigned char t)
+Color BlendColors(Color src, Color dst, int overrideAlpha)
 {
-    assert(t <= 255);
-    if (t == 255)
+    unsigned char alpha = overrideAlpha == -1 ? dst & 0x000000FF : (unsigned char)overrideAlpha;
+    assert(alpha <= 255);
+    if (alpha == 255)
         return dst;
-    if (t == 0 || dst == WHITE)
+    if (alpha == 0 || dst == WHITE)
         return src;
 
-    const Color s = 255 - t;
-    return ((((((src >> 0) & 0xff) * s + ((dst >> 0) & 0xff) * t) >> 8))
-            | (((((src >> 8) & 0xff) * s + ((dst >> 8) & 0xff) * t)) & ~0xff)
-            | (((((src >> 16) & 0xff) * s + ((dst >> 16) & 0xff) * t) << 8) & ~0xffff)
-            | (((((src >> 24) & 0xff) * s + ((dst >> 24) & 0xff) * t) << 16) & ~0xffffff));
+    const Color s = 255 - alpha;
+    return ((((((src >> 0) & 0xff) * s + ((dst >> 0) & 0xff) * alpha) >> 8))
+            | (((((src >> 8) & 0xff) * s + ((dst >> 8) & 0xff) * alpha)) & ~0xff)
+            | (((((src >> 16) & 0xff) * s + ((dst >> 16) & 0xff) * alpha) << 8) & ~0xffff) | 255);
+}
+
+Color BlendColorsWithAlpha(Color src, Color dst, int overrideAlpha)
+{
+    unsigned char alpha = overrideAlpha == -1 ? dst & 0x000000FF : (unsigned char)overrideAlpha;
+    assert(alpha <= 255);
+    if (alpha == 255)
+        return dst;
+    if (alpha == 0 || dst == WHITE)
+        return src;
+
+    const Color s = 255 - alpha;
+    return ((((((src >> 0) & 0xff) * s + ((dst >> 0) & 0xff) * alpha) >> 8))
+            | (((((src >> 8) & 0xff) * s + ((dst >> 8) & 0xff) * alpha)) & ~0xff)
+            | (((((src >> 16) & 0xff) * s + ((dst >> 16) & 0xff) * alpha) << 8) & ~0xffff)
+            | (((((src >> 24) & 0xff) * s + ((dst >> 24) & 0xff) * alpha) << 16) & ~0xffffff));
 }
 
 inline Color ColorAlpha(Color col, float a)

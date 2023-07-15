@@ -114,4 +114,5 @@ extern const unsigned char SPR_PIXELFONT[];
 extern Color MakeRGB(unsigned char r, unsigned char g, unsigned char b, unsigned char a = 255);
 extern Color MakeRGBf(float r, float g, float b, float a = 1.f);
 extern Color ColorAlpha(Color col, float a);
-Color BlendColors(Color src, Color dest, unsigned char t);
+Color BlendColors(Color src, Color dest, int overrideAlpha = -1);
+Color BlendColorsAlpha(Color src, Color dest, int overrideAlpha = -1);
