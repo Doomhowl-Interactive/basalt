@@ -2,14 +2,15 @@
 #include <spdlog/spdlog.h>
 #include "sdl2_plat.hpp"
 
-
-
 using namespace std;
 
 static unordered_map<SDL_Keycode, bool> pressedKeys;
 static unordered_map<SDL_Keycode, bool> pressedKeysFrame;
 
+enum MouseState { MOUSE_UP, MOUSE_PRESSED, MOUSE_DOWN };
+
 static Point mousePos;
+static MouseState mouseState = MOUSE_UP;
 
 static void PrintKeys()
 {
@@ -45,6 +46,17 @@ void ProcessMouseInput()
 {
     // Poll mouse position
     SDL_GetMouseState(&mousePos.x, &mousePos.y);
+
+    // state machine for mouse
+    if (mouseState == MOUSE_UP) {
+        if (SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_LEFT)) {
+            mouseState = MOUSE_PRESSED;
+        }
+    } else if (mouseState == MOUSE_PRESSED) {
+        mouseState = MOUSE_DOWN;
+    } else {
+        mouseState = MOUSE_UP;
+    }
 }
 
 void ClearKeyboardInput()
@@ -69,17 +81,17 @@ Point GetMousePosition()
 
 bool IsMouseDown()
 {
-    return SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_LEFT);
+    return mouseState == MOUSE_DOWN;
 }
 
 bool IsMousePressed()
 {
-    return IsMouseDown() && !pressedKeysFrame[SDL_BUTTON_LEFT];
+    return mouseState == MOUSE_PRESSED;
 }
 
 bool IsMouseUp()
 {
-    return !IsMouseDown();
+    return mouseState == MOUSE_UP;
 }
 
 bool IsKeyPressed(KeyCode code)
