@@ -369,7 +369,7 @@ Color BlendColors(Color src, Color dst, int overrideAlpha)
             | (((((src >> 16) & 0xff) * s + ((dst >> 16) & 0xff) * alpha) << 8) & ~0xffff) | 255);
 }
 
-Color BlendColorsWithAlpha(Color src, Color dst, int overrideAlpha)
+Color BlendColorsAlpha(Color src, Color dst, int overrideAlpha)
 {
     unsigned char alpha = overrideAlpha == -1 ? dst & 0x000000FF : (unsigned char)overrideAlpha;
     assert(alpha <= 255);

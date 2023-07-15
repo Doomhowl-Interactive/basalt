@@ -61,6 +61,44 @@ Rect::operator RectF() const
     ;
 }
 
+Rect Rect::operator*(int scalar)
+{
+    return {
+        x * scalar,
+        y * scalar,
+        width * scalar,
+        height * scalar,
+    };
+}
+
+Rect Rect::operator/(int scalar)
+{
+    return {
+        x / scalar,
+        y / scalar,
+        width / scalar,
+        height / scalar,
+    };
+}
+
+Rect& Rect::operator*=(int scalar)
+{
+    x *= scalar;
+    y *= scalar;
+    width *= scalar;
+    height *= scalar;
+    return *this;
+}
+
+Rect& Rect::operator/=(int scalar)
+{
+    x /= scalar;
+    y /= scalar;
+    width /= scalar;
+    height /= scalar;
+    return *this;
+}
+
 Point Rect::origin()
 {
     Point p2 = {
@@ -106,6 +144,44 @@ bool Rect::inside(Rect other)
 RectF::operator Rect() const
 {
     return { (int)x, (int)y, (int)width, (int)height };
+}
+
+RectF RectF::operator*(float scalar)
+{
+    return {
+        x * scalar,
+        y * scalar,
+        width * scalar,
+        height * scalar,
+    };
+}
+
+RectF RectF::operator/(float scalar)
+{
+    return {
+        x / scalar,
+        y / scalar,
+        width / scalar,
+        height / scalar,
+    };
+}
+
+RectF& RectF::operator*=(float scalar)
+{
+    x *= scalar;
+    y *= scalar;
+    width *= scalar;
+    height *= scalar;
+    return *this;
+}
+
+RectF& RectF::operator/=(float scalar)
+{
+    x /= scalar;
+    y /= scalar;
+    width /= scalar;
+    height /= scalar;
+    return *this;
 }
 
 Vec2 RectF::origin()

@@ -18,6 +18,10 @@ struct Rect {
     int height;
 
     operator RectF() const;
+    Rect operator*(int scalar);
+    Rect operator/(int scalar);
+    Rect& operator*=(int scalar);
+    Rect& operator/=(int scalar);
 
     Point origin();
     Point center();
@@ -36,6 +40,10 @@ struct RectF {
     float height;
 
     operator Rect() const;
+    RectF operator*(float scalar);
+    RectF operator/(float scalar);
+    RectF& operator*=(float scalar);
+    RectF& operator/=(float scalar);
 
     Vec2 origin();
     Vec2 center();
