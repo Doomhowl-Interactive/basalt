@@ -33,6 +33,7 @@
     <ClCompile Include="basalt_graphics.cpp" />
     <ClCompile Include="basalt_graphics_fonts.cpp" />
     <ClCompile Include="basalt_math.cpp" />
+    <ClCompile Include="basalt_profiler.cpp" />
     <ClCompile Include="basalt_testing.cpp" />
     <ClCompile Include="basalt_utils.cpp" />
     <ClCompile Include="pch.cpp" />
@@ -48,6 +49,7 @@
     <ClInclude Include="basalt_input.hpp" />
     <ClInclude Include="basalt_macros.hpp" />
     <ClInclude Include="basalt_math.hpp" />
+    <ClInclude Include="basalt_profiler.hpp" />
     <ClInclude Include="basalt_testing.hpp" />
     <ClInclude Include="basalt_utils.hpp" />
     <ClInclude Include="basalt_window.hpp" />
