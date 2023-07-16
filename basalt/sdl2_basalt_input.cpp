@@ -54,7 +54,7 @@ void ProcessMouseInput()
         }
     } else if (mouseState == MOUSE_PRESSED) {
         mouseState = MOUSE_DOWN;
-    } else {
+    } else if (!(SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_LEFT))) {
         mouseState = MOUSE_UP;
     }
 }

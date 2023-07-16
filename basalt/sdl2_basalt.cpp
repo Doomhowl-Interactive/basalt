@@ -23,7 +23,8 @@ static double timeElapsed = 0;
 static double delta = 0;
 static Uint64 startTicks = 0;
 static ulong frameIndex = 0;
-static Texture* canvas;
+
+static std::unique_ptr<Texture> canvas;
 
 void SetWindowTitle(string title)
 {
@@ -89,7 +90,7 @@ Basalt::Basalt(GameConfig config, int argc, char** argv)
     }
 
     // initialize the main texture
-    canvas = new Texture(Game.width, Game.height);
+    canvas = std::make_unique<Texture>(Texture(Game.width, Game.height));
 
     // NOTE: If this breaks go back to using raw pointers instead of vector
     const auto& canvasPixels = *canvas->pixels.get();
@@ -138,13 +139,13 @@ bool Basalt::ShouldClose()
 
 Texture Basalt::BeginFrame()
 {
-    if (!canvas) {
+    if (canvas) {
+        startTicks = SDL_GetTicks64();
+        ProcessMouseInput();
+        return *canvas;
+    } else {
         spdlog::critical("No basalt canvas!");
     }
-
-    startTicks = SDL_GetTicks64();
-    ProcessMouseInput();
-    return *canvas;
 }
 
 void Basalt::EndFrame()
@@ -163,7 +164,7 @@ void Basalt::EndFrame()
 
     frameIndex++;
 
-    double timeToWait = 1000 / maxFps;
+    Uint32 timeToWait = (Uint32)(1000 / maxFps);
     SDL_Delay(timeToWait);
 
     Uint64 ticksPassed = SDL_GetTicks64() - startTicks;
@@ -175,7 +176,7 @@ void Basalt::EndFrame()
     static double timer = 0.f;
     if (timer > 0.2) {
         // set Window title to framerate
-        float fps = 1.0f / delta;
+        double fps = 1.0 / delta;
         auto title = FormatText("%s - %d FPS - %f delta", Game.title, (int)fps, delta);
         SetWindowTitle(title);
         timer = 0.0;
@@ -187,7 +188,6 @@ void Basalt::EndFrame()
 
 Basalt::~Basalt()
 {
-    delete canvas;
     SDL_FreeSurface(ScreenSurface);
     SDL_DestroyWindow(Window);
     CloseSystemConsole();
