@@ -150,7 +150,7 @@ Texture Basalt::BeginFrame()
 
 void Basalt::EndFrame()
 {
-    double maxFps = Config.unlockedFramerate ? 10000 : 60;
+    double maxFps = Config.unlockedFramerate ? 10000 : 200;
 
     // === Render to the screen (software rendering)
     SDL_Surface* windowSurface = SDL_GetWindowSurface(Window);
@@ -164,6 +164,7 @@ void Basalt::EndFrame()
 
     frameIndex++;
 
+    // FIXME TODO: This waits longer than it should!
     Uint32 timeToWait = (Uint32)(1000 / maxFps);
     SDL_Delay(timeToWait);
 

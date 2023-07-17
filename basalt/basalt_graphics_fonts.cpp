@@ -63,6 +63,58 @@ DEFAULT:
     return Font::Default();
 }
 
+// TODO: move to utils
+template <class T> inline void hash_combine(size_t& seed, const T& v)
+{
+    hash<T> hasher;
+    seed ^= hasher(v) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+}
+
+class CachedText {
+   public:
+    CachedText(Font font, string text, Color color)
+    {
+        // bake text
+        auto theFont = LoadedFonts.at(font.name);
+        SDL_Color sdlColor = ConvertColor(color);
+        // TODO: use the function from TTF_Font that wraps
+        surface = TTF_RenderText_Blended(theFont, text.c_str(), sdlColor);
+        lastUsed = SDL_GetTicks();
+    }
+
+    ~CachedText()
+    {
+        SDL_FreeSurface(surface);
+    }
+
+    bool isOld()
+    {
+        return SDL_GetTicks() - lastUsed > 20 * 1000;
+    }
+
+    SDL_Surface* get()
+    {
+        lastUsed = SDL_GetTicks();
+        return surface;
+    }
+
+   private:
+    SDL_Surface* surface;
+    size_t lastUsed;
+};
+
+static map<size_t, shared_ptr<CachedText>> TextCache = {};
+
+static size_t DrawSettingsHash(Font font, string text, Color color)
+{
+    size_t hash = 0;
+    hash_combine(hash, font.name);
+    hash_combine(hash, text);
+    hash_combine(hash, color);
+    return hash;
+}
+
+// TODO: refactor
 #undef DrawText  // thank you Microsoft, very cool
 void Texture::DrawText(string text, int posX, int posY, Color color, Font font)
 {
@@ -73,15 +125,37 @@ void Texture::DrawText(string text, int posX, int posY, Color color, Font font)
             return;
         }
 
-        auto theFont = LoadedFonts.at(font.name);
+        size_t hash = DrawSettingsHash(font, line, color);
+        try {
+            weak_ptr<CachedText> text = TextCache.at(hash);
+            SDL_Surface* surface = text.lock()->get();
+            SDL_Rect destRect = { posX, posY, surface->w, surface->h };
+            // TODO: Implement GPU: SDL_RenderCopy(canvas->renderer, texture, NULL, &rect);
+            SDL_UpperBlit(surface, NULL, GetScreenOverlaySurface(), &destRect);
+        } catch (out_of_range) {
+            auto text = make_shared<CachedText>(font, line, color);
 
-        SDL_Color sdlColor = ConvertColor(color);
-        SDL_Surface* surface = TTF_RenderText_Blended(theFont, line.c_str(), sdlColor);
-        SDL_Rect destRect = { posX, posY, surface->w, surface->h };
-        // TODO: Implement GPU: SDL_RenderCopy(canvas->renderer, texture, NULL, &rect);
-        SDL_UpperBlit(surface, NULL, GetScreenOverlaySurface(), &destRect);
-        SDL_FreeSurface(surface);
-        posY += TTF_FontHeight(theFont);
+            SDL_Surface* surface = text->get();
+            SDL_Rect destRect = { posX, posY, surface->w, surface->h };
+            // TODO: Implement GPU: SDL_RenderCopy(canvas->renderer, texture, NULL, &rect);
+            SDL_UpperBlit(surface, NULL, GetScreenOverlaySurface(), &destRect);
+
+            TextCache.insert({ hash, text });
+
+            // remove old
+            if (TextCache.size() > 100) {
+                for (auto it = TextCache.begin(); it != TextCache.end();) {
+                    if (it->second->isOld()) {
+                        it = TextCache.erase(it);
+                    } else {
+                        ++it;
+                    }
+                }
+            }
+            if (TextCache.size() > 100) {
+                TextCache.erase(TextCache.begin());
+            }
+        }
     }
 }
 
