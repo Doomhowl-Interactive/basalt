@@ -34,6 +34,7 @@
     <ClCompile Include="basalt_graphics_fonts.cpp" />
     <ClCompile Include="basalt_math.cpp" />
     <ClCompile Include="basalt_profiler.cpp" />
+    <ClCompile Include="basalt_profiler_gui.cpp" />
     <ClCompile Include="basalt_testing.cpp" />
     <ClCompile Include="basalt_utils.cpp" />
     <ClCompile Include="pch.cpp" />

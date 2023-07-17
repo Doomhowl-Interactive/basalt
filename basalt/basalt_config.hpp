@@ -6,6 +6,7 @@ struct EngineConfig {
     bool hasHotloading;
     bool hasUnitTesting;
     bool hasConsole;
+    bool hasProfiler;
     bool useSoftware;
     bool isHeadless;
     bool unlockedFramerate;

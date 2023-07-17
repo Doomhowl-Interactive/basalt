@@ -4,6 +4,8 @@
 #include <unordered_map>
 #include <map>
 
+#include "basalt_graphics.hpp"
+
 constexpr int PROFILER_HISTORY_SIZE = 100;
 
 enum ProfilerTaskType {
@@ -22,12 +24,11 @@ struct ProfilerTask {
     double startTime;
 
     ProfilerTask(std::string name, ProfilerTaskType type, bool builtIn);
-    ProfilerTask();
 
-    double latest();
-    double average();
-    double max();
-    double min();
+    double latest() const;
+    double average() const;
+    double max() const;
+    double min() const;
 
     void addEntry(long frame);
 };
@@ -47,7 +48,7 @@ void EndProfilerTask(std::string name);
 
 ProfilerData& GetProfilerData();
 void UpdateProfiler();
-void RenderProfiler();
+void DrawProfiler(Texture canvas);
 
 #ifndef NO_PROFILER
 # define BeginMeasurement(X) BeginProfiling(X)

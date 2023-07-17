@@ -18,7 +18,8 @@ string& BeginProfilerTask(string name, ProfilerTaskType type, bool builtIn)
     // get or create the task
     auto it = prof.tasks.find(name);
     if (it == prof.tasks.end()) {
-        prof.tasks[name] = ProfilerTask(name, type, builtIn);
+        ProfilerTask task = ProfilerTask(name, type, builtIn);
+        prof.tasks.emplace(name, task);
         it = prof.tasks.find(name);
     }
     it->second.startTime = nowInMs();
@@ -56,11 +57,6 @@ ProfilerTask::ProfilerTask(string name, ProfilerTaskType type, bool builtIn)
     history = map<long, double>();
 }
 
-ProfilerTask::ProfilerTask()
-{
-    assert(0);
-}
-
 void ProfilerTask::addEntry(long frame)
 {
     history[frame] = nowInMs() - startTime;
@@ -69,24 +65,24 @@ void ProfilerTask::addEntry(long frame)
     }
 }
 
-double ProfilerTask::latest()
+double ProfilerTask::latest() const
 {
     return history.rend()->second;
 }
 
-double ProfilerTask::average()
+double ProfilerTask::average() const
 {
     double sum = 0;
-    for (auto& it : history) {
+    for (const auto& it : history) {
         sum += it.second;
     }
     return sum / history.size();
 }
 
-double ProfilerTask::max()
+double ProfilerTask::max() const
 {
     double max = 0;
-    for (auto& it : history) {
+    for (const auto& it : history) {
         if (it.second > max) {
             max = it.second;
         }
@@ -94,10 +90,10 @@ double ProfilerTask::max()
     return max;
 }
 
-double ProfilerTask::min()
+double ProfilerTask::min() const
 {
     double min = 0;
-    for (auto& it : history) {
+    for (const auto& it : history) {
         if (it.second < min) {
             min = it.second;
         }

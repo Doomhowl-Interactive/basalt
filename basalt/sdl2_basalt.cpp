@@ -7,6 +7,7 @@
 #include "basalt_config.hpp"
 #include "basalt_testing.hpp"
 #include "sdl2_plat.hpp"
+#include "basalt_profiler.hpp"
 
 using namespace std;
 
@@ -151,6 +152,13 @@ Texture Basalt::BeginFrame()
 void Basalt::EndFrame()
 {
     double maxFps = Config.unlockedFramerate ? 10000 : 200;
+
+// Draw profiler overlay
+#ifndef NO_PROFILER
+    if (true || Config.hasProfiler) {
+        DrawProfiler(*canvas);
+    }
+#endif
 
     // === Render to the screen (software rendering)
     SDL_Surface* windowSurface = SDL_GetWindowSurface(Window);
