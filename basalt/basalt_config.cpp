@@ -93,7 +93,7 @@ bool ParseLaunchArguments(EngineConfig* config, int argc, char** argv)
     }
 
     if (EnableAll) {
-        memset(&Config, 1, sizeof(EngineConfig));
+        memset(Config, 1, sizeof(EngineConfig));
     }
 
     return true;
