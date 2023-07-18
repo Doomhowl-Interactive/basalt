@@ -52,6 +52,7 @@
     <Compile Include="CrasherForm.Designer.cs">
       <DependentUpon>CrasherForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="FileUtils.cs" />
     <Compile Include="ProcessStarter.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
