@@ -5,10 +5,12 @@ on:
     branches:
       - main
       - windows
+      - crasher
   pull_request:
     branches:
       - main
       - windows
+      - crasher
 
 jobs:
   build:
