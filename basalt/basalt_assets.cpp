@@ -23,11 +23,20 @@ static vector<string> AssetFolders = {
     "../../../assets",
 };
 
-optional<string> SearchAsset(string assetName, string extension)
+static void RelocateToExecutable()
 {
     // Change the working directory to the executable folder.
-    // This is needed because the program can be ran from anywhere.
-    fs::path executablePath = fs::path();
+    // This is needed because so the assets are always found.
+    fs::path executablePath = GetExecutableDirectory();
+    if (fs::current_path() != executablePath) {
+        fs::current_path(executablePath);
+        spdlog::debug("Relocated to executable folder: {}", executablePath.string());
+    }
+}
+
+optional<string> SearchAsset(string assetName, string extension)
+{
+    RelocateToExecutable();
 
     fs::path assetFileName = fs::path(assetName);
     if (!extension.empty() && !assetFileName.has_extension()) {
@@ -57,9 +66,9 @@ optional<string> SearchAsset(string assetName, string extension)
     return nullopt;
 }
 
-string& GetWorkingDirectory()
+fs::path& GetWorkingDirectory()
 {
-    static string workingDirectory = "";
+    static fs::path workingDirectory = "";
     if (workingDirectory == "") {
         char buffer[MAX_PATH];
         GetCurrentDirectoryA(MAX_PATH, buffer);
@@ -68,15 +77,14 @@ string& GetWorkingDirectory()
     return workingDirectory;
 }
 
-string& GetExecutableDirectory()
+fs::path& GetExecutableDirectory()
 {
-    static string executableDirectory = "";
+    static fs::path executableDirectory = "";
     if (executableDirectory == "") {
         char buffer[MAX_PATH];
         GetModuleFileNameA(NULL, buffer, MAX_PATH);
         executableDirectory = buffer;
-        executableDirectory
-            = executableDirectory.substr(0, executableDirectory.find_last_of("\\/"));
+        executableDirectory = executableDirectory.parent_path();
     }
     return executableDirectory;
 }

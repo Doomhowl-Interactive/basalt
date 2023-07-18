@@ -6,7 +6,7 @@
 
 #include "basalt_config.hpp"
 #include "basalt_testing.hpp"
-#include "sdl2_plat.hpp"
+#include "sdl2_basalt.hpp"
 #include "basalt_profiler.hpp"
 
 using namespace std;
@@ -76,6 +76,7 @@ Basalt::Basalt(GameConfig config, int argc, char** argv)
     // initialize SDL
     SDL_Init(SDL_INIT_VIDEO);
     SDL_LogSetAllPriority(SDL_LOG_PRIORITY_VERBOSE);
+    spdlog::set_level(spdlog::level::debug);
 
     // initialize the Window
     Window = SDL_CreateWindow(Game.title,

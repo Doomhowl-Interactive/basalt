@@ -7,7 +7,7 @@
 #include "basalt.h"
 #include "basalt_console.hpp"
 #include "basalt_assets.hpp"
-#include "sdl2_plat.hpp"
+#include "sdl2_basalt.hpp"
 
 using namespace std;
 

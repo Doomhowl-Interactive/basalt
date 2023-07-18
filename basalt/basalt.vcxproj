@@ -60,7 +60,7 @@
     <ClInclude Include="external\stb_image.h" />
     <ClInclude Include="external\stb_image_write.h" />
     <ClInclude Include="pch.h" />
-    <ClInclude Include="sdl2_plat.hpp" />
+    <ClInclude Include="sdl2_basalt.hpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

@@ -89,7 +89,7 @@
     <ClInclude Include="basalt_window.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="sdl2_plat.hpp">
+    <ClInclude Include="sdl2_basalt.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="basalt.h">
