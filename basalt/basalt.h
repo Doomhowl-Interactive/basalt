@@ -22,4 +22,11 @@ struct Basalt {
     bool ShouldClose();
     Texture BeginFrame();
     void EndFrame();
+
+    // usage is discouraged
+    static Basalt* GetInstance();
 };
+
+// Opens the crash handler in distributed builds
+// Write a try/catch block around your main game function and pass the throwed exception into here.
+void HandleFatalException(std::exception e);

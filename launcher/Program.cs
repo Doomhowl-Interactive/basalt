@@ -23,7 +23,7 @@ namespace launcher
         {
             try
             {
-                ProcessStarter.StartGameProcess();
+                GameProcess.StartGameProcess();
             }
             catch (Exception e)
             {

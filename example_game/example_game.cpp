@@ -5,7 +5,9 @@
 static bool Horizontal = false;
 static Font font;
 
-int main(int argc, char** argv)
+using namespace std;
+
+bool RunGame(int argc, char** argv)
 {
     GameConfig config = { 0 };
     config.title = "Basalt Test Game";
@@ -24,6 +26,20 @@ int main(int argc, char** argv)
     }
 
     return engine.exitCode;
+}
+
+int main(int argc, char** argv)
+{
+#ifndef _DEBUG
+    try {
+#endif
+        return RunGame(argc, argv);
+#ifndef _DEBUG
+    } catch (exception e) {
+        HandleFatalException(e);
+        return -1;
+    }
+#endif
 }
 
 void UpdateAndRenderGame(Texture canvas, float delta)
@@ -51,12 +67,14 @@ void UpdateAndRenderGame(Texture canvas, float delta)
         Horizontal = !Horizontal;
     }
 
-    if (IsKeyPressed(KEY_ESCAPE)) {
-        int* val = nullptr;
-        *val = 0;
+    // simulate crashes to demonstrate crash handler
+    if (IsKeyPressed(KEY_DELETE)) {
+        int* val = new int[5];
+        delete[] val;
+        val[5] = 4;
     }
 
     if (IsKeyPressed(KEY_BACKSPACE)) {
-        throw "I am a teapot.";
+        throw exception("I am a teapot.");
     }
 }

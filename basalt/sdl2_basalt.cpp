@@ -45,9 +45,14 @@ static void Close(Basalt& b, int code)
     b.exitCode = code;
 }
 
-// TODO: use a pointer so it doesn't need be initialized like this
 Basalt::Basalt(GameConfig config, int argc, char** argv)
 {
+    if (Instance != nullptr) {
+        spdlog::error("Basalt is already initialized! There can only be one.");
+        Close(*this, EXIT_FAILURE);
+        return;
+    }
+
     Instance = this;
     this->exitCode = EXIT_SUCCESS;
 
@@ -209,9 +214,20 @@ Basalt::~Basalt()
     spdlog::info("Closed SDL2 Window");
 }
 
+Basalt* Basalt::GetInstance()
+{
+    return Instance;
+}
+
 ulong GetFrameIndex()
 {
     return frameIndex;
+}
+
+void HandleFatalException(exception e)
+{
+    spdlog::critical("Fatal exception: {}", e.what());
+    Close(*Instance, EXIT_FAILURE);
 }
 
 // TODO: Implement SetTimeScale and make sure GetTimeElapsed  updates accordingly.
