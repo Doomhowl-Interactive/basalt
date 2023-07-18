@@ -8,6 +8,9 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "example_game", "example_game\example_game.vcxproj", "{AF30E470-5C01-45D1-90B6-4A6088FD04B8}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "launcher", "launcher\launcher.csproj", "{2DDAEE3A-A947-403E-99F1-2E7CD175916A}"
+	ProjectSection(ProjectDependencies) = postProject
+		{AF30E470-5C01-45D1-90B6-4A6088FD04B8} = {AF30E470-5C01-45D1-90B6-4A6088FD04B8}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
