@@ -4,13 +4,9 @@ on:
   push:
     branches:
       - main
-      - windows
-      - crasher
   pull_request:
     branches:
       - main
-      - windows
-      - crasher
 
 jobs:
   build:
@@ -22,6 +18,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Build app for debug
-        run: msbuild -m -t:rebuild -property:Configuration=Debug
+        run: msbuild -t:rebuild -property:Configuration=Debug
       - name: Build app for release
-        run: msbuild -m -t:rebuild -property:Configuration=Release
+        run: msbuild -t:rebuild -property:Configuration=Release
