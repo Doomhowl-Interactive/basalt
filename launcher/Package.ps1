@@ -9,8 +9,8 @@ $DistributionPath = "$BasePath/Distribution"
 
 # check if release folder exists
 if (-not (Test-Path $ReleasePath)) {
-    Write-Host "Release folder not found in solution folder"
-    exit 1
+    Write-Host "Release folder not found in solution folder, ignoring..."
+    exit 0
 }
 
 # check if deploy.ini exists
