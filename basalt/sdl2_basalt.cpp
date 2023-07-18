@@ -91,8 +91,11 @@ Basalt::Basalt(GameConfig config, int argc, char** argv)
         return;
     }
 
-    // initialize the main texture
+    // Initialize the main texture
     canvas = std::make_unique<Texture>(Texture(Game.width, Game.height));
+
+    // Load default font
+    LoadFont("FFFFORWA.TTF");
 
     // NOTE: If this breaks go back to using raw pointers instead of vector
     const auto& canvasPixels = *canvas->pixels.get();

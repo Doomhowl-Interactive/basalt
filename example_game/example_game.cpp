@@ -15,7 +15,7 @@ int main(int argc, char** argv)
 
     auto engine = Basalt(config, argc, argv);
 
-    font = LoadFont("font_sf_cartoonist_hand.ttf", 32);
+    font = LoadFont("font_sf_cartoonist_hand.ttf");
 
     while (!engine.ShouldClose()) {
         Texture canvas = engine.BeginFrame();

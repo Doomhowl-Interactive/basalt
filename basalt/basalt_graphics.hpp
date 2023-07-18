@@ -94,6 +94,7 @@ struct Texture {
                   int posY,
                   Color color,
                   Font font = Font::Default(),
+                  int size = 32,
                   int maxWidth = INT16_MAX);
 };
 

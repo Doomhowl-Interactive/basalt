@@ -6,5 +6,5 @@ struct Font {
     static Font Default();
 };
 
-Font LoadFont(std::string fontName, unsigned int baseSize = 16);
+Font LoadFont(std::string fontName);
 void DisposeFonts();

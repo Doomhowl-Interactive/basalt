@@ -4,7 +4,7 @@
 #include <map>
 #include <spdlog/spdlog.h>
 
-#include "basalt.h"
+#include "basalt_macros.hpp"
 #include "basalt_console.hpp"
 #include "basalt_assets.hpp"
 #include "sdl2_basalt.hpp"
@@ -19,11 +19,10 @@ Font Font::Default()
     if (it == LoadedFonts.end()) {
         spdlog::error("There are no fonts loaded");
     }
-
     return { it->first };
 }
 
-Font LoadFont(string fontName, unsigned int baseSize)
+Font LoadFont(string fontName)
 {
     if (TTF_WasInit() == 0) {
         TTF_Init();
@@ -31,7 +30,7 @@ Font LoadFont(string fontName, unsigned int baseSize)
 
     auto assetPath = SearchAsset(fontName, "ttf");
     if (assetPath) {
-        auto font = TTF_OpenFont(assetPath.value().c_str(), baseSize);
+        auto font = TTF_OpenFont(assetPath.value().c_str(), 16);
         if (font == nullptr) {
             spdlog::error("Failed to load font {}: {}", fontName, TTF_GetError());
             goto DEFAULT;
@@ -39,7 +38,7 @@ Font LoadFont(string fontName, unsigned int baseSize)
 
         // store loaded font
         LoadedFonts.insert({ fontName, font });
-        spdlog::debug("Loaded font {}(.ttf)", fontName);
+        spdlog::debug("Loaded font {}.ttf", fontName);
 
         // if this is the first font loaded, also set it as the default font
         if (LoadedFonts.size() == 1) {
@@ -122,9 +121,22 @@ static size_t DrawSettingsHash(Font font, string text, Color color, int maxWidth
 
 // TODO: refactor
 #undef DrawText  // thank you Microsoft, very cool
-void Texture::DrawText(string text, int posX, int posY, Color color, Font font, int maxWidth)
+void Texture::DrawText(string text,
+                       int posX,
+                       int posY,
+                       Color color,
+                       Font font,
+                       int size,
+                       int maxWidth)
 {
+    maxWidth = max(1, maxWidth);
+
     size_t hash = DrawSettingsHash(font, text, color, maxWidth);
+
+    // resize the font to be the requested size
+    TTF_Font* theFont = LoadedFonts.at(font.name);
+    TTF_SetFontSize(theFont, size);
+
     try {
         weak_ptr<CachedText> text = TextCache.at(hash);
         SDL_Surface* surface = text.lock()->get();

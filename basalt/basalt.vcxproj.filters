@@ -16,6 +16,9 @@
     <Filter Include="Header Files\external">
       <UniqueIdentifier>{fa8abb68-00e8-4e72-b295-2e6fd9e861f9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="assets">
+      <UniqueIdentifier>{ca8d28a4-5681-4998-bb4c-c1b6426805c7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="basalt_config.cpp">
@@ -116,5 +119,10 @@
     <ClInclude Include="basalt_profiler.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Font Include="assets\FFFFORWA.TTF">
+      <Filter>assets</Filter>
+    </Font>
   </ItemGroup>
 </Project>
