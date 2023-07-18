@@ -73,10 +73,12 @@ Basalt::Basalt(GameConfig config, int argc, char** argv)
         return;
     }
 
+#ifdef _DEBUG
     if (Config.hasConsole) {
         // open console (windows only)
         OpenSystemConsole();
     }
+#endif  // ! _DEBUG
 
     // initialize SDL
     SDL_Init(SDL_INIT_VIDEO);

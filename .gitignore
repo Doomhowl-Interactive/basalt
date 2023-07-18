@@ -23,6 +23,7 @@ Distribution.zip
 [Dd]ebug/
 [Dd]ebugPublic/
 [Rr]elease/
+[Rr]eleaseWithDebug/
 [Rr]eleases/
 ./x64
 ./x86
