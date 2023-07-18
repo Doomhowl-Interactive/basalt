@@ -25,6 +25,10 @@ static vector<string> AssetFolders = {
 
 optional<string> SearchAsset(string assetName, string extension)
 {
+    // Change the working directory to the executable folder.
+    // This is needed because the program can be ran from anywhere.
+    fs::path executablePath = fs::path();
+
     fs::path assetFileName = fs::path(assetName);
     if (!extension.empty() && !assetFileName.has_extension()) {
         assetFileName = assetFileName.replace_extension(extension);
@@ -42,12 +46,39 @@ optional<string> SearchAsset(string assetName, string extension)
     // Not found!: List all the places we looked for the asset file
     string msg = "Asset not found: " + assetName + " (assumed " + assetFileName.string()
                  + ")\n\nLooked in the following places:\n";
+
     for (auto& trav : traversedPaths) {
         msg += trav.string() + "\n";
     }
+
+    msg += "\nThe program is ran from: " + fs::current_path().string();
     spdlog::error(msg);
 
     return nullopt;
+}
+
+string& GetWorkingDirectory()
+{
+    static string workingDirectory = "";
+    if (workingDirectory == "") {
+        char buffer[MAX_PATH];
+        GetCurrentDirectoryA(MAX_PATH, buffer);
+        workingDirectory = buffer;
+    }
+    return workingDirectory;
+}
+
+string& GetExecutableDirectory()
+{
+    static string executableDirectory = "";
+    if (executableDirectory == "") {
+        char buffer[MAX_PATH];
+        GetModuleFileNameA(NULL, buffer, MAX_PATH);
+        executableDirectory = buffer;
+        executableDirectory
+            = executableDirectory.substr(0, executableDirectory.find_last_of("\\/"));
+    }
+    return executableDirectory;
 }
 
 static void LoadTextureFromStbData(Texture texture, uchar* data, int channels)

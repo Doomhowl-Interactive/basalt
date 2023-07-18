@@ -10,35 +10,9 @@
 #include "basalt_utils.hpp"
 #include "basalt_console.hpp"
 
-
-
 using namespace std;
 
 namespace fs = std::filesystem;
-
-string& GetWorkingDirectory()
-{
-    static string workingDirectory = "";
-    if (workingDirectory == "") {
-        char buffer[MAX_PATH];
-        GetCurrentDirectoryA(MAX_PATH, buffer);
-        workingDirectory = buffer;
-    }
-    return workingDirectory;
-}
-
-string& GetExecutableDirectory()
-{
-    static string executableDirectory = "";
-    if (executableDirectory == "") {
-        char buffer[MAX_PATH];
-        GetModuleFileNameA(NULL, buffer, MAX_PATH);
-        executableDirectory = buffer;
-        executableDirectory
-            = executableDirectory.substr(0, executableDirectory.find_last_of("\\/"));
-    }
-    return executableDirectory;
-}
 
 // adapted from Raylib
 string FormatText(const char* text, ...)
@@ -147,4 +121,3 @@ vector<string> GetFolderFiles(const string folder, const string ext)
 
     return files;
 }
-

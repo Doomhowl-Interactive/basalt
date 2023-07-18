@@ -5,9 +5,6 @@
 #include <cstdarg>
 #include <optional>
 
-std::string& GetWorkingDirectory();
-std::string& GetExecutableDirectory();
-
 // WARN: Cached memory, copy for long usage!
 std::string FormatText(const char* text, ...);
 std::string& TrimText(std::string buffer);
