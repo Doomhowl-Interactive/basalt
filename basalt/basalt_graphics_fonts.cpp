@@ -72,13 +72,17 @@ template <class T> inline void hash_combine(size_t& seed, const T& v)
 
 class CachedText {
    public:
-    CachedText(Font font, string text, Color color)
+    CachedText(Font font, string text, Color color, int maxWidth)
     {
         // bake text
         auto theFont = LoadedFonts.at(font.name);
         SDL_Color sdlColor = ConvertColor(color);
         // TODO: Implement wrapping
-        surface = TTF_RenderUTF8_Blended_Wrapped(theFont, text.c_str(), sdlColor, 10000);
+        surface = TTF_RenderUTF8_Blended_Wrapped(theFont, text.c_str(), sdlColor, maxWidth);
+        if (!surface) {
+            spdlog::error("Failed to render text {}: {}", text, TTF_GetError());
+            return;
+        }
         assert(surface->w > 0 && surface->h > 0);
         lastUsed = SDL_GetTicks();
     }
@@ -106,20 +110,21 @@ class CachedText {
 
 static map<size_t, shared_ptr<CachedText>> TextCache = {};
 
-static size_t DrawSettingsHash(Font font, string text, Color color)
+static size_t DrawSettingsHash(Font font, string text, Color color, int maxWidth)
 {
     size_t hash = 0;
     hash_combine(hash, font.name);
     hash_combine(hash, text);
     hash_combine(hash, color);
+    hash_combine(hash, maxWidth);
     return hash;
 }
 
 // TODO: refactor
 #undef DrawText  // thank you Microsoft, very cool
-void Texture::DrawText(string text, int posX, int posY, Color color, Font font)
+void Texture::DrawText(string text, int posX, int posY, Color color, Font font, int maxWidth)
 {
-    size_t hash = DrawSettingsHash(font, text, color);
+    size_t hash = DrawSettingsHash(font, text, color, maxWidth);
     try {
         weak_ptr<CachedText> text = TextCache.at(hash);
         SDL_Surface* surface = text.lock()->get();
@@ -127,7 +132,7 @@ void Texture::DrawText(string text, int posX, int posY, Color color, Font font)
         // TODO: Implement GPU: SDL_RenderCopy(canvas->renderer, texture, NULL, &rect);
         SDL_UpperBlit(surface, NULL, GetScreenOverlaySurface(), &destRect);
     } catch (out_of_range) {
-        auto cached = make_shared<CachedText>(font, text, color);
+        auto cached = make_shared<CachedText>(font, text, color, maxWidth);
 
         SDL_Surface* surface = cached->get();
         SDL_Rect destRect = { posX, posY, surface->w, surface->h };

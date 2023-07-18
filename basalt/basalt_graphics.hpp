@@ -89,7 +89,12 @@ struct Texture {
 
     void DrawWeirdTestGradient();
 
-    void DrawText(std::string text, int posX, int posY, Color color, Font font = Font::Default());
+    void DrawText(std::string text,
+                  int posX,
+                  int posY,
+                  Color color,
+                  Font font = Font::Default(),
+                  int maxWidth = INT16_MAX);
 };
 
 enum PlaybackMode {

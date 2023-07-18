@@ -55,15 +55,16 @@ bool DrawProfiler(Texture canvas)
 
     Rect contentBounds = { ProfilerBounds.x + PADDING,
                            ProfilerBounds.y + PADDING,
-                           ProfilerBounds.x + PADDING * 2,
-                           ProfilerBounds.y + PADDING * 2 };
+                           ProfilerBounds.width + PADDING * 2,
+                           ProfilerBounds.height + PADDING * 2 };
 
     string text = ConcatStrings({
         data.fps.toString(),
         "Frame: " + to_string(data.frameIndex),
     });
 
-    canvas.DrawText(text, contentBounds.x, contentBounds.y, YELLOW);
+    canvas.DrawText(
+        text, contentBounds.x, contentBounds.y, YELLOW, Font::Default(), contentBounds.width);
     canvas.DrawRectangle(R2(ProfilerBounds), bgColor);
 
     return true;
