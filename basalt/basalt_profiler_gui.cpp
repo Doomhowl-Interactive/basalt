@@ -41,12 +41,13 @@ void DrawProfiler(Texture canvas)
     constexpr int FONT_SIZE = 16;
 
     static Color bgColor = ColorAlpha(DARKGRAY, 0.5f);
-    static Rect contentBounds = { ProfilerBounds.x + PADDING,
-                                  ProfilerBounds.y + PADDING,
-                                  ProfilerBounds.x + PADDING * 2,
-                                  ProfilerBounds.y + PADDING * 2 };
 
     DragAndDropProfiler(ProfilerBounds);
+
+    Rect contentBounds = { ProfilerBounds.x + PADDING,
+                           ProfilerBounds.y + PADDING,
+                           ProfilerBounds.x + PADDING * 2,
+                           ProfilerBounds.y + PADDING * 2 };
 
     string text = "Frame: " + to_string(data.frameIndex);
     text += "\nFPS: " + to_string((int)data.fps.average());
