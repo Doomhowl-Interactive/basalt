@@ -34,12 +34,12 @@ Copy-Item -Path "$ReleasePath/assets" -Destination $DistributionPath -Recurse
 # rename files
 $GameNameWithoutSpaces = $INI["GameName"].Replace(" ", "")
 Rename-Item -Path "$DistributionPath/$($INI["GameExe"])" -NewName "$DistributionPath/game.exe"
-Rename-Item -Path "$DistributionPath/launcher.exe" -NewName "$DistributionPath/$GameNameWithoutSpaces.exe"
 
 # Create shortcut to launcher
 $WshShell = New-Object -ComObject WScript.Shell
 $Shortcut = $WshShell.CreateShortcut("$DistributionPath/$($INI["GameName"]).lnk")
-$Shortcut.TargetPath = "$DistributionPath/$GameNameWithoutSpaces.exe"
+$Shortcut.TargetPath = "$DistributionPath/launcher.exe"
+$Shortcut.IconLocation = "$DistributionPath/game.exe,0"
 $Shortcut.Save()
 
 Write-Host "Distribution created at $DistributionPath"
