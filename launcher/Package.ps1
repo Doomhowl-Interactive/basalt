@@ -13,6 +13,13 @@ if (-not (Test-Path $ReleasePath)) {
     exit 0
 }
 
+# HACK FIXME: launcher builds before game
+# check if release asset folder exists
+if (-not (Test-Path $ReleasePath/assets)) {
+    Write-Host "Release asset folder not found in solution folder, ignoring..."
+    exit 0
+}
+
 # check if deploy.ini exists
 if (-not (Test-Path "$BasePath/deploy.ini")) {
     Write-Host "deploy.ini not found in solution folder"
