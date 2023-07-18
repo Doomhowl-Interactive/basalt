@@ -1,5 +1,7 @@
 #include <chrono>
 #include <cassert>
+#include <optional>
+
 #include "basalt_profiler.hpp"
 
 using namespace std;
@@ -57,12 +59,23 @@ ProfilerTask::ProfilerTask(string name, ProfilerTaskType type, bool builtIn)
     history = map<long, double>();
 }
 
-void ProfilerTask::addEntry(long frame)
+void ProfilerTask::cleanup()
 {
-    history[frame] = nowInMs() - startTime;
     while (history.size() > PROFILER_HISTORY_SIZE) {
         history.erase(history.begin());
     }
+}
+
+void ProfilerTask::addEntry(long frame)
+{
+    history[frame] = nowInMs() - startTime;
+    cleanup();
+}
+
+void ProfilerTask::addCustomEntry(long frame, double value)
+{
+    history[frame] = value;
+    cleanup();
 }
 
 double ProfilerTask::latest() const

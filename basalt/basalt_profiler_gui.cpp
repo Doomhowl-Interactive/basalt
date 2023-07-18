@@ -33,12 +33,23 @@ static Rect DragAndDropProfiler(Rect& rect)
     return rect;
 }
 
+// move to utils
+static string ConcatStrings(const vector<string> lines, const char sep = '\n')
+{
+    string result;
+    for (const auto& line : lines) {
+        result += line + "\n";
+    }
+    result.pop_back();
+    return result;
+}
+
 void DrawProfiler(Texture canvas)
 {
     const auto& data = GetProfilerData();
 
     constexpr int PADDING = 10;
-    constexpr int FONT_SIZE = 16;
+    constexpr int FONT_SIZE = 12;  // TODO: implement
 
     static Color bgColor = ColorAlpha(DARKGRAY, 0.5f);
 
@@ -49,8 +60,11 @@ void DrawProfiler(Texture canvas)
                            ProfilerBounds.x + PADDING * 2,
                            ProfilerBounds.y + PADDING * 2 };
 
-    string text = "Frame: " + to_string(data.frameIndex);
-    text += "\nFPS: " + to_string((int)data.fps.average());
+    string text = ConcatStrings({
+        "FPS: " + to_string((int)data.fps.average()),
+        "Frame: " + to_string(data.frameIndex),
+    });
+
     canvas.DrawText(text, contentBounds.x, contentBounds.y, YELLOW);
     canvas.DrawRectangle(R2(ProfilerBounds), bgColor);
 }

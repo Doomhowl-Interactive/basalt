@@ -16,7 +16,8 @@ enum ProfilerTaskType {
     TASK_IDLE,
 };
 
-struct ProfilerTask {
+class ProfilerTask {
+   public:
     std::string name;
     bool builtIn;
     ProfilerTaskType type;
@@ -31,6 +32,10 @@ struct ProfilerTask {
     double min() const;
 
     void addEntry(long frame);
+    void addCustomEntry(long frame, double value);
+
+   private:
+    void cleanup();
 };
 
 struct ProfilerData {

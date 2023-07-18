@@ -77,8 +77,9 @@ class CachedText {
         // bake text
         auto theFont = LoadedFonts.at(font.name);
         SDL_Color sdlColor = ConvertColor(color);
-        // TODO: use the function from TTF_Font that wraps
-        surface = TTF_RenderText_Blended(theFont, text.c_str(), sdlColor);
+        // TODO: Implement wrapping
+        surface = TTF_RenderUTF8_Blended_Wrapped(theFont, text.c_str(), sdlColor, 10000);
+        assert(surface->w > 0 && surface->h > 0);
         lastUsed = SDL_GetTicks();
     }
 
@@ -118,43 +119,36 @@ static size_t DrawSettingsHash(Font font, string text, Color color)
 #undef DrawText  // thank you Microsoft, very cool
 void Texture::DrawText(string text, int posX, int posY, Color color, Font font)
 {
-    string line;
-    auto stream = stringstream(text);
-    while (getline(stream, line)) {
-        if (line.empty()) {
-            return;
-        }
+    size_t hash = DrawSettingsHash(font, text, color);
+    try {
+        weak_ptr<CachedText> text = TextCache.at(hash);
+        SDL_Surface* surface = text.lock()->get();
+        SDL_Rect destRect = { posX, posY, surface->w, surface->h };
+        // TODO: Implement GPU: SDL_RenderCopy(canvas->renderer, texture, NULL, &rect);
+        SDL_UpperBlit(surface, NULL, GetScreenOverlaySurface(), &destRect);
+    } catch (out_of_range) {
+        auto cached = make_shared<CachedText>(font, text, color);
 
-        size_t hash = DrawSettingsHash(font, line, color);
-        try {
-            weak_ptr<CachedText> text = TextCache.at(hash);
-            SDL_Surface* surface = text.lock()->get();
-            SDL_Rect destRect = { posX, posY, surface->w, surface->h };
-            // TODO: Implement GPU: SDL_RenderCopy(canvas->renderer, texture, NULL, &rect);
-            SDL_UpperBlit(surface, NULL, GetScreenOverlaySurface(), &destRect);
-        } catch (out_of_range) {
-            auto text = make_shared<CachedText>(font, line, color);
+        SDL_Surface* surface = cached->get();
+        SDL_Rect destRect = { posX, posY, surface->w, surface->h };
+        // TODO: Implement GPU: SDL_RenderCopy(canvas->renderer, texture, NULL, &rect);
+        SDL_UpperBlit(surface, NULL, GetScreenOverlaySurface(), &destRect);
 
-            SDL_Surface* surface = text->get();
-            SDL_Rect destRect = { posX, posY, surface->w, surface->h };
-            // TODO: Implement GPU: SDL_RenderCopy(canvas->renderer, texture, NULL, &rect);
-            SDL_UpperBlit(surface, NULL, GetScreenOverlaySurface(), &destRect);
+        TextCache.insert({ hash, cached });
 
-            TextCache.insert({ hash, text });
-
-            // remove old
-            if (TextCache.size() > 100) {
-                for (auto it = TextCache.begin(); it != TextCache.end();) {
-                    if (it->second->isOld()) {
-                        it = TextCache.erase(it);
-                    } else {
-                        ++it;
-                    }
+        // remove old
+        if (TextCache.size() > 100) {
+            for (auto it = TextCache.begin(); it != TextCache.end();) {
+                if (it->second->isOld()) {
+                    it = TextCache.erase(it);
+                } else {
+                    ++it;
                 }
             }
-            if (TextCache.size() > 100) {
-                TextCache.erase(TextCache.begin());
-            }
+        }
+        // remove any if previous step wasn't enough
+        if (TextCache.size() > 100) {
+            TextCache.erase(TextCache.begin());
         }
     }
 }
