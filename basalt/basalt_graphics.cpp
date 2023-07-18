@@ -185,9 +185,9 @@ void Texture::DrawRectangle(int posX, int posY, int width, int height, Color col
 
 void Texture::DrawRectangleLines(int posX, int posY, int width, int height, int border, Color color)
 {
-    DrawRectangle(posX, posY, width, border, color);  // top
+    DrawRectangle(posX, posY, width, border, color);   // top
     DrawRectangle(posX + width - border, posY, border, height,
-                  color);  // right
+                  color);                              // right
     DrawRectangle(posX, posY + height - border, width, border,
                   color);                              // bottom
     DrawRectangle(posX, posY, border, height, color);  // left
@@ -387,7 +387,8 @@ Color BlendColorsAlpha(Color src, Color dst, int overrideAlpha)
 
 inline Color ColorAlpha(Color col, float a)
 {
-    return (col & 0x00FFFFFF) | ((unsigned char)(a * 255) << 24);
+    uchar alpha = (uchar)(a * 255.f);
+    return (col & 0xFFFFFF00) | alpha;
 }
 
 // NOTE: Taken from https://github.com/tsoding/olive.c/blob/master/olive.c
