@@ -13,3 +13,8 @@ double GetTimeElapsed();
 
 /// Get deltaTime
 double GetDeltaTime();
+
+inline double GetFramesPerSecond()
+{
+    return 1.f / GetDeltaTime();
+}

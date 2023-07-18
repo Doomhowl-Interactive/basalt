@@ -4,10 +4,12 @@
 #include "basalt_profiler.hpp"
 #include "basalt_graphics.hpp"
 #include "basalt_input.hpp"
+#include "basalt_utils.hpp"
 
 using namespace std;
 
 static Rect ProfilerBounds = { 10, 10, 300, 300 };
+static bool ProfilerOpened = false;
 
 struct DragContext {
     Point beginMouse;
@@ -33,19 +35,15 @@ static Rect DragAndDropProfiler(Rect& rect)
     return rect;
 }
 
-// move to utils
-static string ConcatStrings(const vector<string> lines, const char sep = '\n')
+bool DrawProfiler(Texture canvas)
 {
-    string result;
-    for (const auto& line : lines) {
-        result += line + "\n";
+    if (IsKeyPressed(KEY_F3)) {
+        ProfilerOpened = !ProfilerOpened;
     }
-    result.pop_back();
-    return result;
-}
+    if (!ProfilerOpened) {
+        return false;
+    }
 
-void DrawProfiler(Texture canvas)
-{
     const auto& data = GetProfilerData();
 
     constexpr int PADDING = 10;
@@ -61,10 +59,12 @@ void DrawProfiler(Texture canvas)
                            ProfilerBounds.y + PADDING * 2 };
 
     string text = ConcatStrings({
-        "FPS: " + to_string((int)data.fps.average()),
+        data.fps.toString(),
         "Frame: " + to_string(data.frameIndex),
     });
 
     canvas.DrawText(text, contentBounds.x, contentBounds.y, YELLOW);
     canvas.DrawRectangle(R2(ProfilerBounds), bgColor);
+
+    return true;
 }

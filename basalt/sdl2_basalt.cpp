@@ -157,7 +157,9 @@ void Basalt::EndFrame()
 // Draw profiler overlay
 #ifndef NO_PROFILER
     if (true || Config.hasProfiler) {
-        DrawProfiler(*canvas);
+        if (DrawProfiler(*canvas)) {
+            UpdateProfiler();
+        }
     }
 #endif
 

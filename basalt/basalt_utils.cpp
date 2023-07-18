@@ -5,6 +5,7 @@
 #include <filesystem>
 #include <iostream>
 #include <optional>
+#include <vector>
 
 #include "basalt_math.hpp"
 #include "basalt_utils.hpp"
@@ -62,6 +63,16 @@ string& PadStringLeft(string text, char symbol, size_t length)
         text = symbol + text;
     }
     return text;
+}
+
+string ConcatStrings(const vector<string> lines, char sep)
+{
+    string result;
+    for (const auto& line : lines) {
+        result += line + "\n";
+    }
+    result.pop_back();
+    return result;
 }
 
 bool FileHasExtension(const string name, const string ext)

@@ -3,6 +3,8 @@
 #include <optional>
 
 #include "basalt_profiler.hpp"
+#include "basalt_window.hpp"
+#include "basalt_utils.hpp"
 
 using namespace std;
 
@@ -13,6 +15,12 @@ static double nowInMs()
     return chrono::duration_cast<chrono::milliseconds>(
                chrono::system_clock::now().time_since_epoch())
         .count();
+}
+
+inline static bool IsOutlier(double value)
+{
+    // HACK: Don't include data thats ridiculously big or small
+    return abs(value) > 100000;
 }
 
 string& BeginProfilerTask(string name, ProfilerTaskType type, bool builtIn)
@@ -43,8 +51,9 @@ ProfilerData& GetProfilerData()
 
 void UpdateProfiler()
 {
+    auto fps = GetFramesPerSecond();
     prof.frameIndex++;
-    prof.fps.addEntry(prof.frameIndex);
+    prof.fps.addCustomEntry(prof.frameIndex, fps);
 }
 
 ProfilerData::ProfilerData() : fps("FPS", TASK_PROCESS, true)
@@ -56,38 +65,46 @@ ProfilerData::ProfilerData() : fps("FPS", TASK_PROCESS, true)
 ProfilerTask::ProfilerTask(string name, ProfilerTaskType type, bool builtIn)
     : name(name), type(type), builtIn(builtIn)
 {
-    history = map<long, double>();
-}
-
-void ProfilerTask::cleanup()
-{
-    while (history.size() > PROFILER_HISTORY_SIZE) {
-        history.erase(history.begin());
-    }
+    history = deque<HistoryItem>();
 }
 
 void ProfilerTask::addEntry(long frame)
 {
-    history[frame] = nowInMs() - startTime;
-    cleanup();
+    auto diff = nowInMs() - startTime;
+    addCustomEntry(frame, diff);
 }
 
 void ProfilerTask::addCustomEntry(long frame, double value)
 {
-    history[frame] = value;
-    cleanup();
+    if (IsOutlier(value)) {
+        return;
+    }
+
+    HistoryItem elem = { frame, value };
+    history.push_front(elem);
+
+    // cleanup old data
+    while (history.size() > PROFILER_HISTORY_SIZE) {
+        history.pop_back();
+    }
 }
 
 double ProfilerTask::latest() const
 {
-    return history.rend()->second;
+    if (history.empty()) {
+        return 0.0;
+    }
+    return history.back().value;
 }
 
 double ProfilerTask::average() const
 {
     double sum = 0;
     for (const auto& it : history) {
-        sum += it.second;
+        sum += it.value;
+    }
+    if (history.empty()) {
+        return sum;
     }
     return sum / history.size();
 }
@@ -96,8 +113,8 @@ double ProfilerTask::max() const
 {
     double max = 0;
     for (const auto& it : history) {
-        if (it.second > max) {
-            max = it.second;
+        if (it.value > max) {
+            max = it.value;
         }
     }
     return max;
@@ -107,9 +124,19 @@ double ProfilerTask::min() const
 {
     double min = 0;
     for (const auto& it : history) {
-        if (it.second < min) {
-            min = it.second;
+        if (it.value < min) {
+            min = it.value;
         }
     }
     return min;
+}
+
+string ProfilerTask::toString() const
+{
+    return FormatText("%s : %.3f (min %.1f | avg: %.1f | max: %.1f)",
+                      name.c_str(),
+                      latest(),
+                      min(),
+                      average(),
+                      max());
 }

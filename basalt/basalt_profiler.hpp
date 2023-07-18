@@ -2,7 +2,7 @@
 #include <iostream>
 #include <string>
 #include <unordered_map>
-#include <map>
+#include <deque>
 
 #include "basalt_graphics.hpp"
 
@@ -16,12 +16,16 @@ enum ProfilerTaskType {
     TASK_IDLE,
 };
 
-class ProfilerTask {
-   public:
+struct HistoryItem {
+    long frameIndex;
+    double value;
+};
+
+struct ProfilerTask {
     std::string name;
     bool builtIn;
     ProfilerTaskType type;
-    std::map<long, double> history;
+    std::deque<HistoryItem> history;
     double startTime;
 
     ProfilerTask(std::string name, ProfilerTaskType type, bool builtIn);
@@ -31,11 +35,10 @@ class ProfilerTask {
     double max() const;
     double min() const;
 
+    std::string toString() const;
+
     void addEntry(long frame);
     void addCustomEntry(long frame, double value);
-
-   private:
-    void cleanup();
 };
 
 struct ProfilerData {
@@ -53,7 +56,7 @@ void EndProfilerTask(std::string name);
 
 ProfilerData& GetProfilerData();
 void UpdateProfiler();
-void DrawProfiler(Texture canvas);
+bool DrawProfiler(Texture canvas);
 
 #ifndef NO_PROFILER
 # define BeginMeasurement(X) BeginProfiling(X)
