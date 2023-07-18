@@ -16,4 +16,4 @@ Copy-Item -Path "$ReleasePath/assets" -Destination $DistributionPath -Recurse
 Write-Host "Distribution created at $DistributionPath"
 
 # Zip distribution to Distribution.zip
-# Compress-Archive -Path $DistributionPath/* -DestinationPath "$BasePath/Distribution.zip" -Force
+Compress-Archive -Path $DistributionPath/* -DestinationPath "$BasePath/Distribution.zip" -Force
