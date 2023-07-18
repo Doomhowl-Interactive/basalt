@@ -16,6 +16,9 @@
     <Filter Include="x64">
       <UniqueIdentifier>{a777bb17-f755-439c-a914-b623c98f65b8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="assets">
+      <UniqueIdentifier>{842201a2-cf3a-4588-bb03-05446f6f06be}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\vendor\SDL2\lib\x64\SDL2.dll">
@@ -37,5 +40,10 @@
     <ClInclude Include="example_game.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Font Include="assets\font_sf_cartoonist_hand.ttf">
+      <Filter>assets</Filter>
+    </Font>
   </ItemGroup>
 </Project>
