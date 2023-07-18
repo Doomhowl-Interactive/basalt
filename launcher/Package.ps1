@@ -7,6 +7,12 @@ $BasePath = $args[0]
 $ReleasePath = "$BasePath/x64/Release"
 $DistributionPath = "$BasePath/Distribution"
 
+# check if release folder exists
+if (-not (Test-Path $ReleasePath)) {
+    Write-Host "Release folder not found in solution folder"
+    exit 1
+}
+
 # check if deploy.ini exists
 if (-not (Test-Path "$BasePath/deploy.ini")) {
     Write-Host "deploy.ini not found in solution folder"
