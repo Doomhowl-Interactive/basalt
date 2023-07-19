@@ -58,10 +58,10 @@ void UpdateAndRenderGame(Texture canvas, float delta)
         }
     }
 
-    canvas.DrawText("Hello Basalt!", 10, 10, WHITE, font);
-    canvas.DrawText("Press SPACE to change rainbow direction", 10, 50, GREEN, font);
-    canvas.DrawText("Press DELETE to segfault", 10, 80, RED, font);
-    canvas.DrawText("Press BACKSPACE to throw c++ error", 10, 120, RED, font);
+    canvas.DrawBasaltText("Hello Basalt!", 10, 10, WHITE, font);
+    canvas.DrawBasaltText("Press SPACE to change rainbow direction", 10, 50, GREEN, font);
+    canvas.DrawBasaltText("Press DELETE to segfault", 10, 80, RED, font);
+    canvas.DrawBasaltText("Press BACKSPACE to throw c++ error", 10, 120, RED, font);
 
     if (IsKeyPressed(KEY_SPACE)) {
         Horizontal = !Horizontal;
