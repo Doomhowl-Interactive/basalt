@@ -19,6 +19,7 @@ bool RunGame(int argc, char** argv)
     auto engine = Basalt(config, argc, argv);
     while (!engine.ShouldClose()) {
         Texture canvas = engine.BeginFrame();
+
         UpdateAndRenderGame(canvas, GetDeltaTime());
         engine.EndFrame();
     }

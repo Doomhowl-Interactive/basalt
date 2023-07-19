@@ -7,6 +7,8 @@ static Font font;
 
 using namespace std;
 
+static FontStyle style = {};
+
 bool RunGame(int argc, char** argv)
 {
     GameConfig config = { 0 };
@@ -18,6 +20,10 @@ bool RunGame(int argc, char** argv)
     auto engine = Basalt(config, argc, argv);
 
     font = LoadFont("font_sf_cartoonist_hand.ttf");
+
+    style.color = WHITE;
+    style.size = 32;
+    style.centered = true;
 
     while (!engine.ShouldClose()) {
         Texture canvas = engine.BeginFrame();
@@ -58,7 +64,7 @@ void UpdateAndRenderGame(Texture canvas, float delta)
         }
     }
 
-    canvas.DrawBasaltText("Hello Basalt!", 10, 10, WHITE, font);
+    canvas.DrawBasaltText("Hello Basalt!", Game.width / 2, Game.height / 2, style);
     canvas.DrawBasaltText("Press SPACE to change rainbow direction", 10, 50, GREEN, font);
     canvas.DrawBasaltText("Press DELETE to segfault", 10, 80, RED, font);
     canvas.DrawBasaltText("Press BACKSPACE to throw c++ error", 10, 120, RED, font);

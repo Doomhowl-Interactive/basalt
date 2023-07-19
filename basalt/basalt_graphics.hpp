@@ -99,6 +99,9 @@ struct Texture {
                         bool centered = false);
 
     // DrawText is already taken by windows.h
+    void DrawBasaltText(std::string text, int posX, int posY, FontStyle style = {});
+
+    // DrawText is already taken by windows.h
     void DrawBasaltText(std::string text,
                         int posX,
                         int posY,

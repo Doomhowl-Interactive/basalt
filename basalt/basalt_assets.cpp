@@ -3,6 +3,7 @@
 #include <string>
 #include <filesystem>
 #include <optional>
+#include <cassert>
 #include <spdlog/spdlog.h>
 
 #include "basalt_macros.hpp"
@@ -15,13 +16,6 @@
 
 namespace fs = std::filesystem;
 using namespace std;
-
-static vector<string> AssetFolders = {
-    "assets",
-    "../assets",
-    "../../assets",
-    "../../../assets",
-};
 
 static void RelocateToExecutable()
 {
@@ -36,6 +30,13 @@ static void RelocateToExecutable()
 
 optional<string> SearchAsset(string assetName, string extension)
 {
+    static const vector<string> AssetFolders = {
+        "assets",
+        "../assets",
+        "../../assets",
+        "../../../assets",
+    };
+
     RelocateToExecutable();
 
     fs::path assetFileName = fs::path(assetName);
@@ -51,6 +52,7 @@ optional<string> SearchAsset(string assetName, string extension)
         }
         traversedPaths.push_back(combined);
     }
+    assert(AssetFolders.size() > 0);
 
     // Not found!: List all the places we looked for the asset file
     string msg = "Asset not found: " + assetName + " (assumed " + assetFileName.string()

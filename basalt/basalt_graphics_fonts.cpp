@@ -12,7 +12,7 @@
 
 using namespace std;
 
-static map<string, TTF_Font*> LoadedFonts;
+static map<string, TTF_Font*> LoadedFonts = {};
 
 struct CachedText;
 static map<size_t, shared_ptr<CachedText>> TextCache = {};
@@ -102,10 +102,13 @@ static shared_ptr<CachedText> GetOrCacheText(string text,
 
 Font Font::Default()
 {
-    auto it = LoadedFonts.begin();
-    if (it == LoadedFonts.end()) {
+    if (LoadedFonts.empty()) {
         spdlog::error("There are no fonts loaded");
+        auto defaultFont = LoadFont("FFFFORWA.TTF");
+        return defaultFont;
     }
+
+    auto it = LoadedFonts.begin();
     return { it->first };
 }
 
@@ -125,38 +128,32 @@ Font LoadFont(string fontName)
         TTF_Init();
     }
 
-    auto assetPath = SearchAsset(fontName, "ttf");
-    if (assetPath) {
-        auto font = TTF_OpenFont(assetPath.value().c_str(), 16);
-        if (font == nullptr) {
-            spdlog::error("Failed to load font {}: {}", fontName, TTF_GetError());
-            goto DEFAULT;
-        }
-
-        // store loaded font
-        LoadedFonts.insert({ fontName, font });
-        spdlog::debug("Loaded font {}.ttf", fontName);
-
-        // if this is the first font loaded, also set it as the default font
-        if (LoadedFonts.size() == 1) {
-            LoadedFonts.insert({ "default", font });
-        }
-
-        return { fontName };
-    }
-
-DEFAULT:
-    TTF_Font* defaultFont;
+    // check if font is already loaded
     try {
-        defaultFont = LoadedFonts.at("default");
+        if (LoadedFonts.empty()) {
+            throw out_of_range("No fonts loaded");
+        }
+        LoadedFonts.at(fontName);
+        return { fontName };
     } catch (out_of_range& e) {
-        spdlog::error("There is no default font: ({})", TTF_GetError());
+        auto assetPath = SearchAsset(fontName, "ttf");
+        if (assetPath) {
+            auto font = TTF_OpenFont(assetPath.value().c_str(), 16);
+            if (font == nullptr) {
+                spdlog::error("Failed to load font {}: {}", fontName, TTF_GetError());
+                throw exception("Failed to load font");
+            }
+
+            // store loaded font
+            LoadedFonts.insert({ fontName, font });
+            spdlog::debug("Loaded font {}.ttf", fontName);
+
+            return { fontName };
+        } else {
+            spdlog::error("Failed to find font {}", fontName);
+            throw exception("Failed to load font");
+        }
     }
-
-    LoadedFonts.insert({ fontName, defaultFont });
-    spdlog::warn("Failed to load font, using default: {}", TTF_GetError());
-
-    return Font::Default();
 }
 
 void Texture::DrawBasaltText(string text,
@@ -177,6 +174,11 @@ void Texture::DrawBasaltText(string text,
     DrawBasaltText(text, posX, posY, font, style);
 }
 
+void Texture::DrawBasaltText(std::string text, int posX, int posY, FontStyle style)
+{
+    DrawBasaltText(text, posX, posY, Font::Default(), style);
+}
+
 void Texture::DrawBasaltText(std::string text, int posX, int posY, Font font, FontStyle style)
 {
     size_t hash = style.Hash(text);
@@ -188,6 +190,11 @@ void Texture::DrawBasaltText(std::string text, int posX, int posY, Font font, Fo
     destRect.y = posY;
     destRect.w = size.width;
     destRect.h = size.height;
+
+    if (style.centered) {
+        destRect.x -= size.width / 2;
+        destRect.y -= size.height / 2;
+    }
 
     SDL_UpperBlit(surface->get(), NULL, GetScreenOverlaySurface(), &destRect);
 }
@@ -209,7 +216,6 @@ void DisposeFonts()
 // ==== Font styles ====
 FontStyle::FontStyle(const FontStyle& st)
 {
-    this->font = st.font;
     this->color = st.color;
     this->size = st.size;
     this->maxWidth = st.maxWidth;
@@ -219,7 +225,6 @@ FontStyle::FontStyle(const FontStyle& st)
 size_t FontStyle::Hash(string ofText) const
 {
     size_t hash = 0;
-    CombineHash(hash, font.name);
     CombineHash(hash, ofText);
     CombineHash(hash, color);
     CombineHash(hash, maxWidth);
@@ -237,13 +242,6 @@ FontStyle FontStyle::wColor(Color color) const
 {
     auto c = FontStyle(*this);
     c.color = color;
-    return c;
-}
-
-FontStyle FontStyle::wFont(Font font) const
-{
-    auto c = FontStyle(*this);
-    c.font = font;
     return c;
 }
 

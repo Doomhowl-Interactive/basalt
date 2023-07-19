@@ -14,7 +14,6 @@ struct Font {
 
 struct FontStyle {
     Color color = 0xFFFFFFFF;
-    Font font = Font::Default();
     uint size = 32;
     uint maxWidth = INT16_MAX;
     bool centered = false;
