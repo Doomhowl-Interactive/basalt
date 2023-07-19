@@ -1,4 +1,5 @@
 #pragma once
+#undef DrawText  // TODO: Use DrawBasaltText instead
 
 #include "basalt_macros.hpp"
 #include "basalt_config.hpp"
@@ -12,7 +13,6 @@
 #include "basalt_window.hpp"
 
 // TODO: Replace old logging with spdlog
-
 struct Basalt {
     int exitCode;
 
