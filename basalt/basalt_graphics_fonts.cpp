@@ -181,6 +181,11 @@ void Texture::DrawBasaltText(std::string text, int posX, int posY, FontStyle sty
 
 void Texture::DrawBasaltText(std::string text, int posX, int posY, Font font, FontStyle style)
 {
+    if (style.size > 1000) {
+        spdlog::warn("Font size is too big: {}", style.size);
+        return;
+    }
+
     size_t hash = style.Hash(text);
     Size size;
     auto surface = GetOrCacheText(text, font, style, &size);
@@ -199,6 +204,19 @@ void Texture::DrawBasaltText(std::string text, int posX, int posY, Font font, Fo
     SDL_UpperBlit(surface->get(), NULL, GetScreenOverlaySurface(), &destRect);
 }
 
+void Texture::DrawBasaltTextShadow(string text,
+                                   int posX,
+                                   int posY,
+                                   Font font,
+                                   FontStyle foreStyle,
+                                   FontStyle backStyle,
+                                   int spacingX,
+                                   int spacingY)
+{
+    DrawBasaltText(text, posX - spacingX, posY - spacingY, font, backStyle);
+    DrawBasaltText(text, posX, posY, font, foreStyle);
+}
+
 void DisposeFonts()
 {
     for (auto& font : LoadedFonts) {
@@ -214,6 +232,14 @@ void DisposeFonts()
 }
 
 // ==== Font styles ====
+FontStyle::FontStyle(Color color, uint size, bool centered, uint maxWidth)
+{
+    this->color = color;
+    this->size = size;
+    this->maxWidth = maxWidth;
+    this->centered = centered;
+}
+
 FontStyle::FontStyle(const FontStyle& st)
 {
     this->color = st.color;

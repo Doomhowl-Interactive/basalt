@@ -107,6 +107,16 @@ struct Texture {
                         int posY,
                         Font font = Font::Default(),
                         FontStyle style = {});
+
+    // Draw text with a shadow
+    void DrawBasaltTextShadow(std::string text,
+                              int posX,
+                              int posY,
+                              Font font = Font::Default(),
+                              FontStyle foreStyle = {},
+                              FontStyle backStyle = {},
+                              int spacingX = 2,
+                              int spacingY = 2);
 };
 
 enum PlaybackMode {

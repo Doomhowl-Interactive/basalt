@@ -18,7 +18,11 @@ struct FontStyle {
     uint maxWidth = INT16_MAX;
     bool centered = false;
 
-    FontStyle() = default;
+    FontStyle(Color color = 0xFFFFFFFF,
+              uint size = 32,
+              bool centered = false,
+              uint maxWidth = INT16_MAX);
+
     FontStyle(const FontStyle& st);
     size_t Hash(std::string ofText) const;
 
@@ -26,8 +30,6 @@ struct FontStyle {
     FontStyle center() const;
     // returns copy with overriden property
     FontStyle wColor(Color color) const;
-    // returns copy with overriden property
-    FontStyle wFont(Font font) const;
     // returns copy with overriden property
     FontStyle wSize(int size) const;
     // returns copy with overriden property
