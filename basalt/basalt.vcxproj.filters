@@ -60,6 +60,9 @@
     <ClCompile Include="basalt_profiler_gui.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="basalt_math_tweening.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="basalt_config.hpp">
@@ -117,6 +120,9 @@
       <Filter>Header Files\external</Filter>
     </ClInclude>
     <ClInclude Include="basalt_profiler.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="basalt_math_tweening.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
