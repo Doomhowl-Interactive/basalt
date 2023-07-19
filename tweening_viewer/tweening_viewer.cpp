@@ -1,12 +1,8 @@
 #include <basalt.h>
+#include <memory>
+#include "tweening_display.cpp"
 
 using namespace std;
-
-void UpdateAndRenderGame(Texture canvas, float delta)
-{
-    canvas.Clear(PURPLE);
-    canvas.DrawBasaltText("Hello Basalt3D!", 10, 10, RED);
-}
 
 bool RunGame(int argc, char** argv)
 {
@@ -17,10 +13,15 @@ bool RunGame(int argc, char** argv)
     config.height = 480;
 
     auto engine = Basalt(config, argc, argv);
+
+    unique_ptr<TweeningDisplay> display = nullptr;
     while (!engine.ShouldClose()) {
         Texture canvas = engine.BeginFrame();
-
-        UpdateAndRenderGame(canvas, GetDeltaTime());
+        if (!display) {
+            display = unique_ptr<TweeningDisplay>(new TweeningDisplay(canvas));
+        }
+        canvas.Clear(LIGHTGRAY);
+        display->UpdateAndRenderTweenings((float)GetDeltaTime());
         engine.EndFrame();
     }
 
