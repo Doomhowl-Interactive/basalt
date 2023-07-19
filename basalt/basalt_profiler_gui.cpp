@@ -95,7 +95,7 @@ bool DrawProfiler(Texture canvas)
         "Frame: " + to_string(data.frameIndex),
     });
 
-    canvas.DrawText(
+    canvas.DrawBasaltText(
         text, contentBounds.x, contentBounds.y, YELLOW, Font::Default(), 12, contentBounds.width);
 
     canvas.DrawRectangle(R2(ProfilerBounds), bgColor);

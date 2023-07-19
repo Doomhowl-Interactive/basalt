@@ -29,8 +29,6 @@ constexpr Color DARKBROWN = 0x5A2E00FF;
 constexpr Color DARKRED = 0x7F0000FF;
 #pragma endregion
 
-#undef DrawText
-
 struct TextureSheet;
 struct Texture {
     unsigned int width;
@@ -89,13 +87,23 @@ struct Texture {
 
     void DrawWeirdTestGradient();
 
-    void DrawText(std::string text,
-                  int posX,
-                  int posY,
-                  Color color,
-                  Font font = Font::Default(),
-                  int size = 32,
-                  int maxWidth = INT16_MAX);
+    // DrawText is already taken by windows.h
+    // @deprecated Use overloaded method with TextStyle instead.
+    void DrawBasaltText(std::string text,
+                        int posX,
+                        int posY,
+                        Color color,
+                        Font font = Font::Default(),
+                        int size = 32,
+                        int maxWidth = INT16_MAX,
+                        bool centered = false);
+
+    // DrawText is already taken by windows.h
+    void DrawBasaltText(std::string text,
+                        int posX,
+                        int posY,
+                        Font font = Font::Default(),
+                        FontStyle style = {});
 };
 
 enum PlaybackMode {

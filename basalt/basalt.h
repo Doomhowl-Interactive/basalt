@@ -1,5 +1,4 @@
 #pragma once
-#undef DrawText  // TODO: Use DrawBasaltText instead
 
 #include "basalt_macros.hpp"
 #include "basalt_config.hpp"

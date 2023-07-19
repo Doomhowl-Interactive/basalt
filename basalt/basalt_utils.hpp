@@ -17,6 +17,12 @@ bool FolderExists(const std::string folder);
 
 std::string ConcatStrings(const std::vector<std::string> lines, char sep = '\n');
 
+template <class T> inline void CombineHash(size_t& seed, const T& v)
+{
+    std::hash<T> hasher;
+    seed ^= hasher(v) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+}
+
 // WARN: Uses cached memory, result gets overwritten on future calls.
 // NOTE: Get seconds since epoch a file was last changed.
 // Returns 0 if file doesn't exists.
