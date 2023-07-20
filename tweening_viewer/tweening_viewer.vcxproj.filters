@@ -24,6 +24,9 @@
     <ClCompile Include="tweening_display.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="tweening_scroll.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\vendor\SDL2\lib\x64\SDL2.dll">

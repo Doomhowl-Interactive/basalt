@@ -102,6 +102,8 @@ void Texture::DrawDot(int posX, int posY, Color color)
     auto& pix = *pixels.get();
     unsigned char alpha = color & 0x000000FF;
     int i = posY * width + posX;
+    if (i < 0 || i >= width * height)
+        return;
     pix[i] = BlendColors(pix[i], color, alpha);
 }
 
