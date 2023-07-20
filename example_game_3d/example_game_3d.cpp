@@ -27,7 +27,7 @@ bool RunGame(int argc, char** argv)
     return engine.exitCode;
 }
 
-int main(int argc, char** argv)
+extern "C" int SDL_main(int argc, char* argv[])
 {
 #ifndef _DEBUG
     try {
