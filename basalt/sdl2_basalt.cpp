@@ -194,7 +194,8 @@ void Basalt::EndFrame()
     timeElapsed = (double)SDL_GetTicks64() / 1000.0;
     frameIndex++;
 
-    // Set Window title to fps and delta-time
+// Set Window title to fps and delta-time
+#ifdef _DEBUG
     static double timer = 0.f;
     if (timer > 0.2) {
         // set Window title to framerate
@@ -204,6 +205,7 @@ void Basalt::EndFrame()
         timer = 0.0;
     }
     timer += delta;
+#endif
 
     ClearKeyboardInput();
 }
