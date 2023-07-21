@@ -1,8 +1,7 @@
 ![basalt](misc/logo_small.png)
 
-# basalt
 
-Software rendered game engine based on SDL2 for C++ cavemen
+Software rendered game engine based on SDL3 for C++ cavemen
 
 Solidified version of [Magma Game Engine](https://github.com/bramtechs/RaylibMagmaEngine) and [dream-emu](https://github.com/bramtechs/dream-emu).
 
@@ -15,7 +14,7 @@ Windows 8/10/11
 
 Open with Visual Studio or compile via MSBuild.
 
-Don't forget to place the correct .dlls from ```vendor/SDL2``` and ```vendor/SDL2_ttf``` in the folder of the built executable.
+SDL3 (master branch of SDL) is now statically compiled with basalt, so no extra DLLs are needed!
 
 ## Screenshots
 
