@@ -14,7 +14,7 @@ Windows 8/10/11
 
 Open with Visual Studio or compile via MSBuild.
 
-SDL3 (master branch of SDL) is now statically compiled with basalt, so no extra DLLs are needed!
+**SDL3 (master branch of SDL) is now statically compiled with basalt, so no extra DLLs are needed!**
 
 ## Screenshots
 
