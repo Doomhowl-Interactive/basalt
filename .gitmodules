@@ -1,6 +1,6 @@
 [submodule "vendor/SDL"]
 	path = vendor/SDL
-	url = https://github.com/libsdl-org/SDL
+	url = https://github.com/Doomhowl-Interactive/SDL
 [submodule "vendor/SDL_ttf"]
 	path = vendor/SDL_ttf
-	url = https://github.com/libsdl-org/SDL_ttf.git
+	url = https://github.com/Doomhowl-Interactive/SDL_ttf
