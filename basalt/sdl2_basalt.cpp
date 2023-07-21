@@ -86,12 +86,7 @@ Basalt::Basalt(GameConfig config, int argc, char** argv)
     spdlog::set_level(spdlog::level::debug);
 
     // initialize the Window
-    Window = SDL_CreateWindow(Game.title,
-                              SDL_WINDOWPOS_UNDEFINED,
-                              SDL_WINDOWPOS_UNDEFINED,
-                              Game.width,
-                              Game.height,
-                              NULL);
+    Window = SDL_CreateWindow(Game.title, Game.width, Game.height, NULL);
     if (Window == NULL) {
         spdlog::critical("Could not create Window!");
         Close(*this, EXIT_FAILURE);
@@ -106,14 +101,12 @@ Basalt::Basalt(GameConfig config, int argc, char** argv)
 
     // NOTE: If this breaks go back to using raw pointers instead of vector
     const auto& canvasPixels = *canvas->pixels.get();
-    ScreenSurface = SDL_CreateRGBSurfaceWithFormatFrom((void*)canvasPixels.data(),
-                                                       Game.width,
-                                                       Game.height,
-                                                       32,
-                                                       Game.width * 4,
-                                                       SDL_PIXELFORMAT_ABGR32);
-    OverlaySurface = SDL_CreateRGBSurface(
-        0, Game.width, Game.height, 32, 0xFF000000, 0x00FF0000, 0x0000FF00, 0x000000FF);
+    ScreenSurface = SDL_CreateSurfaceFrom((void*)canvasPixels.data(),
+                                          Game.width,
+                                          Game.height,
+                                          Game.width * 4,
+                                          SDL_PIXELFORMAT_ABGR32);
+    OverlaySurface = SDL_CreateSurface(Game.width, Game.height, SDL_PIXELFORMAT_ABGR32);
 
     SetWindowTitle(Game.title);
 
@@ -125,7 +118,7 @@ bool Basalt::ShouldClose()
     static Uint32 maxFps = Config.unlockedFramerate ? 10000 : 60;
     static float delta = 0.f;
 
-    static Uint64 startTicks = SDL_GetTicks64();
+    static Uint64 startTicks = SDL_GetTicks();
 
     if (exitCode == EXIT_FAILURE) {
         return true;
@@ -135,7 +128,7 @@ bool Basalt::ShouldClose()
     static SDL_Event event;
     while (SDL_PollEvent(&event)) {
         switch (event.type) {
-            case SDL_QUIT: {
+            case SDL_EVENT_QUIT: {
                 return true;
             }
             default: {
@@ -152,7 +145,7 @@ bool Basalt::ShouldClose()
 Texture Basalt::BeginFrame()
 {
     if (canvas) {
-        startTicks = SDL_GetTicks64();
+        startTicks = SDL_GetTicks();
         ProcessMouseInput();
         return *canvas;
     } else {
@@ -181,7 +174,7 @@ void Basalt::EndFrame()
     // =============================================
 
     // Clear the overlay gui surface, (it needs to be transparent!)
-    SDL_FillRect(OverlaySurface, NULL, 0x00000000);
+    SDL_FillSurfaceRect(OverlaySurface, NULL, 0x00000000);
 
     frameIndex++;
 
@@ -189,9 +182,9 @@ void Basalt::EndFrame()
     Uint32 timeToWait = (Uint32)(1000 / maxFps);
     SDL_Delay(timeToWait);
 
-    Uint64 ticksPassed = SDL_GetTicks64() - startTicks;
+    Uint64 ticksPassed = SDL_GetTicks() - startTicks;
     delta = ticksPassed / 1000.0;
-    timeElapsed = (double)SDL_GetTicks64() / 1000.0;
+    timeElapsed = (double)SDL_GetTicks() / 1000.0;
     frameIndex++;
 
 // Set Window title to fps and delta-time
@@ -212,7 +205,7 @@ void Basalt::EndFrame()
 
 Basalt::~Basalt()
 {
-    SDL_FreeSurface(ScreenSurface);
+    SDL_DestroySurface(ScreenSurface);
     SDL_DestroyWindow(Window);
     CloseSystemConsole();
     spdlog::info("Closed SDL2 Window");

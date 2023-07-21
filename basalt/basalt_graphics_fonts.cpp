@@ -36,7 +36,7 @@ class CachedText {
 
     ~CachedText()
     {
-        SDL_FreeSurface(surface);
+        SDL_DestroySurface(surface);
     }
 
     bool isOld()
@@ -201,7 +201,7 @@ void Texture::DrawBasaltText(std::string text, int posX, int posY, Font font, Fo
         destRect.y -= size.height / 2;
     }
 
-    SDL_UpperBlit(surface->get(), NULL, GetScreenOverlaySurface(), &destRect);
+    SDL_BlitSurface(surface->get(), NULL, GetScreenOverlaySurface(), &destRect);
 }
 
 void Texture::DrawBasaltTextShadow(string text,

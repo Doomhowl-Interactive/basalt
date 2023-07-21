@@ -1,4 +1,6 @@
 #include <memory>
+#include <windows.h>
+
 #include "basalt.h"
 #include "tweening_scroll.cpp"
 #include "tweening_display.cpp"
@@ -33,12 +35,12 @@ bool RunGame(int argc, char** argv)
     return engine.exitCode;
 }
 
-extern "C" int SDL_main(int argc, char* argv[])
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
 #ifndef _DEBUG
     try {
 #endif
-        return RunGame(argc, argv);
+        return RunGame(__argc, __argv);
 #ifndef _DEBUG
     } catch (exception e) {
         HandleFatalException(e);

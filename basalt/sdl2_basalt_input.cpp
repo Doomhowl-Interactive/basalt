@@ -9,7 +9,7 @@ static unordered_map<SDL_Keycode, bool> pressedKeysFrame;
 
 enum MouseState { MOUSE_UP, MOUSE_PRESSED, MOUSE_DOWN };
 
-static Point mousePos;
+static Vec2 mousePos;
 static MouseState mouseState = MOUSE_UP;
 
 static void PrintKeys()
@@ -21,18 +21,18 @@ static void PrintKeys()
 
 bool ProcessKeyboardInput(SDL_Event* e)
 {
-    if (e->type == SDL_KEYDOWN || e->type == SDL_KEYUP) {
+    if (e->type == SDL_EVENT_KEY_DOWN || e->type == SDL_EVENT_KEY_DOWN) {
         SDL_KeyboardEvent keyevent = e->key;
         SDL_Keycode key = keyevent.keysym.sym;
         if (key == SDLK_ESCAPE) {
             return false;
         }
 
-        if (key == SDLK_DELETE && e->type == SDL_KEYDOWN) {
+        if (key == SDLK_DELETE && e->type == SDL_EVENT_KEY_DOWN) {
             PrintKeys();
         }
 
-        bool isDown = e->type == SDL_KEYDOWN;
+        bool isDown = e->type == SDL_EVENT_KEY_DOWN;
         pressedKeys[key] = isDown;
         pressedKeysFrame[key] = isDown;
 
