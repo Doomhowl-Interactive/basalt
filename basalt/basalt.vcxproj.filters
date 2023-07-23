@@ -63,6 +63,12 @@
     <ClCompile Include="basalt_math_tweening.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="basalt_textures.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="basalt_colors.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="basalt_config.hpp">
@@ -123,6 +129,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="basalt_math_tweening.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="basalt_textures.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="basalt_colors.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
