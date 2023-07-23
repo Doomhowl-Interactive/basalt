@@ -4,3 +4,6 @@
 [submodule "vendor/SDL_ttf"]
 	path = vendor/SDL_ttf
 	url = https://github.com/Doomhowl-Interactive/SDL_ttf
+[submodule "games/snake-feeder"]
+	path = games/snake-feeder
+	url = https://github.com/Doomhowl-Interactive/snake-feeder.git

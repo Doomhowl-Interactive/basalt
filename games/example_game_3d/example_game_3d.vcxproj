@@ -159,6 +159,9 @@
     <ProjectReference Include="..\..\basalt_3d\basalt_3d.vcxproj">
       <Project>{b7adcedc-8845-4c2a-9238-414971265cf9}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\..\renderers\renderer_legacy\renderer_legacy.vcxproj">
+      <Project>{21fa51b2-074f-48a2-b461-e7aa4f186f64}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
