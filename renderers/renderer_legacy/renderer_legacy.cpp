@@ -120,8 +120,9 @@ void Texture::Blit(Texture texture,
                    int srcWidth,
                    int srcHeight)
 {
-    const auto& srcPix = *texture.pixels.get();
-    auto& pix = *pixels.get();
+    // Slightly faster than using the vectors normally.
+    const Color* srcPix = texture.pixels.get()->data();
+    Color* pix = pixels.get()->data();
 
     if (srcWidth < 0)
         srcWidth = texture.width;
@@ -130,7 +131,8 @@ void Texture::Blit(Texture texture,
 
     // Switch out the texture if hotreloading is on
     // HotReloadTexture(texture);
-
+    //
+    // WARN: Horrible slow shit
     for (int destY = max(0, posY); destY < Clamp(posY + srcHeight, 0, (int)height); destY++) {
         for (int destX = max(0, posX); destX < Clamp(posX + srcWidth, 0, (int)width); destX++) {
             int sourceX = destX - posX + srcX;
@@ -140,9 +142,8 @@ void Texture::Blit(Texture texture,
             int destIndex = destY * width + destX;
 
             Color srcColor = srcPix[srcIndex];
-            unsigned char alpha = srcColor & 0x000000FF;
             Color tintedColor = BlendColors(srcColor, tint, BLEND_VALUE);
-            Color finalColor = BlendColors(pix[destIndex], tintedColor, alpha);
+            Color finalColor = BlendColors(pix[destIndex], tintedColor);
 
             pix[destIndex] = finalColor;
         }
