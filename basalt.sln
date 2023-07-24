@@ -21,6 +21,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "tweening_viewer", "games\tw
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "snake-feeder", "games\snake-feeder\snake-feeder.vcxproj", "{F3D9024E-0CBF-40D7-B116-4B048A955FE0}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "renderer_sdl_cpu", "renderers\renderer_sdl_cpu\renderer_sdl_cpu.vcxproj", "{42B5D027-4EE1-454E-B524-592E7F9BACFC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -310,6 +312,36 @@ Global
 		{F3D9024E-0CBF-40D7-B116-4B048A955FE0}.RelWithDebInfo|x64.Build.0 = ReleaseWithDebug|x64
 		{F3D9024E-0CBF-40D7-B116-4B048A955FE0}.RelWithDebInfo|x86.ActiveCfg = ReleaseWithDebug|Win32
 		{F3D9024E-0CBF-40D7-B116-4B048A955FE0}.RelWithDebInfo|x86.Build.0 = ReleaseWithDebug|Win32
+		{42B5D027-4EE1-454E-B524-592E7F9BACFC}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{42B5D027-4EE1-454E-B524-592E7F9BACFC}.Debug|Any CPU.Build.0 = Debug|x64
+		{42B5D027-4EE1-454E-B524-592E7F9BACFC}.Debug|x64.ActiveCfg = Debug|x64
+		{42B5D027-4EE1-454E-B524-592E7F9BACFC}.Debug|x64.Build.0 = Debug|x64
+		{42B5D027-4EE1-454E-B524-592E7F9BACFC}.Debug|x86.ActiveCfg = Debug|Win32
+		{42B5D027-4EE1-454E-B524-592E7F9BACFC}.Debug|x86.Build.0 = Debug|Win32
+		{42B5D027-4EE1-454E-B524-592E7F9BACFC}.MinSizeRel|Any CPU.ActiveCfg = Debug|x64
+		{42B5D027-4EE1-454E-B524-592E7F9BACFC}.MinSizeRel|Any CPU.Build.0 = Debug|x64
+		{42B5D027-4EE1-454E-B524-592E7F9BACFC}.MinSizeRel|x64.ActiveCfg = Debug|x64
+		{42B5D027-4EE1-454E-B524-592E7F9BACFC}.MinSizeRel|x64.Build.0 = Debug|x64
+		{42B5D027-4EE1-454E-B524-592E7F9BACFC}.MinSizeRel|x86.ActiveCfg = Debug|Win32
+		{42B5D027-4EE1-454E-B524-592E7F9BACFC}.MinSizeRel|x86.Build.0 = Debug|Win32
+		{42B5D027-4EE1-454E-B524-592E7F9BACFC}.Release|Any CPU.ActiveCfg = Release|x64
+		{42B5D027-4EE1-454E-B524-592E7F9BACFC}.Release|Any CPU.Build.0 = Release|x64
+		{42B5D027-4EE1-454E-B524-592E7F9BACFC}.Release|x64.ActiveCfg = Release|x64
+		{42B5D027-4EE1-454E-B524-592E7F9BACFC}.Release|x64.Build.0 = Release|x64
+		{42B5D027-4EE1-454E-B524-592E7F9BACFC}.Release|x86.ActiveCfg = Release|Win32
+		{42B5D027-4EE1-454E-B524-592E7F9BACFC}.Release|x86.Build.0 = Release|Win32
+		{42B5D027-4EE1-454E-B524-592E7F9BACFC}.ReleaseWithDebug|Any CPU.ActiveCfg = Release|x64
+		{42B5D027-4EE1-454E-B524-592E7F9BACFC}.ReleaseWithDebug|Any CPU.Build.0 = Release|x64
+		{42B5D027-4EE1-454E-B524-592E7F9BACFC}.ReleaseWithDebug|x64.ActiveCfg = Release|x64
+		{42B5D027-4EE1-454E-B524-592E7F9BACFC}.ReleaseWithDebug|x64.Build.0 = Release|x64
+		{42B5D027-4EE1-454E-B524-592E7F9BACFC}.ReleaseWithDebug|x86.ActiveCfg = Release|Win32
+		{42B5D027-4EE1-454E-B524-592E7F9BACFC}.ReleaseWithDebug|x86.Build.0 = Release|Win32
+		{42B5D027-4EE1-454E-B524-592E7F9BACFC}.RelWithDebInfo|Any CPU.ActiveCfg = Release|x64
+		{42B5D027-4EE1-454E-B524-592E7F9BACFC}.RelWithDebInfo|Any CPU.Build.0 = Release|x64
+		{42B5D027-4EE1-454E-B524-592E7F9BACFC}.RelWithDebInfo|x64.ActiveCfg = Release|x64
+		{42B5D027-4EE1-454E-B524-592E7F9BACFC}.RelWithDebInfo|x64.Build.0 = Release|x64
+		{42B5D027-4EE1-454E-B524-592E7F9BACFC}.RelWithDebInfo|x86.ActiveCfg = Release|Win32
+		{42B5D027-4EE1-454E-B524-592E7F9BACFC}.RelWithDebInfo|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
