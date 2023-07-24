@@ -6,17 +6,39 @@ Solidified version of [Magma Game Engine](https://github.com/bramtechs/RaylibMag
 
 Inspired by [Handmade Hero](https://handmadehero.org/).
 
-## Dependencies
+## Bindings
 
-Windows 8/10/11
+- C (planned)
+- Go (planned)
+- Javacript (planned, maybe)
 
-- Visual Studio 22 or latest VS Build Tools
+## Compilation
+
+### Windows 8/10/11
+
+- Visual Studio 22 or VS Build Tools 2019
 
 1. Clone this repo **recursively** to download all required files.
-2. Open with Visual Studio or compile via MSBuild.
 
-**SDL3 (master branch of SDL) is now statically compiled with basalt, so no extra DLLs are needed!**
+```bash
+git clone https://github.com/Doomhowl-Interactive/basalt.git --recursive
+# or
+gh repo clone Doomhowl-Interactive/basalt -- --recursive
+```
+
+2. Build with Visual Studio _(open basalt.sln)_ or compile via MSBuild.
+
+```bash
+msbuild -m -property:Configuration=Release
+```
+
+> SDL3 (master branch of SDL) is statically compiled with basalt,
+> so the first compilation may take a while...
 
 ## Screenshots
 
 ![Preview](screenshots/windows7_2.PNG)
+
+```
+
+```
