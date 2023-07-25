@@ -4,6 +4,7 @@
 #include <map>
 #include <spdlog/spdlog.h>
 
+#include "basalt_exceptions.hpp"
 #include "basalt_macros.hpp"
 #include "basalt_console.hpp"
 #include "basalt_assets.hpp"
@@ -141,7 +142,7 @@ Font LoadFont(string fontName)
             auto font = TTF_OpenFont(assetPath.value().c_str(), 16);
             if (font == nullptr) {
                 spdlog::error("Failed to load font {}: {}", fontName, TTF_GetError());
-                throw exception("Failed to load font");
+                throw BasaltException("Failed to load font");
             }
 
             // store loaded font
@@ -151,7 +152,7 @@ Font LoadFont(string fontName)
             return { fontName };
         } else {
             spdlog::error("Failed to find font {}", fontName);
-            throw exception("Failed to load font");
+            throw BasaltException("Failed to load font");
         }
     }
 }

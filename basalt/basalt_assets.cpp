@@ -68,26 +68,44 @@ optional<string> SearchAsset(string assetName, string extension)
     return nullopt;
 }
 
+// TODO: clean this up into win32_basalt and unix_basalt
 fs::path& GetWorkingDirectory()
 {
     static fs::path workingDirectory = "";
+#ifdef WIN32
     if (workingDirectory == "") {
         char buffer[MAX_PATH];
         GetCurrentDirectoryA(MAX_PATH, buffer);
         workingDirectory = buffer;
     }
+#elif defined(__linux__) || defined(__APPLE__)
+    if (workingDirectory == "") {
+        char buffer[PATH_MAX];
+        getcwd(buffer, PATH_MAX);
+        workingDirectory = buffer;
+    }
+#endif
     return workingDirectory;
 }
 
 fs::path& GetExecutableDirectory()
 {
     static fs::path executableDirectory = "";
+#ifdef WIN32
     if (executableDirectory == "") {
         char buffer[MAX_PATH];
         GetModuleFileNameA(NULL, buffer, MAX_PATH);
         executableDirectory = buffer;
         executableDirectory = executableDirectory.parent_path();
     }
+#elif defined(__linux__) || defined(__APPLE__)
+    if (executableDirectory == "") {
+        char buffer[PATH_MAX];
+        readlink("/proc/self/exe", buffer, PATH_MAX);
+        executableDirectory = buffer;
+        executableDirectory = executableDirectory.parent_path();
+    }
+#endif
     return executableDirectory;
 }
 

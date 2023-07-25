@@ -1,7 +1,9 @@
 #pragma once
 
-enum KeyCode;
-enum ScanCode;
+#include "basalt_macros.hpp"
+
+enum KeyCode : uint;
+enum ScanCode : uint;
 
 Point GetMousePosition();
 
@@ -18,7 +20,7 @@ bool IsKeyReleased(KeyCode code);
 #define SCANCODE_MASK (1 << 30)
 #define SCANCODE_TO_KEYCODE(X) (X | SCANCODE_MASK)
 
-enum ScanCode {
+enum ScanCode : uint {
     SCANCODE_UNKNOWN = 0,
 
     /**
@@ -202,8 +204,8 @@ enum ScanCode {
     SCANCODE_F23 = 114,
     SCANCODE_F24 = 115,
     SCANCODE_EXECUTE = 116,
-    SCANCODE_HELP = 117, /**< AL Integrated Help Center */
-    SCANCODE_MENU = 118, /**< Menu (show menu) */
+    SCANCODE_HELP = 117,  /**< AL Integrated Help Center */
+    SCANCODE_MENU = 118,  /**< Menu (show menu) */
     SCANCODE_SELECT = 119,
     SCANCODE_STOP = 120,  /**< AC Stop */
     SCANCODE_AGAIN = 121, /**< AC Redo/Repeat */
@@ -232,19 +234,19 @@ enum ScanCode {
     SCANCODE_INTERNATIONAL7 = 141,
     SCANCODE_INTERNATIONAL8 = 142,
     SCANCODE_INTERNATIONAL9 = 143,
-    SCANCODE_LANG1 = 144, /**< Hangul/English toggle */
-    SCANCODE_LANG2 = 145, /**< Hanja conversion */
-    SCANCODE_LANG3 = 146, /**< Katakana */
-    SCANCODE_LANG4 = 147, /**< Hiragana */
-    SCANCODE_LANG5 = 148, /**< Zenkaku/Hankaku */
-    SCANCODE_LANG6 = 149, /**< reserved */
-    SCANCODE_LANG7 = 150, /**< reserved */
-    SCANCODE_LANG8 = 151, /**< reserved */
-    SCANCODE_LANG9 = 152, /**< reserved */
+    SCANCODE_LANG1 = 144,    /**< Hangul/English toggle */
+    SCANCODE_LANG2 = 145,    /**< Hanja conversion */
+    SCANCODE_LANG3 = 146,    /**< Katakana */
+    SCANCODE_LANG4 = 147,    /**< Hiragana */
+    SCANCODE_LANG5 = 148,    /**< Zenkaku/Hankaku */
+    SCANCODE_LANG6 = 149,    /**< reserved */
+    SCANCODE_LANG7 = 150,    /**< reserved */
+    SCANCODE_LANG8 = 151,    /**< reserved */
+    SCANCODE_LANG9 = 152,    /**< reserved */
 
     SCANCODE_ALTERASE = 153, /**< Erase-Eaze */
     SCANCODE_SYSREQ = 154,
-    SCANCODE_CANCEL = 155, /**< AC Cancel */
+    SCANCODE_CANCEL = 155,   /**< AC Cancel */
     SCANCODE_CLEAR = 156,
     SCANCODE_PRIOR = 157,
     SCANCODE_RETURN2 = 158,
@@ -316,7 +318,7 @@ enum ScanCode {
                           *   special KMOD_MODE for it I'm adding it here
                           */
 
-    /* @} */ /* Usage page 0x07 */
+    /* @} */             /* Usage page 0x07 */
 
     /**
      *  \name Usage page 0x0C
@@ -336,9 +338,9 @@ enum ScanCode {
     SCANCODE_AUDIOPLAY = 261,
     SCANCODE_AUDIOMUTE = 262,
     SCANCODE_MEDIASELECT = 263,
-    SCANCODE_WWW = 264, /**< AL Internet Browser */
+    SCANCODE_WWW = 264,          /**< AL Internet Browser */
     SCANCODE_MAIL = 265,
-    SCANCODE_CALCULATOR = 266, /**< AL Calculator */
+    SCANCODE_CALCULATOR = 266,   /**< AL Calculator */
     SCANCODE_COMPUTER = 267,
     SCANCODE_AC_SEARCH = 268,    /**< AC Search */
     SCANCODE_AC_HOME = 269,      /**< AC Home */
@@ -348,7 +350,7 @@ enum ScanCode {
     SCANCODE_AC_REFRESH = 273,   /**< AC Refresh */
     SCANCODE_AC_BOOKMARKS = 274, /**< AC Bookmarks */
 
-    /* @} */ /* Usage page 0x0C */
+    /* @} */                     /* Usage page 0x0C */
 
     /**
      *  \name Walther keys
@@ -402,7 +404,7 @@ enum ScanCode {
     SCANCODE_CALL = 289,      /**< Used for accepting phone calls. */
     SCANCODE_ENDCALL = 290,   /**< Used for rejecting phone calls. */
 
-    /* @} */ /* Mobile keys */
+    /* @} */                  /* Mobile keys */
 
     /* Add any other keys here. */
 
@@ -410,7 +412,7 @@ enum ScanCode {
                                  for array bounds */
 };
 
-enum KeyCode {
+enum KeyCode : uint {
     KEY_UNKNOWN = 0,
 
     KEY_RETURN = '\r',

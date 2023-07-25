@@ -1,6 +1,7 @@
 #pragma once
 
 #include "basalt_macros.hpp"
+#include "basalt_exceptions.hpp"
 #include "basalt_config.hpp"
 #include "basalt_console.hpp"
 #include "basalt_graphics_fonts.hpp"

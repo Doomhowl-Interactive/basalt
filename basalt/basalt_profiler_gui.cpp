@@ -65,7 +65,7 @@ static Rect DrawProfilerResizer(Texture canvas, const Rect& winBounds)
     };
 
     static Color col = ColorAlpha(DARKGRAY, 0.7f);
-    canvas.DrawRectangle(R2(resizer), col);
+    canvas.DrawRectangle(resizer, col);
     return resizer;
 }
 
@@ -98,7 +98,7 @@ bool DrawProfiler(Texture canvas)
     canvas.DrawBasaltText(
         text, contentBounds.x, contentBounds.y, YELLOW, Font::Default(), 12, contentBounds.width);
 
-    canvas.DrawRectangle(R2(ProfilerBounds), bgColor);
+    canvas.DrawRectangle(ProfilerBounds, bgColor);
 
     Rect resizer = DrawProfilerResizer(canvas, ProfilerBounds);
     DragAndDropProfiler(ProfilerBounds, resizer);

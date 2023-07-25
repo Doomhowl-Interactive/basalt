@@ -23,7 +23,7 @@ inline static bool IsOutlier(double value)
     return abs(value) > 100000;
 }
 
-string& BeginProfilerTask(string name, ProfilerTaskType type, bool builtIn)
+string BeginProfilerTask(string name, ProfilerTaskType type, bool builtIn)
 {
     // get or create the task
     auto it = prof.tasks.find(name);

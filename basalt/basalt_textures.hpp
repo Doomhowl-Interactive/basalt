@@ -43,10 +43,14 @@ struct Texture {
               int posX,
               int posY,
               Color tint = WHITE,
-              int srcX = 0,
+              int srcX = -1,
               int srcY = -1,
               int srcWidth = -1,
               int srcHeight = -1);
+    inline void Blit(Texture texture, Point pos, Color tint = WHITE, Rect src = { -1, -1, -1, -1 })
+    {
+        Blit(texture, pos.x, pos.y, tint, src.x, src.y, src.width, src.height);
+    }
 
     void BlitScaled(Texture texture,
                     int destX,
@@ -54,15 +58,36 @@ struct Texture {
                     int destWidth,
                     int destHeight,
                     Color tint = WHITE);
+    inline void BlitScaled(Texture texture, Rect dest, Color tint = WHITE)
+    {
+        BlitScaled(texture, dest.x, dest.y, dest.width, dest.height, tint);
+    }
 
     void BlitSheet(TextureSheet sheet, int frame, Vec2 pos, Color tint);
 
     void DrawDot(int posX, int posY, Color tint);
-    void DrawLine(int startX, int startY, int endX, int endY, Color tint);
-    void DrawRectangle(int posX, int posY, int width, int height, Color tint);
-    void DrawRectangleLines(int posX, int posY, int width, int height, int border, Color tint);
+    inline void DrawDot(Point pos, Color tint)
+    {
+        DrawDot(pos.x, pos.y, tint);
+    }
 
-    void DrawWeirdTestGradient();
+    void DrawLine(int startX, int startY, int endX, int endY, Color tint);
+    inline void DrawLine(Point start, Point end, Color tint)
+    {
+        DrawLine(start.x, start.y, end.x, end.y, tint);
+    }
+
+    void DrawRectangle(int posX, int posY, int width, int height, Color tint);
+    inline void DrawRectangle(Rect rect, Color tint)
+    {
+        DrawRectangle(rect.x, rect.y, rect.width, rect.height, tint);
+    }
+
+    void DrawRectangleLines(int posX, int posY, int width, int height, int border, Color tint);
+    inline void DrawRectangleLines(Rect rect, int border, Color tint)
+    {
+        DrawRectangleLines(rect.x, rect.y, rect.width, rect.height, border, tint);
+    }
 
     // DrawText is already taken by windows.h
     // @deprecated Use overloaded method with TextStyle instead.

@@ -1,5 +1,4 @@
 #include <string.h>
-#include <malloc.h>
 #include <iostream>
 #include <vector>
 #include <cassert>
@@ -63,9 +62,9 @@ Texture Texture::GenerateNoise(unsigned int width,
 
 void Texture::DrawRectangleLines(int posX, int posY, int width, int height, int border, Color color)
 {
-    DrawRectangle(posX, posY, width, border, color);  // top
+    DrawRectangle(posX, posY, width, border, color);   // top
     DrawRectangle(posX + width - border, posY, border, height,
-                  color);  // right
+                  color);                              // right
     DrawRectangle(posX, posY + height - border, width, border,
                   color);                              // bottom
     DrawRectangle(posX, posY, border, height, color);  // left

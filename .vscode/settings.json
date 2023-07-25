@@ -1,6 +1,8 @@
 {
-    "files.associations": {
-        "*.embeddedhtml": "html",
-        "filesystem": "cpp"
-    }
+  "files.associations": {
+    "*.embeddedhtml": "html",
+    "filesystem": "cpp",
+    "exception": "cpp",
+    "stdexcept": "cpp"
+  }
 }

@@ -49,9 +49,9 @@ struct ProfilerData {
     ProfilerData();
 };
 
-std::string& BeginProfilerTask(std::string name,
-                               ProfilerTaskType type = TASK_PROCESS,
-                               bool builtIn = false);
+std::string BeginProfilerTask(std::string name,
+                              ProfilerTaskType type = TASK_PROCESS,
+                              bool builtIn = false);
 void EndProfilerTask(std::string name);
 
 ProfilerData& GetProfilerData();
