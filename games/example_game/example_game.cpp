@@ -18,7 +18,7 @@ bool RunGame(int argc, char** argv)
 
     auto engine = Basalt(config, argc, argv);
 
-    font = LoadFont("font_sf_cartoonist_hand.ttf");
+    font = LoadFont("Coffee Terrace.ttf");
 
     style.color = WHITE;
     style.size = 32;

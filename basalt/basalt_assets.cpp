@@ -54,14 +54,17 @@ optional<string> SearchAsset(string assetName, string extension)
     vector<fs::path> traversedPaths;
 
     for (auto& folder : AssetFolders) {
-        if (fs::exists(folder)){
-            auto combined = fs::path(folder) / assetFileName;
+        auto comb_folder = GetWorkingDirectory() / folder;
+        if (fs::exists(comb_folder)){
+            auto combined = comb_folder / assetFileName;
             if (fs::exists(combined)) {
                 return combined.string();
+            }else {
+                spdlog::warn("Asset path {} does not exist!", combined.string());
             }
             traversedPaths.push_back(combined);
         }else{
-            spdlog::warn("Asset path {} does not exist!", folder);
+            spdlog::warn("Asset path {} does not exist!", comb_folder.string());
         }
     }
     assert(AssetFolders.size() > 0);
