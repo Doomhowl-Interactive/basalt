@@ -3,12 +3,12 @@
 #include "basalt_macros.hpp"
 
 // ==== COLOR UTILTIES ====
-inline Color MakeRGB(uchar r, uchar g, uchar b, uchar a)
+Color MakeRGB(uchar r, uchar g, uchar b, uchar a)
 {
     return (r << 24) | (g << 16) | (b << 8) | a;
 }
 
-inline Color MakeRGBf(float r, float g, float b, float a)
+Color MakeRGBf(float r, float g, float b, float a)
 {
     return MakeRGB((uchar)(r * 255.f),
                    (uchar)(g * 255.f),
@@ -47,7 +47,7 @@ Color BlendColorsAlpha(Color src, Color dst, int overrideAlpha)
             | (((((src >> 24) & 0xff) * s + ((dst >> 24) & 0xff) * alpha) << 16) & ~0xffffff));
 }
 
-inline Color ColorAlpha(Color col, float a)
+Color ColorAlpha(Color col, float a)
 {
     uchar alpha = (uchar)(a * 255.f);
     return (col & 0xFFFFFF00) | alpha;

@@ -26,8 +26,8 @@ constexpr Color DARKRED = 0x7F0000FF;
 #pragma endregion
 
 // ==== COLOR UTILTIES ====
-extern Color MakeRGB(uchar r, uchar g, uchar b, uchar a = 255);
-extern Color MakeRGBf(float r, float g, float b, float a = 1.f);
-extern Color ColorAlpha(Color col, float a);
+Color MakeRGB(uchar r, uchar g, uchar b, uchar a = 255);
+Color MakeRGBf(float r, float g, float b, float a = 1.f);
+Color ColorAlpha(Color col, float a);
 Color BlendColors(Color src, Color dest, int overrideAlpha = -1);
 Color BlendColorsAlpha(Color src, Color dest, int overrideAlpha = -1);

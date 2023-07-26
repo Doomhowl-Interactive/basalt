@@ -248,10 +248,10 @@ void Texture::BlitSheet(TextureSheet sheet, int frame, Vec2 pos, Color tint)
     }
 
     Rect source = {
-        sheet.origin.x + frame * sheet.cellSize.x,
-        sheet.origin.y,
-        sheet.cellSize.x,
-        sheet.cellSize.y,
+        (int) (sheet.origin.x + frame * sheet.cellSize.x),
+        (int) sheet.origin.y,
+        (int) sheet.cellSize.x,
+        (int) sheet.cellSize.y,
     };
-    Blit(sheet.texture, V2(pos), tint, R2(source));
+    Blit(sheet.texture, pos, tint, source);
 }
