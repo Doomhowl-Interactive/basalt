@@ -35,11 +35,14 @@ static void RelocateToExecutable()
 
 optional<string> SearchAsset(string assetName, string extension)
 {
+    // HACK: !
     static const vector<string> AssetFolders = {
         "assets",
         "../assets",
         "../../assets",
         "../../../assets",
+        "/Users/bram/dev/basalt/basalt/assets",
+        "/Users/bram/dev/basalt/games/snake-feeder/assets"
     };
 
     RelocateToExecutable();
@@ -51,11 +54,15 @@ optional<string> SearchAsset(string assetName, string extension)
     vector<fs::path> traversedPaths;
 
     for (auto& folder : AssetFolders) {
-        auto combined = fs::path(folder) / assetFileName;
-        if (fs::exists(combined)) {
-            return combined.string();
+        if (fs::exists(folder)){
+            auto combined = fs::path(folder) / assetFileName;
+            if (fs::exists(combined)) {
+                return combined.string();
+            }
+            traversedPaths.push_back(combined);
+        }else{
+            spdlog::warn("Asset path {} does not exist!", folder);
         }
-        traversedPaths.push_back(combined);
     }
     assert(AssetFolders.size() > 0);
 
