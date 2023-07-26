@@ -35,20 +35,12 @@ cmake -S . -B build -G "Visual Studio 2022" -A x64
 cmake --build build
 ```
 
-## MacOS
+### MacOS
 
 **Dependencies:**
 
 - XCode
 - CMake
-
-1. Clone this repo **recursively** to download all required files.
-
-```bash
-git clone https://github.com/Doomhowl-Interactive/basalt.git --recursive
-# or
-gh repo clone Doomhowl-Interactive/basalt -- --recursive
-```
 
 2. Generate and build with cmake.
 
