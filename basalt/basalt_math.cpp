@@ -493,17 +493,17 @@ float Vec2::distance(Vec2 dest)
     return distRoot;
 }
 
-inline void SetRandomSeed(unsigned int seed)
+void SetRandomSeed(unsigned int seed)
 {
     srand(seed);
 }
 
-inline int GetRandomRange(int min, int max)
+int GetRandomRange(int min, int max)
 {
     return rand() % (max - min + 1) + min;
 }
 
-inline int GetRandomNumber()
+int GetRandomNumber()
 {
     return rand();
 }

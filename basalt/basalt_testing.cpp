@@ -6,8 +6,6 @@
 #include "basalt_console.hpp"
 #include "basalt_graphics.hpp"
 
-
-
 using namespace std;
 
 void EndTest(string name, string description, bool succeeded)

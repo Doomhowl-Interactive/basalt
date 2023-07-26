@@ -16,14 +16,6 @@ if (WIN32)
 set(PLAT_LIBS
 
 )
-elseif(APPLE)
-set(PLAT_LIBS
-
-)
-elseif(LINUX)
-set(PLAT_LIBS
-
-)
 endif()
 
 target_link_libraries(${PROJECT_NAME} ${LIBS} ${PLAT_LIBS})
