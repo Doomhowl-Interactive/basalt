@@ -57,7 +57,3 @@ cmake --build build -DCMAKE_BUILD_TYPE=Release
 
 ![Preview](screenshots/windows7_2.PNG)
 ![Preview2](screenshots/macos.png)
-
-```
-
-```
