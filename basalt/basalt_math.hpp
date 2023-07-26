@@ -121,9 +121,9 @@ struct Vec2 {
 };
 
 // RNG
-extern void SetRandomSeed(unsigned int seed);
-extern int GetRandomRange(int min, int max);
-extern int GetRandomNumber();
+void SetRandomSeed(unsigned int seed);
+int GetRandomRange(int min, int max);
+int GetRandomNumber();
 
 bool IsLittleEndian();
 

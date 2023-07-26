@@ -6,8 +6,8 @@
 
 #include "basalt_config.hpp"
 #include "basalt_testing.hpp"
-#include "sdl2_basalt.hpp"
 #include "basalt_profiler.hpp"
+#include "sdl2_basalt.hpp"
 
 using namespace std;
 
