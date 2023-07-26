@@ -2,6 +2,9 @@ project(basalt)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_C_STANDARD 11)
 
+# TODO: Create a "basalt-launcher" project that links all the libraries together,
+# so we don't need to copypasta cmake files everywhere.
+
 file(GLOB_RECURSE SOURCES *.cpp *.hpp)
 add_library(${PROJECT_NAME} STATIC ${SOURCES})
 

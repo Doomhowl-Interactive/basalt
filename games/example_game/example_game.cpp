@@ -1,6 +1,4 @@
 #include <basalt.h>
-#include <windows.h>
-
 #include "example_game.h"
 
 static bool Horizontal = false;
@@ -35,19 +33,28 @@ bool RunGame(int argc, char** argv)
     return engine.exitCode;
 }
 
+// TODO: Abstract this away!
+#ifdef WIN32
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
-#ifndef _DEBUG
+# ifndef _DEBUG
     try {
-#endif
+# endif
         return RunGame(__argc, __argv);
-#ifndef _DEBUG
+# ifndef _DEBUG
     } catch (exception e) {
         HandleFatalException(e);
         return -1;
     }
-#endif
+# endif
 }
+#endif
+#ifdef __APPLE__
+int main(int argc, char** argv)
+{
+    return RunGame(argc, argv);
+}
+#endif
 
 void UpdateAndRenderGame(Texture canvas, float delta)
 {
@@ -82,6 +89,6 @@ void UpdateAndRenderGame(Texture canvas, float delta)
     }
 
     if (IsKeyPressed(KEY_BACKSPACE)) {
-        throw exception("I am a teapot.");
+        throw BasaltException("I am a teapot.");
     }
 }
