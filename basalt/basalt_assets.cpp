@@ -21,10 +21,15 @@ static void RelocateToExecutable()
 {
     // Change the working directory to the executable folder.
     // This is needed because so the assets are always found.
-    fs::path executablePath = GetExecutableDirectory();
-    if (fs::current_path() != executablePath) {
-        fs::current_path(executablePath);
-        spdlog::debug("Relocated to executable folder: {}", executablePath.string());
+    auto executablePath = GetExecutableDirectory();
+    if (executablePath){
+        if (fs::current_path() != executablePath) {
+            fs::current_path(executablePath.value());
+            spdlog::debug("Relocated to executable folder: {}", executablePath.value().string());
+        }
+    }
+    else{
+        spdlog::error("Relocating is only possible on Windows!");
     }
 }
 
@@ -88,7 +93,7 @@ fs::path& GetWorkingDirectory()
     return workingDirectory;
 }
 
-fs::path& GetExecutableDirectory()
+optional<fs::path> GetExecutableDirectory()
 {
     static fs::path executableDirectory = "";
 #ifdef WIN32
@@ -98,15 +103,12 @@ fs::path& GetExecutableDirectory()
         executableDirectory = buffer;
         executableDirectory = executableDirectory.parent_path();
     }
-#elif defined(__linux__) || defined(__APPLE__)
-    if (executableDirectory == "") {
-        char buffer[PATH_MAX];
-        readlink("/proc/self/exe", buffer, PATH_MAX);
-        executableDirectory = buffer;
-        executableDirectory = executableDirectory.parent_path();
-    }
 #endif
-    return executableDirectory;
+    if (executableDirectory == "") {
+        return nullopt;
+    } else{
+        return executableDirectory;
+    }
 }
 
 static void LoadTextureFromStbData(Texture texture, uchar* data, int channels)

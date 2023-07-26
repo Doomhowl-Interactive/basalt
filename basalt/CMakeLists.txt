@@ -16,4 +16,3 @@ SET(EXTRA_HEADER_FOLDERS
 )
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${EXTRA_HEADER_FOLDERS})
-
