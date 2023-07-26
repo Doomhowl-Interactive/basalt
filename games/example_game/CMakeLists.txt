@@ -7,6 +7,7 @@ add_executable(${PROJECT_NAME} ${SOURCES})
 
 set(LIBS
     basalt
+    renderer_legacy
     SDL3-static
     SDL3_ttf-static
 )

@@ -3,5 +3,6 @@ project(basalt)
 
 add_subdirectory(vendor)
 add_subdirectory(basalt)
+add_subdirectory(renderers)
 
 add_subdirectory(games)
