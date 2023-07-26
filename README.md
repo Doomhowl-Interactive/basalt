@@ -32,7 +32,7 @@ gh repo clone Doomhowl-Interactive/basalt -- --recursive
 
 ```bash
 cmake -S . -B build -G "Visual Studio 2022" -A x64
-cmake --build build -DCMAKE_BUILD_TYPE=Release 
+cmake --build build -DCMAKE_BUILD_TYPE=Release
 ```
 
 ### MacOS
@@ -46,7 +46,7 @@ cmake --build build -DCMAKE_BUILD_TYPE=Release
 
 ```bash
 cmake -S . -B build -G Xcode
-cmake --build build -DCMAKE_BUILD_TYPE=Release 
+cmake --build build -DCMAKE_BUILD_TYPE=Release
 ```
 
 > NOTES: Xcode build target needs to be specified and used or the build will fail.
@@ -56,6 +56,7 @@ cmake --build build -DCMAKE_BUILD_TYPE=Release
 ## Screenshots
 
 ![Preview](screenshots/windows7_2.PNG)
+![Preview2](screenshots/macos.png)
 
 ```
 
