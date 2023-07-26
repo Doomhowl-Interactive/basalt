@@ -9,7 +9,7 @@ Inspired by [Handmade Hero](https://handmadehero.org/).
 ## Bindings
 
 - Go (planned)
-- Javacript (planned, maybe)
+- Javascript (planned, maybe)
 
 ## Compilation
 
