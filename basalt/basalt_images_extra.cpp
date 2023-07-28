@@ -1,6 +1,6 @@
 #include <vector>
 
-#include "basalt_textures.hpp"
+#include "basalt_images.hpp"
 #include "basalt_colors.hpp"
 
 using namespace std;
@@ -9,9 +9,9 @@ using namespace std;
 #define OPEN_SIMPLEX_NOISE_IMPLEMENTATION
 #include "external/open-simplex-noise.h"
 
-Texture GenerateNoise(int width, int height, Color bg, Color fg, double scale, int seed)
+Image GenerateNoise(int width, int height, Color bg, Color fg, double scale, int seed)
 {
-    Texture texture(width, height);
+    Image texture(width, height);
     auto pix = *CreatePixelArray(width, height);
 
     struct osn_context* context;

@@ -25,7 +25,7 @@ bool RunGame(int argc, char** argv)
     style.centered = true;
 
     while (!engine.ShouldClose()) {
-        Texture canvas = engine.BeginFrame();
+        Image canvas = engine.BeginFrame();
         UpdateAndRenderGame(canvas, GetDeltaTime());
         engine.EndFrame();
     }
@@ -56,7 +56,7 @@ int main(int argc, char** argv)
 }
 #endif
 
-void UpdateAndRenderGame(Texture canvas, float delta)
+void UpdateAndRenderGame(Image canvas, float delta)
 {
     int surface = canvas.width * canvas.height;
     for (int y = 0; y < canvas.height; y++) {

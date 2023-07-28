@@ -1,5 +1,5 @@
 #include <basalt.h>
 
-void UpdateAndRenderGame(Texture canvas, float delta);
+void UpdateAndRenderGame(Image canvas, float delta);
 
 Color InterpolateHue(float t);

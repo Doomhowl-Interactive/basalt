@@ -1,4 +1,3 @@
-#pragma once
 #include <vector>
 #include <string>
 #include <filesystem>
@@ -9,7 +8,7 @@
 #include "basalt_macros.hpp"
 #include "basalt_assets.hpp"
 #include "basalt_console.hpp"
-#include "basalt_textures.hpp"
+#include "basalt_images.hpp"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "external/stb_image.h"
@@ -119,7 +118,7 @@ optional<fs::path> GetExecutableDirectory()
     }
 }
 
-static void LoadTextureFromStbData(Texture texture, uchar* data, int channels)
+static void LoadTextureFromStbData(Image texture, uchar* data, int channels)
 {
     assert(data);
     assert(texture.width > 0 && texture.height > 0);
@@ -141,7 +140,7 @@ static void LoadTextureFromStbData(Texture texture, uchar* data, int channels)
 }
 
 // TODO: Support loading grayscale textures
-Texture LoadTexture(string name)
+Image LoadTexture(string name)
 {
     auto asset = SearchAsset(name, "png");
     if (asset.has_value()) {
@@ -154,7 +153,7 @@ Texture LoadTexture(string name)
         spdlog::debug(
             "Loaded texture {} of size {}x{} with {} channels", name, width, height, channels);
 
-        Texture texture = Texture(width, height);
+        Image texture = Image(width, height);
         if (data) {
             LoadTextureFromStbData(texture, data, channels);
             stbi_image_free(data);
@@ -163,7 +162,7 @@ Texture LoadTexture(string name)
         }
         return texture;
     }
-    Texture error = Texture(32, 32);
+    Image error = Image(32, 32);
     error.Clear(0xFF00FFFF);
     return error;
 }

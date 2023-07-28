@@ -5,24 +5,24 @@
 #include "basalt_colors.hpp"
 #include "basalt_math.hpp"
 #include "basalt_utils.hpp"
-#include "basalt_textures_fonts.hpp"
+#include "basalt_images_fonts.hpp"
 
 typedef std::shared_ptr<std::vector<Color>> PixelArray;
 
 struct TextureSheet;
-struct Texture {
+struct Image {
     size_t id;
     int width;
     int height;
 
-    Texture(int width, int height);
+    Image(int width, int height);
     void SetPixels(PixelArray& pixels);
 
-    Texture Copy();
-    void CopyInto(Texture& dest);
+    Image Copy();
+    void CopyInto(Image& dest);
 
     void Clear(Color tint);
-    void Blit(Texture texture,
+    void Blit(Image texture,
               int posX,
               int posY,
               Color tint = WHITE,
@@ -30,15 +30,15 @@ struct Texture {
               int srcY = -1,
               int srcWidth = -1,
               int srcHeight = -1);
-    void Blit(Texture texture, Point pos, Color tint = WHITE, Rect src = { -1, -1, -1, -1 });
+    void Blit(Image texture, Point pos, Color tint = WHITE, Rect src = { -1, -1, -1, -1 });
 
-    void BlitScaled(Texture texture,
+    void BlitScaled(Image texture,
                     int destX,
                     int destY,
                     int destWidth,
                     int destHeight,
                     Color tint = WHITE);
-    void BlitScaled(Texture texture, Rect dest, Color tint = WHITE);
+    void BlitScaled(Image texture, Rect dest, Color tint = WHITE);
 
     void BlitSheet(TextureSheet sheet, int frame, Vec2 pos, Color tint);
 
@@ -96,7 +96,7 @@ enum PlaybackMode {
 
 struct TextureSheet {
     std::string name;  // description
-    Texture texture;   // attached texture
+    Image texture;     // attached texture
     Vec2 origin;       // top left of sector
     Vec2 cellSize;     // size of each cell
     size_t count;      // number of cells in anim

@@ -157,14 +157,14 @@ Font LoadFont(string fontName)
     }
 }
 
-void Texture::DrawBasaltText(string text,
-                             int posX,
-                             int posY,
-                             Color color,
-                             Font font,
-                             int size,
-                             int maxWidth,
-                             bool centered)
+void Image::DrawBasaltText(string text,
+                           int posX,
+                           int posY,
+                           Color color,
+                           Font font,
+                           int size,
+                           int maxWidth,
+                           bool centered)
 {
     FontStyle style;
     style.centered = centered;
@@ -175,12 +175,12 @@ void Texture::DrawBasaltText(string text,
     DrawBasaltText(text, posX, posY, font, style);
 }
 
-void Texture::DrawBasaltText(std::string text, int posX, int posY, FontStyle style)
+void Image::DrawBasaltText(std::string text, int posX, int posY, FontStyle style)
 {
     DrawBasaltText(text, posX, posY, Font::Default(), style);
 }
 
-void Texture::DrawBasaltText(std::string text, int posX, int posY, Font font, FontStyle style)
+void Image::DrawBasaltText(std::string text, int posX, int posY, Font font, FontStyle style)
 {
     if (style.size > 1000) {
         spdlog::warn("Font size is too big: {}", style.size);
@@ -205,14 +205,14 @@ void Texture::DrawBasaltText(std::string text, int posX, int posY, Font font, Fo
     SDL_BlitSurface(surface->get(), NULL, GetScreenSurface(), &destRect);
 }
 
-void Texture::DrawBasaltTextShadow(string text,
-                                   int posX,
-                                   int posY,
-                                   Font font,
-                                   FontStyle foreStyle,
-                                   FontStyle backStyle,
-                                   int spacingX,
-                                   int spacingY)
+void Image::DrawBasaltTextShadow(string text,
+                                 int posX,
+                                 int posY,
+                                 Font font,
+                                 FontStyle foreStyle,
+                                 FontStyle backStyle,
+                                 int spacingX,
+                                 int spacingY)
 {
     DrawBasaltText(text, posX - spacingX, posY - spacingY, font, backStyle);
     DrawBasaltText(text, posX, posY, font, foreStyle);

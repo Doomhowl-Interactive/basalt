@@ -2,7 +2,7 @@
 
 #include "basalt_macros.hpp"
 #include "basalt_profiler.hpp"
-#include "basalt_textures.hpp"
+#include "basalt_images.hpp"
 #include "basalt_input.hpp"
 #include "basalt_utils.hpp"
 
@@ -57,7 +57,7 @@ static Rect ResizeProfiler(const Rect& spot, Rect& rect)
     return rect;
 }
 
-static Rect DrawProfilerResizer(Texture canvas, const Rect& winBounds)
+static Rect DrawProfilerResizer(Image canvas, const Rect& winBounds)
 {
     constexpr int SIZE = 10;
     Rect resizer = {
@@ -69,7 +69,7 @@ static Rect DrawProfilerResizer(Texture canvas, const Rect& winBounds)
     return resizer;
 }
 
-bool DrawProfiler(Texture canvas)
+bool DrawProfiler(Image canvas)
 {
     if (IsKeyPressed(KEY_F3)) {
         ProfilerOpened = !ProfilerOpened;

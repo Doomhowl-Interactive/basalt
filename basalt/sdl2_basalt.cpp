@@ -22,7 +22,7 @@ static double delta = 0;
 static Uint64 startTicks = 0;
 static ulong frameIndex = 0;
 static bool instanceExists = false;
-static std::unique_ptr<Texture> canvas;
+static std::unique_ptr<Image> canvas;
 
 void SetWindowTitle(string title)
 {
@@ -90,7 +90,7 @@ Basalt::Basalt(GameConfig config, int argc, char** argv)
     }
 
     // Initialize the main texture
-    canvas = std::make_unique<Texture>(Texture(Game.width, Game.height));
+    canvas = std::make_unique<Image>(Image(Game.width, Game.height));
 
     // Load default font
     LoadFont("FFFFORWA.TTF");
@@ -131,7 +131,7 @@ bool Basalt::ShouldClose()
     return false;
 }
 
-Texture Basalt::BeginFrame()
+Image Basalt::BeginFrame()
 {
     if (canvas) {
         startTicks = SDL_GetTicks();

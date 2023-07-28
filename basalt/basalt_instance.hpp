@@ -11,7 +11,7 @@ struct Basalt {
 
     void Close(int code);
     bool ShouldClose();
-    Texture BeginFrame();
+    Image BeginFrame();
     void EndFrame();
 };
 

@@ -1,11 +1,11 @@
 #pragma once
 #include <unordered_map>
 
-#include "basalt_textures.hpp"
+#include "basalt_images.hpp"
 
 using namespace std;
 
-static unordered_map<size_t, Texture> textures;
+static unordered_map<size_t, Image> textures;
 
 size_t GetNextTextureID()
 {
