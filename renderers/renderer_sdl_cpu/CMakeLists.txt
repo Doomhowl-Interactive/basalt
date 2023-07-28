@@ -13,3 +13,5 @@ SET(EXTRA_HEADER_FOLDERS
         "${CMAKE_CURRENT_SOURCE_DIR}/../../basalt"
         "${CMAKE_CURRENT_SOURCE_DIR}/../../vendor"
         )
+
+target_include_directories(${PROJECT_NAME} PUBLIC ${EXTRA_HEADER_FOLDERS})

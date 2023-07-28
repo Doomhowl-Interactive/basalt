@@ -1,12 +1,12 @@
 #include <string>
 #include <spdlog/spdlog.h>
-#include <memory.h>
 
 #include "basalt_console.hpp"
 #include "basalt_config.hpp"
 #include "basalt_testing.hpp"
 #include "basalt_profiler.hpp"
 #include "basalt_instance.hpp"
+#include "basalt_renderer.hpp"
 #include "sdl2_basalt.hpp"
 
 using namespace std;
@@ -89,8 +89,8 @@ Basalt::Basalt(GameConfig config, int argc, char** argv)
         return;
     }
 
-    // Initialize the main texture
-    canvas = std::make_unique<Image>(Image(Game.width, Game.height));
+    // Initialize the default renderer
+    SetupDefaultRenderer(Window);
 
     // Load default font
     LoadFont("FFFFORWA.TTF");

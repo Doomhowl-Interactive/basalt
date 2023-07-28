@@ -1,20 +1,8 @@
 #pragma once
 #include <vector>
 
-#include "basalt_colors.hpp"
+#include "sdl2_basalt.hpp"
 
-size_t GetNextTextureID();
-
-void SetPixels(size_t id, std::vector<Color>& pixels);
-void DrawDot(size_t id, int posX, int posY, Color tint);
-void DrawLine(size_t id, int startX, int startY, int endX, int endY, Color tint);
-void DrawRectangle(size_t id, int posX, int posY, int width, int height, Color tint);
-void Blit(size_t id,
-          size_t targetID,
-          int posX,
-          int posY,
-          Color tint = WHITE,
-          int srcX = -1,
-          int srcY = -1,
-          int srcWidth = -1,
-          int srcHeight = -1);
+void SetupDefaultRenderer(SDL_Window* window);
+void DrawDefaultFrame();
+void DisposeDefaultRenderer();

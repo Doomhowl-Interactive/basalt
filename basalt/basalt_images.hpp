@@ -14,10 +14,10 @@ struct Image {
     size_t id;
     int width;
     int height;
+    PixelArray pixels;
 
     Image(int width, int height);
-    void SetPixels(PixelArray& pixels);
-
+    
     Image Copy();
     void CopyInto(Image& dest);
 

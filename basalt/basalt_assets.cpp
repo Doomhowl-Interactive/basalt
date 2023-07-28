@@ -125,15 +125,13 @@ static void LoadTextureFromStbData(Image texture, uchar* data, int channels)
 
     if (channels == 4 || channels == 3) {
         // Copy the texture into the correct color order
-        auto pixels = CreatePixelArray(texture.width, texture.height);
-        uchar* comps = (uchar*)pixels->data();
+        auto* comps = (uchar*)texture.pixels->data();
         for (int i = 0; i < texture.width * texture.height; i++) {
             comps[i * 4 + 0] = data[i * 4 + 3];
             comps[i * 4 + 1] = data[i * 4 + 2];
             comps[i * 4 + 2] = data[i * 4 + 1];
             comps[i * 4 + 3] = data[i * 4 + 0];
         }
-        texture.SetPixels(pixels);
     } else {
         spdlog::error("Unexpected amount of channels in image: there are {}!", channels);
     }

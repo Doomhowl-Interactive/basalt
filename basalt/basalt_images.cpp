@@ -1,7 +1,6 @@
 #include <spdlog/spdlog.h>
 #include <vector>
 
-#include "basalt_renderer.hpp"
 #include "basalt_colors.hpp"
 #include "basalt_images.hpp"
 
@@ -13,14 +12,10 @@ Image::Image(int width, int height)
         spdlog::critical("Canvas width and height must be greater than 0!");
         return;
     }
-    this->id = GetNextTextureID();
+
     this->width = width;
     this->height = height;
-}
-
-void Image::SetPixels(PixelArray& pixels)
-{
-    //
+    this->pixels = CreatePixelArray(width, height);
 }
 
 void Image::Clear(Color color)
