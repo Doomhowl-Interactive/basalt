@@ -9,7 +9,7 @@
 #include "basalt_macros.hpp"
 #include "basalt_assets.hpp"
 #include "basalt_console.hpp"
-#include "basalt_graphics.hpp"
+#include "basalt_textures.hpp"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "external/stb_image.h"
@@ -22,13 +22,12 @@ static void RelocateToExecutable()
     // Change the working directory to the executable folder.
     // This is needed because so the assets are always found.
     auto executablePath = GetExecutableDirectory();
-    if (executablePath){
+    if (executablePath) {
         if (fs::current_path() != executablePath) {
             fs::current_path(executablePath.value());
             spdlog::debug("Relocated to executable folder: {}", executablePath.value().string());
         }
-    }
-    else{
+    } else {
         spdlog::error("Relocating is only possible on Windows!");
     }
 }
@@ -36,14 +35,13 @@ static void RelocateToExecutable()
 optional<string> SearchAsset(string assetName, string extension)
 {
     // HACK: !
-    static const vector<string> AssetFolders = {
-        "assets",
-        "../assets",
-        "../../assets",
-        "../../../assets",
-        "/Users/bram/dev/basalt/basalt/assets",
-        "/Users/bram/dev/basalt/games/snake-feeder/assets"
-    };
+    static const vector<string> AssetFolders
+        = { "assets",
+            "../assets",
+            "../../assets",
+            "../../../assets",
+            "/Users/bram/dev/basalt/basalt/assets",
+            "/Users/bram/dev/basalt/games/snake-feeder/assets" };
 
     RelocateToExecutable();
 
@@ -55,15 +53,15 @@ optional<string> SearchAsset(string assetName, string extension)
 
     for (auto& folder : AssetFolders) {
         auto comb_folder = GetWorkingDirectory() / folder;
-        if (fs::exists(comb_folder)){
+        if (fs::exists(comb_folder)) {
             auto combined = comb_folder / assetFileName;
             if (fs::exists(combined)) {
                 return combined.string();
-            }else {
+            } else {
                 spdlog::warn("Asset path {} does not exist!", combined.string());
             }
             traversedPaths.push_back(combined);
-        }else{
+        } else {
             spdlog::warn("Asset path {} does not exist!", comb_folder.string());
         }
     }
@@ -116,7 +114,7 @@ optional<fs::path> GetExecutableDirectory()
 #endif
     if (executableDirectory == "") {
         return nullopt;
-    } else{
+    } else {
         return executableDirectory;
     }
 }
@@ -128,13 +126,15 @@ static void LoadTextureFromStbData(Texture texture, uchar* data, int channels)
 
     if (channels == 4 || channels == 3) {
         // Copy the texture into the correct color order
-        uchar* comps = (uchar*)texture.pixels.get()->data();
+        auto pixels = CreatePixelArray(texture.width, texture.height);
+        uchar* comps = (uchar*)pixels->data();
         for (int i = 0; i < texture.width * texture.height; i++) {
             comps[i * 4 + 0] = data[i * 4 + 3];
             comps[i * 4 + 1] = data[i * 4 + 2];
             comps[i * 4 + 2] = data[i * 4 + 1];
             comps[i * 4 + 3] = data[i * 4 + 0];
         }
+        texture.SetPixels(pixels);
     } else {
         spdlog::error("Unexpected amount of channels in image: there are {}!", channels);
     }
@@ -155,8 +155,6 @@ Texture LoadTexture(string name)
             "Loaded texture {} of size {}x{} with {} channels", name, width, height, channels);
 
         Texture texture = Texture(width, height);
-        texture.name = name;
-
         if (data) {
             LoadTextureFromStbData(texture, data, channels);
             stbi_image_free(data);

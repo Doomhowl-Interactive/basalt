@@ -1,10 +1,13 @@
 #pragma once
 #include <vector>
+#include <memory>
 
 #include "basalt_colors.hpp"
 #include "basalt_math.hpp"
 #include "basalt_utils.hpp"
 #include "basalt_textures_fonts.hpp"
+
+typedef std::shared_ptr<std::vector<Color>> PixelArray;
 
 struct TextureSheet;
 struct Texture {
@@ -13,6 +16,7 @@ struct Texture {
     int height;
 
     Texture(int width, int height);
+    void SetPixels(PixelArray& pixels);
 
     Texture Copy();
     void CopyInto(Texture& dest);
@@ -81,6 +85,8 @@ struct Texture {
                               int spacingX = 2,
                               int spacingY = 2);
 };
+
+PixelArray CreatePixelArray(int width, int height);
 
 enum PlaybackMode {
     PLAY_LOOP,

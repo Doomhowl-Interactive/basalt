@@ -1,14 +1,7 @@
-#include <string.h>
-#include <iostream>
 #include <vector>
-#include <cassert>
-#include <spdlog/spdlog.h>
 
 #include "basalt_textures.hpp"
 #include "basalt_colors.hpp"
-#include "basalt_macros.hpp"
-#include "basalt_math.hpp"
-#include "basalt_console.hpp"
 
 using namespace std;
 
@@ -19,7 +12,7 @@ using namespace std;
 Texture GenerateNoise(int width, int height, Color bg, Color fg, double scale, int seed)
 {
     Texture texture(width, height);
-    auto& pix = *texture.pixels.get();
+    auto pix = *CreatePixelArray(width, height);
 
     struct osn_context* context;
     open_simplex_noise(seed, &context);

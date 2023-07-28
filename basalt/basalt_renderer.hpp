@@ -1,8 +1,11 @@
 #pragma once
+#include <vector>
+
 #include "basalt_colors.hpp"
 
 size_t GetNextTextureID();
 
+void SetPixels(size_t id, std::vector<Color>& pixels);
 void DrawDot(size_t id, int posX, int posY, Color tint);
 void DrawLine(size_t id, int startX, int startY, int endX, int endY, Color tint);
 void DrawRectangle(size_t id, int posX, int posY, int width, int height, Color tint);

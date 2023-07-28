@@ -2,6 +2,7 @@
 #include <spdlog/spdlog.h>
 #include <memory.h>
 
+#include "basalt_console.hpp"
 #include "basalt_config.hpp"
 #include "basalt_testing.hpp"
 #include "basalt_profiler.hpp"
@@ -38,23 +39,22 @@ void SetWindowTitle(string title)
 
 void Basalt::Close(int code)
 {
-    b.exitCode = code;
+    exitCode = code;
 }
 
 Basalt::Basalt(GameConfig config, int argc, char** argv)
 {
     if (instanceExists) {
         spdlog::error("Basalt is already initialized! There can only be one.");
-        Close(*this, EXIT_FAILURE);
+        Close(EXIT_FAILURE);
         return;
     }
 
-    Instance = this;
     this->exitCode = EXIT_SUCCESS;
 
     EngineConfig Config = { 0 };
     if (!ParseLaunchArguments(&Config, argc, argv)) {
-        Close(*this, EXIT_SUCCESS);
+        Close(EXIT_SUCCESS);
         return;
     }
 
@@ -65,7 +65,7 @@ Basalt::Basalt(GameConfig config, int argc, char** argv)
 
     if (Config.hasUnitTesting) {
         RunUnitTests();
-        Close(*this, EXIT_SUCCESS);
+        Close(EXIT_SUCCESS);
         return;
     }
 
@@ -82,10 +82,10 @@ Basalt::Basalt(GameConfig config, int argc, char** argv)
     spdlog::set_level(spdlog::level::debug);
 
     // initialize the Window
-    Window = SDL_CreateWindow(Game.title, Game.width, Game.height, nullptr);
+    Window = SDL_CreateWindow(Game.title, Game.width, Game.height, 0);
     if (Window == nullptr) {
         spdlog::critical("Could not create Window!");
-        Close(*this, EXIT_FAILURE);
+        Close(EXIT_FAILURE);
         return;
     }
 
@@ -204,7 +204,7 @@ ulong GetFrameIndex()
 void HandleFatalException(exception e)
 {
     spdlog::critical("Fatal exception: {}", e.what());
-    Close(*Instance, EXIT_FAILURE);
+    exit(1);
 }
 
 // TODO: Implement SetTimeScale and make sure GetTimeElapsed  updates accordingly.

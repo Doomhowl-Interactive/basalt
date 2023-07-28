@@ -18,6 +18,11 @@ Texture::Texture(int width, int height)
     this->height = height;
 }
 
+void Texture::SetPixels(PixelArray& pixels)
+{
+    //
+}
+
 void Texture::Clear(Color color)
 {
     DrawRectangle(0, 0, width, height, color);
@@ -105,4 +110,9 @@ void Texture::DrawRectangleLines(int posX, int posY, int width, int height, int 
 void Texture::DrawRectangleLines(Rect rect, int border, Color tint)
 {
     DrawRectangleLines(rect.x, rect.y, rect.width, rect.height, border, tint);
+}
+
+PixelArray CreatePixelArray(int width, int height)
+{
+    return make_shared<vector<Color>>(width * height);
 }
