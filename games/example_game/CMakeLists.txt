@@ -6,23 +6,23 @@ file(GLOB_RECURSE SOURCES *.cpp *.hpp)
 add_executable(${PROJECT_NAME} ${SOURCES})
 
 set(LIBS
-    basalt
-    renderer_legacy
-    SDL3-static
-    SDL3_ttf-static
-)
+        basalt
+        renderer_sdl_cpu
+        SDL3-static
+        SDL3_ttf-static
+        )
 
 if (WIN32)
-set(PLAT_LIBS
+    set(PLAT_LIBS
 
-)
-endif()
+            )
+endif ()
 
 target_link_libraries(${PROJECT_NAME} ${LIBS} ${PLAT_LIBS})
 
-SET(EXTRA_HEADER_FOLDERS 
-    "${CMAKE_CURRENT_SOURCE_DIR}/../../vendor" 
-    "${CMAKE_CURRENT_SOURCE_DIR}/../../basalt"
-)
+SET(EXTRA_HEADER_FOLDERS
+        "${CMAKE_CURRENT_SOURCE_DIR}/../../vendor"
+        "${CMAKE_CURRENT_SOURCE_DIR}/../../basalt"
+        )
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${EXTRA_HEADER_FOLDERS})

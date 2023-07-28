@@ -202,7 +202,7 @@ void Texture::DrawBasaltText(std::string text, int posX, int posY, Font font, Fo
         destRect.y -= size.height / 2;
     }
 
-    SDL_BlitSurface(surface->get(), NULL, GetScreenOverlaySurface(), &destRect);
+    SDL_BlitSurface(surface->get(), NULL, GetScreenSurface(), &destRect);
 }
 
 void Texture::DrawBasaltTextShadow(string text,

@@ -4,7 +4,7 @@
 #include <unordered_map>
 #include <deque>
 
-#include "basalt_graphics.hpp"
+#include "basalt_textures.hpp"
 
 constexpr int PROFILER_HISTORY_SIZE = 100;
 

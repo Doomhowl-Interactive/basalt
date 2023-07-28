@@ -1,6 +1,9 @@
 #include <unordered_map>
 #include <spdlog/spdlog.h>
+
 #include "sdl2_basalt.hpp"
+#include "basalt_math.hpp"
+#include "basalt_input.hpp"
 
 using namespace std;
 

@@ -4,7 +4,6 @@
 #include <cassert>
 #include <spdlog/spdlog.h>
 
-#include "basalt_graphics.hpp"
 #include "basalt_textures.hpp"
 #include "basalt_colors.hpp"
 #include "basalt_macros.hpp"
@@ -17,12 +16,7 @@ using namespace std;
 #define OPEN_SIMPLEX_NOISE_IMPLEMENTATION
 #include "external/open-simplex-noise.h"
 
-Texture Texture::GenerateNoise(unsigned int width,
-                               unsigned int height,
-                               Color bg,
-                               Color fg,
-                               double scale,
-                               int seed)
+Texture GenerateNoise(int width, int height, Color bg, Color fg, double scale, int seed)
 {
     Texture texture(width, height);
     auto& pix = *texture.pixels.get();
@@ -58,14 +52,4 @@ Texture Texture::GenerateNoise(unsigned int width,
 
     open_simplex_noise_free(context);
     return texture;
-}
-
-void Texture::DrawRectangleLines(int posX, int posY, int width, int height, int border, Color color)
-{
-    DrawRectangle(posX, posY, width, border, color);   // top
-    DrawRectangle(posX + width - border, posY, border, height,
-                  color);                              // right
-    DrawRectangle(posX, posY + height - border, width, border,
-                  color);                              // bottom
-    DrawRectangle(posX, posY, border, height, color);  // left
 }

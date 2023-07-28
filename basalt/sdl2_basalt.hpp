@@ -3,12 +3,12 @@
 #include <SDL_surface.h>
 #include <SDL_log.h>
 
-#include "basalt.h"
-#include "basalt_graphics.hpp"
+#include "basalt_colors.hpp"
+#include "basalt_config.hpp"
 
 // HACK: We should probably pass some kind of RenderContext (a union maybe)
 // to each drawing function instead of using an overlaying surface!
-SDL_Surface* GetScreenOverlaySurface();
+SDL_Surface* GetScreenSurface();
 SDL_Color ConvertColor(Color color);
 
 bool ProcessKeyboardInput(SDL_Event* e);

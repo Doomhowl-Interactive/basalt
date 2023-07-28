@@ -2,7 +2,7 @@
 #include <string>
 #include <optional>
 #include <filesystem>
-#include "basalt_graphics.hpp"
+#include "basalt_textures.hpp"
 
 std::filesystem::path& GetWorkingDirectory();
 std::optional<std::filesystem::path> GetExecutableDirectory();

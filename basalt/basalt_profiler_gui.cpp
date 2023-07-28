@@ -2,7 +2,7 @@
 
 #include "basalt_macros.hpp"
 #include "basalt_profiler.hpp"
-#include "basalt_graphics.hpp"
+#include "basalt_textures.hpp"
 #include "basalt_input.hpp"
 #include "basalt_utils.hpp"
 

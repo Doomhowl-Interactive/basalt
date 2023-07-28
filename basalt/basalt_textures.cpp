@@ -1,21 +1,21 @@
 #include <spdlog/spdlog.h>
 #include <vector>
 
+#include "basalt_renderer.hpp"
 #include "basalt_colors.hpp"
 #include "basalt_textures.hpp"
 
 using namespace std;
 
-Texture::Texture(unsigned int width, unsigned int height)
+Texture::Texture(int width, int height)
 {
-    if (width == 0 || height == 0) {
+    if (width <= 0 || height <= 0) {
         spdlog::critical("Canvas width and height must be greater than 0!");
         return;
     }
-
+    this->id = GetNextTextureID();
     this->width = width;
     this->height = height;
-    this->pixels = make_shared<vector<Color>>(vector<Color>(width * height));
 }
 
 void Texture::Clear(Color color)
@@ -33,28 +33,76 @@ Texture Texture::Copy()
 void Texture::CopyInto(Texture& dest)
 {
     assert(dest.width == width && dest.height == height);
-    dest.pixels = pixels;
 }
 
-void Texture::SwapChannels(unsigned char first,
-                           unsigned char second,
-                           unsigned char third,
-                           unsigned char fourth)
+void Texture::Blit(Texture texture,
+                   int posX,
+                   int posY,
+                   Color tint,
+                   int srcX,
+                   int srcY,
+                   int srcWidth,
+                   int srcHeight)
 {
-    assert(first < 4);
-    assert(second < 4);
-    assert(third < 4);
-    assert(fourth < 4);
+}
 
-    // Make copy before swapping
-    Texture src = Copy();
-    auto& sPixels = *src.pixels.get();
-    auto& dPixels = *pixels.get();
+void Texture::Blit(Texture texture, Point pos, Color tint, Rect src)
+{
+    Blit(texture, pos.x, pos.y, tint, src.x, src.y, src.width, src.height);
+}
 
-    for (int i = 0; i < src.width * src.height; i++) {
-        dPixels[i * 4 + 0] = sPixels[i * 4 + first];
-        dPixels[i * 4 + 1] = sPixels[i * 4 + second];
-        dPixels[i * 4 + 2] = sPixels[i * 4 + third];
-        dPixels[i * 4 + 3] = sPixels[i * 4 + fourth];
-    }
+void Texture::BlitScaled(Texture texture,
+                         int destX,
+                         int destY,
+                         int destWidth,
+                         int destHeight,
+                         Color tint)
+{
+}
+
+void Texture::BlitScaled(Texture texture, Rect dest, Color tint)
+{
+    BlitScaled(texture, dest.x, dest.y, dest.width, dest.height, tint);
+}
+
+void Texture::DrawDot(int posX, int posY, Color tint)
+{
+}
+
+void Texture::DrawDot(Point pos, Color tint)
+{
+    DrawDot(pos.x, pos.y, tint);
+}
+
+void Texture::DrawLine(int startX, int startY, int endX, int endY, Color tint)
+{
+}
+
+void Texture::DrawLine(Point start, Point end, Color tint)
+{
+    DrawLine(start.x, start.y, end.x, end.y, tint);
+}
+
+void Texture::DrawRectangle(int posX, int posY, int width, int height, Color tint)
+{
+}
+
+void Texture::DrawRectangle(Rect rect, Color tint)
+{
+    DrawRectangle(rect.x, rect.y, rect.width, rect.height, tint);
+}
+
+void Texture::DrawRectangleLines(int posX, int posY, int width, int height, int border, Color color)
+{
+    DrawRectangle(posX, posY, width, border, color);   // top
+    DrawRectangle(posX + width - border, posY, border, height,
+                  color);                              // right
+    DrawRectangle(posX, posY + height - border, width, border,
+                  color);                              // bottom
+    DrawRectangle(posX, posY, border, height, color);  // left
+}
+
+void Texture::DrawRectangleLines(Rect rect, int border, Color tint)
+{
+    DrawRectangleLines(rect.x, rect.y, rect.width, rect.height, border, tint);
 }
