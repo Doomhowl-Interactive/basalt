@@ -4,7 +4,7 @@ Software rendered game engine based on SDL3 for C++ cavemen
 
 Solidified version of [Magma Game Engine](https://github.com/bramtechs/RaylibMagmaEngine) and [dream-emu](https://github.com/bramtechs/dream-emu).
 
-Inspired by [Handmade Hero](https://handmadehero.org/).
+Inspired by [Raylib](https://github.com/raysan5/raylib).
 
 ## Bindings
 
