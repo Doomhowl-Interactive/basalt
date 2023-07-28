@@ -1,5 +1,3 @@
-> NOTE: Basalt has gone full circle and will be rewritten back into glorious C!
-
 ![basalt](misc/logo_small.png)
 
 Software rendered game engine based on SDL3 for C++ cavemen
