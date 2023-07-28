@@ -1,4 +1,4 @@
-project(renderer_legacy)
+project(renderer_sdl_cpu)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_C_STANDARD 11)
 
