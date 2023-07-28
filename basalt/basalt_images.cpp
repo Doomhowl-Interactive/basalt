@@ -15,7 +15,7 @@ Image::Image(int width, int height)
 
     this->width = width;
     this->height = height;
-    this->pixels = CreatePixelArray(width, height);
+    this->pixels = vector<Color>(width * height);
 }
 
 void Image::Clear(Color color)
@@ -105,9 +105,4 @@ void Image::DrawRectangleLines(int posX, int posY, int width, int height, int bo
 void Image::DrawRectangleLines(Rect rect, int border, Color tint)
 {
     DrawRectangleLines(rect.x, rect.y, rect.width, rect.height, border, tint);
-}
-
-PixelArray CreatePixelArray(int width, int height)
-{
-    return make_shared<vector<Color>>(width * height);
 }

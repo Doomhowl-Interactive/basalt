@@ -3,14 +3,15 @@
 
 #include <spdlog/spdlog.h>
 
-#include "sdl2_basalt.hpp"
+#include "basalt_exceptions.hpp"
 #include "basalt_images.hpp"
+#include "sdl2_basalt.hpp"
 
 using namespace std;
 
 struct CPURenderer {
     SDL_Window* win;
-    unique_ptr<Image> canvas;
+    shared_ptr<Image> canvas;
 
     explicit CPURenderer(SDL_Window* window)
     {
@@ -24,10 +25,10 @@ static CPURenderer* renderer = nullptr;
 shared_ptr<Image> SetupDefaultRenderer(SDL_Window* window)
 {
     if (renderer) {
-        spdlog::warn("Renderer already initialized!");
-        return;
+        throw BasaltException("Renderer already initialized!");
     }
     renderer = new CPURenderer(window);
+    return renderer->canvas;
 }
 
 void DrawDefaultFrame()

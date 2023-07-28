@@ -7,17 +7,15 @@
 #include "basalt_utils.hpp"
 #include "basalt_images_fonts.hpp"
 
-typedef std::shared_ptr<std::vector<Color>> PixelArray;
-
 struct TextureSheet;
 struct Image {
     size_t id;
     int width;
     int height;
-    PixelArray pixels;
+    std::vector<Color> pixels;
 
     Image(int width, int height);
-    
+
     Image Copy();
     void CopyInto(Image& dest);
 
@@ -86,8 +84,6 @@ struct Image {
                               int spacingY = 2);
 };
 
-PixelArray CreatePixelArray(int width, int height);
-
 enum PlaybackMode {
     PLAY_LOOP,
     PLAY_PING_PONG,
@@ -95,11 +91,11 @@ enum PlaybackMode {
 };
 
 struct TextureSheet {
-    std::string name;  // description
-    Image texture;     // attached texture
-    Vec2 origin;       // top left of sector
-    Vec2 cellSize;     // size of each cell
-    size_t count;      // number of cells in anim
+    std::string name;                // description
+    std::shared_ptr<Image> texture;  // attached texture
+    Vec2 origin;                     // top left of sector
+    Vec2 cellSize;                   // size of each cell
+    size_t count;                    // number of cells in anim
     PlaybackMode mode;
     float fps;
 };

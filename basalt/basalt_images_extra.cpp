@@ -5,14 +5,13 @@
 
 using namespace std;
 
-// TODO: Put in extra!
 #define OPEN_SIMPLEX_NOISE_IMPLEMENTATION
 #include "external/open-simplex-noise.h"
 
 Image GenerateNoise(int width, int height, Color bg, Color fg, double scale, int seed)
 {
     Image texture(width, height);
-    auto pix = *CreatePixelArray(width, height);
+    auto pix = vector<Color>(width * height);
 
     struct osn_context* context;
     open_simplex_noise(seed, &context);

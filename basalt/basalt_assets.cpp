@@ -118,14 +118,15 @@ optional<fs::path> GetExecutableDirectory()
     }
 }
 
-static void LoadTextureFromStbData(Image texture, uchar* data, int channels)
+// TODO: Use SDL_Image to load the texture
+static void LoadTextureFromStbData(Image& texture, uchar* data, int channels)
 {
     assert(data);
     assert(texture.width > 0 && texture.height > 0);
 
     if (channels == 4 || channels == 3) {
         // Copy the texture into the correct color order
-        auto* comps = (uchar*)texture.pixels->data();
+        auto* comps = (uchar*)texture.pixels.data();
         for (int i = 0; i < texture.width * texture.height; i++) {
             comps[i * 4 + 0] = data[i * 4 + 3];
             comps[i * 4 + 1] = data[i * 4 + 2];
@@ -146,7 +147,7 @@ Image LoadTexture(string name)
         int channels = 0;
 
         const char* assetPath = asset.value().c_str();
-        uchar* data = (uchar*)stbi_load(assetPath, &width, &height, &channels, 4);
+        auto* data = (uchar*)stbi_load(assetPath, &width, &height, &channels, 4);
 
         spdlog::debug(
             "Loaded texture {} of size {}x{} with {} channels", name, width, height, channels);
