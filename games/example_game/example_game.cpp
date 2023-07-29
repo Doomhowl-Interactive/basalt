@@ -3,11 +3,9 @@
 
 #include "example_game.hpp"
 
-static bool Horizontal = false;
-static Font font;
-
 using namespace std;
 
+static Font font;
 static FontStyle style = {};
 static shared_ptr<Image> rainbowImage;
 
@@ -24,9 +22,7 @@ bool RunGame(int argc, char** argv)
     font = LoadFont("Coffee Terrace.ttf");
     rainbowImage = make_shared<Image>(BakeRainbowImage((int)config.width, (int)config.height));
 
-    style.color = WHITE;
-    style.size = 32;
-    style.centered = true;
+    style.size = 36;
 
     while (!engine.ShouldClose()) {
         auto canvas = engine.BeginFrame();
@@ -75,14 +71,27 @@ void UpdateAndRenderGame(shared_ptr<Image>& canvas, float delta)
     canvas->DrawRectangle(30, 10, 100, 100, BLUE);
     canvas->DrawLine(100, 100, 200, 200, GREEN);
 
-    canvas->DrawBasaltText("Hello Basalt!", Game.width / 2, Game.height / 2, style);
-    canvas->DrawBasaltText("Press SPACE to change rainbow direction", 10, 50, GREEN, font);
-    canvas->DrawBasaltText("Press DELETE to segfault", 10, 80, RED, font);
-    canvas->DrawBasaltText("Press BACKSPACE to throw c++ error", 10, 120, RED, font);
+    static FontStyle backStyle = style.wColor(BLACK);
+    canvas->DrawBasaltTextShadow("Hello Basalt!",
+                                 Game.width / 2,
+                                 Game.height / 2,
+                                 Font::Default(),
+                                 style.center(),
+                                 backStyle.center());
 
-    if (IsKeyPressed(KEY_SPACE)) {
-        Horizontal = !Horizontal;
-    }
+    static FontStyle debugStyle = style.wColor(YELLOW).wSize(18).center(false);
+    canvas->DrawBasaltTextShadow("Press DELETE to segfault",
+                                 10,
+                                 80,
+                                 Font::Default(),
+                                 debugStyle,
+                                 debugStyle.wColor(DARKRED));
+    canvas->DrawBasaltTextShadow("Press BACKSPACE to throw c++ error",
+                                 10,
+                                 120,
+                                 Font::Default(),
+                                 debugStyle,
+                                 debugStyle.wColor(DARKRED));
 
     // simulate crashes to demonstrate crash handler
     if (IsKeyPressed(KEY_DELETE)) {

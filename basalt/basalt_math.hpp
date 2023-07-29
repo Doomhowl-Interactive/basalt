@@ -83,11 +83,6 @@ struct Point {
     bool inside(Rect other);
 };
 
-struct Size {
-    unsigned int width;
-    unsigned int height;
-};
-
 struct Vec2 {
     float x;
     float y;

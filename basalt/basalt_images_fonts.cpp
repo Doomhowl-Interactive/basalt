@@ -51,9 +51,9 @@ class CachedText {
         return surface;
     }
 
-    Size getSize()
+    Point getSize()
     {
-        return { (uint)surface->w, (uint)surface->h };
+        return { surface->w, surface->h };
     }
 
    private:
@@ -64,7 +64,7 @@ class CachedText {
 static shared_ptr<CachedText> GetOrCacheText(string text,
                                              Font font,
                                              FontStyle style,
-                                             Size* outSize = nullptr)
+                                             Point* outSize = nullptr)
 {
     size_t hash = style.Hash(text);
 
@@ -113,14 +113,14 @@ Font Font::Default()
     return { it->first };
 }
 
-Size Font::MeasureString(string text, int fontSize)
+Point Font::MeasureString(string text, int fontSize)
 {
     TTF_Font* theFont = LoadedFonts.at(name);
     TTF_SetFontSize(theFont, fontSize);
 
     int w, h;
     TTF_SizeUTF8(theFont, text.c_str(), &w, &h);
-    return { (uint)w, (uint)h };
+    return { w, h };
 }
 
 Font LoadFont(string fontName)
@@ -188,21 +188,21 @@ void Image::DrawBasaltText(std::string text, int posX, int posY, Font font, Font
     }
 
     size_t hash = style.Hash(text);
-    Size size;
-    auto surface = GetOrCacheText(text, font, style, &size);
+    Point size = {};
+    auto textSurface = GetOrCacheText(text, font, style, &size);
 
     SDL_Rect destRect;
     destRect.x = posX;
     destRect.y = posY;
-    destRect.w = size.width;
-    destRect.h = size.height;
+    destRect.w = size.x;
+    destRect.h = size.y;
 
     if (style.centered) {
-        destRect.x -= size.width / 2;
-        destRect.y -= size.height / 2;
+        destRect.x -= size.x / 2;
+        destRect.y -= size.y / 2;
     }
 
-    SDL_BlitSurface(surface->get(), nullptr, this->surface->get(), &destRect);
+    SDL_BlitSurface(textSurface->get(), nullptr, this->surface->get(), &destRect);
 }
 
 void Image::DrawBasaltTextShadow(string text,
@@ -258,10 +258,10 @@ size_t FontStyle::Hash(string ofText) const
     return hash;
 }
 
-FontStyle FontStyle::center() const
+FontStyle FontStyle::center(bool centered) const
 {
     auto c = FontStyle(*this);
-    c.centered = true;
+    c.centered = centered;
     return c;
 }
 
