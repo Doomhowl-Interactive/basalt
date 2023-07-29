@@ -81,9 +81,8 @@ bool DrawProfiler(Image canvas)
     const auto& data = GetProfilerData();
 
     constexpr int PADDING = 10;
-    constexpr int FONT_SIZE = 12;  // TODO: implement
 
-    static Color bgColor = ColorAlpha(DARKGRAY, 0.1f);
+    static Color bgColor = ColorAlpha(DARKGRAY, 0.5f);
     // static Color bgColor = DARKGRAY;
 
     Rect contentBounds = { ProfilerBounds.x + PADDING,

@@ -6,6 +6,9 @@
 
 using namespace std;
 
+// HACK: Fix transparent shapes by blitting a texture instead of fast-filling
+static Image pixelTexture(1, 1);
+
 SDL_WrappedSurface::SDL_WrappedSurface(int width, int height, Uint32 format)
 {
     surface = SDL_CreateSurface(width, height, format);
@@ -180,8 +183,18 @@ void Image::DrawLine(Point start, Point end, Color tint)
 
 void Image::DrawRectangle(int posX, int posY, int width, int height, Color tint) const
 {
-    SDL_Rect rect = { posX, posY, width, height };
-    SDL_FillSurfaceRect(surface->get(), &rect, tint);
+    // HACK: SDL_FillSurfaceRect doesn't support alpha, so we have to use a texture
+    uchar alpha = tint & 0x000000FF;
+    if (alpha == 255) {
+        SDL_Rect rect = { posX, posY, width, height };
+        SDL_FillSurfaceRect(surface->get(), &rect, tint);
+    } else {
+        Color tintFullAlpha = tint | 0x000000FF;
+        pixelTexture.Clear(tintFullAlpha);
+        SDL_SetSurfaceAlphaMod(pixelTexture.surface->get(), alpha);
+        BlitScaled(pixelTexture, posX, posY, width, height);
+        SDL_SetSurfaceAlphaMod(pixelTexture.surface->get(), 255);
+    }
 }
 
 void Image::DrawRectangle(Rect rect, Color tint) const
