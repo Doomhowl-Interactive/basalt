@@ -83,7 +83,8 @@ bool DrawProfiler(Image canvas)
     constexpr int PADDING = 10;
     constexpr int FONT_SIZE = 12;  // TODO: implement
 
-    static Color bgColor = ColorAlpha(DARKGRAY, 0.5f);
+    static Color bgColor = ColorAlpha(DARKGRAY, 0.1f);
+    // static Color bgColor = DARKGRAY;
 
     Rect contentBounds = { ProfilerBounds.x + PADDING,
                            ProfilerBounds.y + PADDING,
@@ -95,10 +96,10 @@ bool DrawProfiler(Image canvas)
         "Frame: " + to_string(data.frameIndex),
     });
 
-    canvas.DrawBasaltText(
-        text, contentBounds.x, contentBounds.y, YELLOW, Font::Default(), 12, contentBounds.width);
-
     canvas.DrawRectangle(ProfilerBounds, bgColor);
+
+    canvas.DrawBasaltText(
+        text, contentBounds.x, contentBounds.y, YELLOW, Font::Default(), 16, contentBounds.width);
 
     Rect resizer = DrawProfilerResizer(canvas, ProfilerBounds);
     DragAndDropProfiler(ProfilerBounds, resizer);

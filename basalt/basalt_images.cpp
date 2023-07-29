@@ -62,7 +62,7 @@ const Color* Image::GetPixels() const
 
 void Image::Clear(Color color) const
 {
-    DrawRectangle(0, 0, width, height, color);
+    SDL_FillSurfaceRect(surface->get(), nullptr, color);
 }
 
 void Image::Blit(const Image& texture,
@@ -192,9 +192,9 @@ void Image::DrawRectangle(Rect rect, Color tint) const
 void Image::DrawRectangleLines(int posX, int posY, int width, int height, int border, Color color)
     const
 {
-    DrawRectangle(posX, posY, width, border, color);   // top
+    DrawRectangle(posX, posY, width, border, color);  // top
     DrawRectangle(posX + width - border, posY, border, height,
-                  color);                              // right
+                  color);  // right
     DrawRectangle(posX, posY + height - border, width, border,
                   color);                              // bottom
     DrawRectangle(posX, posY, border, height, color);  // left

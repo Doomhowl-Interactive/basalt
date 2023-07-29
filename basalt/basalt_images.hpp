@@ -13,7 +13,7 @@ struct SDL_WrappedSurface {
     SDL_WrappedSurface(int width, int height, Uint32 format);
     ~SDL_WrappedSurface();
 
-    [[nodiscard]] SDL_Surface* get() const;
+    SDL_Surface* get() const;
 };
 
 struct TextureSheet;

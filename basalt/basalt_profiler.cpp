@@ -19,7 +19,7 @@ static double nowInMs()
 
 inline static bool IsOutlier(double value)
 {
-    // HACK: Don't include data thats ridiculously big or small
+    // HACK: Don't include data that's ridiculously big or small
     return abs(value) > 100000;
 }
 

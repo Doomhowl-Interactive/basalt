@@ -10,10 +10,7 @@ Color MakeRGB(uchar r, uchar g, uchar b, uchar a)
 
 Color MakeRGBf(float r, float g, float b, float a)
 {
-    return MakeRGB((uchar)(r * 255.f),
-                   (uchar)(g * 255.f),
-                   (uchar)(b * 255.f),
-                   (uchar)(a * 255.f));
+    return MakeRGB((uchar)(r * 255.f), (uchar)(g * 255.f), (uchar)(b * 255.f), (uchar)(a * 255.f));
 }
 
 Color BlendColors(Color src, Color dst, int overrideAlpha)
@@ -49,6 +46,6 @@ Color BlendColorsAlpha(Color src, Color dst, int overrideAlpha)
 
 Color ColorAlpha(Color col, float a)
 {
-    uchar alpha = (uchar)(a * 255.f);
+    auto alpha = (uchar)(a * 255.f);
     return (col & 0xFFFFFF00) | alpha;
 }

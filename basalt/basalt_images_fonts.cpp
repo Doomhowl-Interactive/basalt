@@ -171,7 +171,6 @@ void Image::DrawBasaltText(string text,
     style.color = color;
     style.size = size;
     style.maxWidth = maxWidth;
-    style.centered = centered;
     DrawBasaltText(text, posX, posY, font, style);
 }
 
@@ -191,11 +190,12 @@ void Image::DrawBasaltText(std::string text, int posX, int posY, Font font, Font
     Point size = {};
     auto textSurface = GetOrCacheText(text, font, style, &size);
 
-    SDL_Rect destRect;
-    destRect.x = posX;
-    destRect.y = posY;
-    destRect.w = size.x;
-    destRect.h = size.y;
+    SDL_Rect destRect = {
+        posX,
+        posY,
+        size.x,
+        size.y,
+    };
 
     if (style.centered) {
         destRect.x -= size.x / 2;
