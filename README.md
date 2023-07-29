@@ -44,11 +44,9 @@ cmake --build build --parallel
 
 2. Generate and build with cmake.
 
-FIXME: Mac cmake still compiles in Debug, even when specifying Release!
-
 ```bash
-cmake -S . -B build -G Xcode -DCMAKE_BUILD_TYPE=Release
-cmake --build build --parallel
+cmake -S . -B build -G Xcode
+cmake --build build --parallel --config Release
 ```
 
 > NOTE: The Xcode build generator needs to be used or the build will fail.
