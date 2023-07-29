@@ -123,10 +123,10 @@ static void LoadTextureFromStbData(Image& texture, uchar* data, int channels)
 {
     assert(data);
     assert(texture.width > 0 && texture.height > 0);
-
+    vector<Color> pixels(texture.width * texture.height);
     if (channels == 4 || channels == 3) {
         // Copy the texture into the correct color order
-        auto* comps = (uchar*)texture.pixels.data();
+        auto* comps = (uchar*)pixels.data();
         for (int i = 0; i < texture.width * texture.height; i++) {
             comps[i * 4 + 0] = data[i * 4 + 3];
             comps[i * 4 + 1] = data[i * 4 + 2];
@@ -136,6 +136,7 @@ static void LoadTextureFromStbData(Image& texture, uchar* data, int channels)
     } else {
         spdlog::error("Unexpected amount of channels in image: there are {}!", channels);
     }
+    texture.SetPixels(pixels);
 }
 
 // TODO: Support loading grayscale textures

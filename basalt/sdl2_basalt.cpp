@@ -22,7 +22,7 @@ static double delta = 0;
 static Uint64 startTicks = 0;
 static ulong frameIndex = 0;
 static bool instanceExists = false;
-static std::unique_ptr<Image> canvas;
+static shared_ptr<Image> canvas;
 
 void SetWindowTitle(string title)
 {
@@ -90,7 +90,7 @@ Basalt::Basalt(GameConfig config, int argc, char** argv)
     }
 
     // Initialize the default renderer
-    SetupDefaultRenderer(Window);
+    canvas = SetupDefaultRenderer(Window);
 
     // Load default font
     LoadFont("FFFFORWA.TTF");

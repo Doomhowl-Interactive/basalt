@@ -6,18 +6,21 @@
 #include "basalt_math.hpp"
 #include "basalt_utils.hpp"
 #include "basalt_images_fonts.hpp"
+#include "sdl2_basalt.hpp"
 
 struct TextureSheet;
 struct Image {
     size_t id;
     int width;
     int height;
-    std::vector<Color> pixels;
+    SDL_Surface* surface;
 
     Image(int width, int height);
+    Image(const Image& other);
+    ~Image();
 
-    Image Copy();
-    void CopyInto(Image& dest);
+    void SetPixels(std::vector<Color>& pixels);
+    const Color* GetPixels() const;
 
     void Clear(Color tint);
     void Blit(Image texture,
@@ -35,13 +38,18 @@ struct Image {
                     int destY,
                     int destWidth,
                     int destHeight,
+                    int srcX = -1,
+                    int srcY = -1,
+                    int srcWidth = -1,
+                    int srcHeight = -1,
                     Color tint = WHITE);
-    void BlitScaled(Image texture, Rect dest, Color tint = WHITE);
+    void BlitScaled(Image texture, Rect dest, Rect src = { -1, -1, -1, -1 }, Color tint = WHITE);
 
     void BlitSheet(TextureSheet sheet, int frame, Vec2 pos, Color tint);
 
-    void DrawDot(int posX, int posY, Color tint);
-    void DrawDot(Point pos, Color tint);
+    // Expensive, do not use for rendering an entire image every frame.
+    void DrawDot(int posX, int posY, Color tint, int thickness = 1);
+    void DrawDot(Point pos, Color tint, int thickness = 1);
 
     void DrawLine(int startX, int startY, int endX, int endY, Color tint);
     void DrawLine(Point start, Point end, Color tint);

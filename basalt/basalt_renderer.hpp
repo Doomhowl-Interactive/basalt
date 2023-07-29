@@ -3,6 +3,6 @@
 
 #include "sdl2_basalt.hpp"
 
-void SetupDefaultRenderer(SDL_Window* window);
+std::shared_ptr<Image> SetupDefaultRenderer(SDL_Window* window);
 void DrawDefaultFrame();
 void DisposeDefaultRenderer();
