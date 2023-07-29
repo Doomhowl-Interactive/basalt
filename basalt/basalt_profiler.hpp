@@ -4,7 +4,7 @@
 #include <unordered_map>
 #include <deque>
 
-#include "basalt_graphics.hpp"
+#include "basalt_images.hpp"
 
 constexpr int PROFILER_HISTORY_SIZE = 100;
 
@@ -49,14 +49,14 @@ struct ProfilerData {
     ProfilerData();
 };
 
-std::string& BeginProfilerTask(std::string name,
-                               ProfilerTaskType type = TASK_PROCESS,
-                               bool builtIn = false);
+std::string BeginProfilerTask(std::string name,
+                              ProfilerTaskType type = TASK_PROCESS,
+                              bool builtIn = false);
 void EndProfilerTask(std::string name);
 
 ProfilerData& GetProfilerData();
 void UpdateProfiler();
-bool DrawProfiler(Texture canvas);
+bool DrawProfiler(Image canvas);
 
 #ifndef NO_PROFILER
 # define BeginMeasurement(X) BeginProfiling(X)

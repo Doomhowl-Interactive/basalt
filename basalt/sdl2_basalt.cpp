@@ -1,35 +1,32 @@
 #include <string>
-#include <stdlib.h>
-#include <time.h>
 #include <spdlog/spdlog.h>
-#include <memory.h>
 
+#include "basalt_console.hpp"
 #include "basalt_config.hpp"
 #include "basalt_testing.hpp"
-#include "sdl2_basalt.hpp"
 #include "basalt_profiler.hpp"
+#include "basalt_instance.hpp"
+#include "basalt_renderer.hpp"
+#include "sdl2_basalt.hpp"
 
 using namespace std;
-
-static Basalt* Instance = nullptr;
 
 GameConfig Game = { 0 };
 EngineConfig Config = { 0 };
 
-SDL_Window* Window = NULL;
-SDL_Surface* ScreenSurface = NULL;
-SDL_Surface* OverlaySurface = NULL;
+SDL_Window* Window = nullptr;
+SDL_Surface* ScreenSurface = nullptr;
 
 static double timeElapsed = 0;
 static double delta = 0;
 static Uint64 startTicks = 0;
 static ulong frameIndex = 0;
-
-static std::unique_ptr<Texture> canvas;
+static bool instanceExists = false;
+static shared_ptr<Image> canvas;
 
 void SetWindowTitle(string title)
 {
-    if (Window != NULL) {
+    if (Window) {
         // check if changed
         std::string oldTitle = SDL_GetWindowTitle(Window);
         if (oldTitle != title) {
@@ -40,25 +37,24 @@ void SetWindowTitle(string title)
     }
 }
 
-static void Close(Basalt& b, int code)
+void Basalt::Close(int code)
 {
-    b.exitCode = code;
+    exitCode = code;
 }
 
 Basalt::Basalt(GameConfig config, int argc, char** argv)
 {
-    if (Instance != nullptr) {
+    if (instanceExists) {
         spdlog::error("Basalt is already initialized! There can only be one.");
-        Close(*this, EXIT_FAILURE);
+        Close(EXIT_FAILURE);
         return;
     }
 
-    Instance = this;
     this->exitCode = EXIT_SUCCESS;
 
     EngineConfig Config = { 0 };
     if (!ParseLaunchArguments(&Config, argc, argv)) {
-        Close(*this, EXIT_SUCCESS);
+        Close(EXIT_SUCCESS);
         return;
     }
 
@@ -69,7 +65,7 @@ Basalt::Basalt(GameConfig config, int argc, char** argv)
 
     if (Config.hasUnitTesting) {
         RunUnitTests();
-        Close(*this, EXIT_SUCCESS);
+        Close(EXIT_SUCCESS);
         return;
     }
 
@@ -86,31 +82,24 @@ Basalt::Basalt(GameConfig config, int argc, char** argv)
     spdlog::set_level(spdlog::level::debug);
 
     // initialize the Window
-    Window = SDL_CreateWindow(Game.title, Game.width, Game.height, NULL);
-    if (Window == NULL) {
+    Window = SDL_CreateWindow(Game.title, Game.width, Game.height, 0);
+    if (Window == nullptr) {
         spdlog::critical("Could not create Window!");
-        Close(*this, EXIT_FAILURE);
+        Close(EXIT_FAILURE);
         return;
     }
 
-    // Initialize the main texture
-    canvas = std::make_unique<Texture>(Texture(Game.width, Game.height));
+    // Initialize the default renderer
+    canvas = SetupDefaultRenderer(Window);
 
     // Load default font
     LoadFont("FFFFORWA.TTF");
 
-    // NOTE: If this breaks go back to using raw pointers instead of vector
-    const auto& canvasPixels = *canvas->pixels.get();
-    ScreenSurface = SDL_CreateSurfaceFrom((void*)canvasPixels.data(),
-                                          Game.width,
-                                          Game.height,
-                                          Game.width * 4,
-                                          SDL_PIXELFORMAT_ABGR32);
-    OverlaySurface = SDL_CreateSurface(Game.width, Game.height, SDL_PIXELFORMAT_ABGR32);
+    ScreenSurface = SDL_GetWindowSurface(Window);
 
     SetWindowTitle(Game.title);
 
-    srand((unsigned int)time(NULL));
+    srand((unsigned int)time(nullptr));
 };
 
 bool Basalt::ShouldClose()
@@ -142,12 +131,12 @@ bool Basalt::ShouldClose()
     return false;
 }
 
-Texture Basalt::BeginFrame()
+shared_ptr<Image> Basalt::BeginFrame()
 {
     if (canvas) {
         startTicks = SDL_GetTicks();
         ProcessMouseInput();
-        return *canvas;
+        return canvas;
     } else {
         spdlog::critical("No basalt canvas!");
     }
@@ -166,15 +155,7 @@ void Basalt::EndFrame()
     }
 #endif
 
-    // === Render to the screen (software rendering)
-    SDL_Surface* windowSurface = SDL_GetWindowSurface(Window);
-    SDL_BlitSurface(ScreenSurface, NULL, windowSurface, NULL);
-    SDL_BlitSurface(OverlaySurface, NULL, windowSurface, NULL);
-    SDL_UpdateWindowSurface(Window);
-    // =============================================
-
-    // Clear the overlay gui surface, (it needs to be transparent!)
-    SDL_FillSurfaceRect(OverlaySurface, NULL, 0x00000000);
+    DrawDefaultFrame();
 
     frameIndex++;
 
@@ -211,11 +192,6 @@ Basalt::~Basalt()
     spdlog::info("Closed SDL2 Window");
 }
 
-Basalt* Basalt::GetInstance()
-{
-    return Instance;
-}
-
 ulong GetFrameIndex()
 {
     return frameIndex;
@@ -224,7 +200,7 @@ ulong GetFrameIndex()
 void HandleFatalException(exception e)
 {
     spdlog::critical("Fatal exception: {}", e.what());
-    Close(*Instance, EXIT_FAILURE);
+    exit(1);
 }
 
 // TODO: Implement SetTimeScale and make sure GetTimeElapsed  updates accordingly.
@@ -236,11 +212,6 @@ double GetTimeElapsed()
 double GetDeltaTime()
 {
     return delta;
-}
-
-SDL_Surface* GetScreenOverlaySurface()
-{
-    return OverlaySurface;
 }
 
 SDL_Color ConvertColor(Color color)

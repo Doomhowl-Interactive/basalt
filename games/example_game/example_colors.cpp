@@ -1,8 +1,28 @@
 #include <iostream>
+#include <vector>
+#include <memory>
 
-#include "example_game.h"
+#include "example_game.hpp"
 
-Color InterpolateHue(float t)
+using namespace std;
+
+static Color InterpolateHue(float t);
+Image BakeRainbowImage(int width, int height)
+{
+    vector<Color> pixels(width * height);
+    int i = 0;
+    for (int y = 0; y < height; y++) {
+        for (int x = 0; x < width; x++) {
+            float perc = (float)y / (float)height;
+            Color color = InterpolateHue(perc);
+            pixels[i++] = color;
+        }
+    }
+
+    return Image(Image(width, height, pixels));
+}
+
+static Color InterpolateHue(float t)
 {
     float hue = fmodf(t, 1.0f);  // Wrap the interpolation parameter if it goes beyond 1
 

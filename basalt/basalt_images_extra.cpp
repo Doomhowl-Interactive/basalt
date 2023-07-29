@@ -1,32 +1,17 @@
-#include <string.h>
-#include <malloc.h>
-#include <iostream>
 #include <vector>
-#include <cassert>
-#include <spdlog/spdlog.h>
 
-#include "basalt_graphics.hpp"
-#include "basalt_textures.hpp"
+#include "basalt_images.hpp"
 #include "basalt_colors.hpp"
-#include "basalt_macros.hpp"
-#include "basalt_math.hpp"
-#include "basalt_console.hpp"
 
 using namespace std;
 
-// TODO: Put in extra!
 #define OPEN_SIMPLEX_NOISE_IMPLEMENTATION
 #include "external/open-simplex-noise.h"
 
-Texture Texture::GenerateNoise(unsigned int width,
-                               unsigned int height,
-                               Color bg,
-                               Color fg,
-                               double scale,
-                               int seed)
+Image GenerateNoise(int width, int height, Color bg, Color fg, double scale, int seed)
 {
-    Texture texture(width, height);
-    auto& pix = *texture.pixels.get();
+    Image texture(width, height);
+    auto pix = vector<Color>(width * height);
 
     struct osn_context* context;
     open_simplex_noise(seed, &context);
@@ -59,14 +44,4 @@ Texture Texture::GenerateNoise(unsigned int width,
 
     open_simplex_noise_free(context);
     return texture;
-}
-
-void Texture::DrawRectangleLines(int posX, int posY, int width, int height, int border, Color color)
-{
-    DrawRectangle(posX, posY, width, border, color);  // top
-    DrawRectangle(posX + width - border, posY, border, height,
-                  color);  // right
-    DrawRectangle(posX, posY + height - border, width, border,
-                  color);                              // bottom
-    DrawRectangle(posX, posY, border, height, color);  // left
 }

@@ -9,7 +9,7 @@ typedef uint32_t Color;
 struct Font {
     std::string name;
     static Font Default();
-    Size MeasureString(std::string text, int fontSize = 32);
+    Point MeasureString(std::string text, int fontSize = 32);
 };
 
 struct FontStyle {
@@ -27,12 +27,9 @@ struct FontStyle {
     size_t Hash(std::string ofText) const;
 
     // returns copy with overriden property
-    FontStyle center() const;
-    // returns copy with overriden property
+    FontStyle center(bool centered = true) const;
     FontStyle wColor(Color color) const;
-    // returns copy with overriden property
     FontStyle wSize(int size) const;
-    // returns copy with overriden property
     FontStyle wMaxWidth(int maxWidth) const;
 };
 

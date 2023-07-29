@@ -1,5 +1,8 @@
 #include <cstdarg>
-#include <Windows.h>
+
+#ifdef WIN32
+# include <Windows.h>
+#endif
 
 #include "spdlog/spdlog.h"
 #include "basalt_console.hpp"
@@ -30,6 +33,7 @@ void PrintASCIILogo(string suffix)
 
 void OpenSystemConsole()
 {
+#ifdef WIN32
     if (!AllocatedConsole) {
         AllocConsole();
         freopen("CONIN$", "r", stdin);
@@ -40,13 +44,18 @@ void OpenSystemConsole()
         spdlog::error("Failed to allocate console!");
     }
     spdlog::debug("Allocated Windows console");
+#else
+    spdlog::error("Custom console only supported on Windows.");
+#endif
 }
 
 void CloseSystemConsole()
 {
+#ifdef WIN32
     if (AllocatedConsole) {
         FreeConsole();
     }
+#endif
 }
 
 string GetBasaltLog()

@@ -4,6 +4,7 @@
 #include <map>
 #include <spdlog/spdlog.h>
 
+#include "basalt_exceptions.hpp"
 #include "basalt_macros.hpp"
 #include "basalt_console.hpp"
 #include "basalt_assets.hpp"
@@ -50,9 +51,9 @@ class CachedText {
         return surface;
     }
 
-    Size getSize()
+    Point getSize()
     {
-        return { (uint)surface->w, (uint)surface->h };
+        return { surface->w, surface->h };
     }
 
    private:
@@ -63,7 +64,7 @@ class CachedText {
 static shared_ptr<CachedText> GetOrCacheText(string text,
                                              Font font,
                                              FontStyle style,
-                                             Size* outSize = nullptr)
+                                             Point* outSize = nullptr)
 {
     size_t hash = style.Hash(text);
 
@@ -112,14 +113,14 @@ Font Font::Default()
     return { it->first };
 }
 
-Size Font::MeasureString(string text, int fontSize)
+Point Font::MeasureString(string text, int fontSize)
 {
     TTF_Font* theFont = LoadedFonts.at(name);
     TTF_SetFontSize(theFont, fontSize);
 
     int w, h;
     TTF_SizeUTF8(theFont, text.c_str(), &w, &h);
-    return { (uint)w, (uint)h };
+    return { w, h };
 }
 
 Font LoadFont(string fontName)
@@ -141,7 +142,7 @@ Font LoadFont(string fontName)
             auto font = TTF_OpenFont(assetPath.value().c_str(), 16);
             if (font == nullptr) {
                 spdlog::error("Failed to load font {}: {}", fontName, TTF_GetError());
-                throw exception("Failed to load font");
+                throw BasaltException("Failed to load font");
             }
 
             // store loaded font
@@ -151,35 +152,34 @@ Font LoadFont(string fontName)
             return { fontName };
         } else {
             spdlog::error("Failed to find font {}", fontName);
-            throw exception("Failed to load font");
+            throw BasaltException("Failed to load font");
         }
     }
 }
 
-void Texture::DrawBasaltText(string text,
-                             int posX,
-                             int posY,
-                             Color color,
-                             Font font,
-                             int size,
-                             int maxWidth,
-                             bool centered)
+void Image::DrawBasaltText(string text,
+                           int posX,
+                           int posY,
+                           Color color,
+                           Font font,
+                           int size,
+                           int maxWidth,
+                           bool centered)
 {
     FontStyle style;
     style.centered = centered;
     style.color = color;
     style.size = size;
     style.maxWidth = maxWidth;
-    style.centered = centered;
     DrawBasaltText(text, posX, posY, font, style);
 }
 
-void Texture::DrawBasaltText(std::string text, int posX, int posY, FontStyle style)
+void Image::DrawBasaltText(std::string text, int posX, int posY, FontStyle style)
 {
     DrawBasaltText(text, posX, posY, Font::Default(), style);
 }
 
-void Texture::DrawBasaltText(std::string text, int posX, int posY, Font font, FontStyle style)
+void Image::DrawBasaltText(std::string text, int posX, int posY, Font font, FontStyle style)
 {
     if (style.size > 1000) {
         spdlog::warn("Font size is too big: {}", style.size);
@@ -187,31 +187,32 @@ void Texture::DrawBasaltText(std::string text, int posX, int posY, Font font, Fo
     }
 
     size_t hash = style.Hash(text);
-    Size size;
-    auto surface = GetOrCacheText(text, font, style, &size);
+    Point size = {};
+    auto textSurface = GetOrCacheText(text, font, style, &size);
 
-    SDL_Rect destRect;
-    destRect.x = posX;
-    destRect.y = posY;
-    destRect.w = size.width;
-    destRect.h = size.height;
+    SDL_Rect destRect = {
+        posX,
+        posY,
+        size.x,
+        size.y,
+    };
 
     if (style.centered) {
-        destRect.x -= size.width / 2;
-        destRect.y -= size.height / 2;
+        destRect.x -= size.x / 2;
+        destRect.y -= size.y / 2;
     }
 
-    SDL_BlitSurface(surface->get(), NULL, GetScreenOverlaySurface(), &destRect);
+    SDL_BlitSurface(textSurface->get(), nullptr, this->surface->get(), &destRect);
 }
 
-void Texture::DrawBasaltTextShadow(string text,
-                                   int posX,
-                                   int posY,
-                                   Font font,
-                                   FontStyle foreStyle,
-                                   FontStyle backStyle,
-                                   int spacingX,
-                                   int spacingY)
+void Image::DrawBasaltTextShadow(string text,
+                                 int posX,
+                                 int posY,
+                                 Font font,
+                                 FontStyle foreStyle,
+                                 FontStyle backStyle,
+                                 int spacingX,
+                                 int spacingY)
 {
     DrawBasaltText(text, posX - spacingX, posY - spacingY, font, backStyle);
     DrawBasaltText(text, posX, posY, font, foreStyle);
@@ -257,10 +258,10 @@ size_t FontStyle::Hash(string ofText) const
     return hash;
 }
 
-FontStyle FontStyle::center() const
+FontStyle FontStyle::center(bool centered) const
 {
     auto c = FontStyle(*this);
-    c.centered = true;
+    c.centered = centered;
     return c;
 }
 

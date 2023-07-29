@@ -16,8 +16,8 @@ struct EngineConfig {
 struct GameConfig {
     const char* title;
     const char* company;
-    unsigned int width;
-    unsigned int height;
-    unsigned char language;
+    int width;
+    int height;
+    char language;
 };
 extern GameConfig Game;

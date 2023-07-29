@@ -1,14 +1,13 @@
+#include <memory>
 #include <basalt.h>
-#include <windows.h>
 
-#include "example_game.h"
-
-static bool Horizontal = false;
-static Font font;
+#include "example_game.hpp"
 
 using namespace std;
 
+static Font font;
 static FontStyle style = {};
+static shared_ptr<Image> rainbowImage;
 
 bool RunGame(int argc, char** argv)
 {
@@ -20,59 +19,79 @@ bool RunGame(int argc, char** argv)
 
     auto engine = Basalt(config, argc, argv);
 
-    font = LoadFont("font_sf_cartoonist_hand.ttf");
+    font = LoadFont("Coffee Terrace.ttf");
+    rainbowImage = make_shared<Image>(BakeRainbowImage((int)config.width, (int)config.height));
 
-    style.color = WHITE;
-    style.size = 32;
-    style.centered = true;
+    style.size = 36;
 
     while (!engine.ShouldClose()) {
-        Texture canvas = engine.BeginFrame();
-        UpdateAndRenderGame(canvas, GetDeltaTime());
+        auto canvas = engine.BeginFrame();
+        UpdateAndRenderGame(canvas, (float)GetDeltaTime());
         engine.EndFrame();
     }
 
     return engine.exitCode;
 }
 
+// TODO: Abstract this away!
+#ifdef WIN32
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
-#ifndef _DEBUG
+# ifndef _DEBUG
     try {
-#endif
+# endif
         return RunGame(__argc, __argv);
-#ifndef _DEBUG
+# ifndef _DEBUG
     } catch (exception e) {
         HandleFatalException(e);
         return -1;
     }
-#endif
+# endif
 }
-
-void UpdateAndRenderGame(Texture canvas, float delta)
+#endif
+#ifdef __APPLE__
+int main(int argc, char** argv)
 {
-    int surface = canvas.width * canvas.height;
-    for (int y = 0; y < canvas.height; y++) {
-        for (int x = 0; x < canvas.width; x++) {
-            float perc;
-            if (Horizontal) {
-                perc = 1.0f - (float)(x * canvas.height + y) / (float)surface;
-            } else {
-                perc = (float)(y * canvas.width + x) / (float)surface;
-            }
-            Color color = InterpolateHue(perc + GetTimeElapsed());
-            canvas.DrawDot(x, y, color);
-        }
+    return RunGame(argc, argv);
+}
+#endif
+
+void UpdateAndRenderGame(shared_ptr<Image>& canvas, float delta)
+{
+    static float offsetY = 0;
+    offsetY += delta * 100;
+    if (offsetY > (float)canvas->height) {
+        offsetY = 0;
     }
 
-    canvas.DrawBasaltText("Hello Basalt!", Game.width / 2, Game.height / 2, style);
-    canvas.DrawBasaltText("Press SPACE to change rainbow direction", 10, 50, GREEN, font);
-    canvas.DrawBasaltText("Press DELETE to segfault", 10, 80, RED, font);
-    canvas.DrawBasaltText("Press BACKSPACE to throw c++ error", 10, 120, RED, font);
+    canvas->Blit(*rainbowImage, 0, (int)offsetY - canvas->height, WHITE);
+    canvas->Blit(*rainbowImage, 0, (int)offsetY, WHITE);
 
-    if (IsKeyPressed(KEY_SPACE)) {
-        Horizontal = !Horizontal;
-    }
+    canvas->DrawRectangle(20, 50, 100, 100, RED);
+    canvas->DrawRectangle(30, 10, 100, 100, BLUE);
+    canvas->DrawLine(100, 100, 200, 200, GREEN);
+
+    static FontStyle backStyle = style.wColor(BLACK);
+    canvas->DrawBasaltTextShadow("Hello Basalt!",
+                                 Game.width / 2,
+                                 Game.height / 2,
+                                 Font::Default(),
+                                 style.center(),
+                                 backStyle.center());
+
+    static FontStyle debugStyle = style.wColor(YELLOW).wSize(18).center(false);
+    canvas->DrawBasaltTextShadow("Press DELETE to segfault",
+                                 10,
+                                 80,
+                                 Font::Default(),
+                                 debugStyle,
+                                 debugStyle.wColor(DARKRED));
+    canvas->DrawBasaltTextShadow("Press BACKSPACE to throw c++ error",
+                                 10,
+                                 120,
+                                 Font::Default(),
+                                 debugStyle,
+                                 debugStyle.wColor(DARKRED));
 
     // simulate crashes to demonstrate crash handler
     if (IsKeyPressed(KEY_DELETE)) {
@@ -82,6 +101,6 @@ void UpdateAndRenderGame(Texture canvas, float delta)
     }
 
     if (IsKeyPressed(KEY_BACKSPACE)) {
-        throw exception("I am a teapot.");
+        throw BasaltException("I am a teapot.");
     }
 }

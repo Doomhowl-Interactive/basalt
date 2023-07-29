@@ -1,12 +1,8 @@
-#include <stdlib.h>
 #include <string>
 #include <spdlog/spdlog.h>
 
 #include "basalt_testing.hpp"
-#include "basalt_console.hpp"
-#include "basalt_graphics.hpp"
-
-
+#include "basalt_colors.hpp"
 
 using namespace std;
 
@@ -144,4 +140,3 @@ void RunUnitTests()
     TestFormatText();
     TestStripText();
 }
-

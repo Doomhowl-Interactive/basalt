@@ -2,7 +2,7 @@
 
 #include "basalt_macros.hpp"
 #include "basalt_profiler.hpp"
-#include "basalt_graphics.hpp"
+#include "basalt_images.hpp"
 #include "basalt_input.hpp"
 #include "basalt_utils.hpp"
 
@@ -57,7 +57,7 @@ static Rect ResizeProfiler(const Rect& spot, Rect& rect)
     return rect;
 }
 
-static Rect DrawProfilerResizer(Texture canvas, const Rect& winBounds)
+static Rect DrawProfilerResizer(Image canvas, const Rect& winBounds)
 {
     constexpr int SIZE = 10;
     Rect resizer = {
@@ -65,11 +65,11 @@ static Rect DrawProfilerResizer(Texture canvas, const Rect& winBounds)
     };
 
     static Color col = ColorAlpha(DARKGRAY, 0.7f);
-    canvas.DrawRectangle(R2(resizer), col);
+    canvas.DrawRectangle(resizer, col);
     return resizer;
 }
 
-bool DrawProfiler(Texture canvas)
+bool DrawProfiler(Image canvas)
 {
     if (IsKeyPressed(KEY_F3)) {
         ProfilerOpened = !ProfilerOpened;
@@ -81,9 +81,9 @@ bool DrawProfiler(Texture canvas)
     const auto& data = GetProfilerData();
 
     constexpr int PADDING = 10;
-    constexpr int FONT_SIZE = 12;  // TODO: implement
 
     static Color bgColor = ColorAlpha(DARKGRAY, 0.5f);
+    // static Color bgColor = DARKGRAY;
 
     Rect contentBounds = { ProfilerBounds.x + PADDING,
                            ProfilerBounds.y + PADDING,
@@ -95,10 +95,10 @@ bool DrawProfiler(Texture canvas)
         "Frame: " + to_string(data.frameIndex),
     });
 
-    canvas.DrawBasaltText(
-        text, contentBounds.x, contentBounds.y, YELLOW, Font::Default(), 12, contentBounds.width);
+    canvas.DrawRectangle(ProfilerBounds, bgColor);
 
-    canvas.DrawRectangle(R2(ProfilerBounds), bgColor);
+    canvas.DrawBasaltText(
+        text, contentBounds.x, contentBounds.y, YELLOW, Font::Default(), 16, contentBounds.width);
 
     Rect resizer = DrawProfilerResizer(canvas, ProfilerBounds);
     DragAndDropProfiler(ProfilerBounds, resizer);

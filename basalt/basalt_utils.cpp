@@ -1,7 +1,6 @@
 #include <iostream>
 #include <cassert>
 #include <cstdarg>
-#include <windows.h>
 #include <filesystem>
 #include <iostream>
 #include <optional>
