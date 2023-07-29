@@ -1,5 +1,5 @@
 #include <basalt.h>
-#include "example_game.h"
+#include "example_game.hpp"
 
 static bool Horizontal = false;
 static Font font;
@@ -25,7 +25,7 @@ bool RunGame(int argc, char** argv)
     style.centered = true;
 
     while (!engine.ShouldClose()) {
-        Image canvas = engine.BeginFrame();
+        auto canvas = engine.BeginFrame();
         UpdateAndRenderGame(canvas, GetDeltaTime());
         engine.EndFrame();
     }
@@ -56,26 +56,30 @@ int main(int argc, char** argv)
 }
 #endif
 
-void UpdateAndRenderGame(Image canvas, float delta)
+void UpdateAndRenderGame(shared_ptr<Image>& canvas, float delta)
 {
-    int surface = canvas.width * canvas.height;
-    for (int y = 0; y < canvas.height; y++) {
-        for (int x = 0; x < canvas.width; x++) {
+    int surface = canvas->width * canvas->height;
+    for (int y = 0; y < canvas->height; y++) {
+        for (int x = 0; x < canvas->width; x++) {
             float perc;
             if (Horizontal) {
-                perc = 1.0f - (float)(x * canvas.height + y) / (float)surface;
+                perc = 1.0f - (float)(x * canvas->height + y) / (float)surface;
             } else {
-                perc = (float)(y * canvas.width + x) / (float)surface;
+                perc = (float)(y * canvas->width + x) / (float)surface;
             }
             Color color = InterpolateHue(perc + GetTimeElapsed());
-            canvas.DrawDot(x, y, color);
+            canvas->DrawDot(x, y, color, 4);
         }
     }
 
-    canvas.DrawBasaltText("Hello Basalt!", Game.width / 2, Game.height / 2, style);
-    canvas.DrawBasaltText("Press SPACE to change rainbow direction", 10, 50, GREEN, font);
-    canvas.DrawBasaltText("Press DELETE to segfault", 10, 80, RED, font);
-    canvas.DrawBasaltText("Press BACKSPACE to throw c++ error", 10, 120, RED, font);
+    canvas->DrawRectangle(20, 50, 100, 100, RED);
+    canvas->DrawRectangle(30, 10, 100, 100, BLUE);
+    canvas->DrawLine(100, 100, 200, 200, GREEN);
+    
+    canvas->DrawBasaltText("Hello Basalt!", Game.width / 2, Game.height / 2, style);
+    canvas->DrawBasaltText("Press SPACE to change rainbow direction", 10, 50, GREEN, font);
+    canvas->DrawBasaltText("Press DELETE to segfault", 10, 80, RED, font);
+    canvas->DrawBasaltText("Press BACKSPACE to throw c++ error", 10, 120, RED, font);
 
     if (IsKeyPressed(KEY_SPACE)) {
         Horizontal = !Horizontal;

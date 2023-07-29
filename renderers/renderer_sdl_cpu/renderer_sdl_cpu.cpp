@@ -18,6 +18,13 @@ struct CPURenderer {
         win = window;
         canvas = std::make_unique<Image>(Image(Game.width, Game.height));
     }
+
+    void DrawFrame()
+    {
+        SDL_Surface* windowSurface = SDL_GetWindowSurface(win);
+        SDL_BlitSurface(canvas->surface, nullptr, windowSurface, nullptr);
+        SDL_UpdateWindowSurface(win);
+    }
 };
 
 static CPURenderer* renderer = nullptr;
@@ -33,6 +40,10 @@ shared_ptr<Image> SetupDefaultRenderer(SDL_Window* window)
 
 void DrawDefaultFrame()
 {
+    if (!renderer) {
+        throw BasaltException("Renderer not initialized!");
+    }
+    renderer->DrawFrame();
 }
 
 void DisposeDefaultRenderer()

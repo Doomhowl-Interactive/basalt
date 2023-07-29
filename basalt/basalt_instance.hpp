@@ -1,4 +1,5 @@
 #pragma once
+#include <memory>
 
 #include "basalt_instance.hpp"
 
@@ -11,7 +12,7 @@ struct Basalt {
 
     void Close(int code);
     bool ShouldClose();
-    Image BeginFrame();
+    std::shared_ptr<Image> BeginFrame();
     void EndFrame();
 };
 

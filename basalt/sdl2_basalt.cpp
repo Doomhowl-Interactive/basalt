@@ -131,12 +131,12 @@ bool Basalt::ShouldClose()
     return false;
 }
 
-Image Basalt::BeginFrame()
+shared_ptr<Image> Basalt::BeginFrame()
 {
     if (canvas) {
         startTicks = SDL_GetTicks();
         ProcessMouseInput();
-        return *canvas;
+        return canvas;
     } else {
         spdlog::critical("No basalt canvas!");
     }
@@ -155,11 +155,7 @@ void Basalt::EndFrame()
     }
 #endif
 
-    // === Render to the screen (software rendering)
-    SDL_Surface* windowSurface = SDL_GetWindowSurface(Window);
-    SDL_BlitSurface(ScreenSurface, nullptr, windowSurface, nullptr);
-    SDL_UpdateWindowSurface(Window);
-    // =============================================
+    DrawDefaultFrame();
 
     frameIndex++;
 

@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "example_game.h"
+#include "example_game.hpp"
 
 Color InterpolateHue(float t)
 {
