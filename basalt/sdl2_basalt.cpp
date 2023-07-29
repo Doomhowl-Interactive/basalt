@@ -160,8 +160,8 @@ void Basalt::EndFrame()
     frameIndex++;
 
     // FIXME TODO: This waits longer than it should!
-    Uint32 timeToWait = (Uint32)(1000 / maxFps);
-    SDL_Delay(timeToWait);
+    // Uint32 timeToWait = (Uint32)(1000 / maxFps);
+    // SDL_Delay(timeToWait);
 
     Uint64 ticksPassed = SDL_GetTicks() - startTicks;
     delta = ticksPassed / 1000.0;
