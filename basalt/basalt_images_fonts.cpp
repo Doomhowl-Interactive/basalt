@@ -202,7 +202,7 @@ void Image::DrawBasaltText(std::string text, int posX, int posY, Font font, Font
         destRect.y -= size.height / 2;
     }
 
-    SDL_BlitSurface(surface->get(), NULL, GetScreenSurface(), &destRect);
+    SDL_BlitSurface(surface->get(), nullptr, this->surface->get(), &destRect);
 }
 
 void Image::DrawBasaltTextShadow(string text,

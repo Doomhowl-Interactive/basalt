@@ -214,11 +214,6 @@ double GetDeltaTime()
     return delta;
 }
 
-SDL_Surface* GetScreenSurface()
-{
-    return ScreenSurface;
-}
-
 SDL_Color ConvertColor(Color color)
 {
     // convert uint32 color to SDL_Color
