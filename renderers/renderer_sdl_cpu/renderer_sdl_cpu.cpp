@@ -19,10 +19,10 @@ struct CPURenderer {
         canvas = std::make_unique<Image>(Image(Game.width, Game.height));
     }
 
-    void DrawFrame()
+    void DrawFrame() const
     {
         SDL_Surface* windowSurface = SDL_GetWindowSurface(win);
-        SDL_BlitSurface(canvas->surface, nullptr, windowSurface, nullptr);
+        SDL_BlitSurface(canvas->surface->get(), nullptr, windowSurface, nullptr);
         SDL_UpdateWindowSurface(win);
     }
 };

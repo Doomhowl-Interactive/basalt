@@ -1,4 +1,6 @@
+#include <memory>
 #include <basalt.h>
+
 #include "example_game.hpp"
 
 static bool Horizontal = false;
@@ -7,6 +9,7 @@ static Font font;
 using namespace std;
 
 static FontStyle style = {};
+static shared_ptr<Image> rainbowImage;
 
 bool RunGame(int argc, char** argv)
 {
@@ -19,6 +22,7 @@ bool RunGame(int argc, char** argv)
     auto engine = Basalt(config, argc, argv);
 
     font = LoadFont("Coffee Terrace.ttf");
+    rainbowImage = make_shared<Image>(BakeRainbowImage((int)config.width, (int)config.height));
 
     style.color = WHITE;
     style.size = 32;
@@ -26,7 +30,7 @@ bool RunGame(int argc, char** argv)
 
     while (!engine.ShouldClose()) {
         auto canvas = engine.BeginFrame();
-        UpdateAndRenderGame(canvas, GetDeltaTime());
+        UpdateAndRenderGame(canvas, (float)GetDeltaTime());
         engine.EndFrame();
     }
 
@@ -58,24 +62,19 @@ int main(int argc, char** argv)
 
 void UpdateAndRenderGame(shared_ptr<Image>& canvas, float delta)
 {
-    int surface = canvas->width * canvas->height;
-    for (int y = 0; y < canvas->height; y++) {
-        for (int x = 0; x < canvas->width; x++) {
-            float perc;
-            if (Horizontal) {
-                perc = 1.0f - (float)(x * canvas->height + y) / (float)surface;
-            } else {
-                perc = (float)(y * canvas->width + x) / (float)surface;
-            }
-            Color color = InterpolateHue(perc + GetTimeElapsed());
-            canvas->DrawDot(x, y, color, 4);
-        }
+    static float offsetY = 0;
+    offsetY += delta * 100;
+    if (offsetY > (float)canvas->height) {
+        offsetY = 0;
     }
+
+    canvas->Blit(*rainbowImage, 0, (int)offsetY - canvas->height, WHITE);
+    canvas->Blit(*rainbowImage, 0, (int)offsetY, WHITE);
 
     canvas->DrawRectangle(20, 50, 100, 100, RED);
     canvas->DrawRectangle(30, 10, 100, 100, BLUE);
     canvas->DrawLine(100, 100, 200, 200, GREEN);
-    
+
     canvas->DrawBasaltText("Hello Basalt!", Game.width / 2, Game.height / 2, style);
     canvas->DrawBasaltText("Press SPACE to change rainbow direction", 10, 50, GREEN, font);
     canvas->DrawBasaltText("Press DELETE to segfault", 10, 80, RED, font);

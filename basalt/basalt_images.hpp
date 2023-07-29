@@ -8,32 +8,43 @@
 #include "basalt_images_fonts.hpp"
 #include "sdl2_basalt.hpp"
 
+struct SDL_WrappedSurface {
+    SDL_Surface* surface;
+    SDL_WrappedSurface(int width, int height, Uint32 format);
+    ~SDL_WrappedSurface();
+
+    [[nodiscard]] SDL_Surface* get() const;
+};
+
 struct TextureSheet;
 struct Image {
-    size_t id;
     int width;
     int height;
-    SDL_Surface* surface;
+    std::shared_ptr<SDL_WrappedSurface> surface;
 
     Image(int width, int height);
-    Image(const Image& other);
-    ~Image();
+    Image(int width, int height, std::vector<Color>& colors);
 
-    void SetPixels(std::vector<Color>& pixels);
+    Image(const Image& other);
+
+    void SetPixels(std::vector<Color>& pixels) const;
     const Color* GetPixels() const;
 
-    void Clear(Color tint);
-    void Blit(Image texture,
+    void Clear(Color tint) const;
+    void Blit(const Image& texture,
               int posX,
               int posY,
               Color tint = WHITE,
               int srcX = -1,
               int srcY = -1,
               int srcWidth = -1,
-              int srcHeight = -1);
-    void Blit(Image texture, Point pos, Color tint = WHITE, Rect src = { -1, -1, -1, -1 });
+              int srcHeight = -1) const;
+    void Blit(const Image& texture,
+              Point pos,
+              Color tint = WHITE,
+              Rect src = { -1, -1, -1, -1 }) const;
 
-    void BlitScaled(Image texture,
+    void BlitScaled(const Image& texture,
                     int destX,
                     int destY,
                     int destWidth,
@@ -42,22 +53,26 @@ struct Image {
                     int srcY = -1,
                     int srcWidth = -1,
                     int srcHeight = -1,
+                    Color tint = WHITE) const;
+    void BlitScaled(const Image& texture,
+                    Rect dest,
+                    Rect src = { -1, -1, -1, -1 },
                     Color tint = WHITE);
-    void BlitScaled(Image texture, Rect dest, Rect src = { -1, -1, -1, -1 }, Color tint = WHITE);
 
     void BlitSheet(TextureSheet sheet, int frame, Vec2 pos, Color tint);
 
     // Expensive, do not use for rendering an entire image every frame.
-    void DrawDot(int posX, int posY, Color tint, int thickness = 1);
-    void DrawDot(Point pos, Color tint, int thickness = 1);
+    void DrawDot(int posX, int posY, Color tint, int thickness = 1) const;
+    void DrawDot(Point pos, Color tint, int thickness = 1) const;
 
-    void DrawLine(int startX, int startY, int endX, int endY, Color tint);
+    void DrawLine(int startX, int startY, int endX, int endY, Color tint) const;
     void DrawLine(Point start, Point end, Color tint);
 
-    void DrawRectangle(int posX, int posY, int width, int height, Color tint);
-    void DrawRectangle(Rect rect, Color tint);
+    void DrawRectangle(int posX, int posY, int width, int height, Color tint) const;
+    void DrawRectangle(Rect rect, Color tint) const;
 
-    void DrawRectangleLines(int posX, int posY, int width, int height, int border, Color tint);
+    void DrawRectangleLines(int posX, int posY, int width, int height, int border, Color tint)
+        const;
     void DrawRectangleLines(Rect rect, int border, Color tint);
 
     // DrawText is already taken by windows.h

@@ -1,4 +1,3 @@
-#pragma once
 #include <unordered_map>
 
 #include "basalt_images.hpp"
