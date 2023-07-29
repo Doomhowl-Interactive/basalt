@@ -31,8 +31,8 @@ gh repo clone Doomhowl-Interactive/basalt -- --recursive
 2. Generate and build with cmake.
 
 ```bash
-cmake -S . -B build -G "Visual Studio 2022" -A x64
-cmake --build build -DCMAKE_BUILD_TYPE=Release
+cmake -S . -B build -G "Visual Studio 2022" -A x64 -DCMAKE_BUILD_TYPE=Release
+cmake --build build --parallel
 ```
 
 ### MacOS
@@ -45,8 +45,8 @@ cmake --build build -DCMAKE_BUILD_TYPE=Release
 2. Generate and build with cmake.
 
 ```bash
-cmake -S . -B build -G Xcode
-cmake --build build -DCMAKE_BUILD_TYPE=Release
+cmake -S . -B build -G Xcode -DCMAKE_BUILD_TYPE=Release
+cmake --build build --parallel
 ```
 
 > NOTES: Xcode build target needs to be specified and used or the build will fail.
