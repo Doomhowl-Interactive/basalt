@@ -9,7 +9,7 @@ Inspired by [Raylib](https://github.com/raysan5/raylib).
 ## Bindings
 
 - Go (planned)
-- Javascript (planned, maybe)
+- Javascript (NodeJS) (planned, maybe)
 
 ## Compilation
 
@@ -44,13 +44,16 @@ cmake --build build --parallel
 
 2. Generate and build with cmake.
 
+FIXME: Mac cmake still compiles in Debug, even when specifying Release!
+
 ```bash
 cmake -S . -B build -G Xcode -DCMAKE_BUILD_TYPE=Release
 cmake --build build --parallel
 ```
 
-> NOTES: Xcode build target needs to be specified and used or the build will fail.
-> SDL3 (master branch of SDL) is statically compiled with basalt,
+> NOTE: The Xcode build generator needs to be used or the build will fail.
+
+> NOTE: SDL3 (master branch of SDL) is compiled and statically compiled with basalt,
 > so the first compilation may take a while...
 
 ## Screenshots
