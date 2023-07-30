@@ -51,7 +51,7 @@ cmake --build build --parallel --config Release
 
 > NOTE: The Xcode build generator needs to be used or the build will fail.
 
-> NOTE: SDL3 (master branch of SDL) is compiled and statically compiled with basalt,
+> NOTE: SDL3 (master branch of SDL) is compiled and statically linked with basalt,
 > so the first compilation may take a while...
 
 ## Screenshots
