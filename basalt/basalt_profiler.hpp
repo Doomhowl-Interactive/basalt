@@ -56,6 +56,7 @@ void EndProfilerTask(std::string name);
 
 ProfilerData& GetProfilerData();
 void UpdateProfiler();
+void SetProfilerEnabled(bool enabled);
 bool DrawProfiler(Image canvas);
 
 #ifndef NO_PROFILER

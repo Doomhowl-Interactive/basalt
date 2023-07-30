@@ -13,6 +13,7 @@ using namespace std;
 
 static Rect ProfilerBounds = { 10, 10, 300, 300 };
 static bool ProfilerOpened = false;
+static bool ProfilerAvailable = true;
 
 struct DragContext {
     Point beginMouse;
@@ -69,9 +70,17 @@ static Rect DrawProfilerResizer(Image canvas, const Rect& winBounds)
     return resizer;
 }
 
+void SetProfilerEnabled(bool enabled)
+{
+    if (!enabled && ProfilerOpened) {
+        ProfilerOpened = false;
+    }
+    ProfilerAvailable = enabled;
+}
+
 bool DrawProfiler(Image canvas)
 {
-    if (IsKeyPressed(KEY_F3)) {
+    if (IsKeyPressed(KEY_F3) && ProfilerAvailable) {
         ProfilerOpened = !ProfilerOpened;
     }
     if (!ProfilerOpened) {

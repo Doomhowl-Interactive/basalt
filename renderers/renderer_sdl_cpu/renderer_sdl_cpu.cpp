@@ -1,8 +1,3 @@
-#include "pch.h"
-#include "framework.h"
-
-#include <spdlog/spdlog.h>
-
 #include "basalt_exceptions.hpp"
 #include "basalt_images.hpp"
 #include "sdl2_basalt.hpp"
