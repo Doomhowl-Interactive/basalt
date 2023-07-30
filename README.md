@@ -31,7 +31,7 @@ gh repo clone Doomhowl-Interactive/basalt -- --recursive
 2. Generate and build with cmake.
 
 ```bash
-cmake -S . -B build -G "Visual Studio 2022" -A x64 -DCMAKE_BUILD_TYPE=Release
+cmake -S . -B build -G "Visual Studio 17 2022" -A x64 -DCMAKE_BUILD_TYPE=Release
 cmake --build build --parallel
 ```
 
