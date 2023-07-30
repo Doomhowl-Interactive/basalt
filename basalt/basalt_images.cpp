@@ -111,8 +111,10 @@ void Image::BlitScaled(const Image& texture,
                        int srcHeight,
                        Color tint) const
 {
+    SDL_Rect srcRect = { srcX, srcY, srcWidth, srcHeight };
     SDL_Rect destRect = { destX, destY, destWidth, destHeight };
-    SDL_BlitSurfaceScaled(texture.surface->get(), nullptr, surface->get(), &destRect);
+    SDL_Rect* srcRectFinal = (srcWidth < 0 || srcHeight < 0) ? nullptr : &srcRect;
+    SDL_BlitSurfaceScaled(texture.surface->get(), srcRectFinal, surface->get(), &destRect);
 }
 
 void Image::BlitScaled(const Image& texture, Rect dest, Rect src, Color tint)
@@ -127,6 +129,11 @@ void Image::BlitScaled(const Image& texture, Rect dest, Rect src, Color tint)
                src.width,
                src.height,
                tint);
+}
+
+void Image::BlitScaled(const Image& texture, Rect dest, Color tint)
+{
+    BlitScaled(texture, dest.x, dest.y, dest.width, dest.height, -1, -1, -1, -1, tint);
 }
 
 void Image::DrawDot(int posX, int posY, Color tint, int thickness) const

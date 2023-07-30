@@ -58,6 +58,7 @@ struct Image {
                     Rect dest,
                     Rect src = { -1, -1, -1, -1 },
                     Color tint = WHITE);
+    void BlitScaled(const Image& texture, Rect dest, Color tint = WHITE);
 
     void BlitSheet(TextureSheet sheet, int frame, Vec2 pos, Color tint);
 

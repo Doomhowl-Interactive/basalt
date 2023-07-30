@@ -141,6 +141,17 @@ bool Rect::inside(Rect other)
            && y + height < other.y + other.height;
 }
 
+Rect Rect::ScaleFromCenter(float scale)
+{
+    Rect r = {
+        (int)(x + width * (1 - scale) / 2),
+        (int)(y + height * (1 - scale) / 2),
+        (int)(width * scale),
+        (int)(height * scale),
+    };
+    return r;
+}
+
 RectF::operator Rect() const
 {
     return { (int)x, (int)y, (int)width, (int)height };
@@ -182,6 +193,17 @@ RectF& RectF::operator/=(float scalar)
     width /= scalar;
     height /= scalar;
     return *this;
+}
+
+RectF RectF::ScaleFromCenter(float scale)
+{
+    RectF r = {
+        x + width * (1 - scale) / 2,
+        y + height * (1 - scale) / 2,
+        width * scale,
+        height * scale,
+    };
+    return r;
 }
 
 Vec2 RectF::origin()

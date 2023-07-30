@@ -32,6 +32,8 @@ struct Rect {
 
     bool inside(RectF other);
     bool inside(Rect other);
+
+    Rect ScaleFromCenter(float scale);
 };
 
 struct RectF {
@@ -57,6 +59,8 @@ struct RectF {
 
     bool contains(Point other);
     bool contains(Vec2 other);
+
+    RectF ScaleFromCenter(float scale);
 };
 
 struct Point {
