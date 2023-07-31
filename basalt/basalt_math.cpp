@@ -162,6 +162,16 @@ bool Rect::operator!=(const Rect& other) const
     return x != other.x || y != other.y || width != other.width || height != other.height;
 }
 
+Rect Rect::operator-() const
+{
+    return {
+        -x,
+        -y,
+        -width,
+        -height,
+    };
+}
+
 RectF::operator Rect() const
 {
     return { (int)x, (int)y, (int)width, (int)height };
@@ -175,6 +185,16 @@ bool RectF::operator==(const RectF& other) const
 bool RectF::operator!=(const RectF& other) const
 {
     return x != other.x || y != other.y || width != other.width || height != other.height;
+}
+
+RectF RectF::operator-() const
+{
+    return {
+        -x,
+        -y,
+        -width,
+        -height,
+    };
 }
 
 RectF RectF::operator*(float scalar)
@@ -370,6 +390,11 @@ Point Point::operator/(const Point& other)
     return p2;
 }
 
+Point Point::operator-() const
+{
+    return { -x, -y };
+}
+
 Point Point::operator*(int scalar)
 {
     Point p2 = { x * scalar, y * scalar };
@@ -451,6 +476,11 @@ Vec2& Vec2::operator/=(float scalar)
     x /= scalar;
     y /= scalar;
     return *this;
+}
+
+Vec2 Vec2::operator-() const
+{
+    return { -x, -y };
 }
 
 Vec2 Vec2::operator+(const Vec2& other)

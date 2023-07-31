@@ -21,6 +21,7 @@ struct Rect {
     bool operator==(const Rect& other) const;
     bool operator!=(const Rect& other) const;
 
+    Rect operator-() const;
     Rect operator*(int scalar);
     Rect operator/(int scalar);
     Rect& operator*=(int scalar);
@@ -48,6 +49,7 @@ struct RectF {
     bool operator==(const RectF& other) const;
     bool operator!=(const RectF& other) const;
 
+    RectF operator-() const;
     RectF operator*(float scalar);
     RectF operator/(float scalar);
     RectF& operator*=(float scalar);
@@ -76,6 +78,7 @@ struct Point {
     bool operator==(const Point& other) const;
     bool operator!=(const Point& other) const;
 
+    Point operator-() const;
     Point& operator+=(const Point& other);
     Point& operator-=(const Point& other);
     Point& operator*=(const Point& other);
@@ -110,6 +113,7 @@ struct Vec2 {
     Vec2& operator*=(float scalar);
     Vec2& operator/=(float scalar);
 
+    Vec2 operator-() const;
     Vec2 operator+(const Vec2& other);
     Vec2 operator-(const Vec2& other);
     Vec2 operator*(const Vec2& other);
