@@ -61,7 +61,7 @@ Rect::operator RectF() const
     ;
 }
 
-Rect Rect::operator*(int scalar)
+Rect Rect::operator*(int scalar) const
 {
     return {
         x * scalar,
@@ -71,7 +71,7 @@ Rect Rect::operator*(int scalar)
     };
 }
 
-Rect Rect::operator/(int scalar)
+Rect Rect::operator/(int scalar) const
 {
     return {
         x / scalar,
@@ -108,7 +108,7 @@ Point Rect::origin()
     return p2;
 }
 
-Point Rect::center()
+Point Rect::center() const
 {
     Point p2 = {
         x + width / 2,
@@ -117,31 +117,31 @@ Point Rect::center()
     return p2;
 }
 
-bool Rect::overlaps(RectF with)
+bool Rect::overlaps(RectF with) const
 {
     return !(x < with.x || y < with.y || x + width > with.x + with.width
              || y + height > with.y + with.height);
 }
 
-bool Rect::overlaps(Rect with)
+bool Rect::overlaps(Rect with) const
 {
     return !(x < with.x || y < with.y || x + width > with.x + with.width
              || y + height > with.y + with.height);
 }
 
-bool Rect::inside(RectF other)
+bool Rect::inside(RectF other) const
 {
     return x > other.x && y > other.y && x + width < other.x + other.width
            && y + height < other.y + other.height;
 }
 
-bool Rect::inside(Rect other)
+bool Rect::inside(Rect other) const
 {
     return x > other.x && y > other.y && x + width < other.x + other.width
            && y + height < other.y + other.height;
 }
 
-Rect Rect::ScaleFromCenter(float scale)
+Rect Rect::ScaleFromCenter(float scale) const
 {
     Rect r = {
         (int)(x + width * (1 - scale) / 2),
@@ -197,7 +197,7 @@ RectF RectF::operator-() const
     };
 }
 
-RectF RectF::operator*(float scalar)
+RectF RectF::operator*(float scalar) const
 {
     return {
         x * scalar,
@@ -207,7 +207,7 @@ RectF RectF::operator*(float scalar)
     };
 }
 
-RectF RectF::operator/(float scalar)
+RectF RectF::operator/(float scalar) const
 {
     return {
         x / scalar,
@@ -235,7 +235,7 @@ RectF& RectF::operator/=(float scalar)
     return *this;
 }
 
-RectF RectF::ScaleFromCenter(float scale)
+RectF RectF::ScaleFromCenter(float scale) const
 {
     RectF r = {
         x + width * (1 - scale) / 2,
@@ -255,7 +255,7 @@ Vec2 RectF::origin()
     return v2;
 }
 
-Vec2 RectF::center()
+Vec2 RectF::center() const
 {
     Vec2 v2 = {
         x + width * 0.5f,
@@ -264,27 +264,22 @@ Vec2 RectF::center()
     return v2;
 }
 
-bool RectF::overlaps(RectF with)
+bool RectF::overlaps(RectF with) const
 {
     return !(x < with.x || y < with.y || x + width > with.x + with.width
              || y + height > with.y + with.height);
 }
 
-bool RectF::overlaps(Rect with)
+bool RectF::overlaps(Rect with) const
 {
     return !(x < with.x || y < with.y || x + width > with.x + with.width
              || y + height > with.y + with.height);
 }
 
-bool RectF::inside(RectF other)
+bool RectF::inside(RectF other) const
 {
     return x > other.x && x + width < other.x + other.width && y > other.y
            && y + height < other.y + other.height;
-}
-
-bool RectF::inside(Rect other)
-{
-    return inside((RectF)other);
 }
 
 bool RectF::contains(Point other)
@@ -354,7 +349,7 @@ Point& Point::operator/=(int scalar)
     return *this;
 }
 
-Point Point::operator+(const Point& other)
+Point Point::operator+(const Point& other) const
 {
     Point p2 = {
         x + other.x,
@@ -363,7 +358,7 @@ Point Point::operator+(const Point& other)
     return p2;
 }
 
-Point Point::operator-(const Point& other)
+Point Point::operator-(const Point& other) const
 {
     Point p2 = {
         x - other.x,
@@ -372,7 +367,7 @@ Point Point::operator-(const Point& other)
     return p2;
 }
 
-Point Point::operator*(const Point& other)
+Point Point::operator*(const Point& other) const
 {
     Point p2 = {
         x * other.x,
@@ -381,7 +376,7 @@ Point Point::operator*(const Point& other)
     return p2;
 }
 
-Point Point::operator/(const Point& other)
+Point Point::operator/(const Point& other) const
 {
     Point p2 = {
         x / other.x,
@@ -395,25 +390,25 @@ Point Point::operator-() const
     return { -x, -y };
 }
 
-Point Point::operator*(int scalar)
+Point Point::operator*(int scalar) const
 {
     Point p2 = { x * scalar, y * scalar };
     return p2;
 }
 
-Point Point::operator/(int scalar)
+Point Point::operator/(int scalar) const
 {
     Point p2 = { x / scalar, y / scalar };
     return p2;
 }
 
-bool Point::inside(RectF other)
+bool Point::inside(RectF other) const
 {
     return x >= other.x && x <= other.x + other.width && y >= other.y
            && y <= other.y + other.height;
 }
 
-bool Point::inside(Rect other)
+bool Point::inside(Rect other) const
 {
     return x >= other.x && x <= other.x + other.width && y >= other.y
            && y <= other.y + other.height;
@@ -483,7 +478,7 @@ Vec2 Vec2::operator-() const
     return { -x, -y };
 }
 
-Vec2 Vec2::operator+(const Vec2& other)
+Vec2 Vec2::operator+(const Vec2& other) const
 {
     Vec2 v2 = {
         x + other.x,
@@ -492,7 +487,7 @@ Vec2 Vec2::operator+(const Vec2& other)
     return v2;
 }
 
-Vec2 Vec2::operator-(const Vec2& other)
+Vec2 Vec2::operator-(const Vec2& other) const
 {
     Vec2 v2 = {
         x - other.x,
@@ -501,7 +496,7 @@ Vec2 Vec2::operator-(const Vec2& other)
     return v2;
 }
 
-Vec2 Vec2::operator*(const Vec2& other)
+Vec2 Vec2::operator*(const Vec2& other) const
 {
     Vec2 v2 = {
         x * other.x,
@@ -510,7 +505,7 @@ Vec2 Vec2::operator*(const Vec2& other)
     return v2;
 }
 
-Vec2 Vec2::operator/(const Vec2& other)
+Vec2 Vec2::operator/(const Vec2& other) const
 {
     Vec2 v2 = {
         x / other.x,
@@ -519,7 +514,7 @@ Vec2 Vec2::operator/(const Vec2& other)
     return v2;
 }
 
-Vec2 Vec2::operator/(float scalar)
+Vec2 Vec2::operator/(float scalar) const
 {
     Vec2 v2 = {
         x / scalar,
@@ -528,7 +523,7 @@ Vec2 Vec2::operator/(float scalar)
     return v2;
 }
 
-Vec2 Vec2::operator*(float scalar)
+Vec2 Vec2::operator*(float scalar) const
 {
     Vec2 v2 = {
         x * scalar,
@@ -537,13 +532,13 @@ Vec2 Vec2::operator*(float scalar)
     return v2;
 }
 
-bool Vec2::inside(RectF other)
+bool Vec2::inside(RectF other) const
 {
     return x >= other.x && x <= other.x + other.width && y >= other.y
            && y <= other.y + other.height;
 }
 
-bool Vec2::inside(Rect other)
+bool Vec2::inside(Rect other) const
 {
     return x >= other.x && x <= other.x + other.width && y >= other.y
            && y <= other.y + other.height;
@@ -556,24 +551,24 @@ Vec2 Vec2::normalize()
     return norm;
 }
 
-float Vec2::magnitude()
+float Vec2::magnitude() const
 {
     return sqrt(x * x + y * y);
 }
 
-Vec2 Vec2::directionTowards(Vec2 dest)
+Vec2 Vec2::directionTowards(Vec2 dest) const
 {
     Vec2 diff = dest - *this;
     return diff.normalize();
 }
 
-float Vec2::distanceSquared(Vec2 dest)
+float Vec2::distanceSquared(Vec2 dest) const
 {
     float dist = ((dest.x - x) * (dest.x - x)) + ((dest.y - y) * (dest.y - y));
     return dist;
 }
 
-float Vec2::distance(Vec2 dest)
+float Vec2::distance(Vec2 dest) const
 {
     float distSquared = distanceSquared(dest);
     float distRoot = sqrtf(distSquared);

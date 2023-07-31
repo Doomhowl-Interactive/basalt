@@ -22,21 +22,21 @@ struct Rect {
     bool operator!=(const Rect& other) const;
 
     Rect operator-() const;
-    Rect operator*(int scalar);
-    Rect operator/(int scalar);
+    Rect operator*(int scalar) const;
+    Rect operator/(int scalar) const;
     Rect& operator*=(int scalar);
     Rect& operator/=(int scalar);
 
     Point origin();
-    Point center();
+    Point center() const;
 
-    bool overlaps(RectF with);
-    bool overlaps(Rect with);
+    bool overlaps(RectF with) const;
+    bool overlaps(Rect with) const;
 
-    bool inside(RectF other);
-    bool inside(Rect other);
+    bool inside(RectF other) const;
+    bool inside(Rect other) const;
 
-    Rect ScaleFromCenter(float scale);
+    Rect ScaleFromCenter(float scale) const;
 };
 
 struct RectF {
@@ -50,24 +50,22 @@ struct RectF {
     bool operator!=(const RectF& other) const;
 
     RectF operator-() const;
-    RectF operator*(float scalar);
-    RectF operator/(float scalar);
+    RectF operator*(float scalar) const;
+    RectF operator/(float scalar) const;
     RectF& operator*=(float scalar);
     RectF& operator/=(float scalar);
 
     Vec2 origin();
-    Vec2 center();
+    Vec2 center() const;
 
-    bool overlaps(RectF with);
-    bool overlaps(Rect with);
-
-    bool inside(RectF other);
-    bool inside(Rect other);
+    bool overlaps(RectF with) const;
+    bool overlaps(Rect with) const;
+    bool inside(RectF other) const;
 
     bool contains(Point other);
     bool contains(Vec2 other);
 
-    RectF ScaleFromCenter(float scale);
+    RectF ScaleFromCenter(float scale) const;
 };
 
 struct Point {
@@ -86,15 +84,15 @@ struct Point {
     Point& operator*=(int scalar);
     Point& operator/=(int scalar);
 
-    Point operator+(const Point& other);
-    Point operator-(const Point& other);
-    Point operator*(const Point& other);
-    Point operator/(const Point& other);
-    Point operator*(int scalar);
-    Point operator/(int scalar);
+    Point operator+(const Point& other) const;
+    Point operator-(const Point& other) const;
+    Point operator*(const Point& other) const;
+    Point operator/(const Point& other) const;
+    Point operator*(int scalar) const;
+    Point operator/(int scalar) const;
 
-    bool inside(RectF other);
-    bool inside(Rect other);
+    bool inside(RectF other) const;
+    bool inside(Rect other) const;
 };
 
 struct Vec2 {
@@ -114,23 +112,23 @@ struct Vec2 {
     Vec2& operator/=(float scalar);
 
     Vec2 operator-() const;
-    Vec2 operator+(const Vec2& other);
-    Vec2 operator-(const Vec2& other);
-    Vec2 operator*(const Vec2& other);
-    Vec2 operator/(const Vec2& other);
-    Vec2 operator*(float scalar);
-    Vec2 operator/(float scalar);
+    Vec2 operator+(const Vec2& other) const;
+    Vec2 operator-(const Vec2& other) const;
+    Vec2 operator*(const Vec2& other) const;
+    Vec2 operator/(const Vec2& other) const;
+    Vec2 operator*(float scalar) const;
+    Vec2 operator/(float scalar) const;
 
-    bool inside(RectF other);
-    bool inside(Rect other);
+    bool inside(RectF other) const;
+    bool inside(Rect other) const;
 
     Vec2 normalize();
-    float magnitude();  // pythagorem theorem
+    float magnitude() const;  // pythagorem theorem
 
-    Vec2 directionTowards(Vec2 dest);
+    Vec2 directionTowards(Vec2 dest) const;
 
-    float distance(Vec2 dest);
-    float distanceSquared(Vec2 dest);
+    float distance(Vec2 dest) const;
+    float distanceSquared(Vec2 dest) const;
 };
 
 // RNG
