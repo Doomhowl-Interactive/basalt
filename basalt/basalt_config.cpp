@@ -26,29 +26,11 @@ static bool EnableAll = false;
 struct Options : vector<Option> {
     Options(EngineConfig& conf)
     {
-        push_back({ &conf.hasArchaeo,
-                    "-a",
-                    "--archaeo",
-                    "Enables tooling to inspect draw calls. (EXPENSIVE)" });
-
-        push_back({ &conf.hasHotloading,
-                    "-h",
-                    "--hotloading",
-                    "Enables hot-reloading if original asset folder is found." });
         push_back({ &conf.hasUnitTesting, "-t", "--test", "Does unit testing before launch" });
-        push_back({ &conf.hasConsole, "-s", "--show", "Open console logs (Windows only)" });
         push_back({ &conf.unlockedFramerate,
                     "-u",
                     "--unlock",
                     "Unlocks the framerate (not recommended)" });
-        push_back({ &conf.isHeadless,
-                    "-H",
-                    "--headless",
-                    "Hot reloads game code from a dynamic library" });
-        push_back({ &conf.lowQuality,
-                    "-l",
-                    "--low",
-                    "Decreases visual effects for higher performance." });
 
         push_back({ &EnableAll, "-A", "--all", "Enables all of the above." });
         push_back({ &NeedsHelp, "-?", "--help", "Shows this help screen" });
@@ -82,7 +64,7 @@ bool ParseLaunchArguments(EngineConfig* config, int argc, char** argv)
     Config = config;
     for (const auto& o : Options(*Config)) {
         if (HasArgument(argc, argv, o)) {
-            if (o.toggle != NULL)
+            if (o.toggle != nullptr)
                 *(o.toggle) = true;
         }
     }

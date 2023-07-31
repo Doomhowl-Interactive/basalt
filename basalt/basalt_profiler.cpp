@@ -1,10 +1,11 @@
 #include <chrono>
 #include <cassert>
-#include <optional>
 
 #include "basalt_profiler.hpp"
 #include "basalt_window.hpp"
 #include "basalt_utils.hpp"
+
+// TODO: Fix freeze when opening the profiler for the first time.
 
 using namespace std;
 

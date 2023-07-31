@@ -1,16 +1,10 @@
 #pragma once
 
-// TODO: Turn into a single struct
 struct EngineConfig {
-    bool hasArchaeo;
-    bool hasHotloading;
+    bool unlockedFramerate;
     bool hasUnitTesting;
-    bool hasConsole;
     bool hasProfiler;
     bool useSoftware;
-    bool isHeadless;
-    bool unlockedFramerate;
-    bool lowQuality;
 };
 
 struct GameConfig {

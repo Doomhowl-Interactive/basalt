@@ -146,14 +146,9 @@ void Basalt::EndFrame()
 {
     double maxFps = Config.unlockedFramerate ? 10000 : 10;
 
-// Draw profiler overlay
-#ifndef NO_PROFILER
-    if (true || Config.hasProfiler) {
-        if (DrawProfiler(*canvas)) {
-            UpdateProfiler();
-        }
+    if (Config.hasProfiler && DrawProfiler(*canvas)) {
+        UpdateProfiler();
     }
-#endif
 
     DrawDefaultFrame();
 
