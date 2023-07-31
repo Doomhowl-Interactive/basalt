@@ -5,7 +5,6 @@
 # define PI 3.14159265358979323846
 #endif
 
-// TODO: Add equality operators
 // TODO: Add negation operator
 
 struct RectF;
@@ -19,6 +18,9 @@ struct Rect {
     int height;
 
     operator RectF() const;
+    bool operator==(const Rect& other) const;
+    bool operator!=(const Rect& other) const;
+
     Rect operator*(int scalar);
     Rect operator/(int scalar);
     Rect& operator*=(int scalar);
@@ -43,6 +45,9 @@ struct RectF {
     float height;
 
     operator Rect() const;
+    bool operator==(const RectF& other) const;
+    bool operator!=(const RectF& other) const;
+
     RectF operator*(float scalar);
     RectF operator/(float scalar);
     RectF& operator*=(float scalar);
@@ -68,7 +73,9 @@ struct Point {
     int y;
 
     operator Vec2() const;
-    bool operator==(const Point& other);
+    bool operator==(const Point& other) const;
+    bool operator!=(const Point& other) const;
+
     Point& operator+=(const Point& other);
     Point& operator-=(const Point& other);
     Point& operator*=(const Point& other);
@@ -93,6 +100,9 @@ struct Vec2 {
     float z;
 
     operator Point() const;
+    bool operator==(const Vec2& other) const;
+    bool operator!=(const Vec2& other) const;
+
     Vec2& operator+=(const Vec2& other);
     Vec2& operator-=(const Vec2& other);
     Vec2& operator*=(const Vec2& other);

@@ -152,9 +152,29 @@ Rect Rect::ScaleFromCenter(float scale)
     return r;
 }
 
+bool Rect::operator==(const Rect& other) const
+{
+    return x == other.x && y == other.y && width == other.width && height == other.height;
+}
+
+bool Rect::operator!=(const Rect& other) const
+{
+    return x != other.x || y != other.y || width != other.width || height != other.height;
+}
+
 RectF::operator Rect() const
 {
     return { (int)x, (int)y, (int)width, (int)height };
+}
+
+bool RectF::operator==(const RectF& other) const
+{
+    return x == other.x && y == other.y && width == other.width && height == other.height;
+}
+
+bool RectF::operator!=(const RectF& other) const
+{
+    return x != other.x || y != other.y || width != other.width || height != other.height;
 }
 
 RectF RectF::operator*(float scalar)
@@ -262,9 +282,14 @@ Point::operator Vec2() const
     return { (float)x, (float)y };
 }
 
-bool Point::operator==(const Point& other)
+bool Point::operator==(const Point& other) const
 {
     return x == other.x && y == other.y;
+}
+
+bool Point::operator!=(const Point& other) const
+{
+    return x != other.x || y != other.y;
 }
 
 Point& Point::operator+=(const Point& other)
@@ -374,6 +399,16 @@ bool Point::inside(Rect other)
 Vec2::operator Point() const
 {
     return { (int)x, (int)y };
+}
+
+bool Vec2::operator==(const Vec2& other) const
+{
+    return x == other.x && y == other.y;
+}
+
+bool Vec2::operator!=(const Vec2& other) const
+{
+    return x != other.x || y != other.y;
 }
 
 Vec2& Vec2::operator+=(const Vec2& other)
