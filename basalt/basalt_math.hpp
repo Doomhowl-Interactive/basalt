@@ -153,9 +153,14 @@ template <typename T> T Clamp(T value, T min, T max)
     return value;
 }
 
-// TODO: Inconstent parameters with Clamp!!!
-template <typename T> T Lerp(T start, T end, float percent)
+template <typename T> T Lerp(float percent, T start, T end)
 {
+    if (start == end) {
+        return start;
+    }
+    if (start > end) {
+        return (start - percent * (start - end));
+    }
     return (start + percent * (end - start));
 }
 

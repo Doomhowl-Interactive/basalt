@@ -4,7 +4,7 @@ float DistanceToEdge(float min, float max, float y)
 {
     Point mouse = GetMousePosition();
     float dist = mouse.y - y;
-    return Lerp(min, max, dist);
+    return Lerp(dist, min, max);
 }
 
 float ScrollOnWindowEdges(int height = 100)
