@@ -2,7 +2,7 @@
 
 using namespace std;
 
-void UpdateAndRenderGame(Texture canvas, float delta)
+void UpdateAndRenderGame(Image& canvas, float delta)
 {
     canvas.Clear(PURPLE);
     canvas.DrawBasaltText("Hello Basalt3D!", 10, 10, RED);
@@ -18,9 +18,8 @@ bool RunGame(int argc, char** argv)
 
     auto engine = Basalt(config, argc, argv);
     while (!engine.ShouldClose()) {
-        Texture canvas = engine.BeginFrame();
-
-        UpdateAndRenderGame(canvas, GetDeltaTime());
+        auto canvas = engine.BeginFrame();
+        UpdateAndRenderGame(*canvas, (float)GetDeltaTime());
         engine.EndFrame();
     }
 
