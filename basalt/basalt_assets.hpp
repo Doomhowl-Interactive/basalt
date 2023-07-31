@@ -5,7 +5,5 @@
 #include "basalt_images.hpp"
 
 std::filesystem::path& GetWorkingDirectory();
-std::optional<std::filesystem::path> GetExecutableDirectory();
-
 std::optional<std::string> SearchAsset(std::string assetName, std::string extension = "");
 Image LoadTexture(std::string name);

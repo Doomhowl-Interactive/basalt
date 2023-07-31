@@ -33,29 +33,6 @@ bool RunGame(int argc, char** argv)
     return engine.exitCode;
 }
 
-// TODO: Abstract this away!
-#ifdef WIN32
-int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
-{
-# ifndef _DEBUG
-    try {
-# endif
-        return RunGame(__argc, __argv);
-# ifndef _DEBUG
-    } catch (exception e) {
-        HandleFatalException(e);
-        return -1;
-    }
-# endif
-}
-#endif
-#ifdef __APPLE__
-int main(int argc, char** argv)
-{
-    return RunGame(argc, argv);
-}
-#endif
-
 void UpdateAndRenderGame(shared_ptr<Image>& canvas, float delta)
 {
     static float offsetY = 0;
@@ -104,3 +81,5 @@ void UpdateAndRenderGame(shared_ptr<Image>& canvas, float delta)
         throw BasaltException("I am a teapot.");
     }
 }
+
+BasaltMain

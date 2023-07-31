@@ -34,7 +34,4 @@ int RunGame(int argc, char** argv)
     return engine.exitCode;
 }
 
-int main(int argc, char** argv)
-{
-    return RunGame(argc, argv);
-}
+BasaltMain

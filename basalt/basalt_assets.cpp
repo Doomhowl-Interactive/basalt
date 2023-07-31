@@ -16,21 +16,6 @@
 namespace fs = std::filesystem;
 using namespace std;
 
-static void RelocateToExecutable()
-{
-    // Change the working directory to the executable folder.
-    // This is needed because so the assets are always found.
-    auto executablePath = GetExecutableDirectory();
-    if (executablePath) {
-        if (fs::current_path() != executablePath) {
-            fs::current_path(executablePath.value());
-            spdlog::debug("Relocated to executable folder: {}", executablePath.value().string());
-        }
-    } else {
-        spdlog::error("Relocating is only possible on Windows!");
-    }
-}
-
 optional<string> SearchAsset(string assetName, string extension)
 {
     // HACK: !
@@ -41,8 +26,6 @@ optional<string> SearchAsset(string assetName, string extension)
             "../../../assets",
             "/Users/bram/dev/basalt/basalt/assets",
             "/Users/bram/dev/basalt/games/snake-feeder/assets" };
-
-    RelocateToExecutable();
 
     fs::path assetFileName = fs::path(assetName);
     if (!extension.empty() && !assetFileName.has_extension()) {
@@ -80,42 +63,15 @@ optional<string> SearchAsset(string assetName, string extension)
     return nullopt;
 }
 
-// TODO: clean this up into win32_basalt and unix_basalt
 fs::path& GetWorkingDirectory()
 {
     static fs::path workingDirectory = "";
-#ifdef WIN32
-    if (workingDirectory == "") {
-        char buffer[MAX_PATH];
-        GetCurrentDirectoryA(MAX_PATH, buffer);
-        workingDirectory = buffer;
-    }
-#elif defined(__linux__) || defined(__APPLE__)
     if (workingDirectory == "") {
         char buffer[PATH_MAX];
         getcwd(buffer, PATH_MAX);
         workingDirectory = buffer;
     }
-#endif
     return workingDirectory;
-}
-
-optional<fs::path> GetExecutableDirectory()
-{
-    static fs::path executableDirectory = "";
-#ifdef WIN32
-    if (executableDirectory == "") {
-        char buffer[MAX_PATH];
-        GetModuleFileNameA(NULL, buffer, MAX_PATH);
-        executableDirectory = buffer;
-        executableDirectory = executableDirectory.parent_path();
-    }
-#endif
-    if (executableDirectory == "") {
-        return nullopt;
-    } else {
-        return executableDirectory;
-    }
 }
 
 // TODO: Use SDL_Image to load the texture
