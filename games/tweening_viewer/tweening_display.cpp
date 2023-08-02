@@ -1,5 +1,6 @@
 #include <string>
 #include <unordered_map>
+#include <functional>
 
 using namespace std;
 
@@ -12,9 +13,9 @@ constexpr uint MARGIN_BOTTOM = 10;
 constexpr float END_DELAY = 1.f;
 
 #define TWEEN_ITEM(X) \
-    { \
-        #X, X \
-    }
+ { \
+#  X, X \
+ }
 
 static const unordered_map<string, TweeningFunction> tweeningFunctions
     = { TWEEN_ITEM(TweenLinear), TWEEN_ITEM(TweenSmooth), TWEEN_ITEM(TweenSmooth2),

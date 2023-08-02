@@ -3,7 +3,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_C_STANDARD 11)
 
 file(GLOB_RECURSE SOURCES *.hpp)
-add_executable(${PROJECT_NAME} ${SOURCES} tweening_viewer.cpp)
+add_executable(${PROJECT_NAME} WIN32 ${SOURCES} tweening_viewer.cpp)
 
 set(LIBS
         basalt
