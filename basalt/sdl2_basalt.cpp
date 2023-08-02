@@ -144,7 +144,7 @@ shared_ptr<Image> Basalt::BeginFrame()
 
 void Basalt::EndFrame()
 {
-    double maxFps = Config.unlockedFramerate ? 10000 : 10;
+    double maxFps = Config.unlockedFramerate ? 10000 : 60;
 
     if (Config.hasProfiler && DrawProfiler(*canvas)) {
         UpdateProfiler();
