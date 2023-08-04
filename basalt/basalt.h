@@ -11,3 +11,4 @@
 #include "basalt_utils.hpp"
 #include "basalt_window.hpp"
 #include "basalt_instance.hpp"
+#include "basalt_persistence.hpp"

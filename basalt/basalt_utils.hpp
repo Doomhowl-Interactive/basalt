@@ -15,6 +15,8 @@ std::string& PadStringLeft(std::string text, char symbol, size_t length);
 bool FileHasExtension(const std::string folder, const std::string ext);
 bool FolderExists(const std::string folder);
 
+void ReplaceAll(std::string& str, const std::string& from, const std::string& to);
+
 std::string ConcatStrings(const std::vector<std::string> lines, char sep = '\n');
 
 template <class T> inline void CombineHash(size_t& seed, const T& v)

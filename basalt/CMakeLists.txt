@@ -5,7 +5,7 @@ set(CMAKE_C_STANDARD 11)
 # TODO: Create a "basalt-launcher" project that links all the libraries together,
 # so we don't need to copypasta cmake files everywhere.
 
-file(GLOB_RECURSE SOURCES *.cpp *.hpp)
+file(GLOB_RECURSE SOURCES *.cpp *.hpp *.h)
 add_library(${PROJECT_NAME} STATIC ${SOURCES})
 
 SET(EXTRA_HEADER_FOLDERS 

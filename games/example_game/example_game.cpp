@@ -68,6 +68,19 @@ void UpdateAndRenderGame(shared_ptr<Image>& canvas, float delta)
                                  debugStyle,
                                  debugStyle.wColor(DARKRED));
 
+    string dataFolder;
+    auto folder = GetAppDataPath("Doomhowl Interactive", "ExampleGame");
+    if (folder) {
+        dataFolder = folder->string();
+    } else {
+        dataFolder = "(unknown)";
+    }
+    
+    // split datafolder over multiple lines
+    ReplaceAll(dataFolder, "/", "/\n");
+    string dataFolderText = "App data folder: " + dataFolder;
+    canvas->DrawBasaltTextShadow(dataFolderText, 10, 180, Font::Default(), debugStyle.wSize(15).wColor(PURPLE), debugStyle.wColor(BLACK).wSize(15));
+    
     // simulate crashes to demonstrate crash handler
     if (IsKeyPressed(KEY_DELETE)) {
         int* val = new int[5];
