@@ -40,6 +40,7 @@ void SetWindowTitle(string title)
 void Basalt::Close(int code)
 {
     exitCode = code;
+    spdlog::info("Closing Basalt with exit code {}", code);
 }
 
 Basalt::Basalt(GameConfig config, int argc, char** argv)
@@ -50,15 +51,13 @@ Basalt::Basalt(GameConfig config, int argc, char** argv)
         return;
     }
 
-    this->exitCode = EXIT_SUCCESS;
-
-    EngineConfig Config = { 0 };
+    instanceExists = true;
+    Game = config;
+    
     if (!ParseLaunchArguments(&Config, argc, argv)) {
         Close(EXIT_SUCCESS);
         return;
     }
-
-    Game = config;
 
     auto copyright = FormatText("Copyright %s (2023) - %s", Game.company, Game.title);
     PrintASCIILogo(copyright);
@@ -105,11 +104,10 @@ Basalt::Basalt(GameConfig config, int argc, char** argv)
 bool Basalt::ShouldClose()
 {
     static Uint32 maxFps = Config.unlockedFramerate ? 10000 : 60;
+    static Uint64 startTicks = SDL_GetTicks();
     static float delta = 0.f;
 
-    static Uint64 startTicks = SDL_GetTicks();
-
-    if (exitCode == EXIT_FAILURE) {
+    if (exitCode.has_value()) {
         return true;
     }
 

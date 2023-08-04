@@ -1,5 +1,6 @@
 #pragma once
 #include <memory>
+#include <optional>
 
 #include "basalt_images.hpp"
 #include "basalt_config.hpp"
@@ -7,7 +8,7 @@
 
 // TODO: Replace old logging with spdlog
 struct Basalt {
-    int exitCode;
+    std::optional<int> exitCode;
 
     Basalt(GameConfig config, int argc, char** argv);
     ~Basalt();
