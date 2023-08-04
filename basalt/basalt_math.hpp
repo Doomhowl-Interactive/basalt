@@ -79,6 +79,11 @@ struct Point {
     Point operator-() const;
     Point& operator+=(const Point& other);
     Point& operator-=(const Point& other);
+
+    // TODO: also add these operators for Vec2
+    Point& operator+=(int offset);
+    Point& operator-=(int offset);
+
     Point& operator*=(const Point& other);
     Point& operator/=(const Point& other);
     Point& operator*=(int scalar);
@@ -88,6 +93,11 @@ struct Point {
     Point operator-(const Point& other) const;
     Point operator*(const Point& other) const;
     Point operator/(const Point& other) const;
+
+    // TODO: also add these operators for Vec2
+    Point operator+(int offset) const;
+    Point operator-(int offset) const;
+
     Point operator*(int scalar) const;
     Point operator/(int scalar) const;
 

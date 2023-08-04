@@ -321,6 +321,20 @@ Point& Point::operator-=(const Point& other)
     return *this;
 }
 
+Point& Point::operator+=(int offset)
+{
+    x += offset;
+    y += offset;
+    return *this;
+}
+
+Point& Point::operator-=(int offset)
+{
+    x -= offset;
+    y -= offset;
+    return *this;
+}
+
 Point& Point::operator*=(const Point& other)
 {
     x *= other.x;
@@ -364,6 +378,18 @@ Point Point::operator-(const Point& other) const
         x - other.x,
         y - other.y,
     };
+    return p2;
+}
+
+Point Point::operator+(int offset) const
+{
+    Point p2 = { x + offset, y + offset };
+    return p2;
+}
+
+Point Point::operator-(int offset) const
+{
+    Point p2 = { x - offset, y - offset };
     return p2;
 }
 
