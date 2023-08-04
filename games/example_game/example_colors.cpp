@@ -6,7 +6,6 @@
 
 using namespace std;
 
-static Color InterpolateHue(float t);
 Image BakeRainbowImage(int width, int height)
 {
     vector<Color> pixels(width * height);
@@ -22,7 +21,7 @@ Image BakeRainbowImage(int width, int height)
     return Image(Image(width, height, pixels));
 }
 
-static Color InterpolateHue(float t)
+Color InterpolateHue(float t)
 {
     float hue = fmodf(t, 1.0f);  // Wrap the interpolation parameter if it goes beyond 1
 

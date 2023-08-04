@@ -15,6 +15,7 @@ set(LIBS
 target_link_libraries(${PROJECT_NAME} ${LIBS} ${PLAT_LIBS})
 
 SET(EXTRA_HEADER_FOLDERS
+        "${CMAKE_CURRENT_SOURCE_DIR}"
         "${CMAKE_CURRENT_SOURCE_DIR}/../../vendor"
         "${CMAKE_CURRENT_SOURCE_DIR}/../../basalt"
         )

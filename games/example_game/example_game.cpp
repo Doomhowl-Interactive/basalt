@@ -30,7 +30,7 @@ bool RunGame(int argc, char** argv)
         engine.EndFrame();
     }
 
-    return engine.exitCode;
+    return engine.exitCode.value_or(EXIT_SUCCESS);
 }
 
 void UpdateAndRenderGame(shared_ptr<Image>& canvas, float delta)
@@ -44,9 +44,7 @@ void UpdateAndRenderGame(shared_ptr<Image>& canvas, float delta)
     canvas->Blit(*rainbowImage, 0, (int)offsetY - canvas->height, WHITE);
     canvas->Blit(*rainbowImage, 0, (int)offsetY, WHITE);
 
-    canvas->DrawRectangle(20, 50, 100, 100, RED);
-    canvas->DrawRectangle(30, 10, 100, 100, BLUE);
-    canvas->DrawLine(100, 100, 200, 200, GREEN);
+    DrawTrippyPattern(*canvas, 70, 100, 10);
 
     static FontStyle backStyle = style.wColor(BLACK);
     canvas->DrawBasaltTextShadow("Hello Basalt!",
