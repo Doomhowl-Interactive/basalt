@@ -12,7 +12,7 @@ struct Basalt {
     Basalt(GameConfig config, int argc, char** argv);
     ~Basalt();
 
-    void Close(int code);
+    void Close(int code = 0);
     bool ShouldClose();
     std::shared_ptr<Image> BeginFrame();
     void EndFrame();
