@@ -76,6 +76,8 @@ struct Image {
         const;
     void DrawRectangleLines(Rect rect, int border, Color tint);
 
+    void DrawRectangleCorners(Point firstCorner, Point secondCorner, Color color);
+    
     // DrawText is already taken by windows.h
     // @deprecated Use overloaded method with TextStyle instead.
     void DrawBasaltText(std::string text,

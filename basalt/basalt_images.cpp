@@ -224,3 +224,19 @@ void Image::DrawRectangleLines(Rect rect, int border, Color tint)
 {
     DrawRectangleLines(rect.x, rect.y, rect.width, rect.height, border, tint);
 }
+
+void Image::DrawRectangleCorners(Point firstCorner, Point secondCorner, Color color)
+{
+    if (firstCorner.x > secondCorner.x) {
+        swap(firstCorner.x, secondCorner.x);
+    }
+    if (firstCorner.y > secondCorner.y) {
+        swap(firstCorner.y, secondCorner.y);
+    }
+
+    DrawRectangle(firstCorner.x,
+                  firstCorner.y,
+                  secondCorner.x - firstCorner.x,
+                  secondCorner.y - firstCorner.y,
+                  color);
+}
