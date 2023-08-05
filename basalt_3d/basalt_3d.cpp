@@ -4,7 +4,8 @@
 #include "pch.h"
 #include "framework.h"
 
-// TODO: This is an example of a library function
-void fnbasalt3d()
+#include "basalt_3d.h"
+
+void DrawModel()
 {
 }
