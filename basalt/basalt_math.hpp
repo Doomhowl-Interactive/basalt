@@ -27,9 +27,12 @@ struct Rect {
     Rect& operator*=(int scalar);
     Rect& operator/=(int scalar);
 
-    Point origin();
+    Point origin() const;
     Point center() const;
 
+    int bottom() const;
+    int right() const;
+    
     bool overlaps(RectF with) const;
     bool overlaps(Rect with) const;
 
@@ -55,9 +58,12 @@ struct RectF {
     RectF& operator*=(float scalar);
     RectF& operator/=(float scalar);
 
-    Vec2 origin();
+    Vec2 origin() const;
     Vec2 center() const;
 
+    float bottom() const;
+    float right() const;
+    
     bool overlaps(RectF with) const;
     bool overlaps(Rect with) const;
     bool inside(RectF other) const;

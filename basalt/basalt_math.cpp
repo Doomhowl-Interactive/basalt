@@ -58,7 +58,6 @@ Rect::operator RectF() const
         (float)width,
         (float)height,
     };
-    ;
 }
 
 Rect Rect::operator*(int scalar) const
@@ -99,7 +98,7 @@ Rect& Rect::operator/=(int scalar)
     return *this;
 }
 
-Point Rect::origin()
+Point Rect::origin() const
 {
     Point p2 = {
         x,
@@ -115,6 +114,14 @@ Point Rect::center() const
         y + height / 2,
     };
     return p2;
+}
+
+int Rect::right() const {
+    return x + width;
+}
+
+int Rect::bottom() const {
+    return y + height;
 }
 
 bool Rect::overlaps(RectF with) const
@@ -246,7 +253,7 @@ RectF RectF::ScaleFromCenter(float scale) const
     return r;
 }
 
-Vec2 RectF::origin()
+Vec2 RectF::origin() const
 {
     Vec2 v2 = {
         x,
@@ -262,6 +269,14 @@ Vec2 RectF::center() const
         y + height * 0.5f,
     };
     return v2;
+}
+
+float RectF::right() const {
+    return x + width;
+}
+
+float RectF::bottom() const {
+    return y + height;
 }
 
 bool RectF::overlaps(RectF with) const
