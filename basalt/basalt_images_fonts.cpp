@@ -76,10 +76,11 @@ static shared_ptr<CachedText> GetOrCacheText(string text,
     try {
         cached = TextCache.at(hash);
     } catch (out_of_range) {
+        constexpr int MAX_CACHE = 30;
         cached = make_shared<CachedText>(text, font, style);
 
         // remove old
-        if (TextCache.size() > 100) {
+        if (TextCache.size() > MAX_CACHE) {
             for (auto it = TextCache.begin(); it != TextCache.end();) {
                 if (it->second->isOld()) {
                     it = TextCache.erase(it);
@@ -89,7 +90,7 @@ static shared_ptr<CachedText> GetOrCacheText(string text,
             }
         }
         // remove any if previous step wasn't enough
-        if (TextCache.size() > 100) {
+        if (TextCache.size() > MAX_CACHE) {
             TextCache.erase(TextCache.begin());
         }
 
@@ -183,6 +184,10 @@ void Image::DrawBasaltText(std::string text, int posX, int posY, Font font, Font
 {
     if (style.size > 1000) {
         spdlog::warn("Font size is too big: {}", style.size);
+        return;
+    }
+    
+    if (text.empty()) {
         return;
     }
 
