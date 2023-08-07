@@ -7,6 +7,7 @@ enum ScanCode : uint;
 
 Point GetMousePosition();
 
+// TODO: add other mouse buttons than left click
 bool IsMouseDown();
 bool IsMousePressed();
 bool IsMouseUp();
@@ -16,6 +17,11 @@ bool IsKeyUp(KeyCode code);
 
 bool IsKeyPressed(KeyCode code);
 bool IsKeyReleased(KeyCode code);
+
+void ProcessKeyDown(KeyCode code);
+void ProcessKeyUp(KeyCode code);
+void ProcessMouseDown();
+void ProcessMouseUp();
 
 #define SCANCODE_MASK (1 << 30)
 #define SCANCODE_TO_KEYCODE(X) (X | SCANCODE_MASK)

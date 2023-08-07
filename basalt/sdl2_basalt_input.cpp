@@ -36,11 +36,12 @@ bool ProcessKeyboardInput(SDL_Event* e)
         }
 
         bool isDown = e->type == SDL_EVENT_KEY_DOWN;
-        pressedKeys[key] = isDown;
-        pressedKeysFrame[key] = isDown;
-
-        // SDL_Log("Key %s was %s", SDL_GetKeyName(key), keyevent.state == SDL_KEYDOWN ? "pressed" :
-        // "released");
+        if (isDown) {
+            ProcessKeyDown((KeyCode)key);
+        }else {
+            ProcessKeyUp((KeyCode)key);
+        }
+        
     }
     return true;
 }
@@ -60,6 +61,16 @@ void ProcessMouseInput()
     } else if (!(SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_LEFT))) {
         mouseState = MOUSE_UP;
     }
+}
+
+void ProcessKeyDown(KeyCode code){
+    pressedKeys[code] = true;
+    pressedKeysFrame[code] = true;
+}
+
+void ProcessKeyUp(KeyCode code) {
+    pressedKeys[code] = false;
+    pressedKeysFrame[code] = false;
 }
 
 void ClearKeyboardInput()
