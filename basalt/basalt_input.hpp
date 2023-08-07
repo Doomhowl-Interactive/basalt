@@ -1,6 +1,7 @@
 #pragma once
 
 #include "basalt_macros.hpp"
+#include "basalt_math.hpp"
 
 enum KeyCode : uint;
 enum ScanCode : uint;
