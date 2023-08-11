@@ -1,32 +1,13 @@
 #include <string>
-
+#include <memory>
 #include "basalt_replays.hpp"
 #include "basalt_input.hpp"
 
 using namespace std;
 
-enum class ReplayEventType : uint8_t {
-    MOUSE_DOWN,
-    MOUSE_UP,
-    KEY_DOWN,
-    KEY_UP
-};
+shared_ptr<ReplayRecording> ActiveRecording = nullptr;
 
-struct ReplayEvent {
-    uint64_t frame;
-    ReplayEventType type;
-    KeyCode keyCode;
-};
-
-struct ReplayRecording {
-    unsigned int seed;
-    uint64_t eventCount;
-    ReplayEvent* events;
-};
-
-static string GenerateRecordingName();
-
-void StartRecordingReplay() {
+string StartRecordingReplay() {
     
 }
 
@@ -42,6 +23,6 @@ void StopRecordedReplay() {
     
 }
 
-static string GenerateRecordingName() {
-    return "TODO";
+std::string ReplayRecording::GenerateName() {
+    
 }

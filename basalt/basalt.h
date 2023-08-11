@@ -9,6 +9,7 @@
 #include "basalt_input.hpp"
 #include "basalt_math.hpp"
 #include "basalt_utils.hpp"
+#include "basalt_utils_io.hpp"
 #include "basalt_window.hpp"
 #include "basalt_instance.hpp"
 #include "basalt_persistence.hpp"
