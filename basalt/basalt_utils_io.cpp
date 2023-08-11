@@ -1,5 +1,7 @@
 #include "basalt_utils_io.hpp"
 
+namespace fs = std::filesystem;
+
 bool FileHasExtension(const string name, const string ext)
 {
     return fs::path(name).extension() == ext;
@@ -72,8 +74,4 @@ vector<string> GetFolderFiles(const string folder, const string ext)
     }
 
     return files;
-}
-
-bool FolderContainsFile(string folderPath) {
-    auto files = GetFolderFiles(folderPath);
 }

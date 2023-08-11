@@ -11,5 +11,3 @@ std::string GetFileStem(const std::string filePath);
 // pass NULL ended array
 std::optional<std::string> GetFirstExistingFolder(const std::vector<std::string> folders);
 std::vector<std::string> GetFolderFiles(const std::string folder, const std::string ext="");
-
-bool FolderContainsFile(std::string folderPath);

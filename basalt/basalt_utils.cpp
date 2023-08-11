@@ -12,8 +12,6 @@
 
 using namespace std;
 
-namespace fs = std::filesystem;
-
 // adapted from Raylib
 string FormatText(const char* text, ...)
 {
