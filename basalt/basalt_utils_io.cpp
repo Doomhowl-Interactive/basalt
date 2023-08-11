@@ -57,14 +57,23 @@ vector<string> GetFolderFiles(const string folder, const string ext)
 {
     vector<string> files;
 
+    // If the file doesn't exist return empty vector.
+    if (!fs::exists(folder)) {
+        return {};
+    }
+
     // Iterate over the files in the specified folder
     for (const auto& entry : fs::directory_iterator(folder)) {
         // Check if the current entry is a regular file and has the specified extension
-        if (entry.is_regular_file() && entry.path().extension() == ext) {
+        if (entry.is_regular_file() && (!path.empty() && entry.path().extension() == ext)) {
             // Add the file name to the vector
             files.push_back(entry.path().filename().string());
         }
     }
 
     return files;
+}
+
+bool FolderContainsFile(string folderPath) {
+    auto files = GetFolderFiles(folderPath);
 }
