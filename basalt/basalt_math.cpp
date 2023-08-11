@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <iostream>
+#include <math.h>
 
 #include "basalt_math.hpp"
 

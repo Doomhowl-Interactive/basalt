@@ -1,13 +1,13 @@
 #include <string>
 #include <memory>
-#include <fileysystem>
+#include <filesystem>
 
 #include "basalt_replays.hpp"
 
 using namespace std;
 namespace fs = filesystem;
 
-constexpr fs::path RecordingPath = "recordings";
+static fs::path RecordingPath = fs::path("recordings");
 
 fs::path ReplayRecording::generate_path() {
     fs::create_directories(RecordingPath);
@@ -15,10 +15,10 @@ fs::path ReplayRecording::generate_path() {
     int i = 1;
     do {
         p = RecordingPath / FormatText("recording_%d.rec", i++);  
-    } while(fs::exists(p))
+    } while(fs::exists(p));
     return p;
 }
 
-void UpdateAndRenderReplayOverlay(Texture canvas, float delta) {
+void UpdateAndRenderReplayOverlay(Image canvas, float delta) {
     
 }

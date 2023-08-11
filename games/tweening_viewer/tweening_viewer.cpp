@@ -31,7 +31,7 @@ int RunGame(int argc, char** argv)
         engine.EndFrame();
     }
 
-    return engine.exitCode;
+    return engine.exitCode.value_or(0);
 }
 
 BasaltMain

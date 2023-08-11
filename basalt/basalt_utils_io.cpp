@@ -1,6 +1,8 @@
+#include <vector>
 #include "basalt_utils_io.hpp"
 
 namespace fs = std::filesystem;
+using namespace std;
 
 bool FileHasExtension(const string name, const string ext)
 {
@@ -67,7 +69,8 @@ vector<string> GetFolderFiles(const string folder, const string ext)
     // Iterate over the files in the specified folder
     for (const auto& entry : fs::directory_iterator(folder)) {
         // Check if the current entry is a regular file and has the specified extension
-        if (entry.is_regular_file() && (!path.empty() && entry.path().extension() == ext)) {
+        auto path = entry.path();
+        if (entry.is_regular_file() && (!path.empty() && path.extension() == ext)) {
             // Add the file name to the vector
             files.push_back(entry.path().filename().string());
         }

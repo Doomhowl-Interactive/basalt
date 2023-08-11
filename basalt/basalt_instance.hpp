@@ -1,6 +1,7 @@
 #pragma once
 #include <memory>
 #include <optional>
+#include <functional>
 
 #include "basalt_images.hpp"
 #include "basalt_config.hpp"

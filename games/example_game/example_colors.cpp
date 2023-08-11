@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <memory>
+#include <math.h>
 
 #include "example_game.hpp"
 

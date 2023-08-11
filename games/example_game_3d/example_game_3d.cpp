@@ -8,7 +8,7 @@ void UpdateAndRenderGame(Image& canvas, float delta)
     canvas.DrawBasaltText("Hello Basalt3D!", 10, 10, RED);
 }
 
-bool RunGame(int argc, char** argv)
+int RunGame(int argc, char** argv)
 {
     GameConfig config = { 0 };
     config.title = "Basalt Test Game";
@@ -23,7 +23,7 @@ bool RunGame(int argc, char** argv)
         engine.EndFrame();
     }
 
-    return engine.exitCode;
+    return engine.exitCode.value_or(0);
 }
 
 BasaltMain

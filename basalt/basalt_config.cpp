@@ -1,5 +1,5 @@
 #include <spdlog/spdlog.h>
-#include <string.h>
+#include <string>
 #include <vector>
 
 #include "basalt_utils.hpp"
