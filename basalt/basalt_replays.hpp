@@ -2,6 +2,7 @@
 #include <string>
 #include <memory>
 #include <vector>
+#include <filesystem>
 
 #include "basalt_images.hpp"
 
@@ -22,7 +23,8 @@ class ReplayRecording {
     public:
         unsigned int seed;
         std::vector<ReplayEvent> events;
-        
+        std::filesystem::path filePath;
+
         // Recordings of input should be started before the first frame of the game!
         void Record();
         void StopRecording();
@@ -33,7 +35,7 @@ class ReplayRecording {
         static void RegisterEvent(ReplayEventType type, KeyCode code=0);
     private:
         static std::shared_ptr<ReplayRecording> active;
-        static std::string generate_name();
+        static std::filesystem::path generate_path();
 
         void register_event(ReplayEventType type, KeyCode code=0);
 };
