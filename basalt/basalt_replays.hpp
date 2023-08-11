@@ -16,18 +16,21 @@ struct ReplayEvent {
     KeyCode keyCode;
 };
 
-struct ReplayRecording {
-    unsigned int seed;
-    std::vector<ReplayEvent> events;
+class ReplayRecording {
+    public:
+        unsigned int seed;
+        std::vector<ReplayEvent> events;
+        
+        // Recordings of input should be started before the first frame of the game!
+        void Record();
+        void StopRecording();
+        void Play();
+        void Stop();
 
-    static std::string GenerateName();
+        static void RegisterEvent(ReplayEventType type, KeyCode code=0);
+    private:
+        static std::shared_ptr<ReplayRecording> active;
+        static std::string generate_name();
+
+        void register_event(ReplayEventType type, KeyCode code=0);
 };
-
-extern std::shared_ptr<ReplayRecording> ActiveRecording = nullptr;
-
-// Recordings of input should be started before the first frame of the game!
-std::string StartRecordingReplay();
-void StopRecordingReplay();
-
-void PlayRecordedReplay();
-void StopRecordedReplay();
