@@ -3,6 +3,8 @@
 #include <memory>
 #include <vector>
 
+#include "basalt_images.hpp"
+
 enum class ReplayEventType : uint8_t {
     MOUSE_DOWN,
     MOUSE_UP,
@@ -27,6 +29,7 @@ class ReplayRecording {
         void Play();
         void Stop();
 
+        void UpdateAndRender(Texture canvas, float delta);
         static void RegisterEvent(ReplayEventType type, KeyCode code=0);
     private:
         static std::shared_ptr<ReplayRecording> active;
@@ -34,3 +37,5 @@ class ReplayRecording {
 
         void register_event(ReplayEventType type, KeyCode code=0);
 };
+
+void UpdateAndRenderReplayOverlay(Texture canvas, float delta);
