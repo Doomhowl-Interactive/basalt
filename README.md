@@ -1,8 +1,9 @@
 ![basalt](misc/logo_small.png)
 
-Software rendered game engine based on SDL3 for C++ cavemen
+Software rendered game engine based on SDL2 for C++ cavemen
 
-Solidified version of [Magma Game Engine](https://github.com/bramtechs/RaylibMagmaEngine) and [dream-emu](https://github.com/bramtechs/dream-emu).
+Solidified version of [Magma Game Engine](https://github.com/bramtechs/RaylibMagmaEngine)
+and [dream-emu](https://github.com/bramtechs/dream-emu).
 
 Inspired by [Raylib](https://github.com/raysan5/raylib).
 
@@ -51,7 +52,7 @@ cmake --build build --parallel --config Release
 
 > NOTE: The Xcode build generator needs to be used or the build will fail.
 
-> NOTE: SDL3 (master branch of SDL) is compiled and statically linked with basalt,
+> NOTE: SDL2 is compiled and statically linked with basalt,
 > so the first compilation may take a while...
 
 ## Screenshots
