@@ -8,8 +8,8 @@ add_executable(${PROJECT_NAME} WIN32 ${SOURCES})
 set(LIBS
         basalt
         renderer_sdl_cpu
-        SDL3-static
-        SDL3_ttf-static
+        SDL2-static
+        SDL2_ttf
         )
 
 target_link_libraries(${PROJECT_NAME} ${LIBS} ${PLAT_LIBS})

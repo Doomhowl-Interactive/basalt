@@ -81,7 +81,7 @@ Basalt::Basalt(GameConfig config, int argc, char** argv)
     spdlog::set_level(spdlog::level::debug);
 
     // initialize the Window
-    Window = SDL_CreateWindow(Game.title, Game.width, Game.height, 0);
+    Window = SDL_CreateWindow(Game.title, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, Game.width, Game.height, 0);
     if (Window == nullptr) {
         spdlog::critical("Could not create Window!");
         Close(EXIT_FAILURE);
@@ -115,7 +115,7 @@ bool Basalt::ShouldClose()
     static SDL_Event event;
     while (SDL_PollEvent(&event)) {
         switch (event.type) {
-            case SDL_EVENT_QUIT: {
+            case SDL_QUIT : {
                 return true;
             }
             default: {
@@ -179,7 +179,7 @@ void Basalt::EndFrame()
 
 Basalt::~Basalt()
 {
-    SDL_DestroySurface(ScreenSurface);
+    SDL_FreeSurface(ScreenSurface);
     SDL_DestroyWindow(Window);
     CloseSystemConsole();
     spdlog::info("Closed SDL2 Window");

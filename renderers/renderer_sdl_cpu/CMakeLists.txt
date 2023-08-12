@@ -7,9 +7,9 @@ add_library(${PROJECT_NAME} STATIC ${SOURCES})
 
 # too dumb to use cmake properly
 SET(EXTRA_HEADER_FOLDERS
-        "${CMAKE_CURRENT_SOURCE_DIR}/../../vendor/SDL/include/SDL3"
+        "${CMAKE_CURRENT_SOURCE_DIR}/../../vendor/SDL/include/SDL2"
         "${CMAKE_CURRENT_SOURCE_DIR}/../../vendor/SDL/include"
-        "${CMAKE_CURRENT_SOURCE_DIR}/../../vendor/SDL_ttf/include/SDL3"
+        "${CMAKE_CURRENT_SOURCE_DIR}/../../vendor/SDL_ttf"
         "${CMAKE_CURRENT_SOURCE_DIR}/../../basalt"
         "${CMAKE_CURRENT_SOURCE_DIR}/../../vendor"
         )

@@ -11,12 +11,12 @@ static Image pixelTexture(1, 1);
 
 SDL_WrappedSurface::SDL_WrappedSurface(int width, int height, Uint32 format)
 {
-    surface = SDL_CreateSurface(width, height, format);
+    surface = SDL_CreateRGBSurfaceWithFormat(0, width, height, 4, format);
 }
 
 SDL_WrappedSurface::~SDL_WrappedSurface()
 {
-    SDL_DestroySurface(surface);
+    SDL_FreeSurface(surface);
 }
 
 SDL_Surface* SDL_WrappedSurface::get() const
@@ -65,7 +65,7 @@ const Color* Image::GetPixels() const
 
 void Image::Clear(Color color) const
 {
-    SDL_FillSurfaceRect(surface->get(), nullptr, color);
+    SDL_FillRect(surface->get(), nullptr, color);
 }
 
 void Image::Blit(const Image& texture,
@@ -114,7 +114,7 @@ void Image::BlitScaled(const Image& texture,
     SDL_Rect srcRect = { srcX, srcY, srcWidth, srcHeight };
     SDL_Rect destRect = { destX, destY, destWidth, destHeight };
     SDL_Rect* srcRectFinal = (srcWidth < 0 || srcHeight < 0) ? nullptr : &srcRect;
-    SDL_BlitSurfaceScaled(texture.surface->get(), srcRectFinal, surface->get(), &destRect);
+    SDL_UpperBlitScaled(texture.surface->get(), srcRectFinal, surface->get(), &destRect);
 }
 
 void Image::BlitScaled(const Image& texture, Rect dest, Rect src, Color tint)
@@ -150,7 +150,7 @@ void Image::DrawDot(int posX, int posY, Color tint, int thickness) const
     int h = clamp(thickness, 0, height - y);
 
     SDL_Rect rect = { x, y, w, h };
-    SDL_FillSurfaceRect(surface->get(), &rect, tint);
+    SDL_FillRect(surface->get(), &rect, tint);
 }
 
 void Image::DrawDot(Point pos, Color tint, int thickness) const
@@ -194,7 +194,7 @@ void Image::DrawRectangle(int posX, int posY, int width, int height, Color tint)
     uchar alpha = tint & 0x000000FF;
     if (alpha == 255) {
         SDL_Rect rect = { posX, posY, width, height };
-        SDL_FillSurfaceRect(surface->get(), &rect, tint);
+        SDL_FillRect(surface->get(), &rect, tint);
     } else {
         Color tintFullAlpha = tint | 0x000000FF;
         pixelTexture.Clear(tintFullAlpha);

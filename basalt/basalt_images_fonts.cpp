@@ -37,7 +37,7 @@ class CachedText {
 
     ~CachedText()
     {
-        SDL_DestroySurface(surface);
+        SDL_FreeSurface(surface);
     }
 
     bool isOld()

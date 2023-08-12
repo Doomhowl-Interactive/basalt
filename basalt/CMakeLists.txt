@@ -11,7 +11,7 @@ add_library(${PROJECT_NAME} STATIC ${SOURCES})
 SET(EXTRA_HEADER_FOLDERS
         "${CMAKE_CURRENT_SOURCE_DIR}/../vendor/SDL/include/SDL2"
         "${CMAKE_CURRENT_SOURCE_DIR}/../vendor/SDL/include"
-        "${CMAKE_CURRENT_SOURCE_DIR}/../vendor/SDL_ttf/include/SDL2"
+        "${CMAKE_CURRENT_SOURCE_DIR}/../vendor/SDL_ttf"
         "${CMAKE_CURRENT_SOURCE_DIR}/../vendor"
 )
 
