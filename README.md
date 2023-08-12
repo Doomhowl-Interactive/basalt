@@ -1,5 +1,7 @@
 ![basalt](misc/logo_small.png)
 
+> As I've moved to self-hosting my git-repos, Basalt has been closed-sourced for the forseable future.
+
 Software rendered game engine based on SDL2 for C++ cavemen
 
 Solidified version of [Magma Game Engine](https://github.com/bramtechs/RaylibMagmaEngine)
